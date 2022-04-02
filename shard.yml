@@ -1,0 +1,13 @@
+name: tanda_cli
+version: 0.1.0
+
+authors:
+  - Daniel Gilchrist <danniieelg@gmail.com>
+
+targets:
+  tanda_cli:
+    main: src/tanda_cli.cr
+
+crystal: 1.1.1
+
+license: MIT
