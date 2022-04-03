@@ -1,6 +1,6 @@
 # tanda_cli
 
-TODO: Write a description here
+https://my.tanda.co/api/v2#general-current-user-get
 
 ## Installation
 
