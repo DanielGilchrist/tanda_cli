@@ -20,22 +20,24 @@ module Tanda::CLI
       res = gets
       res ? res.chomp : exit
     end
+    puts ""
 
     email = begin
       puts "Whats your email?\n"
       res = gets
       res ? res.chomp : exit
     end
+    puts ""
 
     password = begin
       puts "What's your password?\n"
       res = gets
       res ? res.chomp : exit
     end
+    puts ""
 
     auth = API::Auth.new(config.site_prefix, email, password)
     auth_response = auth.get_access_token!
-    puts auth_response
     parsed_auth_response = Types::PasswordAuth.from_json(auth_response)
 
     config.site_prefix = site_prefix

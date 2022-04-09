@@ -9,17 +9,15 @@ module Tanda::CLI
         @token = token
       end
 
-      def get(endpoint : String)
+      def get(endpoint : String) : HTTP::Client::Response
         url = construct_url(endpoint)
-
-        puts url
         HTTP::Client.get(url, headers: build_headers)
       end
 
       private getter base_uri  : String
       private getter token   : String
 
-      private def construct_url(endpoint)
+      private def construct_url(endpoint) : String
         "#{base_uri}#{endpoint}"
       end
 
