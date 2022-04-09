@@ -1,4 +1,5 @@
 require "json"
+require "./organisation"
 
 module Tanda::CLI
   module Types

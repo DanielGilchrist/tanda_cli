@@ -5,7 +5,6 @@ require "option_parser"
 require "./configuration"
 require "./api/**"
 require "./cli/**"
-require "./representers/me"
 
 module Tanda::CLI
   def self.main
@@ -32,7 +31,7 @@ module Tanda::CLI
 
     url = config.get_api_url
     token = config.token!
-    client = API::Client.new(config.get_api_url, token)
+    client = API::Client.new(url, token)
 
     CLI::Parser.new(client).parse!
   end
