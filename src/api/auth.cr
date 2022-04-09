@@ -4,18 +4,18 @@ require "json"
 module Tanda::CLI
   module API
     class Auth
-      def initialize(base_uri : String, email : String, password : String)
-        @base_uri = base_uri
+      def initialize(site_prefix : String, email : String, password : String)
+        @site_prefix = site_prefix
         @email = email
         @password = password
       end
 
-      def get_access_token!
+      def get_access_token! : String
         HTTP::Client.post(
-          "https://eu.tanda.co/api/oauth/token",
+          build_endpoint,
           headers: build_headers,
           body: {
-            username:   username,
+            username:   email,
             password:   password,
             scope:      build_scopes,
             grant_type: "password"
@@ -24,9 +24,13 @@ module Tanda::CLI
         .body
       end
 
-      private getter base_uri : String
+      private getter site_prefix : String
       private getter email    : String
       private getter password : String
+
+      def build_endpoint : String
+        "https://#{site_prefix}.tanda.co/api/oauth/token"
+      end
 
       private def build_headers : HTTP::Headers
         HTTP::Headers{

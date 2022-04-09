@@ -2,18 +2,23 @@ require "json"
 
 module Tanda::CLI
   class Configuration
-    # DEFAULT_CONFIG = {
-    #   "site_prefix": "eu",
-    #   "access_token": {
-    #     "token": nil,
-    #     "token_type": nil,
-    #     "scope": nil,
-    #     "created_at": nil
-    #   }
-    # }.to_json
+    CONFIG_PATH = "/home/daniel/.tanda_cli/config.json"
+    DEFAULT_CONFIG = {
+      "site_prefix": "eu",
+      "access_token": {
+        "email": nil,
+        "token": nil,
+        "token_type": nil,
+        "scope": nil,
+        "created_at": nil
+      }
+    }.to_json
 
     class AccessToken
       include JSON::Serializable
+
+      @[JSON::Field(key: "email")]
+      property email : String?
 
       @[JSON::Field(key: "token")]
       property token : String?
@@ -39,25 +44,38 @@ module Tanda::CLI
     end
 
     def initialize
-      @config = parse_config!
+      @config = Config.from_json(DEFAULT_CONFIG)
     end
 
     delegate site_prefix, access_token, to: config
+
+    def site_prefix=(value : String)
+      config.site_prefix = value
+    end
+
+    def parse_config!
+      file = File.new(CONFIG_PATH)
+      content = file.gets_to_end
+      @config = Config.from_json(content)
+
+      file.close
+    end
+
+    def token! : String
+      token = access_token.token
+      raise "Token is missing" if token.nil?
+
+      token
+    end
+
+    def save!
+      File.write(CONFIG_PATH, config.to_json)
+    end
 
     def get_api_url : String
       "https://#{site_prefix}.tanda.co/api/v2"
     end
 
     private getter config : Config
-
-    private def parse_config! : Config
-      file = File.new("/home/daniel/.tanda_cli/config.json")
-      content = file.gets_to_end
-      parsed_config = Config.from_json(content)
-
-      file.close
-
-      parsed_config
-    end
   end
 end
