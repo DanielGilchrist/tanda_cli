@@ -1,35 +1,31 @@
 # shards
 require "http"
 
-# internal
-require "./configuration"
-
 module Tanda::CLI
   module API
     class Client
-      def initialize(token : String, config : Configuration)
+      def initialize(base_uri : String, token : String)
+        @base_uri = base_uri
         @token = token
-        @config = config
-        @api_url = config.get_api_url
       end
 
-      def get(endpoint : String)
+      def get(endpoint : String) : HTTP::Client::Response
         url = construct_url(endpoint)
-        headers = HTTP::Headers{
+        HTTP::Client.get(url, headers: build_headers)
+      end
+
+      private getter base_uri  : String
+      private getter token   : String
+
+      private def construct_url(endpoint) : String
+        "#{base_uri}#{endpoint}"
+      end
+
+      private def build_headers : HTTP::Headers
+        HTTP::Headers{
           "Authorization" => "Bearer #{token}",
           "Content-Type" => "application/json"
         }
-
-        puts url
-        HTTP::Client.get(url, headers: headers)
-      end
-
-      private getter token   : String
-      private getter config  : Configuration
-      private getter api_url : String
-
-      private def construct_url(endpoint)
-        "#{api_url}#{endpoint}"
       end
     end
   end
