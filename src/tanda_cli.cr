@@ -5,7 +5,6 @@ require "option_parser"
 require "./configuration"
 require "./api/**"
 require "./cli/**"
-require "./representers/me"
 
 module Tanda::CLI
   def self.main
