@@ -54,6 +54,8 @@ module Tanda::CLI
     end
 
     def parse_config!
+      return unless File.exists?(CONFIG_PATH)
+
       file = File.new(CONFIG_PATH)
       content = file.gets_to_end
       @config = Config.from_json(content)

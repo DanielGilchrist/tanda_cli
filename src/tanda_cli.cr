@@ -39,6 +39,7 @@ module Tanda::CLI
     parsed_auth_response = Types::PasswordAuth.from_json(auth_response)
 
     config.site_prefix = site_prefix
+    config.access_token.email = email
     config.access_token.token = parsed_auth_response.token
     config.access_token.token_type = parsed_auth_response.token_type
     config.access_token.scope = parsed_auth_response.scope
