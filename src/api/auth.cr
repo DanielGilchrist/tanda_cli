@@ -1,5 +1,9 @@
+# shards
 require "http"
 require "json"
+
+# internal
+require "../types/password_auth"
 
 module Tanda::CLI
   module API
@@ -10,8 +14,8 @@ module Tanda::CLI
         @password = password
       end
 
-      def get_access_token! : String
-        HTTP::Client.post(
+      def get_access_token! : Types::PasswordAuth
+        response = HTTP::Client.post(
           build_endpoint,
           headers: build_headers,
           body: {
@@ -22,6 +26,8 @@ module Tanda::CLI
           }.to_json
         )
         .body
+
+        Types::PasswordAuth.from_json(response)
       end
 
       private getter site_prefix : String

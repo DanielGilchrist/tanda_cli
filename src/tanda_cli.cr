@@ -4,62 +4,38 @@ require "option_parser"
 # internal
 require "./configuration"
 require "./api/**"
+require "./cli/**"
 require "./representers/me"
-require "./types/**"
 
 module Tanda::CLI
-  VERSION = "0.1.0"
+  def self.main
+    config = Configuration.new
+    config.parse_config!
+    token = config.access_token.token
 
-  config = Configuration.new
-  config.parse_config!
-  token = config.access_token.token
+    # if a token can't be parsed from the config, get username and password from user and request a token
+    if token.nil?
+      site_prefix, email, password = CLI::Auth.request_user_information!
 
-  if token.nil?
-    site_prefix = begin
-      puts "Site prefix:\n"
-      res = gets
-      res ? res.chomp : exit
+      auth = API::Auth.new(site_prefix, email, password)
+      access_token = auth.get_access_token!
+      puts "Successfully retrieved token!\n"
+
+      config.site_prefix = site_prefix
+      config.access_token.email = email
+      config.access_token.token = access_token.token
+      config.access_token.token_type = access_token.token_type
+      config.access_token.scope = access_token.scope
+      config.access_token.created_at = access_token.created_at
+      config.save!
     end
-    puts ""
 
-    email = begin
-      puts "Whats your email?\n"
-      res = gets
-      res ? res.chomp : exit
-    end
-    puts ""
+    url = config.get_api_url
+    token = config.token!
+    client = API::Client.new(config.get_api_url, token)
 
-    password = begin
-      puts "What's your password?\n"
-      res = gets
-      res ? res.chomp : exit
-    end
-    puts ""
-
-    auth = API::Auth.new(config.site_prefix, email, password)
-    auth_response = auth.get_access_token!
-    parsed_auth_response = Types::PasswordAuth.from_json(auth_response)
-
-    config.site_prefix = site_prefix
-    config.access_token.email = email
-    config.access_token.token = parsed_auth_response.token
-    config.access_token.token_type = parsed_auth_response.token_type
-    config.access_token.scope = parsed_auth_response.scope
-    config.access_token.created_at = parsed_auth_response.created_at
-    config.save!
-  end
-
-  url = config.get_api_url
-  token = config.token!
-  client = API::Client.new(config.get_api_url, token)
-
-  OptionParser.parse do |parser|
-    parser.banner = "Welcome to the Tanda CLI!"
-
-    parser.on("me", "Get your own information") do
-      response = client.get("/users/me").body
-      parsed_response = Types::Me::Core.from_json(response)
-      Representers::Me.new(parsed_response).display
-    end
+    CLI::Parser.new(client).parse!
   end
 end
+
+Tanda::CLI.main
