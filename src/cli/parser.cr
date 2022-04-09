@@ -1,4 +1,6 @@
 require "../api/client"
+require "../representers/me"
+require "../types/me/core"
 
 module Tanda::CLI
   class CLI::Parser
