@@ -3,9 +3,9 @@ require "log"
 module Tanda::CLI
   module Debug
     def self.setup
-      if (ENV["DEBUG"]? == "true")
-        Log.setup(:debug, Backend.new)
-      end
+      return unless ENV["DEBUG"]? == "true"
+
+      Log.setup(:debug, Backend.new)
     end
 
     class Backend < Log::IOBackend
