@@ -26,6 +26,8 @@ module Tanda::CLI
         puts "\tID: #{organisation.id}"
         puts "\tName: #{organisation.name}"
         puts "\tCountry: #{organisation.country}"
+        puts "\tUser ID: #{organisation.user_id}"
+        puts "\tLocale: #{organisation.locale}"
         puts "\n"
       end
     end
