@@ -11,16 +11,19 @@ module Tanda::CLI
         puts "Name: #{object.name}"
         puts "Email: #{object.email}"
 
-        puts "Organisations:"
-        object.user_ids.each do |user_id|
-          organisation = object.organisations.find { |o| o.user_id == user_id }
-          next if organisation.nil?
-
-          display_organisation(organisation)
-        end
+        display_organisations
       end
 
       private getter object
+
+      private def display_organisations
+        puts "Organisations:"
+        organisations_by_user_id = object.organisations.index_by(&.user_id)
+        object.user_ids.each do |user_id|
+          organisation = organisations_by_user_id[user_id]
+          display_organisation(organisation)
+        end
+      end
 
       private def display_organisation(organisation : Types::Me::Organisation)
         display_with_padding("ID: #{organisation.id}")
