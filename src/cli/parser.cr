@@ -23,8 +23,6 @@ module Tanda::CLI
             "to"       => "2022-04-09"
           })
 
-          puts response.body
-
           Array(Types::Shift).from_json(response.body).each do |shift|
             puts "ID: #{shift.id}"
             puts "User ID: #{shift.user_id}"

@@ -1,5 +1,6 @@
 require "http"
 require "uri"
+require "log"
 
 module Tanda::CLI
   module API
@@ -13,8 +14,11 @@ module Tanda::CLI
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
         uri = construct_uri(endpoint, query)
-        puts uri
-        HTTP::Client.get(uri, headers: build_headers)
+
+        response = HTTP::Client.get(uri, headers: build_headers)
+        Log.debug(&.emit("Response", body: response.body))
+
+        response
       end
 
       private getter base_uri : String
