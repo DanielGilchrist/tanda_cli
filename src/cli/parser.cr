@@ -21,7 +21,7 @@ module Tanda::CLI
             "user_ids" => "66585",
             "from"     => "2022-04-04",
             "to"       => "2022-04-09"
-          }.to_h)
+          })
 
           puts response.body
 
