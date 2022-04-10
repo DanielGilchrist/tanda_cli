@@ -4,7 +4,7 @@ require "uri"
 module Tanda::CLI
   module API
     class Client
-      alias TQuery = Hash(String | String, String)?
+      alias TQuery = Hash(String, String)?
 
       def initialize(base_uri : String, token : String)
         @base_uri = base_uri
