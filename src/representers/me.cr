@@ -23,12 +23,16 @@ module Tanda::CLI
       private getter object
 
       private def display_organisation(organisation : Types::Me::Organisation)
-        puts "\tID: #{organisation.id}"
-        puts "\tName: #{organisation.name}"
-        puts "\tCountry: #{organisation.country}"
-        puts "\tUser ID: #{organisation.user_id}"
-        puts "\tLocale: #{organisation.locale}"
+        display_with_padding("ID: #{organisation.id}")
+        display_with_padding("Name: #{organisation.name}")
+        display_with_padding("Country: #{organisation.country}")
+        display_with_padding("User ID: #{organisation.user_id}")
+        display_with_padding("Locale: #{organisation.locale}")
         puts "\n"
+      end
+
+      private def display_with_padding(text)
+        puts "    #{text}"
       end
     end
   end
