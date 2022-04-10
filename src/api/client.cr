@@ -13,7 +13,7 @@ module Tanda::CLI
       end
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
-        uri = construct_uri(endpoint, query)
+        uri = build_uri(endpoint, query)
 
         response = HTTP::Client.get(uri, headers: build_headers)
         Log.debug(&.emit("Response", body: response.body))
@@ -24,11 +24,9 @@ module Tanda::CLI
       private getter base_uri : String
       private getter token    : String
 
-      private def construct_uri(endpoint, query : TQuery? = nil) : URI
+      private def build_uri(endpoint, query : TQuery? = nil) : URI
         uri = URI.parse("#{base_uri}#{endpoint}")
-
-        query_params = URI::Params.encode(query) if query
-        uri.query = query_params if query_params
+        uri.query = URI::Params.encode(query) if query
 
         uri
       end
