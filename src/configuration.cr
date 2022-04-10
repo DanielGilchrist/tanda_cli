@@ -2,7 +2,7 @@ require "json"
 
 module Tanda::CLI
   class Configuration
-    CONFIG_PATH = "/home/daniel/.tanda_cli/config.json"
+    CONFIG_PATH = "/home/daniel/.tanda_cli/config.json" # TODO: Don't hardcode this
     DEFAULT_CONFIG = {
       "site_prefix": "eu",
       "access_token": {
