@@ -18,11 +18,7 @@ module Tanda::CLI
 
       private def display_organisations
         puts "Organisations:"
-        organisations_by_user_id = object.organisations.index_by(&.user_id)
-        object.user_ids.each do |user_id|
-          organisation = organisations_by_user_id[user_id]
-          display_organisation(organisation)
-        end
+        object.organisations.each { |o| display_organisation(o) }
       end
 
       private def display_organisation(organisation : Types::Me::Organisation)
