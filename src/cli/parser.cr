@@ -17,10 +17,17 @@ module Tanda::CLI
         end
 
         parser.on("time_worked", "See how many hours you've worked this week") do
+          now = Time.local
+          start_date, finish_date = [
+            now.at_beginning_of_week,
+            now
+          ]
+          .map(&.to_s("%Y-%m-%d"))
+
           response = client.get("/shifts", query: {
             "user_ids" => "66585",
-            "from"     => "2022-04-04",
-            "to"       => "2022-04-09"
+            "from"     => start_date,
+            "to"       => finish_date
           })
 
           Array(Types::Shift).from_json(response.body).each do |shift|
