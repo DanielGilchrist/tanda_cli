@@ -1,8 +1,8 @@
 require "json"
+require "file_utils"
 
 module Tanda::CLI
   class Configuration
-    CONFIG_PATH = "/home/daniel/.tanda_cli/config.json" # TODO: Don't hardcode this
     DEFAULT_CONFIG = {
       "site_prefix": "eu",
       "access_token": {
@@ -54,13 +54,13 @@ module Tanda::CLI
     end
 
     def parse_config!
-      return unless File.exists?(CONFIG_PATH)
+      return unless File.exists?(config_path)
 
-      file = File.new(CONFIG_PATH)
+      file = File.new(config_path)
       content = file.gets_to_end
       @config = Config.from_json(content)
-
-      file.close
+    ensure
+      file.close if file
     end
 
     def token! : String
@@ -71,7 +71,8 @@ module Tanda::CLI
     end
 
     def save!
-      File.write(CONFIG_PATH, config.to_json)
+      create_config_dir_if_not_exists!
+      File.write(config_path, content: config.to_json)
     end
 
     def get_api_url : String
@@ -79,5 +80,17 @@ module Tanda::CLI
     end
 
     private getter config : Config
+
+    private def config_dir : String
+      @config_dir ||= "#{Path.home}/.tanda_cli"
+    end
+
+    private def config_path : String
+      @config_path ||= "#{config_dir}/config.json"
+    end
+
+    private def create_config_dir_if_not_exists!
+      FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
+    end
   end
 end
