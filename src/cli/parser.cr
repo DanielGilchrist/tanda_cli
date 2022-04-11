@@ -31,11 +31,23 @@ module Tanda::CLI
           })
 
           Array(Types::Shift).from_json(response.body).each do |shift|
+            time_worked = shift.time_worked
+            worked_so_far = shift.worked_so_far
+            time_worked && puts "Time worked: #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+            worked_so_far && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
             puts "ID: #{shift.id}"
             puts "User ID: #{shift.user_id}"
             puts "Start: #{shift.start}"
             puts "Finish: #{shift.finish}"
             puts "Status: #{shift.status}"
+            puts "Breaks:"
+            shift.breaks.each do |shift_break|
+              puts "  ID: #{shift_break.id}"
+              puts "  Shift ID: #{shift_break.shift_id}"
+              puts "  Start: #{shift_break.start}"
+              puts "  Finish: #{shift_break.finish}"
+              puts "  Length: #{shift_break.length}"
+            end
             puts "\n"
           end
         end

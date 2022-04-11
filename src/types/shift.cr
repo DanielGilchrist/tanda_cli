@@ -1,4 +1,5 @@
 require "json"
+require "./shift_break"
 
 module Tanda::CLI
   class Types::Shift
@@ -26,6 +27,7 @@ module Tanda::CLI
       end
     end
 
+    # TODO: Refactor out
     module TimeConverter
       def self.from_json(value : JSON::PullParser) : Time
         time = Time.unix(value.read_int)
@@ -47,5 +49,28 @@ module Tanda::CLI
 
     @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
     property status : Status
+
+    @[JSON::Field(key: "breaks")]
+    property breaks : Array(ShiftBreak)
+
+    def time_worked : Time::Span?
+      s = start
+      return if s.nil?
+
+      f = finish
+      return if f.nil?
+
+      f - s
+    end
+
+    def worked_so_far : Time::Span?
+      s = start
+      return if s.nil?
+
+      now = Time.local(Time::Location.load("Europe/London"))
+      return unless now.date == s.date
+
+      (now - s) - breaks.sum(&.length).minutes
+    end
   end
 end
