@@ -11,10 +11,13 @@ module Tanda::CLI
     class Backend < Log::IOBackend
       def write(entry : Log::Entry)
         puts "\n"
-        puts "=============================== DEBUG ==============================="
-        puts entry.message
-        puts entry.data
-        puts "=============================== DEBUG ==============================="
+        pp "=============================== DEBUG ==============================="
+        pp entry.message
+        entry.data.each do |(k, v)|
+          print "#{k}: "
+          pp v
+        end
+        pp "=============================== DEBUG ==============================="
         puts "\n"
       end
     end
