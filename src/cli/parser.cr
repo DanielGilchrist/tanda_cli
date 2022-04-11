@@ -34,7 +34,7 @@ module Tanda::CLI
             time_worked = shift.time_worked
             worked_so_far = shift.worked_so_far
             time_worked && puts "Time worked: #{time_worked.hours} hours and #{time_worked.minutes} minutes"
-            worked_so_far && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+            (!time_worked && worked_so_far) && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
             puts "ID: #{shift.id}"
             puts "User ID: #{shift.user_id}"
             puts "Start: #{shift.start}"

@@ -60,7 +60,7 @@ module Tanda::CLI
       f = finish
       return if f.nil?
 
-      f - s
+      (f - s) - total_break_minutes
     end
 
     def worked_so_far : Time::Span?
@@ -70,7 +70,11 @@ module Tanda::CLI
       now = Time.local(Time::Location.load("Europe/London"))
       return unless now.date == s.date
 
-      (now - s) - breaks.sum(&.length).minutes
+      (now - s) - total_break_minutes
+    end
+
+    def total_break_minutes : Time::Span
+      breaks.sum(&.length).minutes
     end
   end
 end
