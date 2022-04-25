@@ -19,10 +19,10 @@ module Tanda::CLI
     property shift_id : Int32
 
     @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Shift::TimeConverter)]
-    property start : Time
+    property start : Time?
 
     @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Shift::TimeConverter)]
-    property finish : Time
+    property finish : Time?
 
     # length in minutes
     @[JSON::Field(key: "length")]
