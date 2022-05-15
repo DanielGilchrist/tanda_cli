@@ -61,7 +61,7 @@ module Tanda::CLI
         total_time_worked += total_time if total_time
       end
 
-      puts("Total time worked so far: #{total_time_worked.hours} hours and #{total_time_worked.minutes} minutes")
+      puts("Total time worked so far: #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes")
     end
 
     private getter client : API::Client
