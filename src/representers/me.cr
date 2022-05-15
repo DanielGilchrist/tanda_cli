@@ -14,7 +14,7 @@ module Tanda::CLI
         display_organisations
       end
 
-      private getter object
+      private getter object : Types::Me::Core
 
       private def display_organisations
         puts "Organisations:"
