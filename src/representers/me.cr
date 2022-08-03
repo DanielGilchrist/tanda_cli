@@ -1,20 +1,15 @@
+require "./base"
 require "../types/me/**"
 
 module Tanda::CLI
   module Representers
-    class Me
-      def initialize(object : Types::Me::Core)
-        @object = object
-      end
-
+    class Me < Base(Types::Me::Core)
       def display
         puts "Name: #{object.name}"
         puts "Email: #{object.email}"
 
         display_organisations
       end
-
-      private getter object : Types::Me::Core
 
       private def display_organisations
         puts "Organisations:"
