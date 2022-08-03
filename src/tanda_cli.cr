@@ -14,7 +14,7 @@ module Tanda::CLI
     token = config.access_token.token
 
     # TODO: Don't hard code User
-    Current.user = Current::User.new(id: 66585, time_zone: "Europe/London")
+    Current.set_user!(Current::User.new(id: 66585, time_zone: "Europe/London"))
 
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?

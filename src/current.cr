@@ -2,6 +2,18 @@ module Tanda::CLI
   module Current
     extend self
 
+    class UserNotSet < Exception
+      def initialize
+        @message = "User hasn't been set!"
+      end
+    end
+
+    class UserAlreadySet < Exception
+      def initialize
+        @message = "User has already been set!"
+      end
+    end
+
     class User
       getter id : Int32
       getter time_zone : Time::Location
@@ -11,7 +23,19 @@ module Tanda::CLI
       end
     end
 
-    delegate user!, :user=, to: instance
+    delegate user!, to: instance
+
+    def set_user!(user : User)
+      raise UserAlreadySet.new if @@user_set
+
+      instance.user = user
+      @@user_set = true
+    end
+
+    def reset!
+      instance.reset!
+      @@user_set = false
+    end
 
     private def instance
       @@_current ||= CurrentInstance.new
@@ -35,10 +59,8 @@ module Tanda::CLI
         nilable_user
       end
 
-      private class UserNotSet < Exception
-        def initialize
-          @message = "User hasn't been set!"
-        end
+      def reset!
+        @user = nil
       end
     end
   end
