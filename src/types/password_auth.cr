@@ -2,7 +2,7 @@ require "json"
 
 module Tanda::CLI
   module Types
-    class PasswordAuth
+    class AccessToken
       include JSON::Serializable
 
       @[JSON::Field(key: "access_token")]

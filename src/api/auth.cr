@@ -14,7 +14,7 @@ module Tanda::CLI
         @password = password
       end
 
-      def get_access_token! : Types::PasswordAuth
+      def get_access_token! : Types::AccessToken
         response = HTTP::Client.post(
           build_endpoint,
           headers: build_headers,
@@ -27,7 +27,7 @@ module Tanda::CLI
         )
         .body
 
-        Types::PasswordAuth.from_json(response)
+        Types::AccessToken.from_json(response)
       end
 
       private getter site_prefix : String
