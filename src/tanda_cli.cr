@@ -3,7 +3,6 @@ require "option_parser"
 
 # internal
 require "./configuration"
-require "./debug"
 require "./api/**"
 require "./cli/**"
 
@@ -38,6 +37,7 @@ module Tanda::CLI
 end
 
 {% if flag?(:debug) %}
+  require "./debug"
   Tanda::CLI::Debug.setup
 {% end %}
 
