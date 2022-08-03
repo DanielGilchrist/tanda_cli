@@ -15,7 +15,6 @@ module Tanda::CLI
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?
       site_prefix, email, passwords = CLI::Auth.request_user_information!
-      pp "Test!"
 
       access_token = API::Auth.get_access_token!(site_prefix, email, password)
       puts "Successfully retrieved token!\n"
