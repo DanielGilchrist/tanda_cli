@@ -7,16 +7,12 @@ require "../types/password_auth"
 
 module Tanda::CLI
   module API
-    class Auth
-      def initialize(site_prefix : String, email : String, password : String)
-        @site_prefix = site_prefix
-        @email = email
-        @password = password
-      end
+    module Auth
+      extend self
 
-      def get_access_token! : Types::AccessToken
+      def get_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken
         response = HTTP::Client.post(
-          build_endpoint,
+          build_endpoint(site_prefix),
           headers: build_headers,
           body: {
             username:   email,
@@ -30,11 +26,7 @@ module Tanda::CLI
         Types::AccessToken.from_json(response)
       end
 
-      private getter site_prefix : String
-      private getter email    : String
-      private getter password : String
-
-      def build_endpoint : String
+      private def build_endpoint(site_prefix : String) : String
         "https://#{site_prefix}.tanda.co/api/oauth/token"
       end
 
