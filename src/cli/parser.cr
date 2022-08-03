@@ -17,9 +17,13 @@ module Tanda::CLI
         end
 
         parser.on("time_worked", "See how many hours you've worked") do
-          list = false
+          parser.on("today", "Time you've worked today") do
+            handle_time_worked_today
+          end
 
           parser.on("week", "Time you've worked this week") do
+            list = false
+
             OptionParser.parse do |time_worked_parser|
               time_worked_parser.on("--list", "List days worked") do
                 list = true
@@ -27,10 +31,6 @@ module Tanda::CLI
             end
 
             handle_time_worked_week(list)
-          end
-
-          parser.on("today", "Time you've worked today") do
-            handle_time_worked_today
           end
         end
       end
