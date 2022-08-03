@@ -38,5 +38,8 @@ module Tanda::CLI
   end
 end
 
-Tanda::CLI::Debug.setup
+{% if flag?(:debug) %}
+  Tanda::CLI::Debug.setup
+{% end %}
+
 Tanda::CLI.main

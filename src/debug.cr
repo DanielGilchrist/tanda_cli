@@ -3,8 +3,6 @@ require "log"
 module Tanda::CLI
   module Debug
     def self.setup
-      return unless ENV["DEBUG"]? == "true"
-
       Log.setup(:debug, Backend.new)
     end
 
