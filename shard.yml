@@ -13,6 +13,6 @@ development_dependencies:
     github: crystal-ameba/ameba
     version: ~> 1.0.0
 
-crystal: 1.4.0
+crystal: 1.5.0
 
 license: MIT
