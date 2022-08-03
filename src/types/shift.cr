@@ -1,5 +1,6 @@
 require "json"
 require "./shift_break"
+require "./converters/time"
 
 module Tanda::CLI
   class Types::Shift
@@ -27,24 +28,16 @@ module Tanda::CLI
       end
     end
 
-    # TODO: Refactor out
-    module TimeConverter
-      def self.from_json(value : JSON::PullParser) : Time
-        time = Time.unix(value.read_int)
-        time.in(Time::Location.load("Europe/London")) # TODO: Don't hard-code time zone
-      end
-    end
-
     @[JSON::Field(key: "id")]
     property id : Int32
 
     @[JSON::Field(key: "user_id")]
     property user_id : Int32
 
-    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Shift::TimeConverter)]
+    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time)]
     property start : Time?
 
-    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Shift::TimeConverter)]
+    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time)]
     property finish : Time?
 
     @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
