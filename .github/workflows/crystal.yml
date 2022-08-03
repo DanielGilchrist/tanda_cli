@@ -22,6 +22,5 @@ jobs:
       run: ./bin/ameba
     - name: Compile
       run: crystal build src/tanda_cli.cr
-    # TODO: Add Tests
-    # - name: Run tests
-    #   run: crystal spec --order=random --error-on-warnings
+    - name: Run tests
+      run: crystal spec --order=random --error-on-warnings

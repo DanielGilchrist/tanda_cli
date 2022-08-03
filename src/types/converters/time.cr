@@ -7,8 +7,7 @@ module Tanda::CLI
         timestamp = value.read_int_or_null
         return unless timestamp
 
-        time = ::Time.unix(timestamp.to_i32)
-        time.in(::Time::Location.load("Europe/London")) # TODO: Don't hard-code time zone
+        ::Time.unix(timestamp.to_i32).in(Current.user!.time_zone)
       end
     end
   end

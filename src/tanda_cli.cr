@@ -3,6 +3,7 @@ require "option_parser"
 
 # internal
 require "./configuration"
+require "./current"
 require "./api/**"
 require "./cli/**"
 
@@ -11,6 +12,9 @@ module Tanda::CLI
     config = Configuration.new
     config.parse_config!
     token = config.access_token.token
+
+    # TODO: Don't hard code User
+    Current.set_user!(Current::User.new(id: 66585, time_zone: "Europe/London"))
 
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?

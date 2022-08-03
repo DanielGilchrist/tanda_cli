@@ -1,3 +1,4 @@
+require "../current"
 require "../api/client"
 require "../representers/me"
 require "../types/**"
@@ -68,7 +69,7 @@ module Tanda::CLI
       .map(&.to_s("%Y-%m-%d"))
 
       response = client.get("/shifts", query: {
-        "user_ids" => "66585", # TODO: Don't hard-code this
+        "user_ids" => Current.user!.id.to_s,
         "from"     => start_string,
         "to"       => finish_string
       })
