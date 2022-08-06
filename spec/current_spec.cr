@@ -6,11 +6,9 @@ Spectator.describe Tanda::CLI::Current do
   end
 
   context "Current user" do
-    context "Retrieving user" do
-      it "Raises when Current.user! is called without a user set" do
-        expect_raises Tanda::CLI::Current::UserNotSet do
-          Tanda::CLI::Current.user!
-        end
+    it "Raises when Current.user! is called without a user set" do
+      expect_raises Tanda::CLI::Current::UserNotSet do
+        Tanda::CLI::Current.user!
       end
     end
 
