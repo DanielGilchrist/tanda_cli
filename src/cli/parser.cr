@@ -1,6 +1,6 @@
 require "../current"
 require "../api/client"
-require "../representers/me"
+require "../representers/**"
 require "../types/**"
 
 module Tanda::CLI
@@ -76,24 +76,11 @@ module Tanda::CLI
       total_time_worked
     end
 
-    def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
+    private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
       time_worked && puts "Time worked: #{time_worked.hours} hours and #{time_worked.minutes} minutes"
       (!time_worked && worked_so_far) && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
 
-      puts "ID: #{shift.id}"
-      puts "User ID: #{shift.user_id}"
-      puts "Start: #{shift.start}"
-      puts "Finish: #{shift.finish}"
-      puts "Status: #{shift.status}"
-      puts "Breaks:"
-      shift.breaks.each do |shift_break|
-        puts "  ID: #{shift_break.id}"
-        puts "  Shift ID: #{shift_break.shift_id}"
-        puts "  Start: #{shift_break.start}"
-        puts "  Finish: #{shift_break.finish}"
-        puts "  Length: #{shift_break.length}"
-      end
-      puts "\n"
+      Representers::Shift.new(shift).display
     end
 
     private getter client : API::Client

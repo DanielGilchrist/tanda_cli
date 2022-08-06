@@ -3,7 +3,7 @@ require "http"
 require "json"
 
 # internal
-require "../types/password_auth"
+require "../types/access_token"
 
 module Tanda::CLI
   module API
