@@ -1,6 +1,8 @@
 require "json"
 require "file_utils"
 
+require "./types/access_token"
+
 module Tanda::CLI
   class Configuration
     DEFAULT_CONFIG = {
@@ -68,6 +70,17 @@ module Tanda::CLI
       raise "Token is missing" if token.nil?
 
       token
+    end
+
+    def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)
+      self.site_prefix = site_prefix
+      self.access_token.email = email
+      self.access_token.token = access_token.token
+      self.access_token.token_type = access_token.token_type
+      self.access_token.scope = access_token.scope
+      self.access_token.created_at = access_token.created_at
+
+      save!
     end
 
     def save!
