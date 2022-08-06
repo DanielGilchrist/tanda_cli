@@ -46,9 +46,6 @@ module Tanda::CLI
     @[JSON::Field(key: "breaks")]
     property breaks : Array(ShiftBreak)
 
-    @[JSON::Field(key: "leave_request_id")]
-    property leave_request_id : Int32?
-
     def time_worked : Time::Span?
       s = start
       return if s.nil?
