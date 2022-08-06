@@ -39,7 +39,7 @@ module Tanda::CLI
 
     private def handle_time_worked_today
       now = Time.local
-      shifts = request_shifts(now, now)
+      shifts = client.shifts(now)
       total_time_worked = calculate_time_worked(shifts)
 
       if total_time_worked.zero?
@@ -51,7 +51,7 @@ module Tanda::CLI
 
     private def handle_time_worked_week(list : Bool)
       now = Time.local
-      shifts = request_shifts(now.at_beginning_of_week, now)
+      shifts = client.shifts(now.at_beginning_of_week, now)
       total_time_worked = calculate_time_worked(shifts, print: list)
 
       if total_time_worked.zero?
@@ -59,22 +59,6 @@ module Tanda::CLI
       else
         puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes this week")
       end
-    end
-
-    private def request_shifts(start_date : Time, finish_date : Time)
-      start_string, finish_string = [
-        start_date,
-        finish_date
-      ]
-      .map(&.to_s("%Y-%m-%d"))
-
-      response = client.get("/shifts", query: {
-        "user_ids" => Current.user!.id.to_s,
-        "from"     => start_string,
-        "to"       => finish_string
-      })
-
-      Array(Types::Shift).from_json(response.body)
     end
 
     private def calculate_time_worked(shifts : Array(Types::Shift), print : Bool = false) : Time::Span

@@ -46,6 +46,9 @@ module Tanda::CLI
     @[JSON::Field(key: "breaks")]
     property breaks : Array(ShiftBreak)
 
+    @[JSON::Field(key: "leave_request_id")]
+    property leave_request_id : Int32?
+
     def time_worked : Time::Span?
       s = start
       return if s.nil?
@@ -68,6 +71,18 @@ module Tanda::CLI
 
     def total_break_minutes : Time::Span
       breaks.sum(&.length).minutes
+    end
+
+    def leave? : Bool
+      !leave_request_id.nil?
+    end
+
+    def leave_request
+      leave_id = leave_request_id
+      return if leave_id.nil?
+
+      client = Current.client!
+      client.fetch_leave_request(leave_id)
     end
   end
 end
