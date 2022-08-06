@@ -23,4 +23,4 @@ jobs:
     - name: Compile
       run: crystal build src/tanda_cli.cr
     - name: Run tests
-      run: crystal spec
+      run: crystal spec -Dtest

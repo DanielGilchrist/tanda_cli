@@ -39,4 +39,6 @@ end
   Tanda::CLI::Debug.setup
 {% end %}
 
-Tanda::CLI.main
+{% unless flag?(:test) %}
+  Tanda::CLI.main
+{% end %}
