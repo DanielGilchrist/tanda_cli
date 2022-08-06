@@ -1,2 +1,2 @@
-require "spec"
-require "../src/tanda_cli"
+require "../src/*"
+require "spectator"
