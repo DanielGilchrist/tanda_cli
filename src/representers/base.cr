@@ -7,6 +7,10 @@ module Tanda::CLI
 
       abstract def display
 
+      protected def display_with_padding(key : String, value)
+        puts "    #{key}: #{value}"
+      end
+
       private getter object : T
     end
   end

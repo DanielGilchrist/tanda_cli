@@ -29,22 +29,22 @@ module Tanda::CLI
     end
 
     @[JSON::Field(key: "id")]
-    property id : Int32
+    getter id : Int32
 
     @[JSON::Field(key: "user_id")]
-    property user_id : Int32
+    getter user_id : Int32
 
     @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time)]
-    property start : Time?
+    getter start : Time?
 
     @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time)]
-    property finish : Time?
+    getter finish : Time?
 
     @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
-    property status : Status
+    getter status : Status
 
     @[JSON::Field(key: "breaks")]
-    property breaks : Array(ShiftBreak)
+    getter breaks : Array(ShiftBreak)
 
     def time_worked : Time::Span?
       s = start

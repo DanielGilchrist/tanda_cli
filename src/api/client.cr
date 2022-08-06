@@ -2,9 +2,13 @@ require "http"
 require "uri"
 require "log"
 
+require "./endpoints"
+
 module Tanda::CLI
   module API
     class Client
+      include Tanda::CLI::API::Endpoints
+
       alias TQuery = Hash(String, String)
 
       def initialize(base_uri : String, token : String)
