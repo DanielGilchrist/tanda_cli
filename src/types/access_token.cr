@@ -6,16 +6,16 @@ module Tanda::CLI
       include JSON::Serializable
 
       @[JSON::Field(key: "access_token")]
-      property token : String
+      getter token : String
 
       @[JSON::Field(key: "token_type")]
-      property token_type : String
+      getter token_type : String
 
       @[JSON::Field(key: "scope")]
-      property scope : String
+      getter scope : String
 
       @[JSON::Field(key: "created_at")]
-      property created_at : Int32
+      getter created_at : Int32
     end
   end
 end

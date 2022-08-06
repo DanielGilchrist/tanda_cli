@@ -7,16 +7,16 @@ module Tanda::CLI
       include JSON::Serializable
 
       @[JSON::Field(key: "name")]
-      property name : String
+      getter name : String
 
       @[JSON::Field(key: "email")]
-      property email : String
+      getter email : String
 
       @[JSON::Field(key: "user_ids")]
-      property user_ids : Array(Int32)
+      getter user_ids : Array(Int32)
 
       @[JSON::Field(key: "organisations")]
-      property organisations : Array(Me::Organisation)
+      getter organisations : Array(Me::Organisation)
     end
   end
 end

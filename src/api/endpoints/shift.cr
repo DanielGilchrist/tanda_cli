@@ -1,6 +1,5 @@
 require "./interface.cr"
 require "../client"
-require "../../types/leave_request"
 
 module Tanda::CLI
   module API
