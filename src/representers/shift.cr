@@ -8,6 +8,7 @@ module Tanda::CLI
       def display
         puts "ID: #{object.id}"
         puts "User ID: #{object.user_id}"
+        puts "Date: #{object.pretty_date}"
         puts "Start: #{object.start}"
         puts "Finish: #{object.finish}"
         puts "Status: #{object.status}"
