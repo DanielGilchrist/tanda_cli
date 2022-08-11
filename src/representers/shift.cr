@@ -20,7 +20,9 @@ module Tanda::CLI
 
       private def display_shift_breaks
         puts "Breaks:"
-        object.breaks.each do |shift_break|
+
+        breaks = sort_breaks(object.breaks)
+        breaks.each do |shift_break|
           display_shift_break(shift_break)
         end
       end
@@ -31,6 +33,14 @@ module Tanda::CLI
         display_with_padding("Start", shift_break.start)
         display_with_padding("Finish", shift_break.finish)
         display_with_padding("Length", shift_break.length)
+        puts "\n"
+      end
+
+      private def sort_breaks(breaks : Array(Types::ShiftBreak))
+        breaks.sort_by do |shift_break|
+          start = shift_break.start
+          start ? start.to_unix : 0
+        end
       end
     end
   end
