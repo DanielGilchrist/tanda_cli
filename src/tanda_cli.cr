@@ -39,6 +39,7 @@ end
   Tanda::CLI::Debug.setup
 {% end %}
 
+# TODO: Test `Tanda::CLI.main`
 {% unless flag?(:test) %}
   Tanda::CLI.main
 {% end %}
