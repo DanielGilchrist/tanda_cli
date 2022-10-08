@@ -8,6 +8,7 @@ module Tanda::CLI
       def display
         puts "ID: #{object.id}"
         puts "User ID: #{object.user_id}"
+        puts "Date: #{object.pretty_date}"
         puts "Start: #{object.start}"
         puts "Finish: #{object.finish}"
         puts "Status: #{object.status}"
@@ -19,7 +20,8 @@ module Tanda::CLI
 
       private def display_shift_breaks
         puts "Breaks:"
-        object.breaks.each do |shift_break|
+
+        object.breaks.sort_by(&.id).each do |shift_break|
           display_shift_break(shift_break)
         end
       end
@@ -30,6 +32,7 @@ module Tanda::CLI
         display_with_padding("Start", shift_break.start)
         display_with_padding("Finish", shift_break.finish)
         display_with_padding("Length", shift_break.length)
+        puts "\n"
       end
     end
   end

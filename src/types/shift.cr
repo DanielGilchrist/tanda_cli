@@ -6,6 +6,8 @@ module Tanda::CLI
   class Types::Shift
     include JSON::Serializable
 
+    DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
+
     enum Status
       Pending
       Approved
@@ -34,10 +36,13 @@ module Tanda::CLI
     @[JSON::Field(key: "user_id")]
     getter user_id : Int32
 
-    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time)]
+    @[JSON::Field(key: "date", converter: Tanda::CLI::Types::Converters::Time::FromISODate)]
+    getter date : Time
+
+    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
     getter start : Time?
 
-    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time)]
+    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
     getter finish : Time?
 
     @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
@@ -45,6 +50,10 @@ module Tanda::CLI
 
     @[JSON::Field(key: "breaks")]
     getter breaks : Array(ShiftBreak)
+
+    def pretty_date : String
+      Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
+    end
 
     def time_worked : Time::Span?
       s = start

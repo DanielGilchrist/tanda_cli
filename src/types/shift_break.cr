@@ -12,10 +12,10 @@ module Tanda::CLI
     @[JSON::Field(key: "shift_id")]
     getter shift_id : Int32
 
-    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time)]
+    @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
     getter start : Time?
 
-    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time)]
+    @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
     getter finish : Time?
 
     # length in minutes
