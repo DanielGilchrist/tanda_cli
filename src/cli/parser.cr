@@ -13,8 +13,8 @@ module Tanda::CLI
       OptionParser.parse do |parser|
         parser.on("me", "Get your own information") do
           response = client.get("/users/me").body
-          parsed_response = Types::Me::Core.from_json(response)
-          Representers::Me.new(parsed_response).display
+          me = Types::Me::Core.from_json(response)
+          Representers::Me::Core.new(me).display
         end
 
         parser.on("time_worked", "See how many hours you've worked") do
