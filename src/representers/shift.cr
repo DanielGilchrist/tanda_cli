@@ -21,8 +21,8 @@ module Tanda::CLI
 
       private def display_shift_breaks
         puts "Breaks:"
-        object.breaks.sort_by(&.id).each do |shift|
-          ShiftBreak.new(shift).display
+        object.breaks.sort_by(&.id).each do |shift_break|
+          ShiftBreak.new(shift_break).display
         end
       end
     end
