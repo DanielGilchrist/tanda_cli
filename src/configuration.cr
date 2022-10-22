@@ -5,16 +5,46 @@ require "./types/access_token"
 
 module Tanda::CLI
   class Configuration
+    DEFAULT_SITE_PREFIX = "eu"
+
+    DEFAULT_ACCESS_TOKEN = {
+      "email": nil,
+      "token": nil,
+      "token_type": nil,
+      "scope": nil,
+      "created_at": nil
+    }
+
+    DEFAULT_ORGANISATIONS = [] of Organisation
+
     DEFAULT_CONFIG = {
-      "site_prefix": "eu",
-      "access_token": {
-        "email": nil,
-        "token": nil,
-        "token_type": nil,
-        "scope": nil,
-        "created_at": nil
-      }
-    }.to_json
+      "site_prefix": DEFAULT_SITE_PREFIX,
+      "access_token": DEFAULT_ACCESS_TOKEN,
+      "organisations": DEFAULT_ORGANISATIONS
+    }
+
+    class Organisation
+      include JSON::Serializable
+
+      # defaults
+      @current : Bool = false
+
+      @[JSON::Field(key: "id")]
+      getter id : Int32
+
+      @[JSON::Field(key: "name")]
+      getter name : String
+
+      @[JSON::Field(key: "user_id")]
+      getter user_id : Int32
+
+      @[JSON::Field(key: "current")]
+      property current : Bool
+
+      def current? : Bool
+        current
+      end
+    end
 
     class AccessToken
       include JSON::Serializable
@@ -38,21 +68,40 @@ module Tanda::CLI
     class Config
       include JSON::Serializable
 
+      # defaults
+      @site_prefix   : String              = DEFAULT_SITE_PREFIX
+      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
+      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS.to_json)
+
       @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
 
       @[JSON::Field(key: "access_token")]
       property access_token : AccessToken
+
+      @[JSON::Field(key: "organisations")]
+      property organisations : Array(Organisation)
+
+      @[JSON::Field(key: "time_zone")]
+      property time_zone : String?
     end
 
     def initialize
-      @config = Config.from_json(DEFAULT_CONFIG)
+      @config = Config.from_json(DEFAULT_CONFIG.to_json)
     end
 
-    delegate site_prefix, access_token, to: config
+    delegate site_prefix, access_token, organisations, time_zone, to: config
 
     def site_prefix=(value : String)
       config.site_prefix = value
+    end
+
+    def organisations=(value : Array(Organisation))
+      config.organisations = value
+    end
+
+    def time_zone=(value : String)
+      config.time_zone = value
     end
 
     def parse_config!

@@ -11,6 +11,9 @@ module Tanda::CLI
         @[JSON::Field(key: "email")]
         getter email : String
 
+        @[JSON::Field(key: "time_zone")]
+        getter time_zone : String
+
         @[JSON::Field(key: "user_ids")]
         getter user_ids : Array(Int32)
 
