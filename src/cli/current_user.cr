@@ -31,11 +31,11 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisations = api_organisations
       organisation : Configuration::Organisation? = nil
+      organisations = api_organisations
 
       while organisation.nil?
-        organisation = request_organisation_from_user(api_organisations)
+        organisation = request_organisation_from_user(organisations)
       end
 
       organisation.current = true
@@ -47,7 +47,7 @@ module Tanda::CLI
       organisations = api_organisations
 
       puts "Which organisation would you like to use?"
-      api_organisations.each_with_index(1) do |org, index|
+      organisations.each_with_index(1) do |org, index|
         puts "#{index}: #{org.name}"
       end
       puts "\nEnter a number: "

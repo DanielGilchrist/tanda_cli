@@ -45,7 +45,7 @@ module Tanda::CLI
 
         return user_not_found! if organisation.nil?
 
-        config.organisations.each { |org| org.current = false }
+        config.organisations.each(&.current = false)
         organisation.current = true
         config.save!
 

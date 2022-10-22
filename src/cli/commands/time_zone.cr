@@ -21,7 +21,7 @@ module Tanda::CLI
 
       private def display_time_zone
         if time_zone = config.time_zone
-          puts "The current time zone is #{config.time_zone}"
+          puts "The current time zone is #{time_zone}"
         else
           puts "A time zone isn't currently set"
           puts "Set it with `tanda_cli time_zone --set <time_zone>`"
