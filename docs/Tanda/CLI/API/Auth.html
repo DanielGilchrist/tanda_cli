@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 1.5.0">
+<meta name="crystal_docs.project_version" content="add-api-docs">
+<meta name="crystal_docs.project_name" content="tanda_cli">
+
+
+
+<link href="../../../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../../js/doc.js"></script>
+
+  <meta name="repository-name" content="tanda_cli">
+  <title>Tanda::CLI::API::Auth - tanda_cli add-api-docs</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../../../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../../../index.html">
+          tanda_cli
+        </a>
+      </h1>
+
+      <span class="project-version">
+        add-api-docs
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="tanda_cli/Tanda" data-name="tanda">
+      <a href="../../../Tanda.html">Tanda</a>
+      
+        <ul>
+  
+  <li class="parent open current" data-id="tanda_cli/Tanda/CLI" data-name="tanda::cli">
+      <a href="../../../Tanda/CLI.html">CLI</a>
+      
+        <ul>
+  
+  <li class="parent open current" data-id="tanda_cli/Tanda/CLI/API" data-name="tanda::cli::api">
+      <a href="../../../Tanda/CLI/API.html">API</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="tanda_cli/Tanda/CLI/API/Auth" data-name="tanda::cli::api::auth">
+      <a href="../../../Tanda/CLI/API/Auth.html">Auth</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/API/Client" data-name="tanda::cli::api::client">
+      <a href="../../../Tanda/CLI/API/Client.html">Client</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/API/Client/TQuery" data-name="tanda::cli::api::client::tquery">
+      <a href="../../../Tanda/CLI/API/Client/TQuery.html">TQuery</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/API/Endpoints" data-name="tanda::cli::api::endpoints">
+      <a href="../../../Tanda/CLI/API/Endpoints.html">Endpoints</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/API/Endpoints/Interface" data-name="tanda::cli::api::endpoints::interface">
+      <a href="../../../Tanda/CLI/API/Endpoints/Interface.html">Interface</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/API/Endpoints/Me" data-name="tanda::cli::api::endpoints::me">
+      <a href="../../../Tanda/CLI/API/Endpoints/Me.html">Me</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/API/Endpoints/Shift" data-name="tanda::cli::api::endpoints::shift">
+      <a href="../../../Tanda/CLI/API/Endpoints/Shift.html">Shift</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Auth" data-name="tanda::cli::auth">
+      <a href="../../../Tanda/CLI/Auth.html">Auth</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Commands" data-name="tanda::cli::commands">
+      <a href="../../../Tanda/CLI/Commands.html">Commands</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Commands/CurrentUser" data-name="tanda::cli::commands::currentuser">
+      <a href="../../../Tanda/CLI/Commands/CurrentUser.html">CurrentUser</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Commands/TimeZone" data-name="tanda::cli::commands::timezone">
+      <a href="../../../Tanda/CLI/Commands/TimeZone.html">TimeZone</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Configuration" data-name="tanda::cli::configuration">
+      <a href="../../../Tanda/CLI/Configuration.html">Configuration</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Configuration/AccessToken" data-name="tanda::cli::configuration::accesstoken">
+      <a href="../../../Tanda/CLI/Configuration/AccessToken.html">AccessToken</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Configuration/Config" data-name="tanda::cli::configuration::config">
+      <a href="../../../Tanda/CLI/Configuration/Config.html">Config</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Configuration/Organisation" data-name="tanda::cli::configuration::organisation">
+      <a href="../../../Tanda/CLI/Configuration/Organisation.html">Organisation</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Current" data-name="tanda::cli::current">
+      <a href="../../../Tanda/CLI/Current.html">Current</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Current/User" data-name="tanda::cli::current::user">
+      <a href="../../../Tanda/CLI/Current/User.html">User</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Current/UserAlreadySet" data-name="tanda::cli::current::useralreadyset">
+      <a href="../../../Tanda/CLI/Current/UserAlreadySet.html">UserAlreadySet</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Current/UserNotSet" data-name="tanda::cli::current::usernotset">
+      <a href="../../../Tanda/CLI/Current/UserNotSet.html">UserNotSet</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/CurrentUser" data-name="tanda::cli::currentuser">
+      <a href="../../../Tanda/CLI/CurrentUser.html">CurrentUser</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Debug" data-name="tanda::cli::debug">
+      <a href="../../../Tanda/CLI/Debug.html">Debug</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Debug/Backend" data-name="tanda::cli::debug::backend">
+      <a href="../../../Tanda/CLI/Debug/Backend.html">Backend</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Parser" data-name="tanda::cli::parser">
+      <a href="../../../Tanda/CLI/Parser.html">Parser</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Representers" data-name="tanda::cli::representers">
+      <a href="../../../Tanda/CLI/Representers.html">Representers</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Representers/Base" data-name="tanda::cli::representers::base(t)">
+      <a href="../../../Tanda/CLI/Representers/Base.html">Base</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Representers/Me" data-name="tanda::cli::representers::me">
+      <a href="../../../Tanda/CLI/Representers/Me.html">Me</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Representers/Me/Core" data-name="tanda::cli::representers::me::core">
+      <a href="../../../Tanda/CLI/Representers/Me/Core.html">Core</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Representers/Me/Organisation" data-name="tanda::cli::representers::me::organisation">
+      <a href="../../../Tanda/CLI/Representers/Me/Organisation.html">Organisation</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Representers/Shift" data-name="tanda::cli::representers::shift">
+      <a href="../../../Tanda/CLI/Representers/Shift.html">Shift</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Representers/ShiftBreak" data-name="tanda::cli::representers::shiftbreak">
+      <a href="../../../Tanda/CLI/Representers/ShiftBreak.html">ShiftBreak</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Types" data-name="tanda::cli::types">
+      <a href="../../../Tanda/CLI/Types.html">Types</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/AccessToken" data-name="tanda::cli::types::accesstoken">
+      <a href="../../../Tanda/CLI/Types/AccessToken.html">AccessToken</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Base" data-name="tanda::cli::types::base">
+      <a href="../../../Tanda/CLI/Types/Base.html">Base</a>
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Types/Converters" data-name="tanda::cli::types::converters">
+      <a href="../../../Tanda/CLI/Types/Converters.html">Converters</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Types/Converters/Time" data-name="tanda::cli::types::converters::time">
+      <a href="../../../Tanda/CLI/Types/Converters/Time.html">Time</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Converters/Time/FromISODate" data-name="tanda::cli::types::converters::time::fromisodate">
+      <a href="../../../Tanda/CLI/Types/Converters/Time/FromISODate.html">FromISODate</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Converters/Time/FromMaybeUnix" data-name="tanda::cli::types::converters::time::frommaybeunix">
+      <a href="../../../Tanda/CLI/Types/Converters/Time/FromMaybeUnix.html">FromMaybeUnix</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Types/Me" data-name="tanda::cli::types::me">
+      <a href="../../../Tanda/CLI/Types/Me.html">Me</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Me/Core" data-name="tanda::cli::types::me::core">
+      <a href="../../../Tanda/CLI/Types/Me/Core.html">Core</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Me/Organisation" data-name="tanda::cli::types::me::organisation">
+      <a href="../../../Tanda/CLI/Types/Me/Organisation.html">Organisation</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="tanda_cli/Tanda/CLI/Types/Shift" data-name="tanda::cli::types::shift">
+      <a href="../../../Tanda/CLI/Types/Shift.html">Shift</a>
+      
+        <ul>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Shift/Status" data-name="tanda::cli::types::shift::status">
+      <a href="../../../Tanda/CLI/Types/Shift/Status.html">Status</a>
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/Shift/StatusConverter" data-name="tanda::cli::types::shift::statusconverter">
+      <a href="../../../Tanda/CLI/Types/Shift/StatusConverter.html">StatusConverter</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="tanda_cli/Tanda/CLI/Types/ShiftBreak" data-name="tanda::cli::types::shiftbreak">
+      <a href="../../../Tanda/CLI/Types/ShiftBreak.html">ShiftBreak</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">module</span> Tanda::CLI::API::Auth
+
+</h1>
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="extended-modules" class="anchor" href="#extended-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Extended Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type"><a href="../../../Tanda/CLI/API/Auth.html">Tanda::CLI::API::Auth</a></li>
+    
+  </ul>
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/DanielGilchrist/tanda_cli/blob/e5fa578dcea95d9f4fae4e73e879f08b788f1f5e/src/api/auth.cr#L10" target="_blank">
+        api/auth.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#get_access_token%21%28site_prefix%3AString%2Cemail%3AString%2Cpassword%3AString%29%3ATypes%3A%3AAccessToken-instance-method" class="signature"><strong>#get_access_token!</strong>(site_prefix : String, email : String, password : String) : Types::AccessToken</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+</div>
+
+
+
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="get_access_token!(site_prefix:String,email:String,password:String):Types::AccessToken-instance-method">
+      <div class="signature">
+        
+        def <strong>get_access_token!</strong>(site_prefix : String, email : String, password : String) : <a href="../../../Tanda/CLI/Types/AccessToken.html">Types::AccessToken</a>
+
+        <a class="method-permalink" href="#get_access_token%21%28site_prefix%3AString%2Cemail%3AString%2Cpassword%3AString%29%3ATypes%3A%3AAccessToken-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/DanielGilchrist/tanda_cli/blob/e5fa578dcea95d9f4fae4e73e879f08b788f1f5e/src/api/auth.cr#L13" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>
