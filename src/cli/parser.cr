@@ -12,8 +12,7 @@ module Tanda::CLI
     def parse!
       OptionParser.parse do |parser|
         parser.on("me", "Get your own information") do
-          response = client.get("/users/me").body
-          me = Types::Me::Core.from_json(response)
+          me = client.me
           Representers::Me::Core.new(me).display
         end
 
