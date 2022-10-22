@@ -1,4 +1,5 @@
 # shards
+require "colorize"
 require "option_parser"
 
 # internal
@@ -8,13 +9,23 @@ require "./api/**"
 require "./cli/**"
 
 module Tanda::CLI
+  def self.try_parse_config!(config : Configuration)
+    config.parse_config!
+  rescue error
+    {% if flag?(:debug) %}
+      raise(error)
+    {% else %}
+      puts "\n#{"Error:".colorize(:red)} Invalid Config!"
+      puts error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError)
+      exit
+    {% end %}
+  end
+
   def self.main
     config = Configuration.new
-    config.parse_config!
-    token = config.access_token.token
+    try_parse_config!(config)
 
-    # TODO: Don't hard code User
-    Current.set_user!(Current::User.new(id: 66585, time_zone: "Europe/London"))
+    token = config.access_token.token
 
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?
@@ -30,7 +41,8 @@ module Tanda::CLI
     token = config.token!
     client = API::Client.new(url, token)
 
-    CLI::Parser.new(client).parse!
+    CLI::CurrentUser.new(client, config).set!
+    CLI::Parser.new(client, config).parse!
   end
 end
 
