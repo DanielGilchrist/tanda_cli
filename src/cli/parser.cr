@@ -1,3 +1,6 @@
+require "colorize"
+
+require "./commands/**"
 require "../current"
 require "../api/client"
 require "../representers/**"
@@ -5,8 +8,9 @@ require "../types/**"
 
 module Tanda::CLI
   class CLI::Parser
-    def initialize(client : API::Client)
+    def initialize(client : API::Client, config : Configuration)
       @client = client
+      @config = config
     end
 
     def parse!
@@ -32,6 +36,18 @@ module Tanda::CLI
 
             handle_time_worked_week(list)
           end
+        end
+
+        parser.on("time_zone", "See the currently set time zone") do
+          new_time_zone : String? = nil
+
+          OptionParser.parse do |set_time_zone_parser|
+            set_time_zone_parser.on("--set=TIME_ZONE", "Set the current time zone") do |time_zone|
+              new_time_zone = time_zone
+            end
+          end
+
+          CLI::Commands::TimeZone.new(config, new_time_zone).execute
         end
       end
     end
@@ -83,5 +99,6 @@ module Tanda::CLI
     end
 
     private getter client : API::Client
+    private getter config : Configuration
   end
 end

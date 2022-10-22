@@ -42,7 +42,7 @@ module Tanda::CLI
     client = API::Client.new(url, token)
 
     CLI::CurrentUser.new(client, config).set!
-    CLI::Parser.new(client).parse!
+    CLI::Parser.new(client, config).parse!
   end
 end
 
