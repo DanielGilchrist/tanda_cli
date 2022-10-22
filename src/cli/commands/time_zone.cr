@@ -9,8 +9,8 @@ module Tanda::CLI
       def execute
         puts "\n"
 
-        if new_time_zone
-          set_time_zone
+        if time_zone = new_time_zone
+          set_time_zone!(time_zone)
         else
           display_time_zone
         end
@@ -18,10 +18,6 @@ module Tanda::CLI
 
       private getter config : Configuration
       private getter new_time_zone : String?
-
-      private def new_time_zone! : String
-        new_time_zone.not_nil!
-      end
 
       private def display_time_zone
         if time_zone = config.time_zone
@@ -32,21 +28,19 @@ module Tanda::CLI
         end
       end
 
-      private def set_time_zone
-        validate_time_zone!
+      private def set_time_zone!(time_zone : String)
+        validate_time_zone!(time_zone)
 
-        new_time_zone = new_time_zone!
-        config.time_zone = new_time_zone
+        config.time_zone = time_zone
         config.save!
 
         puts "Successfully set current time zone to \"#{new_time_zone}\""
       end
 
-      private def validate_time_zone!
-        new_time_zone = new_time_zone!
-        Time::Location.load(new_time_zone)
+      private def validate_time_zone!(time_zone : String)
+        Time::Location.load(time_zone)
       rescue Time::Location::InvalidLocationNameError
-        puts "#{"Error:".colorize(:red)} Invalid time zone \"#{new_time_zone}\""
+        puts "#{"Error:".colorize(:red)} Invalid time zone \"#{time_zone}\""
         exit
       end
     end
