@@ -7,7 +7,6 @@ module Tanda::CLI
   class CLI::CurrentUser
     @api_organisations : Array(Configuration::Organisation)?
     @me : Types::Me::Core?
-    @time_zone : String?
 
     def initialize(client : API::Client, config : Configuration)
       @client = client
@@ -45,21 +44,7 @@ module Tanda::CLI
       Current::User.new(id: organisation.user_id, time_zone: time_zone)
     end
 
-    def me : Types::Me::Core
-      @me ||= client.me
-    end
-
-    def time_zone : String
-      @time_zone ||= config.time_zone || me.time_zone
-    end
-
-    def api_organisations : Array(Configuration::Organisation)
-      @api_organisations ||= client.me.organisations.map do |org|
-        Configuration::Organisation.from_json(org.to_json)
-      end
-    end
-
-    def request_organisation_from_user(organistations : Array(Configuration::Organisation)) : Configuration::Organisation?
+    private def request_organisation_from_user(organistations : Array(Configuration::Organisation)) : Configuration::Organisation?
       organisations = api_organisations
 
       puts "Which organisation would you like to use?"
@@ -82,10 +67,24 @@ module Tanda::CLI
       end
     end
 
-    def save_config!
+    private def save_config!
       config.time_zone ||= time_zone
       config.organisations = api_organisations
       config.save!
+    end
+
+    private def me : Types::Me::Core
+      @me ||= client.me
+    end
+
+    private def time_zone : String
+      config.time_zone || me.time_zone
+    end
+
+    private def api_organisations : Array(Configuration::Organisation)
+      @api_organisations ||= client.me.organisations.map do |org|
+        Configuration::Organisation.from_json(org.to_json)
+      end
     end
   end
 end
