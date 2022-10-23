@@ -1,28 +1,37 @@
 module Tanda::CLI
   class CLI::Auth
+    VALID_SITE_PREFIXES = Set{"my", "eu", "us"}
+
     def self.request_user_information! : Tuple(String, String, String)
-      site_prefix = begin
-        puts "Site prefix:\n"
-        res = gets
-        res ? res.chomp : exit
-      end
-      puts ""
+      valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
+      site_prefix = try_get_input(message: "Site prefix (#{valid_site_prefixes}):", error_prefix: "Site prefix")
 
-      email = begin
-        puts "Whats your email?\n"
-        res = gets
-        res ? res.chomp : exit
+      unless VALID_SITE_PREFIXES.includes?(site_prefix)
+        Utils::Display.error("Invalid site prefix")
+        Utils::Display.sub_error("Site prefix must be one of #{valid_site_prefixes}")
+        exit
       end
-      puts ""
 
-      password = begin
-        puts "What's your password?\n"
-        res = gets
-        res ? res.chomp : exit
+      email = try_get_input(message: "Whats your email?", error_prefix: "Email")
+
+      password = STDIN.noecho do
+        try_get_input("What's your password?", "Password")
       end
-      puts ""
 
       {site_prefix, email, password}
+    end
+
+    private def self.try_get_input(message : String, error_prefix : String) : String
+      puts "#{message}\n"
+      input = gets.try(&.chomp).presence || handle_invalid_input!("#{error_prefix} cannot be blank")
+      puts ""
+
+      input
+    end
+
+    private def self.handle_invalid_input!(message : String) : NoReturn
+      Utils::Display.error(message)
+      exit
     end
   end
 end

@@ -4,13 +4,14 @@ require "json"
 
 # internal
 require "../types/access_token"
+require "../types/error"
 
 module Tanda::CLI
   module API
     module Auth
       extend self
 
-      def get_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken
+      def get_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken | Types::Error
         response = HTTP::Client.post(
           build_endpoint(site_prefix),
           headers: build_headers,
@@ -23,7 +24,15 @@ module Tanda::CLI
         )
         .body
 
+        Log.debug(&.emit("Response", body: response))
+
+        parse_response(response)
+      end
+
+      def parse_response(response : String) : Types::AccessToken | Types::Error
         Types::AccessToken.from_json(response)
+      rescue JSON::SerializableError
+        Types::Error.from_json(response)
       end
 
       private def build_endpoint(site_prefix : String) : String
