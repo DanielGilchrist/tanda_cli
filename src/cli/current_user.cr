@@ -48,7 +48,7 @@ module Tanda::CLI
     private def request_organisation_from_user(organistations : Array(Configuration::Organisation)) : Configuration::Organisation?
       organisations = api_organisations
 
-      puts "Which organisation would you like to use?"
+      puts "\nWhich organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
         puts "#{index}: #{org.name}"
       end
@@ -68,7 +68,7 @@ module Tanda::CLI
       puts "\n"
       if user_input
         Utils::Display.error("Invalid selection", user_input)
-        Utils::Display.sub_error("Please select a number between #{1} and #{length}") if length
+        Utils::Display.sub_error("Please select a number between 1 and #{length}") if length
       else
         Utils::Display.error("You must enter a number")
       end
