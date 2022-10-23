@@ -1,8 +1,10 @@
 module Tanda::CLI
-  class CLI::Auth
+  module CLI::Auth
+    extend self
+
     VALID_SITE_PREFIXES = Set{"my", "eu", "us"}
 
-    def self.request_user_information! : Tuple(String, String, String)
+    def request_user_information! : Tuple(String, String, String)
       valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
       site_prefix = try_get_input!(message: "Site prefix (#{valid_site_prefixes}):", error_prefix: "Site prefix")
 
@@ -21,7 +23,7 @@ module Tanda::CLI
       {site_prefix, email, password}
     end
 
-    private def self.try_get_input!(message : String, error_prefix : String) : String
+    private def try_get_input!(message : String, error_prefix : String) : String
       puts "#{message}\n"
       input = gets.try(&.chomp).presence || handle_invalid_input!("#{error_prefix} cannot be blank")
       puts ""
@@ -29,7 +31,7 @@ module Tanda::CLI
       input
     end
 
-    private def self.handle_invalid_input!(message : String) : NoReturn
+    private def handle_invalid_input!(message : String) : NoReturn
       Utils::Display.error(message)
       exit
     end
