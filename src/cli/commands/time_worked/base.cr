@@ -2,21 +2,27 @@ module Tanda::CLI
   module CLI::Commands
     module TimeWorked
       abstract class Base
-        def initialize(client : API::Client)
+        def initialize(client : API::Client, show : Bool)
           @client = client
+          @show = show
         end
 
         private getter client : API::Client
 
         abstract def execute
 
-        private def calculate_time_worked(shifts : Array(Types::Shift), print : Bool = false) : Time::Span
+        private getter show : Bool
+        private def show?
+          show
+        end
+
+        private def calculate_time_worked(shifts : Array(Types::Shift)) : Time::Span
           total_time_worked = Time::Span.zero
           shifts.each do |shift|
             time_worked = shift.time_worked
             worked_so_far = shift.worked_so_far
 
-            print_shift(shift, time_worked, worked_so_far) if print
+            print_shift(shift, time_worked, worked_so_far) if show?
 
             total_time = time_worked || worked_so_far
             total_time_worked += total_time if total_time

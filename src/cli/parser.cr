@@ -21,20 +21,20 @@ module Tanda::CLI
         end
 
         parser.on("time_worked", "See how many hours you've worked") do
+          show = false
+
+          OptionParser.parse do |time_worked_parser|
+            time_worked_parser.on("--show", "Show shift/s") do
+              show = true
+            end
+          end
+
           parser.on("today", "Time you've worked today") do
-            CLI::Commands::TimeWorked::Today.new(client).execute
+            CLI::Commands::TimeWorked::Today.new(client, show).execute
           end
 
           parser.on("week", "Time you've worked this week") do
-            list = false
-
-            OptionParser.parse do |time_worked_parser|
-              time_worked_parser.on("--list", "List days worked") do
-                list = true
-              end
-            end
-
-            CLI::Commands::TimeWorked::Week.new(client, list).execute
+            CLI::Commands::TimeWorked::Week.new(client, show).execute
           end
         end
 
