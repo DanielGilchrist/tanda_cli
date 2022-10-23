@@ -15,7 +15,6 @@ module Tanda::CLI
       user = user_from_config || user_from_api
 
       Current.set_user!(user)
-      Utils::Display.success("Current user set to", user.id)
     end
 
     private getter client : API::Client
