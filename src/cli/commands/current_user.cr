@@ -41,17 +41,13 @@ module Tanda::CLI
           end
         end
 
-        return user_not_found! if organisation.nil?
+        return Utils::Display.error("Invalid argument", id_or_name) if organisation.nil?
 
         config.organisations.each(&.current = false)
         organisation.current = true
         config.save!
 
-        puts "The current user has been set to #{display(organisation)}"
-      end
-
-      private def user_not_found!
-        Utils::Display.error("Invalid argument", id_or_name)
+        Utils::Display.success("The current user has been set to", display(organisation))
       end
 
       private def display(organisation : Configuration::Organisation)
