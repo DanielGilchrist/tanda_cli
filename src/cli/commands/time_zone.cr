@@ -40,7 +40,7 @@ module Tanda::CLI
       private def validate_time_zone!(time_zone : String)
         Time::Location.load(time_zone)
       rescue Time::Location::InvalidLocationNameError
-        puts "#{"Error:".colorize(:red)} Invalid time zone \"#{time_zone}\""
+        Utils::Error.display("Invalid time zone \"#{time_zone}\"")
         exit
       end
     end

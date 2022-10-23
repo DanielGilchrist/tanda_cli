@@ -1,10 +1,10 @@
 # shards
-require "colorize"
 require "option_parser"
 
 # internal
 require "./configuration"
 require "./current"
+require "./utils/error"
 require "./api/**"
 require "./cli/**"
 
@@ -15,7 +15,7 @@ module Tanda::CLI
     {% if flag?(:debug) %}
       raise(error)
     {% else %}
-      puts "\n#{"Error:".colorize(:red)} Invalid Config!"
+      Utils::Error.display("Invalid Config!")
       puts error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError)
       exit
     {% end %}

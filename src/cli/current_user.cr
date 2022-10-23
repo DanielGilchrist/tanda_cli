@@ -1,5 +1,3 @@
-require "colorize"
-
 require "../api/client"
 require "../configuration"
 
