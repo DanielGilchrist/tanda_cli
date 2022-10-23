@@ -9,7 +9,9 @@ require "./api/**"
 require "./cli/**"
 
 module Tanda::CLI
-  def self.try_parse_config!(config : Configuration)
+  extend self
+
+  def try_parse_config!(config : Configuration)
     config.parse_config!
   rescue error
     {% if flag?(:debug) %}
@@ -22,7 +24,7 @@ module Tanda::CLI
     {% end %}
   end
 
-  def self.main
+  def main
     config = Configuration.new
     try_parse_config!(config)
 
