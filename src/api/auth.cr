@@ -22,17 +22,10 @@ module Tanda::CLI
             grant_type: "password"
           }.to_json
         )
-        .body
 
-        Log.debug(&.emit("Response", body: response))
+        Log.debug(&.emit("Response", body: response.body))
 
-        parse_response(response)
-      end
-
-      def parse_response(response : String) : Types::AccessToken | Types::Error
-        Types::AccessToken.from_json(response)
-      rescue JSON::SerializableError
-        Types::Error.from_json(response)
+        (response.success? ? Types::AccessToken : Types::Error).from_json(response.body)
       end
 
       private def build_endpoint(site_prefix : String) : String
