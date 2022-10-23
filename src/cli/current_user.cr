@@ -68,7 +68,7 @@ module Tanda::CLI
       puts "\n"
       if user_input
         Utils::Display.error("Invalid selection", user_input)
-        Utils::Display.sub_error("Please select a number between #{1} and #{length}") if length
+        Utils::Display.sub_error("Please select a number between 1 and #{length}") if length
       else
         Utils::Display.error("You must enter a number")
       end
