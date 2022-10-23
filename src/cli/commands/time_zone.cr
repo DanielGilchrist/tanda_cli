@@ -34,13 +34,13 @@ module Tanda::CLI
         config.time_zone = time_zone
         config.save!
 
-        puts "Successfully set current time zone to \"#{new_time_zone}\""
+        Utils::Display.success("Set current time zone to", new_time_zone)
       end
 
       private def validate_time_zone!(time_zone : String)
         Time::Location.load(time_zone)
       rescue Time::Location::InvalidLocationNameError
-        Utils::Error.display("Invalid time zone \"#{time_zone}\"")
+        Utils::Display.error("Invalid time zone", time_zone)
         exit
       end
     end
