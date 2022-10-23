@@ -15,8 +15,9 @@ module Tanda::CLI
     {% if flag?(:debug) %}
       raise(error)
     {% else %}
-      Utils::Display.error("Invalid Config!")
-      puts error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError)
+      value = error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError)
+      reason = " (#{value})" if value
+      Utils::Display.error("Invalid Config#{reason}")
       exit
     {% end %}
   end

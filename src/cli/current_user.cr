@@ -16,6 +16,7 @@ module Tanda::CLI
       user ||= user_from_api
 
       Current.set_user!(user)
+      Utils::Display.success("Current user set to", user.id)
     end
 
     private getter client : API::Client
@@ -38,6 +39,8 @@ module Tanda::CLI
 
       organisation.current = true
       save_config!
+      Utils::Display.success("Organisations saved to config")
+
       Current::User.new(id: organisation.user_id, time_zone: time_zone)
     end
 
@@ -56,11 +59,16 @@ module Tanda::CLI
       if number
         organisations[number - 1]?
       else
-        if user_input
-          puts "\nInvalid selection \"#{user_input}\"\n"
-        else
-          puts "\nYou must select a number\n"
-        end
+        handle_invalid_selection(user_input)
+      end
+    end
+
+    def handle_invalid_selection(user_input : String?)
+      if user_input
+        Utils::Display.error("\nInvalid selection", user_input)
+        puts "\n"
+      else
+        Utils::Display.error("\nYou must select a number\n")
       end
     end
 
