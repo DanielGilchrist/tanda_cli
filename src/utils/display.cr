@@ -21,6 +21,10 @@ module Tanda::CLI
         display_message(Type::Error, message, value)
       end
 
+      def sub_error(message : String)
+        puts "#{" " * ERROR_STRING.default.to_s.size} #{message}"
+      end
+
       private def display_message(type, message : String, value)
         puts "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
       end

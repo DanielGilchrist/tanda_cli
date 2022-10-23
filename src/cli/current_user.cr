@@ -12,8 +12,7 @@ module Tanda::CLI
     end
 
     def set!
-      user = user_from_config
-      user ||= user_from_api
+      user = user_from_config || user_from_api
 
       Current.set_user!(user)
       Utils::Display.success("Current user set to", user.id)
@@ -30,8 +29,8 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisation : Configuration::Organisation? = nil
       organisations = api_organisations
+      organisation = organisations.size == 1 ? organisations[0] : nil
 
       while organisation.nil?
         organisation = request_organisation_from_user(organisations)
@@ -39,6 +38,8 @@ module Tanda::CLI
 
       organisation.current = true
       save_config!
+
+      puts "\n"
       Utils::Display.success("Organisations saved to config")
 
       Current::User.new(id: organisation.user_id, time_zone: time_zone)
@@ -52,24 +53,26 @@ module Tanda::CLI
         puts "#{index}: #{org.name}"
       end
       puts "\nEnter a number: "
-      user_input = gets
-      user_input = user_input.chomp if user_input
-      number = user_input ? user_input.to_i32? : nil
+      user_input = gets.try(&.chomp)
+      number = user_input.try(&.to_i32?)
 
       if number
-        organisations[number - 1]?
+        index = number - 1
+        organisations[index]? || handle_invalid_selection(organisations.size, user_input)
       else
-        handle_invalid_selection(user_input)
+        handle_invalid_selection
       end
     end
 
-    def handle_invalid_selection(user_input : String?)
+    def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil)
+      puts "\n"
       if user_input
-        Utils::Display.error("\nInvalid selection", user_input)
-        puts "\n"
+        Utils::Display.error("Invalid selection", user_input)
+        Utils::Display.sub_error("Please select a number between #{1} and #{length}") if length
       else
-        Utils::Display.error("\nYou must select a number\n")
+        Utils::Display.error("You must enter a number")
       end
+      puts "\n"
     end
 
     private def save_config!
