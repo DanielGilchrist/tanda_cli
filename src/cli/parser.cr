@@ -1,5 +1,3 @@
-require "colorize"
-
 require "./commands/**"
 require "../current"
 require "../api/client"

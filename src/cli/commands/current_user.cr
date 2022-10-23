@@ -1,5 +1,3 @@
-require "colorize"
-
 module Tanda::CLI
   module CLI::Commands
     class CurrentUser
@@ -53,7 +51,7 @@ module Tanda::CLI
       end
 
       private def user_not_found!
-        puts "#{"Error:".colorize(:red)} Invalid argument \"#{id_or_name}\""
+        Utils::Error.display("Invalid argument \"#{id_or_name}\"")
       end
 
       private def display(organisation : Configuration::Organisation)
