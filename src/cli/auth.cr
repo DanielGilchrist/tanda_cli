@@ -15,7 +15,7 @@ module Tanda::CLI
       email = try_get_input(message: "Whats your email?", error_prefix: "Email")
 
       password = STDIN.noecho do
-        try_get_input("What's your password?", "Password")
+        try_get_input(message: "What's your password?", error_prefix: "Password")
       end
 
       {site_prefix, email, password}
