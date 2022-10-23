@@ -51,7 +51,7 @@ module Tanda::CLI
       end
 
       private def user_not_found!
-        Utils::Error.display("Invalid argument \"#{id_or_name}\"")
+        Utils::Display.error("Invalid argument", id_or_name)
       end
 
       private def display(organisation : Configuration::Organisation)

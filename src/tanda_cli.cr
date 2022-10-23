@@ -4,7 +4,7 @@ require "option_parser"
 # internal
 require "./configuration"
 require "./current"
-require "./utils/error"
+require "./utils/display"
 require "./api/**"
 require "./cli/**"
 
@@ -15,7 +15,7 @@ module Tanda::CLI
     {% if flag?(:debug) %}
       raise(error)
     {% else %}
-      Utils::Error.display("Invalid Config!")
+      Utils::Display.error("Invalid Config!")
       puts error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError)
       exit
     {% end %}
@@ -32,7 +32,7 @@ module Tanda::CLI
       site_prefix, email, password = CLI::Auth.request_user_information!
 
       access_token = API::Auth.get_access_token!(site_prefix, email, password)
-      puts "Successfully retrieved token!\n"
+      Utils::Display.success("Retrieved token!\n")
 
       config.overwrite!(site_prefix, email, access_token)
     end
