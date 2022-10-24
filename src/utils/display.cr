@@ -31,12 +31,10 @@ module Tanda::CLI
 
       private def prefix(type : Type) : Colorize::Object(String)
         case type
-        when Type::Success
+        in Type::Success
           SUCCESS_STRING
-        when Type::Error
+        in Type::Error
           ERROR_STRING
-        else
-          raise "Unknown type #{type}"
         end
       end
     end
