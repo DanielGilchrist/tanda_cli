@@ -32,10 +32,12 @@ module Tanda::CLI
       @@user_set = true
     end
 
-    def reset!
-      instance.reset!
-      @@user_set = false
-    end
+    {% if flag?(:test) %}
+      def reset!
+        instance.reset!
+        @@user_set = false
+      end
+    {% end %}
 
     private def instance
       @@_current ||= CurrentInstance.new
