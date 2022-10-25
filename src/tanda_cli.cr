@@ -4,7 +4,7 @@ require "option_parser"
 # internal
 require "./configuration"
 require "./current"
-require "./utils/display"
+require "./utils/**"
 require "./api/**"
 require "./cli/**"
 

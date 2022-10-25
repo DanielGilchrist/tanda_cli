@@ -4,7 +4,7 @@ module Tanda::CLI
       def initialize(@client : API::Client, @clock_type : String); end
 
       def execute
-        now = Time.local(location: Current.user.time_zone)
+        now = Utils::Time.now
         client.send_clockin(now, clock_type)
       end
 
