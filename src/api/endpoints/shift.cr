@@ -22,7 +22,7 @@ module Tanda::CLI
         .map(&.to_s("%Y-%m-%d"))
 
         response = get("/shifts", query: {
-          "user_ids" => Current.user!.id.to_s,
+          "user_ids" => Current.user.id.to_s,
           "from"     => start_string,
           "to"       => finish_string
         })

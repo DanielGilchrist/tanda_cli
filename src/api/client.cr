@@ -10,6 +10,7 @@ module Tanda::CLI
       include Tanda::CLI::API::Endpoints
 
       alias TQuery = Hash(String, String)
+      alias TBody  = Hash(String, String)
 
       def initialize(base_uri : String, token : String)
         @base_uri = base_uri
@@ -20,6 +21,15 @@ module Tanda::CLI
         uri = build_uri(endpoint, query)
 
         response = HTTP::Client.get(uri, headers: build_headers)
+        Log.debug(&.emit("Response", body: response.body))
+
+        response
+      end
+
+      def post(endpoint : String, body : TBody) : HTTP::Client::Response
+        uri = build_uri(endpoint)
+
+        response = HTTP::Client.post(uri, headers: build_headers, body: body.to_json)
         Log.debug(&.emit("Response", body: response.body))
 
         response

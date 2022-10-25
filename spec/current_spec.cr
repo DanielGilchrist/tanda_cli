@@ -6,18 +6,18 @@ Spectator.describe Tanda::CLI::Current do
   end
 
   context "Current user" do
-    it "Raises when Current.user! is called without a user set" do
+    it "Raises when Current.user is called without a user set" do
       expect_raises Tanda::CLI::Current::UserNotSet do
-        Tanda::CLI::Current.user!
+        Tanda::CLI::Current.user
       end
     end
 
     context "Setting user" do
       let(user) { Tanda::CLI::Current::User.new(id: 1, time_zone: "Europe/London") }
 
-      it "Returns set user when calling Current.user!" do
+      it "Returns set user when calling Current.user" do
         Tanda::CLI::Current.set_user!(user)
-        expect(Tanda::CLI::Current.user!).to eq(user)
+        expect(Tanda::CLI::Current.user).to eq(user)
       end
 
       it "Raises when Current.set_user! is called a second time" do

@@ -59,6 +59,14 @@ module Tanda::CLI
 
           CLI::Commands::CurrentUser.new(client, config, new_id_or_name).execute
         end
+
+        parser.on("clockin", "Clock in/out") do
+          OptionParser.parse do |clock_flag|
+            clock_flag.on("--type=TYPE", "Clock type - start | finish") do |clock_type|
+              CLI::Commands::ClockIn.new(client, clock_type).execute
+            end
+          end
+        end
       end
     end
 
