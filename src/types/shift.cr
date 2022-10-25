@@ -68,7 +68,7 @@ module Tanda::CLI
         s = start
         return if s.nil?
 
-        now = Time.local(Time::Location.load("Europe/London"))
+        now = Time.local(location: Current.user.time_zone)
         return unless now.date == s.date
 
         (now - s) - total_break_minutes

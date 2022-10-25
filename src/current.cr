@@ -23,7 +23,7 @@ module Tanda::CLI
       end
     end
 
-    delegate user!, to: instance
+    delegate user, to: instance
 
     def set_user!(user : User)
       raise UserAlreadySet.new if @@user_set
@@ -44,25 +44,25 @@ module Tanda::CLI
     end
 
     private class CurrentInstance
-      getter user : User?
+      getter maybe_user : User?
 
       def initialize
-        @user = nil
+        @maybe_user = nil
       end
 
       def user=(user : User)
-        @user = user
+        @maybe_user = user
       end
 
-      def user! : User
-        nilable_user = user
+      def user : User
+        nilable_user = maybe_user
         raise UserNotSet.new unless nilable_user
 
         nilable_user
       end
 
       def reset!
-        @user = nil
+        @maybe_user = nil
       end
     end
   end

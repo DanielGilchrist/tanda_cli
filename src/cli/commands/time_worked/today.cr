@@ -5,7 +5,7 @@ module Tanda::CLI
     module TimeWorked
       class Today < Base
         def execute
-          now = Time.local
+          now = Time.local(location: Current.user.time_zone)
           shifts = client.shifts(now)
           total_time_worked = calculate_time_worked(shifts)
 
