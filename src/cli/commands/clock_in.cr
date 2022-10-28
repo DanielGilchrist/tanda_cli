@@ -10,7 +10,7 @@ module Tanda::CLI
         if error
           Utils::Display.error(error)
         else
-
+          display_success_message
         end
       end
 
