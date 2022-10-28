@@ -5,11 +5,32 @@ module Tanda::CLI
 
       def execute
         now = Utils::Time.now
-        client.send_clockin(now, clock_type)
+        error = client.send_clockin(now, clock_type)
+
+        if error
+          Utils::Display.error(error)
+        else
+
+        end
       end
 
       private getter client
       private getter clock_type
+
+      private def display_success_message
+        success_message = case clock_type
+        when "start"
+          "You are now clocked in!"
+        when "finish"
+          "You are now clocked out!"
+        when "break_start"
+          "Your break has started!"
+        when "break_finish"
+          "Your break has ended!"
+        end
+
+        Utils::Display.success(success_message) if success_message
+      end
     end
   end
 end

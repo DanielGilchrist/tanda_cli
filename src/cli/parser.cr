@@ -6,13 +6,15 @@ require "../types/**"
 
 module Tanda::CLI
   class CLI::Parser
-    def initialize(client : API::Client, config : Configuration)
+    def initialize(client : API::Client, config : Configuration, args = ARGV)
       @client = client
       @config = config
+      @args = args
     end
 
     def parse!
-      OptionParser.parse do |parser|
+      puts args
+      OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
           me = client.me
           Representers::Me::Core.new(me).display
@@ -33,6 +35,42 @@ module Tanda::CLI
 
           parser.on("week", "Time you've worked this week") do
             CLI::Commands::TimeWorked::Week.new(client, display).execute
+          end
+        end
+
+        parser.on("clockin", "Clock in/out") do
+          clock_type : String? = nil
+
+          parser.on("start", "Clock in") do
+            puts "start"
+            clock_type = "start"
+          end
+
+          parser.on("finish", "Clock out") do
+            puts "finish"
+            clock_type = "finish"
+          end
+
+          parser.on("break", "Clock a break") do
+            puts "break"
+            parser.on("start", "Start break") do
+              puts "break start"
+              clock_type = "break_start"
+            end
+
+            parser.on("finish", "Finish break") do
+              puts "break finish"
+              clock_type = "break_finish"
+            end
+          end
+
+          puts clock_type
+          if type = clock_type
+            CLI::Commands::ClockIn.new(client, type).execute
+            exit
+          else
+            Utils::Display.error("You must pass a command to clockin")
+            exit
           end
         end
 
@@ -59,17 +97,10 @@ module Tanda::CLI
 
           CLI::Commands::CurrentUser.new(client, config, new_id_or_name).execute
         end
-
-        parser.on("clockin", "Clock in/out") do
-          OptionParser.parse do |clock_flag|
-            clock_flag.on("--type=TYPE", "Clock type - start | finish") do |clock_type|
-              CLI::Commands::ClockIn.new(client, clock_type).execute
-            end
-          end
-        end
       end
     end
 
+    private getter args : Array(String)
     private getter client : API::Client
     private getter config : Configuration
   end
