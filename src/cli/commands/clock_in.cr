@@ -29,7 +29,9 @@ module Tanda::CLI
           "Your break has ended!"
         end
 
-        Utils::Display.success(success_message) if success_message
+        if success_message
+          Utils::Display.success("#{success_message} (#{Current.user.id})")
+        end
       end
     end
   end
