@@ -6,13 +6,10 @@ require "../types/**"
 
 module Tanda::CLI
   class CLI::Parser
-    def initialize(client : API::Client, config : Configuration)
-      @client = client
-      @config = config
-    end
+    def initialize(@client : API::Client, @config : Configuration, @args = ARGV); end
 
     def parse!
-      OptionParser.parse do |parser|
+      OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
           me = client.me
           Representers::Me::Core.new(me).display
@@ -34,6 +31,10 @@ module Tanda::CLI
           parser.on("week", "Time you've worked this week") do
             CLI::Commands::TimeWorked::Week.new(client, display).execute
           end
+        end
+
+        parser.on("clockin", "Clock in/out") do
+          CLI::Parser::Clockin.new(parser, client).parse
         end
 
         parser.on("time_zone", "See the currently set time zone") do
@@ -59,17 +60,10 @@ module Tanda::CLI
 
           CLI::Commands::CurrentUser.new(client, config, new_id_or_name).execute
         end
-
-        parser.on("clockin", "Clock in/out") do
-          OptionParser.parse do |clock_flag|
-            clock_flag.on("--type=TYPE", "Clock type - start | finish") do |clock_type|
-              CLI::Commands::ClockIn.new(client, clock_type).execute
-            end
-          end
-        end
       end
     end
 
+    private getter args : Array(String)
     private getter client : API::Client
     private getter config : Configuration
   end
