@@ -13,7 +13,6 @@ module Tanda::CLI
     end
 
     def parse!
-      puts args
       OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
           me = client.me
@@ -39,39 +38,7 @@ module Tanda::CLI
         end
 
         parser.on("clockin", "Clock in/out") do
-          clock_type : String? = nil
-
-          parser.on("start", "Clock in") do
-            puts "start"
-            clock_type = "start"
-          end
-
-          parser.on("finish", "Clock out") do
-            puts "finish"
-            clock_type = "finish"
-          end
-
-          parser.on("break", "Clock a break") do
-            puts "break"
-            parser.on("start", "Start break") do
-              puts "break start"
-              clock_type = "break_start"
-            end
-
-            parser.on("finish", "Finish break") do
-              puts "break finish"
-              clock_type = "break_finish"
-            end
-          end
-
-          puts clock_type
-          if type = clock_type
-            CLI::Commands::ClockIn.new(client, type).execute
-            exit
-          else
-            Utils::Display.error("You must pass a command to clockin")
-            exit
-          end
+          CLI::Parser::Clockin.new(parser, client).parse
         end
 
         parser.on("time_zone", "See the currently set time zone") do
