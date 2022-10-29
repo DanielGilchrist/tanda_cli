@@ -6,11 +6,7 @@ require "../types/**"
 
 module Tanda::CLI
   class CLI::Parser
-    def initialize(client : API::Client, config : Configuration, args = ARGV)
-      @client = client
-      @config = config
-      @args = args
-    end
+    def initialize(@client : API::Client, @config : Configuration, @args = ARGV); end
 
     def parse!
       OptionParser.parse(args) do |parser|
