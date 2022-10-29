@@ -6,7 +6,7 @@ module Tanda::CLI
     module Endpoints::ClockIn
       include Endpoints::Interface
 
-      def send_clockin(time : Time, type : String) : Types::Error?
+      def send_clock_in(time : Time, type : String) : Types::Error?
         response = post("/clockins", body: {
           "time" => time.to_unix.to_s,
           "type" => type,

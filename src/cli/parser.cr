@@ -34,7 +34,7 @@ module Tanda::CLI
         end
 
         parser.on("clockin", "Clock in/out") do
-          CLI::Parser::Clockin.new(parser, client).parse
+          CLI::Parser::ClockIn.new(parser, client).parse
         end
 
         parser.on("time_zone", "See the currently set time zone") do

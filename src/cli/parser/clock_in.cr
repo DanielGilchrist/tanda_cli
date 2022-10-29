@@ -1,24 +1,35 @@
 module Tanda::CLI
   class CLI::Parser
-    class Clockin
+    class ClockIn
+      enum ClockType
+        Start
+        Finish
+        BreakStart
+        BreakFinish
+
+        def to_underscore : String
+          to_s.underscore
+        end
+      end
+
       def initialize(@parser : OptionParser, @client : API::Client); end
 
       def parse
         parser.on("start", "Clock in") do
-          execute("start")
+          execute(ClockType::Start)
         end
 
         parser.on("finish", "Clock out") do
-          execute("finish")
+          execute(ClockType::Finish)
         end
 
         parser.on("break", "Clock a break") do
           parser.on("start", "Start break") do
-            execute("break_start")
+            execute(ClockType::BreakStart)
           end
 
           parser.on("finish", "Finish break") do
-            execute("break_finish")
+            execute(ClockType::BreakFinish)
           end
         end
       end
@@ -26,7 +37,7 @@ module Tanda::CLI
       private getter parser : OptionParser
       private getter client : API::Client
 
-      private def execute(type : String)
+      private def execute(type : ClockType)
         CLI::Commands::ClockIn.new(client, type).execute
         exit
       end
