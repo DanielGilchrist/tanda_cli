@@ -1,5 +1,3 @@
-require "json"
-
 require "./interface.cr"
 require "../client"
 
