@@ -21,11 +21,6 @@ module Tanda::CLI
             execute("break_finish")
           end
         end
-
-        parser.missing_option do |option|
-          Utils::Display.error("You must pass a command to clockin", option)
-          exit
-        end
       end
 
       private getter parser : OptionParser
