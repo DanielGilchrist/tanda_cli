@@ -24,7 +24,7 @@ module Tanda::CLI
       organisation = config.organisations.find(&.current?)
       return if organisation.nil?
 
-      Current::User.new(id: organisation.user_id, time_zone: time_zone)
+      Current::User.new(organisation.user_id, organisation.name, time_zone)
     end
 
     private def user_from_api : Current::User
@@ -41,7 +41,7 @@ module Tanda::CLI
       puts "\n"
       Utils::Display.success("Organisations saved to config")
 
-      Current::User.new(id: organisation.user_id, time_zone: time_zone)
+      Current::User.new(organisation.user_id, organisation.name, time_zone)
     end
 
     private def request_organisation_from_user(organistations : Array(Configuration::Organisation)) : Configuration::Organisation?

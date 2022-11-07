@@ -16,9 +16,10 @@ module Tanda::CLI
 
     class User
       getter id : Int32
+      getter organisation_name : String
       getter time_zone : Time::Location
 
-      def initialize(@id : Int32, time_zone : String)
+      def initialize(@id : Int32, @organisation_name : String, time_zone : String)
         @time_zone = Time::Location.load(time_zone)
       end
     end

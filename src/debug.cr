@@ -1,3 +1,4 @@
+require "colorize"
 require "log"
 
 module Tanda::CLI
@@ -9,14 +10,20 @@ module Tanda::CLI
     class Backend < Log::IOBackend
       def write(entry : Log::Entry)
         puts "\n"
-        pp "=============================== DEBUG ==============================="
-        pp entry.message
-        entry.data.each do |(k, v)|
-          print "#{k}: "
-          pp v
-        end
-        pp "=============================== DEBUG ==============================="
+        pp "================================= DEBUG ================================="
+        puts entry.message.colorize(:yellow)
         puts "\n"
+        entry.data.each do |(k, v)|
+          print "#{"#{k}:".colorize(:light_yellow)} "
+          pp v
+          puts "\n" unless http_debug_message?(entry)
+        end
+        pp "================================= DEBUG ================================="
+        puts "\n"
+      end
+
+      private def http_debug_message?(entry : Log::Entry)
+        entry.message == "Performing request"
       end
     end
   end

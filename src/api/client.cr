@@ -19,18 +19,21 @@ module Tanda::CLI
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
         uri = build_uri(endpoint, query)
+        headers = build_headers
 
-        response = HTTP::Client.get(uri, headers: build_headers)
-        Log.debug(&.emit("Response", body: response.body))
+        response = HTTP::Client.get(uri, headers: headers)
+        Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
 
         response
       end
 
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
         uri = build_uri(endpoint)
+        headers = build_headers
+        request_body = body.to_json
 
-        response = HTTP::Client.post(uri, headers: build_headers, body: body.to_json)
-        Log.debug(&.emit("Response", body: response.body))
+        response = HTTP::Client.post(uri, headers: headers, body: request_body)
+        Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
 
         response
       end
