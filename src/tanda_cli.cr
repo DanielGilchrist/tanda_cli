@@ -34,7 +34,7 @@ module Tanda::CLI
     if token.nil?
       site_prefix, email, password = CLI::Auth.request_user_information!
 
-      access_token = API::Auth.get_access_token!(site_prefix, email, password)
+      access_token = API::Auth.fetch_access_token!(site_prefix, email, password)
       if access_token.is_a?(Types::AccessToken)
         Utils::Display.success("Retrieved token!\n")
       else

@@ -11,7 +11,7 @@ module Tanda::CLI
     module Auth
       extend self
 
-      def get_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken | Types::Error
+      def fetch_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken | Types::Error
         response = HTTP::Client.post(
           build_endpoint(site_prefix),
           headers: build_headers,
