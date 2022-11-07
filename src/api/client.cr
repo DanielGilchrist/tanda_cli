@@ -32,7 +32,7 @@ module Tanda::CLI
         headers = build_headers
         request_body = body.to_json
 
-        response = HTTP::Client.post(uri, headers: headers, body: body.to_json)
+        response = HTTP::Client.post(uri, headers: headers, body: request_body)
         Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
 
         response
