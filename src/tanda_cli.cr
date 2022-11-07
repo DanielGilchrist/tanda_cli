@@ -38,7 +38,14 @@ module Tanda::CLI
       if access_token.is_a?(Types::AccessToken)
         Utils::Display.success("Retrieved token!\n")
       else
-        Utils::Display.error("Incorrect login details")
+        # TODO - Why do I have to manually force the type here???
+        error = access_token.as(Types::Error)
+        Utils::Display.error("Unable to authenticate (likely incorrect login details)")
+        Utils::Display.sub_error("Error Type: #{error.error}")
+
+        description = error.error_description
+        Utils::Display.sub_error("Message: #{description}") if description
+
         exit
       end
 
