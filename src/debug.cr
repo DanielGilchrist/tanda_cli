@@ -1,3 +1,4 @@
+require "colorize"
 require "log"
 
 module Tanda::CLI
@@ -10,10 +11,11 @@ module Tanda::CLI
       def write(entry : Log::Entry)
         puts "\n"
         pp "=============================== DEBUG ==============================="
-        pp entry.message
+        pp entry.message.colorize(:red)
         entry.data.each do |(k, v)|
-          print "#{k}: "
+          print "#{"#{k}:".colorize(:yellow)} "
           pp v
+          puts "\n"
         end
         pp "=============================== DEBUG ==============================="
         puts "\n"
