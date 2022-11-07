@@ -89,7 +89,7 @@ module Tanda::CLI
     end
 
     private def api_organisations : Array(Configuration::Organisation)
-      @api_organisations ||= client.me.organisations.map do |org|
+      @api_organisations ||= me.organisations.map do |org|
         Configuration::Organisation.from_json(org.to_json)
       end
     end
