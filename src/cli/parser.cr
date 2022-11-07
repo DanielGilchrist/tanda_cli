@@ -28,7 +28,7 @@ module Tanda::CLI
         end
 
         parser.on("current_user", "Display the current user") do
-          CLI::Parser::CurrentUser.new(parser, client, config).parse
+          CLI::Parser::CurrentUser.new(parser, config).parse
         end
       end
     end
