@@ -24,15 +24,7 @@ module Tanda::CLI
         end
 
         parser.on("time_zone", "See the currently set time zone") do
-          new_time_zone : String? = nil
-
-          OptionParser.parse do |set_time_zone_parser|
-            set_time_zone_parser.on("--set=TIME_ZONE", "Set the current time zone") do |time_zone|
-              new_time_zone = time_zone
-            end
-          end
-
-          CLI::Commands::TimeZone.new(config, new_time_zone).execute
+          CLI::Parser::TimeZone.new(parser, config).parse
         end
 
         parser.on("current_user", "Display the current user") do
