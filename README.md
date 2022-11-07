@@ -1,26 +1,30 @@
+# This is a work in progress and primarily built to suit my own needs
+Regardless of this, if you find this useful and have feature requests / ideas feel free to submit a pull request / issue.
+
 # tanda_cli
 
 https://my.tanda.co/api/v2#general-current-user-get
 
 ## Installation
 
-TODO: Write installation instructions here
+1. Clone the repository
+2. Run `./scripts/build_prod.sh`
+3. You now have a release build! This can be run with `./bin/tanda_cli` assuming you're in the root directory of this repository
 
 ## Usage
 
-TODO: Write usage instructions here
+TODO - Need to flesh out and specify interface
 
 ## Development
 
-TODO: Write development instructions here
+1. Clone Repo
+2. Write code
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/tanda_cli/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+1. Clone repo
+2. Implement your idea / fix bug
+3. Make a pull request
 
 ## Contributors
 
