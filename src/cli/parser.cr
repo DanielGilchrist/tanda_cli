@@ -36,15 +36,7 @@ module Tanda::CLI
         end
 
         parser.on("current_user", "Display the current user") do
-          new_id_or_name : String? = nil
-
-          OptionParser.parse do |set_user_parser|
-            set_user_parser.on("--set=ID_OR_NAME", "Set the current user") do |id_or_name|
-              new_id_or_name = id_or_name
-            end
-          end
-
-          CLI::Commands::CurrentUser.new(client, config, new_id_or_name).execute
+          CLI::Parser::CurrentUser.new(parser, client, config).parse
         end
       end
     end
