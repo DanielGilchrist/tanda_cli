@@ -13,7 +13,7 @@ Spectator.describe Tanda::CLI::Current do
     end
 
     context "Setting user" do
-      let(user) { Tanda::CLI::Current::User.new(id: 1, time_zone: "Europe/London") }
+      let(user) { Tanda::CLI::Current::User.new(id: 1, organisation_name: "Pokemart", time_zone: "Europe/London") }
 
       it "Returns set user when calling Current.user" do
         Tanda::CLI::Current.set_user!(user)
