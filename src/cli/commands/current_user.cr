@@ -1,14 +1,11 @@
 module Tanda::CLI
   module CLI::Commands
     class CurrentUser
-      def initialize(client : API::Client, config : Configuration, id_or_name : String?)
-        @client = client
-        @config = config
-        @id_or_name = id_or_name
-      end
+      def initialize(@config : Configuration, @id_or_name : String?, @list : Bool = false); end
 
       def execute
         puts "\n"
+        display_organisations! if list
 
         id_or_name = self.id_or_name
         return display_current_user if id_or_name.nil?
@@ -16,9 +13,9 @@ module Tanda::CLI
         try_set_new_current_user!(id_or_name)
       end
 
-      private getter client
       private getter config
       private getter id_or_name
+      private getter list
 
       private def display_current_user
         if organisation = config.organisations.find(&.current?)
@@ -48,6 +45,13 @@ module Tanda::CLI
         config.save!
 
         Utils::Display.success("The current user has been set to", display(organisation))
+      end
+
+      def display_organisations!
+        config.organisations.each do |organisation|
+          puts "Name: #{organisation.name}\nUser ID: #{organisation.user_id}\n\n"
+        end
+        exit
       end
 
       private def display(organisation : Configuration::Organisation)
