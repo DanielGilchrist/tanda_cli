@@ -1,3 +1,22 @@
+# Exclusions
 Lint/DebugCalls:
   Excluded:
     - src/debug.cr
+
+# Disabled by default
+Layout/LineLength:
+  Enabled: true
+  MaxLength: 140 # default
+
+Lint/ComparisonToBoolean:
+  Enabled: true
+
+Style/GuardClause:
+  Enabled: true
+
+Style/LargeNumbers:
+  Enabled: true
+  IntMinDigits: 5 # i.e. integers higher than 9999
+
+Style/PredicateName:
+  Enabled: true
