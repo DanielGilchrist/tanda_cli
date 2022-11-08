@@ -12,6 +12,10 @@ module Tanda::CLI
 
       @[JSON::Field(key: "error_description")]
       getter error_description : String?
+
+      def display
+        Utils::Display.error(self)
+      end
     end
   end
 end

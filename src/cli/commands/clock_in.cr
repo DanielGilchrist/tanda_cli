@@ -12,9 +12,7 @@ module Tanda::CLI
             display_success_message
           end
 
-          error do |error|
-            Utils::Display.error(error)
-          end
+          error(&.display)
         end
       end
 

@@ -15,21 +15,25 @@ module Tanda::CLI
       def initialize(@parser : OptionParser, @client : API::Client); end
 
       def parse
+        parser.on("status", "Check clockin status") do
+          CLI::Commands::ClockIn::Status.new(client).execute
+        end
+
         parser.on("start", "Clock in") do
-          execute(ClockType::Start)
+          execute_clock_in(ClockType::Start)
         end
 
         parser.on("finish", "Clock out") do
-          execute(ClockType::Finish)
+          execute_clock_in(ClockType::Finish)
         end
 
         parser.on("break", "Clock a break") do
           parser.on("start", "Start break") do
-            execute(ClockType::BreakStart)
+            execute_clock_in(ClockType::BreakStart)
           end
 
           parser.on("finish", "Finish break") do
-            execute(ClockType::BreakFinish)
+            execute_clock_in(ClockType::BreakFinish)
           end
         end
       end
@@ -37,7 +41,7 @@ module Tanda::CLI
       private getter parser : OptionParser
       private getter client : API::Client
 
-      private def execute(type : ClockType)
+      private def execute_clock_in(type : ClockType)
         CLI::Commands::ClockIn.new(client, type).execute
         exit
       end

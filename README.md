@@ -1,6 +1,6 @@
 # tanda_cli
 
-## Disclaimer 
+## Disclaimer
 This is a work in progress and (currently) primarily built to suit my own needs.
 
 This repo is severely lacking tests at the moment so I'll probably be a bit relucant to accept pull requests as it will be difficult to write your own without a solid base.
@@ -32,7 +32,8 @@ tanda_cli me
 # View or set the current user/organisation
 tanda_cli current_user
 tanda_cli current_user --set "Dan's Donuts"
-tanda_cli current_user --list # shows "current users" saved in config file - if you want a fresh version use `tanda_cli me`
+# shows "current users" saved in config file - if you want a fresh version use `tanda_cli me`
+tanda_cli current_user --list
 
 # View or set the current time zone
 tanda_cli time_zone
@@ -46,6 +47,8 @@ tanda_cli time_Worked today --display
 tanda_cli time_worked week
 tanda_cli time_worked week --display
 
+# View current clock in status
+tanda_cli clockin status
 # Clock in or clock out (including breaks)
 tanda_cli clockin start
 tanda_cli clockin finish
