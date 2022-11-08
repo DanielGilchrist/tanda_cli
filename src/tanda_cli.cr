@@ -38,7 +38,8 @@ module Tanda::CLI
       if access_token.is_a?(Types::AccessToken)
         Utils::Display.success("Retrieved token!\n")
       else
-        # TODO - Why do I have to manually force the type here???
+        # TODO - Crystal compiler bug
+        # .as needed due to bug https://github.com/crystal-lang/crystal/issues/10831
         error = access_token.as(Types::Error)
         Utils::Display.error("Unable to authenticate (likely incorrect login details)")
         Utils::Display.sub_error("Error Type: #{error.error}")
