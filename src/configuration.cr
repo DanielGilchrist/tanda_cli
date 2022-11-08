@@ -5,6 +5,9 @@ require "./types/access_token"
 
 module Tanda::CLI
   class Configuration
+    CONFIG_DIR = "#{Path.home}/.tanda_cli"
+    CONFIG_PATH = "#{CONFIG_DIR}/config.json"
+
     DEFAULT_SITE_PREFIX = "eu"
 
     DEFAULT_ACCESS_TOKEN = %({
@@ -105,6 +108,41 @@ module Tanda::CLI
       property mode : String
     end
 
+    def self.init : Configuration
+      config : Configuration? = nil
+      file   : File?          = nil
+
+      begin
+        if File.exists?(CONFIG_PATH)
+          file = File.new(CONFIG_PATH)
+          content = file.gets_to_end
+          config = new(Config.from_json(content))
+        else
+          config = new(Config.from_json(%({})))
+        end
+      rescue error
+        {% if flag?(:debug) %}
+          raise(error)
+        {% else %}
+          reason = error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError) || error.is_a?(JSON::ParseException)
+          Utils::Display.error("Invalid Config!", reason)
+          Utils::Display.sub_error("If you want to try and fix the config manually press Ctrl+C to quit")
+          Utils::Display.sub_error("Press enter if you want to proceed with a default config")
+          gets # don't proceed unless user wants us to
+
+          config = new(Config.from_json(%({})))
+        {% end %}
+      ensure
+        file.close if file
+      end
+
+      config || begin
+        Utils::Display.error("Unable to initialise config!")
+        Utils::Display.sub_error("Try running `rm #{CONFIG_PATH}` and re-running a command")
+        exit
+      end
+    end
+
     def self.validate_url(url : String) : URI | ErrorString
       uri = URI.parse(url).normalize!
       return "Invalid URL" if uri.opaque?
@@ -118,9 +156,7 @@ module Tanda::CLI
       uri
     end
 
-    def initialize
-      @config = Config.from_json(%({}))
-    end
+    def initialize(@config : Config); end
 
     delegate mode, to: config
 
@@ -196,16 +232,6 @@ module Tanda::CLI
       config.mode = value
     end
 
-    def parse_config!
-      return unless File.exists?(config_path)
-
-      file = File.new(config_path)
-      content = file.gets_to_end
-      @config = Config.from_json(content)
-    ensure
-      file.close if file
-    end
-
     def token! : String
       token = access_token.token
       raise "Token is missing" if token.nil?
@@ -226,7 +252,7 @@ module Tanda::CLI
 
     def save!
       create_config_dir_if_not_exists!
-      File.write(config_path, content: config.to_json)
+      File.write(CONFIG_PATH, content: config.to_json)
     end
 
     def get_api_url : String
@@ -249,16 +275,8 @@ module Tanda::CLI
 
     private getter config : Config
 
-    private def config_dir : String
-      @config_dir ||= "#{Path.home}/.tanda_cli"
-    end
-
-    private def config_path : String
-      @config_path ||= "#{config_dir}/config.json"
-    end
-
     private def create_config_dir_if_not_exists!
-      FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
+      FileUtils.mkdir_p(CONFIG_DIR) unless File.directory?(CONFIG_DIR)
     end
   end
 end
