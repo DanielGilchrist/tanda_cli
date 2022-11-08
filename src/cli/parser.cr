@@ -30,6 +30,10 @@ module Tanda::CLI
         parser.on("current_user", "Display the current user") do
           CLI::Parser::CurrentUser.new(parser, config).parse
         end
+
+        parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
+          CLI::Parser::Mode.new(parser, config).parse
+        end
       end
     end
 

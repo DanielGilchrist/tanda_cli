@@ -28,16 +28,32 @@ module Tanda::CLI
     config = Configuration.new
     try_parse_config!(config)
 
+    mode = config.mode
     token = config.access_token.token
 
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?
       site_prefix, email, password = CLI::Auth.request_user_information!
 
+      staging = mode != "production"
+      if staging
+        site_prefix =
+          case site_prefix
+          when "my"
+            "staging"
+          when "eu"
+            "staging.eu"
+          when "us"
+            "staging.us"
+          else
+            site_prefix
+          end
+      end
+
       API::Auth.fetch_access_token!(site_prefix, email, password).match do
         ok do |access_token|
-          Utils::Display.success("Retrieved token!\n")
-          config.overwrite!(site_prefix, email, access_token)
+          Utils::Display.success("Retrieved token!#{staging && " (staging)"}\n")
+          config.overwrite!(site_prefix, email, access_token, staging: staging)
         end
 
         error do |error|

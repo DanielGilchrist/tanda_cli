@@ -23,6 +23,13 @@ module Tanda::CLI
       "organisations": DEFAULT_ORGANISATIONS
     }
 
+    VALID_HOSTS = [
+      ".tanda.co",
+      ".workforce.com"
+    ]
+
+    alias ErrorString = String
+
     class Organisation
       include JSON::Serializable
 
@@ -69,9 +76,11 @@ module Tanda::CLI
       include JSON::Serializable
 
       # defaults
-      @site_prefix   : String              = DEFAULT_SITE_PREFIX
-      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
+      @site_prefix : String = DEFAULT_SITE_PREFIX
+      @access_token : AccessToken = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
+      @staging_access_token : AccessToken = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
       @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS.to_json)
+      @mode : String = "production"
 
       @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
@@ -79,18 +88,52 @@ module Tanda::CLI
       @[JSON::Field(key: "access_token")]
       property access_token : AccessToken
 
+      @[JSON::Field(key: "staging_access_token")]
+      property staging_access_token : AccessToken
+
       @[JSON::Field(key: "organisations")]
       property organisations : Array(Organisation)
 
       @[JSON::Field(key: "time_zone")]
       property time_zone : String?
+
+      @[JSON::Field(key: "mode")]
+      property mode : String
     end
 
-    def initialize
+    def self.validate_url(url : String) : URI | ErrorString
+      uri = URI.parse(url).normalize!
+      return "Invalid URL" if uri.opaque?
+      return "URL cannot contain query parameters" if uri.query
+
+      host = uri.host
+      doesnt_contain_valid_host = host && VALID_HOSTS.none? { |valid_host| host.includes?(valid_host) }
+      return "Host must contain #{VALID_HOSTS.join(" or ")}" if doesnt_contain_valid_host
+
+      uri
+    end
+
+    def initialize(@staging : Bool = false)
       @config = Config.from_json(DEFAULT_CONFIG.to_json)
     end
 
-    delegate site_prefix, access_token, organisations, time_zone, to: config
+    delegate site_prefix, organisations, time_zone, mode, to: config
+
+    def access_token : AccessToken
+      if staging
+        config.staging_access_token
+      else
+        config.access_token
+      end
+    end
+
+    def access_token=(value : AccessToken)
+      if staging
+        config.staging_access_token = value
+      else
+        config.access_token = value
+      end
+    end
 
     def site_prefix=(value : String)
       config.site_prefix = value
@@ -102,6 +145,10 @@ module Tanda::CLI
 
     def time_zone=(value : String)
       config.time_zone = value
+    end
+
+    def mode=(value : String)
+      config.mode = value
     end
 
     def parse_config!
@@ -138,7 +185,21 @@ module Tanda::CLI
     end
 
     def get_api_url : String
-      "https://#{site_prefix}.tanda.co/api/v2"
+      case mode
+      when "production"
+        "https://#{site_prefix}.tanda.co/api/v2"
+      when "staging"
+        prefix = "#{site_prefix}." if site_prefix != "my"
+        "https://staging.#{prefix}tanda.co/api/v2"
+      else
+        validated_uri = self.class.validate_url(mode)
+        if validated_uri.is_a?(String)
+          Utils::Display.error(validated_uri, mode)
+          exit
+        else
+          validated_uri.to_s
+        end
+      end
     end
 
     private getter config : Config
