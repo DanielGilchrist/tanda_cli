@@ -7,21 +7,22 @@ module Tanda::CLI
   class Configuration
     DEFAULT_SITE_PREFIX = "eu"
 
-    DEFAULT_ACCESS_TOKEN = {
-      "email": nil,
-      "token": nil,
-      "token_type": nil,
-      "scope": nil,
-      "created_at": nil
-    }
+    DEFAULT_ACCESS_TOKEN = %({
+      "email": null,
+      "token": null,
+      "token_type": null,
+      "scope": null,
+      "created_at": null
+    })
 
-    DEFAULT_ORGANISATIONS = [] of Organisation
+    DEFAULT_ORGANISATIONS = %([])
 
-    DEFAULT_CONFIG = {
-      "site_prefix": DEFAULT_SITE_PREFIX,
-      "access_token": DEFAULT_ACCESS_TOKEN,
-      "organisations": DEFAULT_ORGANISATIONS
-    }
+    VALID_HOSTS = [
+      ".tanda.co",
+      ".workforce.com"
+    ]
+
+    alias ErrorString = String
 
     class Organisation
       include JSON::Serializable
@@ -65,13 +66,13 @@ module Tanda::CLI
       property created_at : Int32?
     end
 
-    class Config
+    class Environment
       include JSON::Serializable
 
       # defaults
       @site_prefix   : String              = DEFAULT_SITE_PREFIX
-      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
-      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS.to_json)
+      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN)
+      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS)
 
       @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
@@ -86,22 +87,113 @@ module Tanda::CLI
       property time_zone : String?
     end
 
-    def initialize
-      @config = Config.from_json(DEFAULT_CONFIG.to_json)
+    class Config
+      include JSON::Serializable
+
+      # defaults
+      @production : Environment = Environment.from_json(%({}))
+      @staging    : Environment = Environment.from_json(%({}))
+      @mode       : String      = "production"
+
+      @[JSON::Field(key: "production")]
+      getter production
+
+      @[JSON::Field(key: "staging")]
+      getter staging
+
+      @[JSON::Field(key: "mode")]
+      property mode : String
     end
 
-    delegate site_prefix, access_token, organisations, time_zone, to: config
+    def self.validate_url(url : String) : URI | ErrorString
+      uri = URI.parse(url).normalize!
+      return "Invalid URL" if uri.opaque?
+      return "URL must be prefixed with \"https://\"" if uri.scheme != "https"
+      return "URL cannot contain query parameters" if uri.query
+
+      host = uri.host
+      doesnt_contain_valid_host = host && VALID_HOSTS.none? { |valid_host| host.includes?(valid_host) }
+      return "Host must contain #{VALID_HOSTS.join(" or ")}" if doesnt_contain_valid_host
+
+      uri
+    end
+
+    def initialize
+      @config = Config.from_json(%({}))
+    end
+
+    delegate mode, to: config
+
+    def staging? : Bool
+      mode != "production"
+    end
+
+    def time_zone
+      if staging?
+        config.staging.time_zone
+      else
+        config.production.time_zone
+      end
+    end
+
+    def organisations : Array(Organisation)
+      if staging?
+        config.staging.organisations
+      else
+        config.production.organisations
+      end
+    end
+
+    def site_prefix : String
+      if staging?
+        config.staging.site_prefix
+      else
+        config.production.site_prefix
+      end
+    end
+
+    def access_token : AccessToken
+      if staging?
+        config.staging.access_token
+      else
+        config.production.access_token
+      end
+    end
+
+    def access_token=(value : AccessToken)
+      if staging?
+        config.staging_access_token = value
+      else
+        config.access_token = value
+      end
+    end
 
     def site_prefix=(value : String)
-      config.site_prefix = value
+      if staging?
+        config.staging.site_prefix = value
+      else
+        config.production.site_prefix = value
+      end
     end
 
     def organisations=(value : Array(Organisation))
-      config.organisations = value
+      if staging?
+        config.staging.organisations = value
+      else
+        config.production.organisations = value
+      end
     end
 
     def time_zone=(value : String)
-      config.time_zone = value
+      if staging?
+        config.staging.time_zone = value
+      else
+        config.production.time_zone = value
+      end
+    end
+
+    def mode=(value : String)
+      config.mode = value
     end
 
     def parse_config!
@@ -138,7 +230,21 @@ module Tanda::CLI
     end
 
     def get_api_url : String
-      "https://#{site_prefix}.tanda.co/api/v2"
+      case mode
+      when "production"
+        "https://#{site_prefix}.tanda.co/api/v2"
+      when "staging"
+        prefix = "#{site_prefix}." if site_prefix != "my"
+        "https://staging.#{prefix}tanda.co/api/v2"
+      else
+        validated_uri = self.class.validate_url(mode)
+        if validated_uri.is_a?(String)
+          Utils::Display.error(validated_uri, mode)
+          exit
+        else
+          validated_uri.to_s
+        end
+      end
     end
 
     private getter config : Config

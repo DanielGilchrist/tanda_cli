@@ -28,36 +28,7 @@ module Tanda::CLI
     config = Configuration.new
     try_parse_config!(config)
 
-    token = config.access_token.token
-
-    # if a token can't be parsed from the config, get username and password from user and request a token
-    if token.nil?
-      site_prefix, email, password = CLI::Auth.request_user_information!
-
-      API::Auth.fetch_access_token!(site_prefix, email, password).match do
-        ok do |access_token|
-          Utils::Display.success("Retrieved token!\n")
-          config.overwrite!(site_prefix, email, access_token)
-        end
-
-        error do |error|
-          Utils::Display.error("Unable to authenticate (likely incorrect login details)")
-          Utils::Display.sub_error("Error Type: #{error.error}")
-
-          description = error.error_description
-          Utils::Display.sub_error("Message: #{description}") if description
-
-          exit
-        end
-      end
-    end
-
-    url = config.get_api_url
-    token = config.token!
-    client = API::Client.new(url, token)
-
-    CLI::CurrentUser.new(client, config).set!
-    CLI::Parser.new(client, config).parse!
+    CLI::Parser.new(config).parse!
   end
 end
 
