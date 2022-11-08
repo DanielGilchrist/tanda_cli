@@ -6,7 +6,7 @@ module Tanda::CLI
     module Endpoints::ClockIn
       include Endpoints::Interface
 
-      def clockins(date : Time) : Array(Types::ClockIn) | Types::Error
+      def clockins(date : Time) : API::Result(Array(Types::ClockIn))
         date_string = date.to_s("%Y-%m-%d")
 
         response = get("/clockins", query: {
@@ -14,9 +14,14 @@ module Tanda::CLI
           "from" => date_string,
           "to" => date_string
         })
-        return Types::Error.from_json(response.body) unless response.success?
 
-        Array(Types::ClockIn).from_json(response.body)
+        result = if response.success?
+          Array(Types::ClockIn).from_json(response.body)
+        else
+          Types::Error.from_json(response.body)
+        end
+
+        API::Result(Array(Types::ClockIn)).new(result)
       end
 
       def send_clock_in(time : Time, type : String) : API::Result(Nil)

@@ -1,9 +1,11 @@
-require "./base"
+require "json"
 require "./converters/time"
 
 module Tanda::CLI
   module Types
-    class ClockIn < Base
+    class ClockIn
+      include JSON::Serializable
+
       enum Type
         Start
         Finish
