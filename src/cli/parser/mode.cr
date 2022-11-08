@@ -11,6 +11,7 @@ module Tanda::CLI
           config.save!
 
           Utils::Display.success("Successfully set mode to production!")
+          exit
         end
 
         parser.on("staging", "Set mode to staging") do
@@ -18,6 +19,7 @@ module Tanda::CLI
           config.save!
 
           Utils::Display.success("Successfully set mode to staging!")
+          exit
         end
 
         parser.on("--custom=CUSTOM", "Set mode to custom URL") do |custom|
@@ -43,6 +45,7 @@ module Tanda::CLI
 
         parser.on("current", "View currently set mode") do
           puts "Mode is currently set to #{config.mode}"
+          exit
         end
       end
 

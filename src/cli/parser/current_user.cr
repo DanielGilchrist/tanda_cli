@@ -18,6 +18,7 @@ module Tanda::CLI
         end
 
         CLI::Commands::CurrentUser.new(config, new_id_or_name, list).execute
+        exit
       end
 
       private getter parser : OptionParser

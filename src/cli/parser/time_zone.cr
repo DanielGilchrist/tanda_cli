@@ -13,6 +13,7 @@ module Tanda::CLI
         end
 
         CLI::Commands::TimeZone.new(config, new_time_zone).execute
+        exit
       end
 
       private getter parser : OptionParser
