@@ -34,20 +34,21 @@ module Tanda::CLI
     if token.nil?
       site_prefix, email, password = CLI::Auth.request_user_information!
 
-      access_token = API::Auth.fetch_access_token!(site_prefix, email, password)
-      case access_token
-      when Types::AccessToken
-        Utils::Display.success("Retrieved token!\n")
-        config.overwrite!(site_prefix, email, access_token)
-      when Types::Error
-        error = access_token
-        Utils::Display.error("Unable to authenticate (likely incorrect login details)")
-        Utils::Display.sub_error("Error Type: #{error.error}")
+      API::Auth.fetch_access_token!(site_prefix, email, password).match do
+        ok do |access_token|
+          Utils::Display.success("Retrieved token!\n")
+          config.overwrite!(site_prefix, email, access_token)
+        end
 
-        description = error.error_description
-        Utils::Display.sub_error("Message: #{description}") if description
+        error do |error|
+          Utils::Display.error("Unable to authenticate (likely incorrect login details)")
+          Utils::Display.sub_error("Error Type: #{error.error}")
 
-        exit
+          description = error.error_description
+          Utils::Display.sub_error("Message: #{description}") if description
+
+          exit
+        end
       end
     end
 

@@ -1,10 +1,12 @@
-require "./base"
+require "json"
 require "./shift_break"
 require "./converters/time"
 
 module Tanda::CLI
   module Types
-    class Shift < Base
+    class Shift
+      include JSON::Serializable
+
       DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
 
       enum Status

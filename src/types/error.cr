@@ -1,8 +1,10 @@
-require "./base"
+require "json"
 
 module Tanda::CLI
   module Types
-    class Error < Base
+    class Error
+      include JSON::Serializable
+
       @error_description : String? = nil
 
       @[JSON::Field(key: "error")]

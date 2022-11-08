@@ -1,9 +1,10 @@
-require "../base"
+require "json"
 
 module Tanda::CLI
   module Types
     module Me
-      class Organisation < Base
+      class Organisation
+        include JSON::Serializable
         @[JSON::Field(key: "id")]
         getter id : Int32
 

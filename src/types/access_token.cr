@@ -1,8 +1,10 @@
-require "./base"
+require "json"
 
 module Tanda::CLI
   module Types
-    class AccessToken < Base
+    class AccessToken
+      include JSON::Serializable
+
       @[JSON::Field(key: "access_token")]
       getter token : String
 

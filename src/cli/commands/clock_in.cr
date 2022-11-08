@@ -7,12 +7,14 @@ module Tanda::CLI
 
       def execute
         now = Utils::Time.now
-        error = client.send_clock_in(now, clock_type.to_underscore)
+        client.send_clock_in(now, clock_type.to_underscore).match do
+          ok do
+            display_success_message
+          end
 
-        if error
-          Utils::Display.error(error)
-        else
-          display_success_message
+          error do |error|
+            Utils::Display.error(error)
+          end
         end
       end
 
