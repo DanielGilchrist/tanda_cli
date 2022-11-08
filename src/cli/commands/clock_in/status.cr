@@ -9,9 +9,7 @@ module Tanda::CLI
           client.clockins(now).match do
             ok do |clockins|
               clockin = clockins.sort_by(&.time).last?
-              if clockin.nil?
-                puts "You aren't currently clocked in"
-              else
+              if clockin
                 case clockin.type
                 in Types::ClockIn::Type::Start
                   puts "You clocked in at #{clockin.time}"
@@ -22,6 +20,8 @@ module Tanda::CLI
                 in Types::ClockIn::Type::BreakFinish
                   puts "You finished your break at #{clockin.time}"
                 end
+              else
+                puts "You aren't currently clocked in"
               end
             end
 
