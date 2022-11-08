@@ -1,10 +1,12 @@
+require "json"
 require "./organisation"
-require "../base"
 
 module Tanda::CLI
   module Types
     module Me
-      class Core < Base
+      class Core
+        include JSON::Serializable
+
         @[JSON::Field(key: "name")]
         getter name : String
 

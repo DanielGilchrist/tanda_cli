@@ -34,22 +34,22 @@ module Tanda::CLI
     if token.nil?
       site_prefix, email, password = CLI::Auth.request_user_information!
 
-      access_token = API::Auth.fetch_access_token!(site_prefix, email, password)
-      if access_token.is_a?(Types::AccessToken)
-        Utils::Display.success("Retrieved token!\n")
-      else
-        # TODO - Why do I have to manually force the type here???
-        error = access_token.as(Types::Error)
-        Utils::Display.error("Unable to authenticate (likely incorrect login details)")
-        Utils::Display.sub_error("Error Type: #{error.error}")
+      API::Auth.fetch_access_token!(site_prefix, email, password).match do
+        ok do |access_token|
+          Utils::Display.success("Retrieved token!\n")
+          config.overwrite!(site_prefix, email, access_token)
+        end
 
-        description = error.error_description
-        Utils::Display.sub_error("Message: #{description}") if description
+        error do |error|
+          Utils::Display.error("Unable to authenticate (likely incorrect login details)")
+          Utils::Display.sub_error("Error Type: #{error.error}")
 
-        exit
+          description = error.error_description
+          Utils::Display.sub_error("Message: #{description}") if description
+
+          exit
+        end
       end
-
-      config.overwrite!(site_prefix, email, access_token)
     end
 
     url = config.get_api_url
