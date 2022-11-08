@@ -28,10 +28,6 @@ module Tanda::CLI
     config = Configuration.new
     try_parse_config!(config)
 
-    if config.staging?
-      Utils::Display.warning("Running command on #{config.mode}\n")
-    end
-
     CLI::Parser.new(config).parse!
   end
 end

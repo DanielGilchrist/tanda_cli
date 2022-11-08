@@ -9,13 +9,30 @@ module Tanda::CLI
     def initialize(@config : Configuration, @args = ARGV); end
 
     def parse!
-      # Options that don't need a client or current user set
+      # This should exit early if a command is successfully parsed
+      parse_standard_options!
+
+      maybe_display_staging_warning
+
+      client = create_client_from_config
+      CLI::CurrentUser.new(client, config).set!
+
+      parse_api_options!(client)
+    end
+
+    private getter config : Configuration
+    private getter args   : Array(String)
+
+    # Options that don't make API requests
+    private def parse_standard_options!
       OptionParser.parse(args) do |parser|
         parser.on("time_zone", "See the currently set time zone") do
+          maybe_display_staging_warning
           CLI::Parser::TimeZone.new(parser, config).parse
         end
 
         parser.on("current_user", "Display the current user") do
+          maybe_display_staging_warning
           CLI::Parser::CurrentUser.new(parser, config).parse
         end
 
@@ -23,11 +40,10 @@ module Tanda::CLI
           CLI::Parser::Mode.new(parser, config).parse
         end
       end.parse
+    end
 
-      client = create_client_from_config
-      CLI::CurrentUser.new(client, config).set!
-
-      # Options that need a client to make API requests
+    # Options that make API requests
+    private def parse_api_options!(client : API::Client)
       OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
           me = client.me
@@ -44,8 +60,17 @@ module Tanda::CLI
       end
     end
 
-    private getter config : Configuration
-    private getter args   : Array(String)
+    private def maybe_display_staging_warning
+      return unless config.staging?
+
+      message = if (mode = config.mode != "staging")
+        "Command running on #{mode}"
+      else
+        "Command running in staging mode"
+      end
+
+      Utils::Display.warning(message)
+    end
 
     private def create_client_from_config : API::Client
       token = config.access_token.token
