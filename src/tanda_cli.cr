@@ -35,12 +35,11 @@ module Tanda::CLI
       site_prefix, email, password = CLI::Auth.request_user_information!
 
       access_token = API::Auth.fetch_access_token!(site_prefix, email, password)
-      if access_token.is_a?(Types::AccessToken)
+      case access_token
+      in Types::AccessToken
         Utils::Display.success("Retrieved token!\n")
-      else
-        # TODO - Crystal compiler bug
-        # .as needed due to bug https://github.com/crystal-lang/crystal/issues/10831
-        error = access_token.as(Types::Error)
+      in Types::Error
+        error = access_token
         Utils::Display.error("Unable to authenticate (likely incorrect login details)")
         Utils::Display.sub_error("Error Type: #{error.error}")
 
