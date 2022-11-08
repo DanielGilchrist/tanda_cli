@@ -37,7 +37,7 @@ module Tanda::CLI
           config.mode = uri_string
           config.save!
 
-          Utils::Display.success("Successfully saved custom url!", uri_string)
+          Utils::Display.success("Successfully set custom url", uri_string)
           exit
         end
 

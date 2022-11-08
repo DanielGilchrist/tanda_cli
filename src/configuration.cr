@@ -108,6 +108,7 @@ module Tanda::CLI
     def self.validate_url(url : String) : URI | ErrorString
       uri = URI.parse(url).normalize!
       return "Invalid URL" if uri.opaque?
+      return "URL must be prefixed with \"https://\"" if uri.scheme != "https"
       return "URL cannot contain query parameters" if uri.query
 
       host = uri.host
