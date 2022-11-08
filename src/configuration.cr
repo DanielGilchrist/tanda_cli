@@ -203,6 +203,7 @@ module Tanda::CLI
     end
 
     private getter config : Config
+    private getter staging : Bool
 
     private def config_dir : String
       @config_dir ||= "#{Path.home}/.tanda_cli"
