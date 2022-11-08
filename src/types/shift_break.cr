@@ -1,9 +1,11 @@
-require "./base"
+require "json"
 require "./converters/time"
 
 module Tanda::CLI
   module Types
-    class ShiftBreak < Base
+    class ShiftBreak
+      include JSON::Serializable
+
       @[JSON::Field(key: "id")]
       getter id : Int32
 

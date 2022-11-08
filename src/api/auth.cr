@@ -11,7 +11,7 @@ module Tanda::CLI
     module Auth
       extend self
 
-      def fetch_access_token!(site_prefix : String, email : String, password : String) : Types::AccessToken | Types::Error
+      def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
         response = HTTP::Client.post(
           build_endpoint(site_prefix),
           headers: build_headers,
@@ -25,7 +25,8 @@ module Tanda::CLI
 
         Log.debug(&.emit("Response", body: response.body))
 
-        (response.success? ? Types::AccessToken : Types::Error).from_json(response.body)
+        result = (response.success? ? Types::AccessToken : Types::Error).from_json(response.body)
+        API::Result(Types::AccessToken).new(result)
       end
 
       private def build_endpoint(site_prefix : String) : String
