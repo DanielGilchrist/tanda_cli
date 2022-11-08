@@ -7,21 +7,15 @@ module Tanda::CLI
   class Configuration
     DEFAULT_SITE_PREFIX = "eu"
 
-    DEFAULT_ACCESS_TOKEN = {
-      "email": nil,
-      "token": nil,
-      "token_type": nil,
-      "scope": nil,
-      "created_at": nil
-    }
+    DEFAULT_ACCESS_TOKEN = %({
+      "email": null,
+      "token": null,
+      "token_type": null,
+      "scope": null,
+      "created_at": null
+    })
 
-    DEFAULT_ORGANISATIONS = [] of Organisation
-
-    DEFAULT_CONFIG = {
-      "site_prefix": DEFAULT_SITE_PREFIX,
-      "access_token": DEFAULT_ACCESS_TOKEN,
-      "organisations": DEFAULT_ORGANISATIONS
-    }
+    DEFAULT_ORGANISATIONS = %([])
 
     VALID_HOSTS = [
       ".tanda.co",
@@ -72,15 +66,13 @@ module Tanda::CLI
       property created_at : Int32?
     end
 
-    class Config
+    class Environment
       include JSON::Serializable
 
       # defaults
-      @site_prefix : String = DEFAULT_SITE_PREFIX
-      @access_token : AccessToken = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
-      @staging_access_token : AccessToken = AccessToken.from_json(DEFAULT_ACCESS_TOKEN.to_json)
-      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS.to_json)
-      @mode : String = "production"
+      @site_prefix   : String              = DEFAULT_SITE_PREFIX
+      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN)
+      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS)
 
       @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
@@ -88,14 +80,26 @@ module Tanda::CLI
       @[JSON::Field(key: "access_token")]
       property access_token : AccessToken
 
-      @[JSON::Field(key: "staging_access_token")]
-      property staging_access_token : AccessToken
-
       @[JSON::Field(key: "organisations")]
       property organisations : Array(Organisation)
 
       @[JSON::Field(key: "time_zone")]
       property time_zone : String?
+    end
+
+    class Config
+      include JSON::Serializable
+
+      # defaults
+      @production : Environment = Environment.from_json(%({}))
+      @staging    : Environment = Environment.from_json(%({}))
+      @mode       : String      = "production"
+
+      @[JSON::Field(key: "production")]
+      getter production
+
+      @[JSON::Field(key: "staging")]
+      getter staging
 
       @[JSON::Field(key: "mode")]
       property mode : String
@@ -113,22 +117,50 @@ module Tanda::CLI
       uri
     end
 
-    def initialize(@staging : Bool = false)
-      @config = Config.from_json(DEFAULT_CONFIG.to_json)
+    def initialize
+      @config = Config.from_json(%({}))
     end
 
-    delegate site_prefix, organisations, time_zone, mode, to: config
+    delegate mode, to: config
+
+    def staging? : Bool
+      mode != "production"
+    end
+
+    def time_zone
+      if staging?
+        config.staging.time_zone
+      else
+        config.production.time_zone
+      end
+    end
+
+    def organisations : Array(Organisation)
+      if staging?
+        config.staging.organisations
+      else
+        config.production.organisations
+      end
+    end
+
+    def site_prefix : String
+      if staging?
+        config.staging.site_prefix
+      else
+        config.production.site_prefix
+      end
+    end
 
     def access_token : AccessToken
-      if staging
-        config.staging_access_token
+      if staging?
+        config.staging.access_token
       else
-        config.access_token
+        config.production.access_token
       end
     end
 
     def access_token=(value : AccessToken)
-      if staging
+      if staging?
         config.staging_access_token = value
       else
         config.access_token = value
@@ -136,15 +168,27 @@ module Tanda::CLI
     end
 
     def site_prefix=(value : String)
-      config.site_prefix = value
+      if staging?
+        config.staging.site_prefix = value
+      else
+        config.production.site_prefix = value
+      end
     end
 
     def organisations=(value : Array(Organisation))
-      config.organisations = value
+      if staging?
+        config.staging.organisations = value
+      else
+        config.production.organisations = value
+      end
     end
 
     def time_zone=(value : String)
-      config.time_zone = value
+      if staging?
+        config.staging.time_zone = value
+      else
+        config.production.time_zone = value
+      end
     end
 
     def mode=(value : String)
@@ -203,7 +247,6 @@ module Tanda::CLI
     end
 
     private getter config : Config
-    private getter staging : Bool
 
     private def config_dir : String
       @config_dir ||= "#{Path.home}/.tanda_cli"
