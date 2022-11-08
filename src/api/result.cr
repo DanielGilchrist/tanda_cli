@@ -6,8 +6,6 @@ module Tanda::CLI
       class Matcher(T)
         def initialize(@value : T | Types::Error); end
 
-        getter value : T | Types::Error
-
         def ok(&block : T -> ::Nil)
           value = self.value
           return if value.is_a?(Types::Error)
@@ -21,15 +19,17 @@ module Tanda::CLI
 
           yield(value)
         end
+
+        private getter value : T | Types::Error
       end
 
       def initialize(@value : T | Types::Error); end
 
-      getter value : T | Types::Error
-
       def match(&block)
         with Matcher(T).new(value) yield
       end
+
+      private getter value : T | Types::Error
     end
   end
 end
