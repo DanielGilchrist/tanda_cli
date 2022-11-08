@@ -48,13 +48,6 @@ module Tanda::CLI
 
       private getter parser
       private getter config
-
-      private def invalid_host?(uri : URI) : Bool
-        host = uri.host
-        return true if host.nil?
-
-
-      end
     end
   end
 end
