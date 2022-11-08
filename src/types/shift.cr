@@ -16,16 +16,7 @@ module Tanda::CLI
       module StatusConverter
         def self.from_json(value : JSON::PullParser) : Status
           status_string = value.read_string
-          case status_string
-          when "PENDING"
-            Status::Pending
-          when "APPROVED"
-            Status::Approved
-          when "EXPORTED"
-            Status::Exported
-          else
-            raise "Unknown status: #{status_string}"
-          end
+          Status.parse?(status_string) || raise "Unknown status: #{status_string}"
         end
       end
 

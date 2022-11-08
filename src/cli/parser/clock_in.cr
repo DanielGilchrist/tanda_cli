@@ -15,6 +15,32 @@ module Tanda::CLI
       def initialize(@parser : OptionParser, @client : API::Client); end
 
       def parse
+        parser.on("status", "Check clockin status") do
+          now = Utils::Time.now
+          clockins = client.clockins(now)
+
+          if clockins.is_a?(Types::Error)
+            Utils::Display.error(clockins)
+          else
+            clockin = clockins.sort_by(&.time).last?
+            if clockin.nil?
+              puts "You aren't currently clocked in"
+            else
+              case clockin.type
+              in Types::ClockIn::Type::Start
+                puts "You clocked in at #{clockin.time}"
+              in Types::ClockIn::Type::Finish
+                puts "You clocked out at #{clockin.time}"
+              in Types::ClockIn::Type::BreakStart
+                puts "You started a break at #{clockin.time}"
+              in Types::ClockIn::Type::BreakFinish
+                puts "You finished your break at #{clockin.time}"
+              end
+            end
+          end
+          exit
+        end
+
         parser.on("start", "Clock in") do
           execute(ClockType::Start)
         end
