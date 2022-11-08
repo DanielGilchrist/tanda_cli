@@ -39,7 +39,12 @@ module Tanda::CLI
         parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
           CLI::Parser::Mode.new(parser, config).parse
         end
-      end.parse
+
+        parser.invalid_option do
+          # TODO: Handle invalid options
+          # no-op
+        end
+      end
     end
 
     # Options that make API requests
