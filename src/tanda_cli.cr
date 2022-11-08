@@ -36,9 +36,10 @@ module Tanda::CLI
 
       access_token = API::Auth.fetch_access_token!(site_prefix, email, password)
       case access_token
-      in Types::AccessToken
+      when Types::AccessToken
         Utils::Display.success("Retrieved token!\n")
-      in Types::Error
+        config.overwrite!(site_prefix, email, access_token)
+      when Types::Error
         error = access_token
         Utils::Display.error("Unable to authenticate (likely incorrect login details)")
         Utils::Display.sub_error("Error Type: #{error.error}")
@@ -48,8 +49,6 @@ module Tanda::CLI
 
         exit
       end
-
-      config.overwrite!(site_prefix, email, access_token)
     end
 
     url = config.get_api_url
