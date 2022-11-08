@@ -36,9 +36,7 @@ module Tanda::CLI
               end
             end
 
-            error do |error|
-              Utils::Display.error(error)
-            end
+            error(&.display)
           end
 
           exit
