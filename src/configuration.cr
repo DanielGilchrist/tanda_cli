@@ -136,7 +136,11 @@ module Tanda::CLI
         file.close if file
       end
 
-      config || raise "Unable to create config"
+      config || begin
+        Utils::Display.error("Unable to initialise config!")
+        Utils::Display.sub_error("Try running `rm #{CONFIG_PATH}` and re-running a command")
+        exit
+      end
     end
 
     def self.validate_url(url : String) : URI | ErrorString
