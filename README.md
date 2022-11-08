@@ -31,7 +31,7 @@ tanda_cli me
 
 # View or set the current user/organisation
 tanda_cli current_user
-tanda_cli current_set --set "Dan's Donuts"
+tanda_cli current_user --set "Dan's Donuts"
 tanda_cli current_user --list # shows "current users" saved in config file - if you want a fresh version use `tanda_cli me`
 
 # View or set the current time zone
