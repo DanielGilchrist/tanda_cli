@@ -14,8 +14,11 @@ module Tanda::CLI
         with self yield
       end
 
-      def unwrap : T
-        value.as(T)
+      def or(&block)
+        value = self.value
+        return value unless value.is_a?(Types::Error)
+
+        yield(value)
       end
 
       private getter value : T | Types::Error
