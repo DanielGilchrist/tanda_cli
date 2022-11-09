@@ -40,7 +40,7 @@ module Tanda::CLI
       end
 
       private def build_scopes : String
-        [
+        {
           "me",
           "roster",
           "timesheet",
@@ -58,7 +58,7 @@ module Tanda::CLI
           "personal",
           "financial",
           "platform"
-        ]
+        }
         .join(" ")
       end
     end

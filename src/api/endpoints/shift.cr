@@ -15,10 +15,10 @@ module Tanda::CLI
       end
 
       private def request_shifts(start_date : Time, finish_date : Time) : API::Result(Array(Types::Shift))
-        start_string, finish_string = [
+        start_string, finish_string = {
           start_date,
           finish_date
-        ]
+        }
         .map(&.to_s("%Y-%m-%d"))
 
         response = get("/shifts", query: {
