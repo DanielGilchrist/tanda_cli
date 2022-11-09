@@ -34,7 +34,7 @@ module Tanda::CLI
           yield(io)
         end
 
-        string.split("\n").each { |str| sub_error(str) }
+        string.split("\n").each(&-> sub_error(String))
       end
 
       def error(error_object : Types::Error)
