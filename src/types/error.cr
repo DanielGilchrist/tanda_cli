@@ -16,6 +16,11 @@ module Tanda::CLI
       def display
         Utils::Display.error(self)
       end
+
+      def display! : NoReturn
+        Utils::Display.error(self)
+        exit
+      end
     end
   end
 end

@@ -81,10 +81,7 @@ module Tanda::CLI
     end
 
     private def me : Types::Me::Core
-      @me ||= client.me.or do |error|
-        Utils::Display.error(error)
-        exit
-      end
+      @me ||= client.me.or(&.display!)
     end
 
     private def time_zone : String
