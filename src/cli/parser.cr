@@ -97,7 +97,7 @@ module Tanda::CLI
 
         API::Auth.fetch_access_token!(auth_site_prefix, email, password).match do
           ok do |access_token|
-            Utils::Display.success("Retrieved token!#{config.staging? && " (staging)"}\n")
+            Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
             config.overwrite!(site_prefix, email, access_token)
           end
 
