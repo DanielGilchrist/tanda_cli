@@ -22,9 +22,11 @@ module Tanda::CLI
         .map(&.to_s("%Y-%m-%d"))
 
         response = get("/shifts", query: {
-          "user_ids" => Current.user.id.to_s,
-          "from"     => start_string,
-          "to"       => finish_string
+          "user_ids"  => Current.user.id.to_s,
+          "from"      => start_string,
+          "to"        => finish_string,
+          # This is an arbitrarily named query param to get past issue where shift data would be stale from server-side cache
+          "cache_key" => Random.rand(1000).to_s
         })
 
         API::Result(Array(Types::Shift)).from(response)
