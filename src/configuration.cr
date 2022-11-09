@@ -265,8 +265,7 @@ module Tanda::CLI
       else
         validated_uri = self.class.validate_url(mode)
         if validated_uri.is_a?(String)
-          Utils::Display.error(validated_uri, mode)
-          exit
+          Utils::Display.error!(validated_uri, mode)
         else
           validated_uri.to_s
         end

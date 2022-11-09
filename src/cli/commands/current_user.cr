@@ -38,7 +38,7 @@ module Tanda::CLI
           end
         end
 
-        return Utils::Display.error("Invalid argument", id_or_name) if organisation.nil?
+        Utils::Display.error!("Invalid argument", id_or_name) if organisation.nil?
 
         config.organisations.each(&.current = false)
         organisation.current = true

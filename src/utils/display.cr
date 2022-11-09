@@ -35,6 +35,16 @@ module Tanda::CLI
         sub_error(error_description) if error_description
       end
 
+      def error!(message : String, value = nil)
+        error(message, value)
+        exit
+      end
+
+      def error!(error_object : Types::Error)
+        error(error_object)
+        exit
+      end
+
       def sub_error(message : String)
         puts "#{" " * ERROR_STRING.default.to_s.size} #{message}"
       end

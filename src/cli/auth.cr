@@ -25,15 +25,10 @@ module Tanda::CLI
 
     private def try_get_input!(message : String, error_prefix : String) : String
       puts "#{message}\n"
-      input = gets.try(&.chomp).presence || handle_invalid_input!("#{error_prefix} cannot be blank")
+      input = gets.try(&.chomp).presence || Utils::Display.error!("#{error_prefix} cannot be blank")
       puts ""
 
       input
-    end
-
-    private def handle_invalid_input!(message : String) : NoReturn
-      Utils::Display.error(message)
-      exit
     end
   end
 end
