@@ -38,8 +38,7 @@ module Tanda::CLI
       end
 
       def error(error_object : Types::Error)
-        error_message = error_object.error
-        display_message(Type::Error, error_message)
+        error(error_object.error)
 
         error_description = error_object.error_description
         sub_error(error_description) if error_description
