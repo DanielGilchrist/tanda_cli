@@ -98,6 +98,12 @@ module Tanda::CLI
       @staging    : Environment = Environment.from_json(%({}))
       @mode       : String      = "production"
 
+      # Allows initialization with default values
+      # i.e. `Config.new` vs `Config.from_json(%({}))`
+      def self.new
+        super
+      end
+
       @[JSON::Field(key: "production")]
       getter production
 
@@ -118,7 +124,7 @@ module Tanda::CLI
           content = file.gets_to_end
           config = new(Config.from_json(content))
         else
-          config = new(Config.from_json(%({})))
+          config = new
         end
       rescue error
         {% if flag?(:debug) %}
@@ -130,18 +136,12 @@ module Tanda::CLI
             sub_errors << "Press enter if you want to proceed with a default config"
           end
           gets # don't proceed unless user wants us to
-
-          config = new(Config.from_json(%({})))
         {% end %}
       ensure
         file.close if file
       end
 
-      config || begin
-        Utils::Display.error!("Unable to initialise config!") do |sub_errors|
-          sub_errors << "Try running `rm #{CONFIG_PATH}` and re-running a command\n"
-        end
-      end
+      config || new
     end
 
     def self.validate_url(url : String) : URI | ErrorString
@@ -157,7 +157,7 @@ module Tanda::CLI
       uri
     end
 
-    def initialize(@config : Config); end
+    def initialize(@config : Config = Config.new); end
 
     delegate mode, to: config
 
