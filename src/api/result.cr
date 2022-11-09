@@ -3,10 +3,19 @@ require "../types/error"
 module Tanda::CLI
   module API
     class Result(T)
+      def self.from(response : HTTP::Client::Response) : API::Result(T)
+        result = (response.success? ? T : Types::Error).from_json(response.body)
+        new(result)
+      end
+
       def initialize(@value : T | Types::Error); end
 
       def match(&block)
         with self yield
+      end
+
+      def unwrap : T
+        value.as(T)
       end
 
       private getter value : T | Types::Error

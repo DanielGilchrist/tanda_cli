@@ -81,7 +81,7 @@ module Tanda::CLI
     end
 
     private def me : Types::Me::Core
-      @me ||= client.me
+      @me ||= client.me.unwrap
     end
 
     private def time_zone : String

@@ -6,15 +6,15 @@ module Tanda::CLI
     module Endpoints::Shift
       include Endpoints::Interface
 
-      def shifts(date : Time) : Array(Types::Shift)
+      def shifts(date : Time) : API::Result(Array(Types::Shift))
         request_shifts(date, date)
       end
 
-      def shifts(start_date : Time, finish_date : Time) : Array(Types::Shift)
+      def shifts(start_date : Time, finish_date : Time) : API::Result(Array(Types::Shift))
         request_shifts(start_date, finish_date)
       end
 
-      private def request_shifts(start_date : Time, finish_date : Time) : Array(Types::Shift)
+      private def request_shifts(start_date : Time, finish_date : Time) : API::Result(Array(Types::Shift))
         start_string, finish_string = [
           start_date,
           finish_date
@@ -27,7 +27,7 @@ module Tanda::CLI
           "to"       => finish_string
         })
 
-        Array(Types::Shift).from_json(response.body)
+        API::Result(Array(Types::Shift)).from(response)
       end
     end
   end

@@ -15,13 +15,7 @@ module Tanda::CLI
           "to" => date_string
         })
 
-        result = if response.success?
-          Array(Types::ClockIn).from_json(response.body)
-        else
-          Types::Error.from_json(response.body)
-        end
-
-        API::Result(Array(Types::ClockIn)).new(result)
+        API::Result(Array(Types::ClockIn)).from(response)
       end
 
       def send_clock_in(time : Time, type : String) : API::Result(Nil)
@@ -31,8 +25,7 @@ module Tanda::CLI
           "user_id" => Current.user.id.to_s
         })
 
-        result = Types::Error.from_json(response.body) unless response.success?
-        API::Result(Nil).new(result)
+        API::Result(Nil).from(response)
       end
     end
   end

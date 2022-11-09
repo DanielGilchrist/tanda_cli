@@ -6,9 +6,9 @@ module Tanda::CLI
     module Endpoints::Me
       include Endpoints::Interface
 
-      def me : Types::Me::Core
+      def me : API::Result(Types::Me::Core)
         response = get("/users/me")
-        Types::Me::Core.from_json(response.body)
+        API::Result(Types::Me::Core).from(response)
       end
     end
   end
