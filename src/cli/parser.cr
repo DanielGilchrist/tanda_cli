@@ -51,8 +51,13 @@ module Tanda::CLI
     private def parse_api_options!(client : API::Client)
       OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
-          me = client.me
-          Representers::Me::Core.new(me).display
+          client.me.match do
+            ok do |me|
+              Representers::Me::Core.new(me).display
+            end
+
+            error(&.display)
+          end
         end
 
         parser.on("time_worked", "See how many hours you've worked") do

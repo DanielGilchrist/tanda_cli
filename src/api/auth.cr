@@ -25,8 +25,7 @@ module Tanda::CLI
 
         Log.debug(&.emit("Response", body: response.body))
 
-        result = (response.success? ? Types::AccessToken : Types::Error).from_json(response.body)
-        API::Result(Types::AccessToken).new(result)
+        API::Result(Types::AccessToken).from(response)
       end
 
       private def build_endpoint(site_prefix : String) : String
