@@ -27,6 +27,16 @@ module Tanda::CLI
         display_message(Type::Error, message, value)
       end
 
+      def error(message : String, value = nil, &block : IO -> Nil)
+        error(message, value)
+
+        string = String.build do |io|
+          yield(io)
+        end
+
+        string.split("\n").each { |str| sub_error(str) }
+      end
+
       def error(error_object : Types::Error)
         error_message = error_object.error
         display_message(Type::Error, error_message)
@@ -40,12 +50,17 @@ module Tanda::CLI
         exit
       end
 
+      def error!(message : String, value = nil, &block : IO -> Nil)
+        error(message, value, &block)
+        exit
+      end
+
       def error!(error_object : Types::Error)
         error(error_object)
         exit
       end
 
-      def sub_error(message : String)
+      private def sub_error(message : String)
         puts "#{" " * ERROR_STRING.default.to_s.size} #{message}"
       end
 

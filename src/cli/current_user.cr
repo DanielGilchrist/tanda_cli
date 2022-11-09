@@ -66,8 +66,9 @@ module Tanda::CLI
     def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil)
       puts "\n"
       if user_input
-        Utils::Display.error("Invalid selection", user_input)
-        Utils::Display.sub_error("Please select a number between 1 and #{length}") if length
+        Utils::Display.error("Invalid selection", user_input) do |sub_errors|
+          sub_errors << "Please select a number between 1 and #{length}" if length
+        end
       else
         Utils::Display.error("You must enter a number")
       end

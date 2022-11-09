@@ -9,9 +9,9 @@ module Tanda::CLI
       site_prefix = try_get_input!(message: "Site prefix (#{valid_site_prefixes}):", error_prefix: "Site prefix")
 
       unless VALID_SITE_PREFIXES.includes?(site_prefix)
-        Utils::Display.error("Invalid site prefix")
-        Utils::Display.sub_error("Site prefix must be one of #{valid_site_prefixes}")
-        exit
+        Utils::Display.error!("Invalid site prefix") do |sub_errors|
+          sub_errors << "Site prefix must be one of #{valid_site_prefixes}"
+        end
       end
 
       email = try_get_input!(message: "Whats your email?", error_prefix: "Email")

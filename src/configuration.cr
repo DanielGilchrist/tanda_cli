@@ -125,9 +125,10 @@ module Tanda::CLI
           raise(error)
         {% else %}
           reason = error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError) || error.is_a?(JSON::ParseException)
-          Utils::Display.error("Invalid Config!", reason)
-          Utils::Display.sub_error("If you want to try and fix the config manually press Ctrl+C to quit")
-          Utils::Display.sub_error("Press enter if you want to proceed with a default config")
+          Utils::Display.error("Invalid Config!", reason) do |sub_errors|
+            sub_errors << "If you want to try and fix the config manually press Ctrl+C to quit\n"
+            sub_errors << "Press enter if you want to proceed with a default config"
+          end
           gets # don't proceed unless user wants us to
 
           config = new(Config.from_json(%({})))
@@ -137,9 +138,9 @@ module Tanda::CLI
       end
 
       config || begin
-        Utils::Display.error("Unable to initialise config!")
-        Utils::Display.sub_error("Try running `rm #{CONFIG_PATH}` and re-running a command")
-        exit
+        Utils::Display.error!("Unable to initialise config!") do |sub_errors|
+          sub_errors << "Try running `rm #{CONFIG_PATH}` and re-running a command\n"
+        end
       end
     end
 

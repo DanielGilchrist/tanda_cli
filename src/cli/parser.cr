@@ -102,13 +102,12 @@ module Tanda::CLI
           end
 
           error do |error|
-            Utils::Display.error("Unable to authenticate (likely incorrect login details)")
-            Utils::Display.sub_error("Error Type: #{error.error}")
+            Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
+              sub_errors << "Error Type: #{error.error}\n"
 
-            description = error.error_description
-            Utils::Display.sub_error("Message: #{description}") if description
-
-            exit
+              description = error.error_description
+              sub_errors << "Message: #{description}" if description
+            end
           end
         end
       end
