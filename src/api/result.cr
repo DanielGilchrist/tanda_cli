@@ -10,14 +10,6 @@ module Tanda::CLI
         new(result)
       end
 
-      # TODO: This isn't a great pattern - look into better alternatives
-      # Use if you don't care about the value and just want to match on an error
-      # This way we also avoid unnecessarily parsing the response into an object
-      def self.from_maybe_error(response : HTTP::Client::Response) : API::Result(Nil)
-        result = Types::Error.from_json(response.body) unless response.success?
-        new(result)
-      end
-
       def initialize(@value : T | Types::Error); end
 
       def match(&block)
