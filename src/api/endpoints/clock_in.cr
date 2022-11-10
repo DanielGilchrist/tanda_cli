@@ -25,7 +25,7 @@ module Tanda::CLI
           "user_id" => Current.user.id.to_s
         })
 
-        API::Result(Nil).from(response)
+        API::Result.from_maybe_error(response)
       end
     end
   end
