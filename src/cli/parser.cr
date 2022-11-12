@@ -14,7 +14,7 @@ module Tanda::CLI
       # This should exit early if a command is successfully parsed
       parse_standard_options!
       maybe_display_staging_warning
-      parse_api_options!(client)
+      parse_api_options!
     end
 
     private getter config : Configuration
@@ -45,7 +45,7 @@ module Tanda::CLI
     end
 
     # Options that make API requests
-    private def parse_api_options!(client : API::Client)
+    private def parse_api_options!
       OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
           me = client.me.or(&.display!)
