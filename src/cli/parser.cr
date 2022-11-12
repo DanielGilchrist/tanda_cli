@@ -62,6 +62,11 @@ module Tanda::CLI
         parser.on("clockin", "Clock in/out") do
           CLI::Parser::ClockIn.new(parser, client).parse
         end
+
+        parser.on("refetch_token", "Refetch token for the current environment") do
+          config.reset_environment!
+          fetch_new_token!
+        end
       end
     end
 
@@ -81,40 +86,42 @@ module Tanda::CLI
       token = config.access_token.token
 
       # if a token can't be parsed from the config, get username and password from user and request a token
-      if token.nil?
-        site_prefix, email, password = CLI::Auth.request_user_information!
-
-        auth_site_prefix = if config.staging?
-          case site_prefix
-          when "my"
-            "staging"
-          when "eu"
-            "staging.eu"
-          when "us"
-            "staging.us"
-          end
-        end || site_prefix
-
-        API::Auth.fetch_access_token!(auth_site_prefix, email, password).match do
-          ok do |access_token|
-            Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
-            config.overwrite!(site_prefix, email, access_token)
-          end
-
-          error do |error|
-            Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
-              sub_errors << "Error Type: #{error.error}\n"
-
-              description = error.error_description
-              sub_errors << "Message: #{description}" if description
-            end
-          end
-        end
-      end
+      fetch_new_token! if token.nil?
 
       url = config.get_api_url
       token = config.token!
       API::Client.new(url, token)
+    end
+
+    private def fetch_new_token!
+      site_prefix, email, password = CLI::Auth.request_user_information!
+
+      auth_site_prefix = if config.staging?
+        case site_prefix
+        when "my"
+          "staging"
+        when "eu"
+          "staging.eu"
+        when "us"
+          "staging.us"
+        end
+      end || site_prefix
+
+      API::Auth.fetch_access_token!(auth_site_prefix, email, password).match do
+        ok do |access_token|
+          Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
+          config.overwrite!(site_prefix, email, access_token)
+        end
+
+        error do |error|
+          Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
+            sub_errors << "Error Type: #{error.error}\n"
+
+            description = error.error_description
+            sub_errors << "Message: #{description}" if description
+          end
+        end
+      end
     end
   end
 end
