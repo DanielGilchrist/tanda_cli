@@ -42,7 +42,7 @@ tanda_cli time_zone --set "Australia/Brisbane"
 
 # Check time worked today
 tanda_cli time_worked today
-tanda_cli time_Worked today --display
+tanda_cli time_worked today --display
 
 # Check time worked this week
 tanda_cli time_worked week
@@ -55,6 +55,14 @@ tanda_cli clockin start
 tanda_cli clockin finish
 tanda_cli clockin break start
 tanda_cli clockin break finish
+
+# Set "mode" (production | staging)
+tanda_cli mode production # default
+tanda_cli mode staging
+
+# Refetch token for the current environment
+# This will take you through the auth flow allowing a different region to be selected as well
+tanda_cli refetch_token
 ```
 
 ## Development
