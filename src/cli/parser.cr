@@ -6,17 +6,14 @@ require "../types/**"
 
 module Tanda::CLI
   class CLI::Parser
+    @client : API::Client? = nil
+
     def initialize(@config : Configuration, @args = ARGV); end
 
     def parse!
       # This should exit early if a command is successfully parsed
       parse_standard_options!
-
       maybe_display_staging_warning
-
-      client = create_client_from_config
-      CLI::CurrentUser.new(client, config).set!
-
       parse_api_options!(client)
     end
 
@@ -67,6 +64,15 @@ module Tanda::CLI
           config.reset_environment!
           fetch_new_token!
         end
+      end
+    end
+
+    private def client : API::Client
+      @client ||= begin
+        client = create_client_from_config
+        CLI::CurrentUser.new(client, config).set!
+
+        client
       end
     end
 
