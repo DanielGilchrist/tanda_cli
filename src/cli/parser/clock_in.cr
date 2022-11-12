@@ -19,6 +19,10 @@ module Tanda::CLI
           CLI::Commands::ClockIn::Status.new(client).execute
         end
 
+        parser.on("display", "Display current clockins") do
+          CLI::Commands::ClockIn::Display.new(client).execute
+        end
+
         parser.on("start", "Clock in") do
           execute_clock_in(ClockType::Start)
         end
