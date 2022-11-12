@@ -115,17 +115,13 @@ module Tanda::CLI
     end
 
     def self.init : Configuration
-      config : Configuration? = nil
-      file   : File?          = nil
+      return new unless File.exists?(CONFIG_PATH)
 
-      begin
-        if File.exists?(CONFIG_PATH)
-          file = File.new(CONFIG_PATH)
-          content = file.gets_to_end
-          config = new(Config.from_json(content))
-        else
-          config = new
-        end
+      File.open(CONFIG_PATH) do |file|
+        config_contents = file.gets_to_end
+        parsed_config = Config.from_json(config_contents)
+
+        new(parsed_config)
       rescue error
         {% if flag?(:debug) %}
           raise(error)
@@ -133,15 +129,12 @@ module Tanda::CLI
           reason = error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError) || error.is_a?(JSON::ParseException)
           Utils::Display.error("Invalid Config!", reason) do |sub_errors|
             sub_errors << "If you want to try and fix the config manually press Ctrl+C to quit\n"
-            sub_errors << "Press enter if you want to proceed with a default config"
+            sub_errors << "Press enter if you want to proceed with a default config (this will override the existing config)"
           end
           gets # don't proceed unless user wants us to
+          nil
         {% end %}
-      ensure
-        file.close if file
-      end
-
-      config || new
+      end || new
     end
 
     def self.validate_url(url : String) : URI | ErrorString
