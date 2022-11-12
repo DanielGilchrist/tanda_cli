@@ -5,20 +5,10 @@ require "./types/access_token"
 
 module Tanda::CLI
   class Configuration
-    CONFIG_DIR = "#{Path.home}/.tanda_cli"
+    CONFIG_DIR  = "#{Path.home}/.tanda_cli"
     CONFIG_PATH = "#{CONFIG_DIR}/config.json"
 
     DEFAULT_SITE_PREFIX = "eu"
-
-    DEFAULT_ACCESS_TOKEN = %({
-      "email": null,
-      "token": null,
-      "token_type": null,
-      "scope": null,
-      "created_at": null
-    })
-
-    DEFAULT_ORGANISATIONS = %([])
 
     VALID_HOSTS = [
       ".tanda.co",
@@ -53,6 +43,19 @@ module Tanda::CLI
     class AccessToken
       include JSON::Serializable
 
+      # defaults
+      @email      : String? = nil
+      @token      : String? = nil
+      @token_type : String? = nil
+      @scope      : String? = nil
+      @created_at : Int32?  = nil
+
+      # Allows initialization with default values
+      # i.e. `Config.new` vs `Config.from_json(%({}))`
+      def self.new
+        super
+      end
+
       @[JSON::Field(key: "email")]
       property email : String?
 
@@ -74,8 +77,14 @@ module Tanda::CLI
 
       # defaults
       @site_prefix   : String              = DEFAULT_SITE_PREFIX
-      @access_token  : AccessToken         = AccessToken.from_json(DEFAULT_ACCESS_TOKEN)
-      @organisations : Array(Organisation) = Array(Organisation).from_json(DEFAULT_ORGANISATIONS)
+      @access_token  : AccessToken         = AccessToken.new
+      @organisations : Array(Organisation) = [] of Organisation
+
+      # Allows initialization with default values
+      # i.e. `Config.new` vs `Config.from_json(%({}))`
+      def self.new
+        super
+      end
 
       @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
@@ -94,8 +103,8 @@ module Tanda::CLI
       include JSON::Serializable
 
       # defaults
-      @production : Environment = Environment.from_json(%({}))
-      @staging    : Environment = Environment.from_json(%({}))
+      @production : Environment = Environment.new
+      @staging    : Environment = Environment.new
       @mode       : String      = "production"
 
       # Allows initialization with default values
@@ -114,11 +123,11 @@ module Tanda::CLI
       property mode : String
 
       def reset_staging!
-        @staging = Environment.from_json(%({}))
+        @staging = Environment.new
       end
 
       def reset_production!
-        @production = Environment.from_json(%({}))
+        @production = Environment.new
       end
     end
 
