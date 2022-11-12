@@ -55,6 +55,8 @@ tanda_cli clockin start
 tanda_cli clockin finish
 tanda_cli clockin break start
 tanda_cli clockin break finish
+# Display clock ins for today
+tanda_ccli clockin display
 
 # Set "mode" (production | staging)
 tanda_cli mode production # default
