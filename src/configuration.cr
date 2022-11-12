@@ -112,6 +112,14 @@ module Tanda::CLI
 
       @[JSON::Field(key: "mode")]
       property mode : String
+
+      def reset_staging!
+        @staging = Environment.from_json(%({}))
+      end
+
+      def reset_production!
+        @production = Environment.from_json(%({}))
+      end
     end
 
     def self.init : Configuration
@@ -156,6 +164,14 @@ module Tanda::CLI
 
     def staging? : Bool
       mode != "production"
+    end
+
+    def reset_environment!
+      if staging?
+        config.reset_staging!
+      else
+        config.reset_production!
+      end
     end
 
     def time_zone
