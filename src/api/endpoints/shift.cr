@@ -16,8 +16,8 @@ module Tanda::CLI
 
       private def request_shifts(start_date : Time, finish_date : Time) : API::Result(Collection::Shift)
         start_string, finish_string = {
-          start_date + Time::Span.new(days:  2),
-          finish_date + Time::Span.new(days:  2)
+          start_date,
+          finish_date
         }
         .map(&.to_s("%Y-%m-%d"))
 
