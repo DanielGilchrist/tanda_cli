@@ -6,18 +6,18 @@ module Tanda::CLI
     module Endpoints::Shift
       include Endpoints::Interface
 
-      def shifts(date : Time) : API::Result(Array(Types::Shift))
+      def shifts(date : Time) : API::Result(Collection::Shift)
         request_shifts(date, date)
       end
 
-      def shifts(start_date : Time, finish_date : Time) : API::Result(Array(Types::Shift))
+      def shifts(start_date : Time, finish_date : Time) : API::Result(Collection::Shift)
         request_shifts(start_date, finish_date)
       end
 
-      private def request_shifts(start_date : Time, finish_date : Time) : API::Result(Array(Types::Shift))
+      private def request_shifts(start_date : Time, finish_date : Time) : API::Result(Collection::Shift)
         start_string, finish_string = {
-          start_date,
-          finish_date
+          start_date + Time::Span.new(days:  2),
+          finish_date + Time::Span.new(days:  2)
         }
         .map(&.to_s("%Y-%m-%d"))
 
@@ -29,7 +29,7 @@ module Tanda::CLI
           "cache_key" => Random.rand(1000).to_s
         })
 
-        API::Result(Array(Types::Shift)).from(response)
+        Collection::Shift.from(response, self)
       end
     end
   end
