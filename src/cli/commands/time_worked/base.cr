@@ -26,7 +26,8 @@ module Tanda::CLI
             if leave_request = shift.leave_request
               hours = leave_request.hours
               total_leave_hours += hours if hours
-              next print_leave_request(leave_request) if display?
+              print_leave_request(leave_request) if display?
+              next
             end
 
             time_worked = shift.time_worked
