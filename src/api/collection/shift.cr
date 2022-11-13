@@ -9,7 +9,7 @@ module Tanda::CLI
         result = if response.success?
           shifts = Array(Types::Shift).from_json(response.body)
           leave_request_ids = shifts.compact_map(&.leave_request_id)
-          leave_requests_by_id = if leave_request_ids.any?
+          leave_requests_by_id = if !leave_request_ids.empty?
             leave_requests = client.leave_requests(ids: leave_request_ids).or do |error|
               return API::Result(self).new(error)
             end
@@ -17,7 +17,7 @@ module Tanda::CLI
             leave_requests.index_by(&.id)
           end
 
-          if leave_requests_by_id && leave_requests_by_id.any?
+          if leave_requests_by_id && !leave_requests_by_id.empty?
             shifts.each do |shift|
               leave_request = leave_requests_by_id[shift.leave_request_id]?
               next if leave_request.nil?
