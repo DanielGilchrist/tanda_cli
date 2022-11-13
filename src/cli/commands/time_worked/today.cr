@@ -17,9 +17,9 @@ module Tanda::CLI
             puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes today")
           end
 
-          unless total_leave_hours.zero?
-            puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave today")
-          end
+          return if total_leave_hours.zero?
+
+          puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave today")
         end
       end
     end
