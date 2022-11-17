@@ -42,7 +42,6 @@ module Tanda::CLI
             config.production.{{name.var.id}} = value
           end
         end
-        {{debug}}
       end
     end
   end
