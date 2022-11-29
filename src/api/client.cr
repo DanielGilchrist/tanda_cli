@@ -51,7 +51,8 @@ module Tanda::CLI
       private def build_headers : HTTP::Headers
         HTTP::Headers{
           "Authorization" => "Bearer #{token}",
-          "Content-Type" => "application/json"
+          "Content-Type" => "application/json",
+          "X-User-Id" => Current.user.id.to_s
         }
       end
     end
