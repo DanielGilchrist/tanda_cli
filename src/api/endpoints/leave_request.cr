@@ -8,7 +8,7 @@ module Tanda::CLI
 
       def leave_requests(ids : Array(Int32)) : API::Result(Array(Types::LeaveRequest))
         response = get("/leave", query: {
-          "ids" => ids.map(&.to_s).join(",")
+          "ids" => ids.join(",")
         })
 
         API::Result(Array(Types::LeaveRequest)).from(response)
