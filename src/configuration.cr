@@ -1,10 +1,13 @@
 require "json"
 require "file_utils"
 
+require "./configuration/**"
 require "./types/access_token"
 
 module Tanda::CLI
   class Configuration
+    include Configuration::Macros
+
     CONFIG_DIR  = "#{Path.home}/.tanda_cli"
     CONFIG_PATH = "#{CONFIG_DIR}/config.json"
 
@@ -171,6 +174,12 @@ module Tanda::CLI
 
     delegate mode, to: config
 
+    # properties that return from a different environment depending on `mode`
+    mode_property time_zone     : String?
+    mode_property organisations : Array(Organisation)
+    mode_property site_prefix   : String
+    mode_property access_token  : AccessToken
+
     def staging? : Bool
       mode != "production"
     end
@@ -180,70 +189,6 @@ module Tanda::CLI
         config.reset_staging!
       else
         config.reset_production!
-      end
-    end
-
-    def time_zone
-      if staging?
-        config.staging.time_zone
-      else
-        config.production.time_zone
-      end
-    end
-
-    def organisations : Array(Organisation)
-      if staging?
-        config.staging.organisations
-      else
-        config.production.organisations
-      end
-    end
-
-    def site_prefix : String
-      if staging?
-        config.staging.site_prefix
-      else
-        config.production.site_prefix
-      end
-    end
-
-    def access_token : AccessToken
-      if staging?
-        config.staging.access_token
-      else
-        config.production.access_token
-      end
-    end
-
-    def access_token=(value : AccessToken)
-      if staging?
-        config.staging_access_token = value
-      else
-        config.access_token = value
-      end
-    end
-
-    def site_prefix=(value : String)
-      if staging?
-        config.staging.site_prefix = value
-      else
-        config.production.site_prefix = value
-      end
-    end
-
-    def organisations=(value : Array(Organisation))
-      if staging?
-        config.staging.organisations = value
-      else
-        config.production.organisations = value
-      end
-    end
-
-    def time_zone=(value : String)
-      if staging?
-        config.staging.time_zone = value
-      else
-        config.production.time_zone = value
       end
     end
 

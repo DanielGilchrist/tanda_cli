@@ -8,6 +8,9 @@ module Tanda::CLI
         def display
           puts "Name: #{object.name}"
           puts "Email: #{object.email}"
+          puts "Country: #{object.country}"
+          puts "Time Zone: #{object.time_zone}"
+          puts "Permissions: #{object.permissions.join(", ")}"
 
           display_organisations
         end
