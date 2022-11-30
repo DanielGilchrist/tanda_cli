@@ -4,10 +4,7 @@ module Tanda::CLI
   module CLI::Commands
     module TimeWorked
       abstract class Base
-        def initialize(client : API::Client, display : Bool)
-          @client = client
-          @display = display
-        end
+        def initialize(@client : API::Client, @display : Bool); end
 
         abstract def execute
 
@@ -23,10 +20,13 @@ module Tanda::CLI
           total_leave_hours = Time::Span.zero
 
           shifts.each do |shift|
-            if leave_request = shift.leave_request
-              hours = leave_request.hours
+            leave_request = shift.leave_request
+            breakdown = leave_request.breakdown_for(shift) if leave_request
+
+            if leave_request && breakdown
+              hours = breakdown.hours
               total_leave_hours += hours if hours
-              print_leave_request(leave_request) if display?
+              print_leave(leave_request, breakdown) if display?
               next
             end
 
@@ -49,11 +49,11 @@ module Tanda::CLI
           Representers::Shift.new(shift).display
         end
 
-        private def print_leave_request(leave_request : Types::LeaveRequest)
-          length = leave_request.hours
+        private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
+          length = breakdown.hours
           puts "Leave taken: #{length.hours} hours and #{length.minutes} minutes"
 
-          Representers::LeaveRequest.new(leave_request).display
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
         end
       end
     end

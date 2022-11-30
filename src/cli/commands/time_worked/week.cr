@@ -6,7 +6,7 @@ module Tanda::CLI
       class Week < Base
         def execute
           now = Utils::Time.now
-          shifts = client.shifts(now.at_beginning_of_week, now).or(&.display!)
+          shifts = client.shifts(now.at_beginning_of_week, now.at_end_of_week).or(&.display!)
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero?
