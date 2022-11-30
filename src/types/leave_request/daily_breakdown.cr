@@ -7,6 +7,7 @@ module Tanda::CLI
     class LeaveRequest
       class DailyBreakdown
         include JSON::Serializable
+        include Utils::Mixins::PrettyStartFinish
 
         module StringIDConverter
           def self.from_json(value : JSON::PullParser) : Int32

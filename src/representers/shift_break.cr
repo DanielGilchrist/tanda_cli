@@ -8,8 +8,13 @@ module Tanda::CLI
       def display
         display_with_padding("ID", object.id)
         display_with_padding("Shift ID", object.shift_id)
-        display_with_padding("Start", object.start)
-        display_with_padding("Finish", object.finish)
+
+        pretty_start = object.pretty_start_time
+        display_with_padding("Start", pretty_start) if pretty_start
+
+        pretty_finish = object.pretty_finish_time
+        display_with_padding("Finish", pretty_finish) if pretty_finish
+
         display_with_padding("Length", object.length)
         puts "\n"
       end
