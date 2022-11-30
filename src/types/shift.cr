@@ -7,8 +7,6 @@ module Tanda::CLI
     class Shift
       include JSON::Serializable
 
-      DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
-
       # defaults
       @leave_request : Types::LeaveRequest? = nil
       @leave_request_set : Bool = false
@@ -61,7 +59,7 @@ module Tanda::CLI
       end
 
       def pretty_date : String
-        Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
+        Utils::Time.pretty_date(date)
       end
 
       def time_worked : Time::Span?
