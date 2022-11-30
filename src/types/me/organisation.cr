@@ -2,7 +2,7 @@ require "json"
 
 module Tanda::CLI
   module Types
-    module Me
+    class Me
       class Organisation
         include JSON::Serializable
         @[JSON::Field(key: "id")]

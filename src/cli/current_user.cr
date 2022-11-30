@@ -4,7 +4,7 @@ require "../configuration"
 module Tanda::CLI
   class CLI::CurrentUser
     @api_organisations : Array(Configuration::Organisation)?
-    @me : Types::Me::Core?
+    @me : Types::Me?
 
     def initialize(client : API::Client, config : Configuration)
       @client = client
@@ -86,7 +86,7 @@ module Tanda::CLI
       config.save!
     end
 
-    private def me : Types::Me::Core
+    private def me : Types::Me
       @me ||= client.me.or(&.display!)
     end
 

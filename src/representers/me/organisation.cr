@@ -3,7 +3,7 @@ require "../../types/me/organisation"
 
 module Tanda::CLI
   module Representers
-    module Me
+    class Me
       class Organisation < Base(Types::Me::Organisation)
         def display
           display_with_padding("ID", object.id)
