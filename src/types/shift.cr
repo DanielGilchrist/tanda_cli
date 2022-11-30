@@ -54,6 +54,7 @@ module Tanda::CLI
 
       def set_leave_request!(leave_request : Types::LeaveRequest)
         raise "Leave request already set!" if @leave_request_set
+        raise "Leave request doesn't belong to shift!" if leave_request.id != leave_request_id
 
         @leave_request_set = true
         @leave_request = leave_request
