@@ -14,7 +14,7 @@ module Tanda::CLI
         puts "Finish: #{object.finish}"
         puts "Status: #{object.status}"
 
-        display_shift_breaks
+        display_shift_breaks if !object.breaks.empty?
 
         puts "\n"
       end

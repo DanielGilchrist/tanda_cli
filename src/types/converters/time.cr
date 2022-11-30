@@ -3,7 +3,6 @@ require "json"
 module Tanda::CLI
   module Types
     module Converters::Time
-
       module FromUnix
         def self.from_json(value : JSON::PullParser) : ::Time?
           timestamp = value.read_int

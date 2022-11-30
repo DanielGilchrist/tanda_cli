@@ -16,7 +16,7 @@ module Tanda::CLI
         with self yield
       end
 
-      def or(&block)
+      def or(&block : Types::Error -> _)
         value = self.value
         return value unless value.is_a?(Types::Error)
 

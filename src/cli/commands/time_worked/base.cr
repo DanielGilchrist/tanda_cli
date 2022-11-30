@@ -1,3 +1,5 @@
+require "../../../api/collection/shift"
+
 module Tanda::CLI
   module CLI::Commands
     module TimeWorked
@@ -7,18 +9,27 @@ module Tanda::CLI
           @display = display
         end
 
-        private getter client : API::Client
-
         abstract def execute
 
+        private getter client : API::Client
         private getter display : Bool
+
         private def display?
           display
         end
 
-        private def calculate_time_worked(shifts : Array(Types::Shift)) : Time::Span
+        private def calculate_time_worked(shifts : API::Collection::Shift) : Tuple(Time::Span, Time::Span)
           total_time_worked = Time::Span.zero
+          total_leave_hours = Time::Span.zero
+
           shifts.each do |shift|
+            if leave_request = shift.leave_request
+              hours = leave_request.hours
+              total_leave_hours += hours if hours
+              print_leave_request(leave_request) if display?
+              next
+            end
+
             time_worked = shift.time_worked
             worked_so_far = shift.worked_so_far
 
@@ -28,7 +39,7 @@ module Tanda::CLI
             total_time_worked += total_time if total_time
           end
 
-          total_time_worked
+          { total_time_worked, total_leave_hours }
         end
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
@@ -36,6 +47,13 @@ module Tanda::CLI
           (!time_worked && worked_so_far) && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
 
           Representers::Shift.new(shift).display
+        end
+
+        private def print_leave_request(leave_request : Types::LeaveRequest)
+          length = leave_request.hours
+          puts "Leave taken: #{length.hours} hours and #{length.minutes} minutes"
+
+          Representers::LeaveRequest.new(leave_request).display
         end
       end
     end

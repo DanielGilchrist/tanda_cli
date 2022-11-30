@@ -9,6 +9,10 @@ module Tanda::CLI
 
       DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
 
+      # defaults
+      @leave_request : Types::LeaveRequest? = nil
+      @leave_request_set : Bool = false
+
       enum Status
         Pending
         Approved
@@ -42,6 +46,19 @@ module Tanda::CLI
 
       @[JSON::Field(key: "breaks")]
       getter breaks : Array(ShiftBreak)
+
+      @[JSON::Field(key: "leave_request_id")]
+      getter leave_request_id : Int32?
+
+      getter leave_request : Types::LeaveRequest?
+
+      def set_leave_request!(leave_request : Types::LeaveRequest)
+        raise "Leave request already set!" if @leave_request_set
+        raise "Leave request doesn't belong to shift!" if leave_request.id != leave_request_id
+
+        @leave_request_set = true
+        @leave_request = leave_request
+      end
 
       def pretty_date : String
         Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
