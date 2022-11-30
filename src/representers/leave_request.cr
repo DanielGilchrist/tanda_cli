@@ -13,6 +13,7 @@ module Tanda::CLI
         puts "Finish: #{finish}"
 
         puts "Status: #{object.status}"
+        puts "\n"
       end
     end
   end

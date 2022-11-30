@@ -14,7 +14,7 @@ module Tanda::CLI
           else
             puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes this week")
             if !total_leave_hours.zero?
-              puts("You also took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave this week")
+              puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave this week")
             end
           end
         end

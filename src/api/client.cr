@@ -51,9 +51,10 @@ module Tanda::CLI
       private def build_headers : HTTP::Headers
         HTTP::Headers{
           "Authorization" => "Bearer #{token}",
-          "Content-Type" => "application/json",
-          "X-User-Id" => Current.user.id.to_s
-        }
+          "Content-Type" => "application/json"
+        }.tap do |headers|
+          headers["X-User-Id"] = Current.user.id.to_s if Current.user?
+        end
       end
     end
   end
