@@ -29,7 +29,7 @@ alias tanda_cli="/link/to/tanda_cli/bin/tanda_cli"
 
 ## Usage
 Upon running any command for the first time, you will be taken through an authentication flow where you will need to enter your username and password.
-This information is stored in `~/.tanda_cli/config.json` (config format / structure is subject to change at the moment)
+The retrieved token is stored in `~/.tanda_cli/config.json` with other data that needs to persist for the app to function (format / structure is subject to change at the moment)
 
 #### Examples
 ```sh
