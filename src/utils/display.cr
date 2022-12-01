@@ -48,11 +48,11 @@ module Tanda::CLI
         display_message(Type::Error, message, value)
       end
 
-      def error(message : String, value = nil, &block : String::Builder -> _)
+      def error(message : String, value = nil, & : String::Builder -> _)
         error(message, value)
 
-        string = String.build do |io|
-          yield(io)
+        string = String.build do |builder|
+          yield(builder)
         end
 
         string.split("\n").each(&-> sub_error(String))

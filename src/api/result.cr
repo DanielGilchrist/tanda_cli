@@ -12,11 +12,13 @@ module Tanda::CLI
 
       def initialize(@value : T | Types::Error); end
 
-      def match(&block)
+      def match(&) : ::Nil
         with self yield
+
+        nil
       end
 
-      def or(&block : Types::Error -> _)
+      def or(& : Types::Error -> _)
         value = self.value
         return value unless value.is_a?(Types::Error)
 
@@ -25,18 +27,22 @@ module Tanda::CLI
 
       private getter value : T | Types::Error
 
-      private def ok(&block : T -> ::Nil)
+      private def ok(& : T -> _) : ::Nil
         value = self.value
         return if value.is_a?(Types::Error)
 
         yield(value)
+
+        nil
       end
 
-      private def error(&block : Types::Error -> ::Nil)
+      private def error(& : Types::Error -> _) : ::Nil
         value = self.value
         return unless value.is_a?(Types::Error)
 
         yield(value)
+
+        nil
       end
     end
   end
