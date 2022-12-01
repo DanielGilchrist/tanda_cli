@@ -9,6 +9,8 @@ module Tanda::CLI
     class Client
       include Tanda::CLI::API::Endpoints
 
+      INTERNAL_SERVER_ERROR_STRING = "Internal Server Error"
+
       alias TQuery = Hash(String, String)
       alias TBody = Hash(String, String)
 
@@ -21,10 +23,10 @@ module Tanda::CLI
         uri = build_uri(endpoint, query)
         headers = build_headers
 
-        response = HTTP::Client.get(uri, headers: headers)
-        Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
-
-        response
+        HTTP::Client.get(uri, headers: headers).tap do |response|
+          Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
+          handle_fatal_error!(response)
+        end
       end
 
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
@@ -32,10 +34,10 @@ module Tanda::CLI
         headers = build_headers
         request_body = body.to_json
 
-        response = HTTP::Client.post(uri, headers: headers, body: request_body)
-        Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
-
-        response
+        HTTP::Client.post(uri, headers: headers, body: request_body).tap do |response|
+          Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
+          handle_fatal_error!(response)
+        end
       end
 
       private getter base_uri : String
@@ -54,6 +56,17 @@ module Tanda::CLI
           "Content-Type"  => "application/json",
         }.tap do |headers|
           headers["X-User-Id"] = Current.user.id.to_s if Current.user?
+        end
+      end
+
+      private def handle_fatal_error!(response : HTTP::Client::Response)
+        case response.status
+        when .service_unavailable?
+          Utils::Display.fatal!("API is offline")
+        when .internal_server_error?
+          if response.body.includes?(INTERNAL_SERVER_ERROR_STRING)
+            Utils::Display.fatal!("An internal server error occured")
+          end
         end
       end
     end
