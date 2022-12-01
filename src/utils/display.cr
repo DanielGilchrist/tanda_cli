@@ -26,7 +26,7 @@ module Tanda::CLI
       end
 
       def fatal!(message : String) : NoReturn
-        {% if flag?(:debug) %}
+        {% if flag?(:debug) || flag?(:test) %}
           raise message
         {% else %}
           display_message(Type::Fatal, message)
@@ -35,7 +35,7 @@ module Tanda::CLI
       end
 
       def fatal!(exception : Exception) : NoReturn
-        {% if flag?(:debug) %}
+        {% if flag?(:debug) || flag?(:test) %}
           raise exception
         {% else %}
           message = exception.message || "An irrecoverable error occured"
