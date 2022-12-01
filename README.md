@@ -39,8 +39,12 @@ tanda_cli me
 # View or set the current user/organisation
 tanda_cli current_user
 tanda_cli current_user --set "Dan's Donuts"
-# shows "current users" saved in config file - if you want a fresh version use `tanda_cli me`
+# shows "current users" saved in config file
+# if you want a fresh version use `tanda_cli refetch_users` to refetch from API or `tanda_cli me` to view from API
 tanda_cli current_user --list
+
+# refetch and save users/organisations to config
+tanda_cli refetch_users
 
 # View or set the current time zone
 tanda_cli time_zone
