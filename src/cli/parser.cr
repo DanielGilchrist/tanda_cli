@@ -94,7 +94,7 @@ module Tanda::CLI
       # if a token can't be parsed from the config, get username and password from user and request a token
       fetch_new_token! if token.nil?
 
-      url = config.get_api_url
+      url = config.api_url
       token = config.token!
       API::Client.new(url, token)
     end

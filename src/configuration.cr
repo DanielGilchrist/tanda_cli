@@ -219,7 +219,7 @@ module Tanda::CLI
       File.write(CONFIG_PATH, content: config.to_json)
     end
 
-    def get_api_url : String
+    def api_url : String
       case mode
       when "production"
         "https://#{site_prefix}.tanda.co/api/v2"
@@ -228,14 +228,9 @@ module Tanda::CLI
         "https://staging.#{prefix}tanda.co/api/v2"
       else
         validated_uri = self.class.validate_url(mode)
+        Utils::Display.error!(validated_uri, mode) if validated_uri.is_a?(String)
 
-        custom_uri = if validated_uri.is_a?(String)
-          Utils::Display.error!(validated_uri, mode)
-        else
-          validated_uri.to_s
-        end
-
-        "#{custom_uri}/api/v2"
+        "#{validated_uri}/api/v2"
       end
     end
 
