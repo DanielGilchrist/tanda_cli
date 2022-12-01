@@ -5,7 +5,7 @@ module Tanda::CLI
   module Types
     class ShiftBreak
       include JSON::Serializable
-      include Utils::Mixins::PrettyStartFinish
+      include Utils::Mixins::PrettyTimes
 
       @[JSON::Field(key: "id")]
       getter id : Int32

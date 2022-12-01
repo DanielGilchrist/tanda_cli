@@ -7,7 +7,7 @@ module Tanda::CLI
     class LeaveRequest
       class DailyBreakdown
         include JSON::Serializable
-        include Utils::Mixins::PrettyStartFinish
+        include Utils::Mixins::PrettyTimes
 
         module StringIDConverter
           def self.from_json(value : JSON::PullParser) : Int32
@@ -43,10 +43,6 @@ module Tanda::CLI
 
         @[JSON::Field(key: "hours", converter: Tanda::CLI::Types::Converters::Span::FromHoursFloat)]
         getter hours : Time::Span
-
-        def pretty_date : String
-          Utils::Time.pretty_date(date)
-        end
       end
     end
   end

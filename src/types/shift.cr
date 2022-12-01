@@ -6,7 +6,7 @@ module Tanda::CLI
   module Types
     class Shift
       include JSON::Serializable
-      include Utils::Mixins::PrettyStartFinish
+      include Utils::Mixins::PrettyTimes
 
       # defaults
       @leave_request : Types::LeaveRequest? = nil
@@ -57,10 +57,6 @@ module Tanda::CLI
 
         @leave_request_set = true
         @leave_request = leave_request
-      end
-
-      def pretty_date : String
-        Utils::Time.pretty_date(date)
       end
 
       def time_worked : Time::Span?

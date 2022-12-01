@@ -26,15 +26,6 @@ module Tanda::CLI
       @[JSON::Field(key: "user_id")]
       getter user_id : Int32
 
-      # @[JSON::Field(key: "hours", converter: Tanda::CLI::Types::Converters::Span::FromHoursFloat)]
-      # getter hours : Time::Span
-
-      # @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromISODate)]
-      # getter start : Time
-
-      # @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromISODate)]
-      # getter finish : Time
-
       @[JSON::Field(key: "status", converter: Tanda::CLI::Types::LeaveRequest::StatusConverter)]
       getter status : Status
 
@@ -47,10 +38,6 @@ module Tanda::CLI
       def breakdown_for(shift : Types::Shift) : Types::LeaveRequest::DailyBreakdown?
         daily_breakdown.find(&.shift_id.==(shift.id))
       end
-
-      # def pretty_dates : Tuple(String, String)
-      #   { start, finish }.map { |date| Utils::Time.pretty_date(date) }
-      # end
     end
   end
 end
