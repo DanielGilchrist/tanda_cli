@@ -21,6 +21,6 @@ jobs:
     - name: Lint
       run: ./bin/ameba
     - name: Compile
-      run: crystal build src/tanda_cli.cr --no-debug && mv tanda_cli bin/tanda_cli
+      run: ./scripts/build-prod.sh
     - name: Run tests
       run: ./scripts/run-spec.sh
