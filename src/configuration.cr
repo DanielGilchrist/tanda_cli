@@ -228,11 +228,14 @@ module Tanda::CLI
         "https://staging.#{prefix}tanda.co/api/v2"
       else
         validated_uri = self.class.validate_url(mode)
-        if validated_uri.is_a?(String)
+
+        custom_uri = if validated_uri.is_a?(String)
           Utils::Display.error!(validated_uri, mode)
         else
           validated_uri.to_s
         end
+
+        "#{custom_uri}/api/v2"
       end
     end
 
