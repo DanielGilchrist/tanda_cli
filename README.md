@@ -21,6 +21,12 @@ Then
 3. Run `./scripts/build_prod.sh`
 4. You now have a release build! This can be run with `./bin/tanda_cli` assuming you're in the root directory of this repository
 
+This project doesn't currently distribute to any package managers or release any binaries.
+I recommend aliasing if you intend on using it outside of the repo directory
+```sh
+alias tanda_cli="/link/to/tanda_cli/bin/tanda_cli"
+```
+
 ## Usage
 Upon running any command for the first time, you will be taken through an authentication flow where you will need to enter your username and password.
 This information is stored in `~/.tanda_cli/config.json` (config format / structure is subject to change at the moment)
