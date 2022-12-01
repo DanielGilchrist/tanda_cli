@@ -79,7 +79,7 @@ module Tanda::CLI
     private def maybe_display_staging_warning
       return unless config.staging?
 
-      message = if (mode = config.mode != "staging")
+      message = if (mode = config.mode) != "staging"
         "Command running on #{mode}"
       else
         "Command running in staging mode"

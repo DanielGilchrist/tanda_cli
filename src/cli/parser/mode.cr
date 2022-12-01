@@ -38,7 +38,14 @@ module Tanda::CLI
         end
 
         parser.on("current", "View currently set mode") do
-          puts "Mode is currently set to #{config.mode}"
+          mode = config.mode
+
+          if { "production", "staging" }.includes?(mode)
+            puts "Mode is currently set to #{mode}"
+          else
+            puts "Mode is set to a custom URL (#{mode})"
+          end
+
           exit
         end
       end
