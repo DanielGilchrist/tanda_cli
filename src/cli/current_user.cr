@@ -3,7 +3,6 @@ require "../configuration"
 
 module Tanda::CLI
   class CLI::CurrentUser
-    @api_organisations : Array(Configuration::Organisation)?
     @me : Types::Me?
 
     def initialize(client : API::Client, config : Configuration)
@@ -33,7 +32,7 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisations = api_organisations
+      organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
       organisation = organisations.size == 1 ? organisations[0] : nil
 
       while organisation.nil?
@@ -41,7 +40,7 @@ module Tanda::CLI
       end
 
       organisation.current = true
-      save_config!
+      save_config!(organisations)
 
       puts "\n"
       Utils::Display.success("Organisations saved to config")
@@ -49,9 +48,7 @@ module Tanda::CLI
       Current::User.new(organisation.user_id, organisation.name, time_zone)
     end
 
-    private def request_organisation_from_user(organistations : Array(Configuration::Organisation)) : Configuration::Organisation?
-      organisations = api_organisations
-
+    private def request_organisation_from_user(organisations : Array(Configuration::Organisation)) : Configuration::Organisation?
       puts "\nWhich organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
         puts "#{index}: #{org.name}"
@@ -80,9 +77,9 @@ module Tanda::CLI
       puts "\n"
     end
 
-    private def save_config!
+    private def save_config!(organisations : Array(Configuration::Organisation))
       config.time_zone ||= time_zone
-      config.organisations = api_organisations
+      config.organisations = organisations
       config.save!
     end
 
@@ -92,12 +89,6 @@ module Tanda::CLI
 
     private def time_zone : String
       config.time_zone || me.time_zone
-    end
-
-    private def api_organisations : Array(Configuration::Organisation)
-      @api_organisations ||= me.organisations.map do |org|
-        Configuration::Organisation.from_json(org.to_json)
-      end
     end
   end
 end
