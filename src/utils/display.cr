@@ -7,8 +7,8 @@ module Tanda::CLI
 
       SUCCESS_STRING = "Success:".colorize(:green)
       WARNING_STRING = "Warning:".colorize(:yellow)
-      ERROR_STRING   = "Error:".colorize(:red)
-      FATAL_STRING   = "FATAL ERROR:".colorize(:red)
+      ERROR_STRING   = "Error:".colorize(:light_red)
+      FATAL_STRING   = "Fatal Error:".colorize(:red)
 
       enum Type
         Success
