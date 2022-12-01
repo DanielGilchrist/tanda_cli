@@ -15,7 +15,7 @@ module Tanda::CLI
 
     VALID_HOSTS = [
       ".tanda.co",
-      ".workforce.com"
+      ".workforce.com",
     ]
 
     alias ErrorString = String
@@ -47,11 +47,11 @@ module Tanda::CLI
       include JSON::Serializable
 
       # defaults
-      @email      : String? = nil
-      @token      : String? = nil
+      @email : String? = nil
+      @token : String? = nil
       @token_type : String? = nil
-      @scope      : String? = nil
-      @created_at : Int32?  = nil
+      @scope : String? = nil
+      @created_at : Int32? = nil
 
       # Allows initialization with default values
       # i.e. `Config.new` vs `Config.from_json(%({}))`
@@ -79,8 +79,8 @@ module Tanda::CLI
       include JSON::Serializable
 
       # defaults
-      @site_prefix   : String              = DEFAULT_SITE_PREFIX
-      @access_token  : AccessToken         = AccessToken.new
+      @site_prefix : String = DEFAULT_SITE_PREFIX
+      @access_token : AccessToken = AccessToken.new
       @organisations : Array(Organisation) = [] of Organisation
 
       # Allows initialization with default values
@@ -107,8 +107,8 @@ module Tanda::CLI
 
       # defaults
       @production : Environment = Environment.new
-      @staging    : Environment = Environment.new
-      @mode       : String      = "production"
+      @staging : Environment = Environment.new
+      @mode : String = "production"
 
       # Allows initialization with default values
       # i.e. `Config.new` vs `Config.from_json(%({}))`
@@ -175,10 +175,10 @@ module Tanda::CLI
     delegate mode, to: config
 
     # properties that return from a different environment depending on `mode`
-    mode_property time_zone     : String?
+    mode_property time_zone : String?
     mode_property organisations : Array(Organisation)
-    mode_property site_prefix   : String
-    mode_property access_token  : AccessToken
+    mode_property site_prefix : String
+    mode_property access_token : AccessToken
 
     def staging? : Bool
       mode != "production"

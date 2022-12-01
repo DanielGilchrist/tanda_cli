@@ -3,8 +3,8 @@ module Tanda::CLI
     module Time
       extend self
 
-      DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
-      DEFAULT_TIME_FORMAT = "%l:%M %p"
+      DEFAULT_DATE_FORMAT      = "%A, %d %b %Y"
+      DEFAULT_TIME_FORMAT      = "%l:%M %p"
       DEFAULT_DATE_TIME_FORMAT = "#{DEFAULT_DATE_FORMAT} | #{DEFAULT_TIME_FORMAT}"
 
       def now : ::Time
