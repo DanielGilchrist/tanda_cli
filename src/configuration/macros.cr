@@ -4,11 +4,13 @@ module Tanda::CLI
       abstract def staging? : Bool
 
       #
-      # Defines getter and setter methods for accessing Configuration::Environment methods based on mode
+      # Defines getter and setter methods for accessing `Configuration::Environment` methods based on `Configuration#mode`
+      #
       # Example:
+      # ```
       # mode_property time_zone : String?
       #
-      # expands to
+      # # expands to
       #
       # def time_zone : String | ::Nil
       #   if staging?
@@ -25,6 +27,7 @@ module Tanda::CLI
       #     config.production.time_zone = value
       #   end
       # end
+      # ```
       #
       macro mode_property(name)
         def {{name.var.id}} : {{name.type}}
