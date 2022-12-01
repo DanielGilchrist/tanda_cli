@@ -4,6 +4,7 @@ module Tanda::CLI
       extend self
 
       DEFAULT_DATE_FORMAT = "%A, %d %b %Y"
+      DEFAULT_TIME_FORMAT = "%l:%M %p"
 
       def now : ::Time
         ::Time.local(location: Current.user.time_zone)
@@ -11,6 +12,10 @@ module Tanda::CLI
 
       def pretty_date(date : ::Time) : String
         ::Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
+      end
+
+      def pretty_time(time : ::Time) : String
+        ::Time::Format.new(DEFAULT_TIME_FORMAT).format(time).lstrip
       end
     end
   end

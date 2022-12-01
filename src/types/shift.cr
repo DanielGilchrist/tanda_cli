@@ -6,6 +6,7 @@ module Tanda::CLI
   module Types
     class Shift
       include JSON::Serializable
+      include Utils::Mixins::PrettyStartFinish
 
       # defaults
       @leave_request : Types::LeaveRequest? = nil
@@ -34,10 +35,10 @@ module Tanda::CLI
       getter date : Time
 
       @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
-      getter start : Time?
+      getter start_time : Time?
 
       @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
-      getter finish : Time?
+      getter finish_time : Time?
 
       @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
       getter status : Status
@@ -63,17 +64,17 @@ module Tanda::CLI
       end
 
       def time_worked : Time::Span?
-        s = start
+        s = start_time
         return if s.nil?
 
-        f = finish
+        f = finish_time
         return if f.nil?
 
         (f - s) - total_break_minutes
       end
 
       def worked_so_far : Time::Span?
-        s = start
+        s = start_time
         return if s.nil?
 
         now = Utils::Time.now

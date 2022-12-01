@@ -10,8 +10,13 @@ module Tanda::CLI
         puts "ID: #{object.id}"
         puts "User ID: #{object.user_id}"
         puts "Date: #{object.pretty_date}"
-        puts "Start: #{object.start}"
-        puts "Finish: #{object.finish}"
+
+        pretty_start = object.pretty_start_time
+        puts "Start: #{pretty_start}" if pretty_start
+
+        pretty_finish = object.pretty_finish_time
+        puts "Finish: #{pretty_finish}" if pretty_finish
+
         puts "Status: #{object.status}"
 
         display_shift_breaks if !object.breaks.empty?
