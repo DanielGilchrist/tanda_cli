@@ -29,7 +29,7 @@ alias tanda_cli="/link/to/tanda_cli/bin/tanda_cli"
 
 ## Usage
 Upon running any command for the first time, you will be taken through an authentication flow where you will need to enter your username and password.
-The retrieved token is stored in `~/.tanda_cli/config.json` with other data that needs to persist for the app to function (format / structure is subject to change at the moment)
+The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure is subject to change at the moment)
 
 #### Examples
 ```sh
@@ -54,13 +54,13 @@ tanda_cli time_worked today --display
 tanda_cli time_worked week
 tanda_cli time_worked week --display
 
-# View current clock in status
-tanda_cli clockin status
 # Clock in or clock out (including breaks)
 tanda_cli clockin start
 tanda_cli clockin finish
 tanda_cli clockin break start
 tanda_cli clockin break finish
+# View current clock in status
+tanda_cli clockin status
 # Display clock ins for today
 tanda_cli clockin display
 
