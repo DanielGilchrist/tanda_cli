@@ -24,6 +24,14 @@ module Tanda::CLI
           end
         end
 
+        module PrettyDateTime
+          abstract def time : ::Time
+
+          def pretty_date_time : String
+            Utils::Time.pretty_date_time(time)
+          end
+        end
+
         module PrettyDate
           abstract def date : ::Time
 
@@ -44,6 +52,10 @@ module Tanda::CLI
 
             \{% if @type.has_method?(:date) %}
               include PrettyDate
+            \{% end %}
+
+            \{% if @type.has_method?(:time) %}
+              include PrettyDateTime
             \{% end %}
           end
         end

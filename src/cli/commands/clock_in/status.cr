@@ -12,13 +12,13 @@ module Tanda::CLI
 
           case clockin.type
           in Types::ClockIn::Type::Start
-            puts "You clocked in at #{clockin.time}"
+            puts "You clocked in at #{clockin.pretty_date_time}"
           in Types::ClockIn::Type::Finish
-            puts "You clocked out at #{clockin.time}"
+            puts "You clocked out at #{clockin.pretty_date_time}"
           in Types::ClockIn::Type::BreakStart
-            puts "You started a break at #{clockin.time}"
+            puts "You started a break at #{clockin.pretty_date_time}"
           in Types::ClockIn::Type::BreakFinish
-            puts "You finished your break at #{clockin.time}"
+            puts "You finished your break at #{clockin.pretty_date_time}"
           end
         end
 

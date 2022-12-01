@@ -5,6 +5,7 @@ module Tanda::CLI
   module Types
     class ClockIn
       include JSON::Serializable
+      include Utils::Mixins::PrettyTimes
 
       enum Type
         Start

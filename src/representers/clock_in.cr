@@ -6,7 +6,7 @@ module Tanda::CLI
     class ClockIn < Base(Types::ClockIn)
       def display
         display_with_padding("ID", object.id)
-        display_with_padding("Time", object.time)
+        display_with_padding("Time", object.pretty_date_time)
         display_with_padding("Type", object.type)
         puts "\n"
       end
