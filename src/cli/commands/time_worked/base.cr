@@ -39,7 +39,7 @@ module Tanda::CLI
             total_time_worked += total_time if total_time
           end
 
-          { total_time_worked, total_leave_hours }
+          {total_time_worked, total_leave_hours}
         end
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)

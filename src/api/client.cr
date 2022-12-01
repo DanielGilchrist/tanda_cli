@@ -10,7 +10,7 @@ module Tanda::CLI
       include Tanda::CLI::API::Endpoints
 
       alias TQuery = Hash(String, String)
-      alias TBody  = Hash(String, String)
+      alias TBody = Hash(String, String)
 
       def initialize(base_uri : String, token : String)
         @base_uri = base_uri
@@ -39,7 +39,7 @@ module Tanda::CLI
       end
 
       private getter base_uri : String
-      private getter token    : String
+      private getter token : String
 
       private def build_uri(endpoint, query : TQuery? = nil) : URI
         uri = URI.parse("#{base_uri}#{endpoint}")
@@ -51,7 +51,7 @@ module Tanda::CLI
       private def build_headers : HTTP::Headers
         HTTP::Headers{
           "Authorization" => "Bearer #{token}",
-          "Content-Type" => "application/json"
+          "Content-Type"  => "application/json",
         }.tap do |headers|
           headers["X-User-Id"] = Current.user.id.to_s if Current.user?
         end

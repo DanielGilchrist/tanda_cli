@@ -7,8 +7,8 @@ module Tanda::CLI
 
       SUCCESS_STRING = "Success:".colorize(:green)
       WARNING_STRING = "Warning:".colorize(:yellow)
-      ERROR_STRING = "Error:".colorize(:red)
-      FATAL_STRING = "FATAL ERROR:".colorize(:red)
+      ERROR_STRING   = "Error:".colorize(:red)
+      FATAL_STRING   = "FATAL ERROR:".colorize(:red)
 
       enum Type
         Success
@@ -55,7 +55,7 @@ module Tanda::CLI
           yield(builder)
         end
 
-        string.split("\n").each(&-> sub_error(String))
+        string.split("\n").each(&->sub_error(String))
       end
 
       def error(error_object : Types::Error)

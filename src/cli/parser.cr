@@ -18,7 +18,7 @@ module Tanda::CLI
     end
 
     private getter config : Configuration
-    private getter args   : Array(String)
+    private getter args : Array(String)
 
     # Options that don't make API requests
     private def parse_standard_options!
@@ -79,10 +79,12 @@ module Tanda::CLI
     private def maybe_display_staging_warning
       return unless config.staging?
 
-      message = if (mode = config.mode) != "staging"
-        "Command running on #{mode}"
-      else
-        "Command running in staging mode"
+      message = begin
+        if (mode = config.mode) != "staging"
+          "Command running on #{mode}"
+        else
+          "Command running in staging mode"
+        end
       end
 
       Utils::Display.warning(message)
@@ -102,14 +104,16 @@ module Tanda::CLI
     private def fetch_new_token!
       site_prefix, email, password = CLI::Auth.request_user_information!
 
-      auth_site_prefix = if config.staging?
-        case site_prefix
-        when "my"
-          "staging"
-        when "eu"
-          "staging.eu"
-        when "us"
-          "staging.us"
+      auth_site_prefix = begin
+        if config.staging?
+          case site_prefix
+          when "my"
+            "staging"
+          when "eu"
+            "staging.eu"
+          when "us"
+            "staging.us"
+          end
         end
       end || site_prefix
 

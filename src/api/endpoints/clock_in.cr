@@ -11,8 +11,8 @@ module Tanda::CLI
 
         response = get("/clockins", query: {
           "user_id" => Current.user.id.to_s,
-          "from" => date_string,
-          "to" => date_string
+          "from"    => date_string,
+          "to"      => date_string,
         })
 
         API::Result(Array(Types::ClockIn)).from(response)
@@ -20,9 +20,9 @@ module Tanda::CLI
 
       def send_clock_in(time : Time, type : String) : API::Result(Nil)
         response = post("/clockins", body: {
-          "time" => time.to_unix.to_s,
-          "type" => type,
-          "user_id" => Current.user.id.to_s
+          "time"    => time.to_unix.to_s,
+          "type"    => type,
+          "user_id" => Current.user.id.to_s,
         })
 
         error = Types::Error.from_json(response.body) unless response.success?

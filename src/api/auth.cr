@@ -19,7 +19,7 @@ module Tanda::CLI
             username:   email,
             password:   password,
             scope:      build_scopes,
-            grant_type: "password"
+            grant_type: "password",
           }.to_json
         )
 
@@ -35,7 +35,7 @@ module Tanda::CLI
       private def build_headers : HTTP::Headers
         HTTP::Headers{
           "Cache-Control" => "no-cache",
-          "Content-Type" => "application/json"
+          "Content-Type"  => "application/json",
         }
       end
 
@@ -57,9 +57,9 @@ module Tanda::CLI
           "sms",
           "personal",
           "financial",
-          "platform"
+          "platform",
         }
-        .join(" ")
+          .join(" ")
       end
     end
   end
