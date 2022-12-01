@@ -30,7 +30,6 @@ module Tanda::CLI
 
         parser.on("current_user", "Display the current user") do
           maybe_display_staging_warning
-
           CLI::Parser::CurrentUser.new(parser, config).parse
         end
 
