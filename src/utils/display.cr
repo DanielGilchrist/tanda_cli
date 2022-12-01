@@ -8,11 +8,13 @@ module Tanda::CLI
       SUCCESS_STRING = "Success:".colorize(:green)
       WARNING_STRING = "Warning:".colorize(:yellow)
       ERROR_STRING = "Error:".colorize(:red)
+      FATAL_STRING = "FATAL ERROR:".colorize(:red)
 
       enum Type
         Success
         Warning
         Error
+        Fatal
       end
 
       def success(message : String, value = nil)
@@ -21,6 +23,25 @@ module Tanda::CLI
 
       def warning(message : String)
         display_message(Type::Warning, message)
+      end
+
+      def fatal!(message : String) : NoReturn
+        {% if flag?(:debug) %}
+          raise message
+        {% else %}
+          display_message(Type::Fatal, message)
+          exit
+        {% end %}
+      end
+
+      def fatal!(exception : Exception) : NoReturn
+        {% if flag?(:debug) %}
+          raise exception
+        {% else %}
+          message = exception.message || "An irrecoverable error occured"
+          display_message(Type::Fatal, message)
+          exit
+        {% end %}
       end
 
       def error(message : String, value = nil)
@@ -44,17 +65,17 @@ module Tanda::CLI
         sub_error(error_description) if error_description
       end
 
-      def error!(message : String, value = nil)
+      def error!(message : String, value = nil) : NoReturn
         error(message, value)
         exit
       end
 
-      def error!(message : String, value = nil, &block : IO -> Nil)
+      def error!(message : String, value = nil, &block : IO -> Nil) : NoReturn
         error(message, value, &block)
         exit
       end
 
-      def error!(error_object : Types::Error)
+      def error!(error_object : Types::Error) : NoReturn
         error(error_object)
         exit
       end
@@ -75,6 +96,8 @@ module Tanda::CLI
           WARNING_STRING
         in Type::Error
           ERROR_STRING
+        in Type::Fatal
+          FATAL_STRING
         end
       end
     end

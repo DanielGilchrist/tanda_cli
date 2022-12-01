@@ -16,7 +16,7 @@ module Tanda::CLI
       module TypeConverter
         def self.from_json(value : JSON::PullParser) : Type
           type_string = value.read_string
-          Type.parse?(type_string) || raise "Unknown type: #{type_string}"
+          Type.parse?(type_string) || Utils::Display.fatal!("Unknown type: #{type_string}")
         end
       end
 

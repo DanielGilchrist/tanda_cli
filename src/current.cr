@@ -27,7 +27,7 @@ module Tanda::CLI
     delegate user, user?, to: instance
 
     def set_user!(user : User)
-      raise UserAlreadySet.new if @@user_set
+      Utils::Display.fatal!(UserAlreadySet.new) if @@user_set
 
       instance.user = user
       @@user_set = true
@@ -57,7 +57,7 @@ module Tanda::CLI
 
       def user : User
         nilable_user = maybe_user
-        raise UserNotSet.new unless nilable_user
+        Utils::Display.fatal!(UserNotSet.new) if nilable_user.nil?
 
         nilable_user
       end

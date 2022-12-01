@@ -198,7 +198,7 @@ module Tanda::CLI
 
     def token! : String
       token = access_token.token
-      raise "Token is missing" if token.nil?
+      Utils::Display.fatal!("Token is missing") if token.nil?
 
       token
     end
