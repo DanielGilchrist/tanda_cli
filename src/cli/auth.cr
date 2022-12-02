@@ -2,7 +2,7 @@ module Tanda::CLI
   module CLI::Auth
     extend self
 
-    VALID_SITE_PREFIXES = Set{"my", "eu", "us"}
+    VALID_SITE_PREFIXES = {"my", "eu", "us"}
 
     def request_user_information! : Tuple(String, String, String)
       valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
