@@ -2,8 +2,38 @@ module Tanda::CLI
   module CLI::Request
     extend self
 
-    def organisation_from_user(organisations : Array(Configuration::Organisation)) : Configuration::Organisation
-      puts "\nWhich organisation would you like to use?"
+    def ask_which_organisation_and_save!(client : API::Client, config : Configuration) : Configuration::Organisation
+      me = client.me.or(&.display!)
+      organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
+
+      organisation = organisations.size == 1 ? organisations[0] : nil
+      while organisation.nil?
+        organisation = ask_for_organisation(organisations)
+      end
+
+      Utils::Display.success("Selected organisation #{organisation.name}")
+
+      organisation.tap do |org|
+        save_config!(config, organisations, organisation, me.time_zone)
+      end
+    end
+
+    private def save_config!(
+      config : Configuration,
+      organisations : Array(Configuration::Organisation),
+      organisation : Configuration::Organisation,
+      time_zone : String
+    )
+      organisation.current = true
+      config.organisations = organisations
+      config.time_zone = time_zone
+      config.save!
+
+      Utils::Display.success("Organisations saved to config")
+    end
+
+    private def ask_for_organisation(organisations : Array(Configuration::Organisation)) : Configuration::Organisation?
+      puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
         puts "#{index}: #{org.name}"
       end
@@ -16,7 +46,7 @@ module Tanda::CLI
         organisations[index]? || handle_invalid_selection(organisations.size, user_input)
       else
         handle_invalid_selection
-      end || organisation_from_user(organisations)
+      end.tap { puts }
     end
 
     private def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil) : Nil
@@ -28,7 +58,6 @@ module Tanda::CLI
       else
         Utils::Display.error("You must enter a number")
       end
-      puts "\n"
     end
   end
 end

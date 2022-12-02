@@ -32,24 +32,8 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
-      organisation = organisations.size == 1 ? organisations[0] : nil
-
-      organisation = CLI::Request.organisation_from_user(organisations) if organisation.nil?
-
-      organisation.current = true
-      save_config!(organisations)
-
-      puts "\n"
-      Utils::Display.success("Organisations saved to config")
-
+      organisation = CLI::Request.ask_which_organisation_and_save!(client, config)
       Current::User.new(organisation.user_id, organisation.name, time_zone)
-    end
-
-    private def save_config!(organisations : Array(Configuration::Organisation))
-      config.time_zone ||= time_zone
-      config.organisations = organisations
-      config.save!
     end
 
     private def me : Types::Me

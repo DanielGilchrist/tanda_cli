@@ -66,17 +66,7 @@ module Tanda::CLI
         end
 
         parser.on("refetch_users", "Refetch users from the API and save to config") do
-          me = client.me.or(&.display!)
-          organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
-
-          organisation = CLI::Request.organisation_from_user(organisations)
-          organisation.current = true
-
-          config.organisations = organisations
-          config.save!
-
-          puts
-          Utils::Display.success("Organisations saved to config")
+          CLI::Request.ask_which_organisation_and_save!(client, config)
           exit
         end
       end
