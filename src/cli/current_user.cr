@@ -32,55 +32,8 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
-      organisation = organisations.size == 1 ? organisations[0] : nil
-
-      while organisation.nil?
-        organisation = request_organisation_from_user(organisations)
-      end
-
-      organisation.current = true
-      save_config!(organisations)
-
-      puts "\n"
-      Utils::Display.success("Organisations saved to config")
-
+      organisation = CLI::Request.ask_which_organisation_and_save!(client, config)
       Current::User.new(organisation.user_id, organisation.name, time_zone)
-    end
-
-    private def request_organisation_from_user(organisations : Array(Configuration::Organisation)) : Configuration::Organisation?
-      puts "\nWhich organisation would you like to use?"
-      organisations.each_with_index(1) do |org, index|
-        puts "#{index}: #{org.name}"
-      end
-      puts "\nEnter a number: "
-      user_input = gets.try(&.chomp)
-      number = user_input.try(&.to_i32?)
-
-      if number
-        index = number - 1
-        organisations[index]? || handle_invalid_selection(organisations.size, user_input)
-      else
-        handle_invalid_selection
-      end
-    end
-
-    def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil)
-      puts "\n"
-      if user_input
-        Utils::Display.error("Invalid selection", user_input) do |sub_errors|
-          sub_errors << "Please select a number between 1 and #{length}" if length
-        end
-      else
-        Utils::Display.error("You must enter a number")
-      end
-      puts "\n"
-    end
-
-    private def save_config!(organisations : Array(Configuration::Organisation))
-      config.time_zone ||= time_zone
-      config.organisations = organisations
-      config.save!
     end
 
     private def me : Types::Me

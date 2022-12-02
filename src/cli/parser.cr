@@ -64,6 +64,11 @@ module Tanda::CLI
           config.reset_environment!
           fetch_new_token!
         end
+
+        parser.on("refetch_users", "Refetch users from the API and save to config") do
+          CLI::Request.ask_which_organisation_and_save!(client, config)
+          exit
+        end
       end
     end
 
