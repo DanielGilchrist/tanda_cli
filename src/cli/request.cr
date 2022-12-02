@@ -13,7 +13,7 @@ module Tanda::CLI
 
       Utils::Display.success("Selected organisation #{organisation.name}")
 
-      organisation.tap do |org|
+      organisation.tap do
         save_config!(config, organisations, organisation, me.time_zone)
       end
     end
