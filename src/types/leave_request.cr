@@ -20,17 +20,12 @@ module Tanda::CLI
         end
       end
 
-      @[JSON::Field(key: "id")]
       getter id : Int32
-
-      @[JSON::Field(key: "user_id")]
       getter user_id : Int32
+      getter leave_type : String
 
       @[JSON::Field(key: "status", converter: Tanda::CLI::Types::LeaveRequest::StatusConverter)]
       getter status : Status
-
-      @[JSON::Field(key: "leave_type")]
-      getter leave_type : String
 
       @[JSON::Field(key: "daily_breakdown")]
       getter daily_breakdown : Array(Types::LeaveRequest::DailyBreakdown)
