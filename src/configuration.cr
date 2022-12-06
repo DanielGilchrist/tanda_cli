@@ -26,16 +26,9 @@ module Tanda::CLI
       # defaults
       @current : Bool = false
 
-      @[JSON::Field(key: "id")]
       getter id : Int32
-
-      @[JSON::Field(key: "name")]
       getter name : String
-
-      @[JSON::Field(key: "user_id")]
       getter user_id : Int32
-
-      @[JSON::Field(key: "current")]
       property current : Bool
 
       def current? : Bool
@@ -59,19 +52,10 @@ module Tanda::CLI
         super
       end
 
-      @[JSON::Field(key: "email")]
       property email : String?
-
-      @[JSON::Field(key: "token")]
       property token : String?
-
-      @[JSON::Field(key: "token_type")]
       property token_type : String?
-
-      @[JSON::Field(key: "scope")]
       property scope : String?
-
-      @[JSON::Field(key: "created_at")]
       property created_at : Int32?
     end
 
@@ -89,16 +73,9 @@ module Tanda::CLI
         super
       end
 
-      @[JSON::Field(key: "site_prefix")]
       property site_prefix : String
-
-      @[JSON::Field(key: "access_token")]
       property access_token : AccessToken
-
-      @[JSON::Field(key: "organisations")]
       property organisations : Array(Organisation)
-
-      @[JSON::Field(key: "time_zone")]
       property time_zone : String?
     end
 
@@ -116,13 +93,8 @@ module Tanda::CLI
         super
       end
 
-      @[JSON::Field(key: "production")]
       getter production
-
-      @[JSON::Field(key: "staging")]
       getter staging
-
-      @[JSON::Field(key: "mode")]
       property mode : String
 
       def reset_staging!

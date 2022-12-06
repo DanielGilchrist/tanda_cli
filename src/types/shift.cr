@@ -25,11 +25,10 @@ module Tanda::CLI
         end
       end
 
-      @[JSON::Field(key: "id")]
       getter id : Int32
-
-      @[JSON::Field(key: "user_id")]
       getter user_id : Int32
+      getter breaks : Array(ShiftBreak)
+      getter leave_request_id : Int32?
 
       @[JSON::Field(key: "date", converter: Tanda::CLI::Types::Converters::Time::FromISODate)]
       getter date : Time
@@ -42,12 +41,6 @@ module Tanda::CLI
 
       @[JSON::Field(key: "status", converter: Tanda::CLI::Types::Shift::StatusConverter)]
       getter status : Status
-
-      @[JSON::Field(key: "breaks")]
-      getter breaks : Array(ShiftBreak)
-
-      @[JSON::Field(key: "leave_request_id")]
-      getter leave_request_id : Int32?
 
       getter leave_request : Types::LeaveRequest?
 

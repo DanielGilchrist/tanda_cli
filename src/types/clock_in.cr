@@ -21,7 +21,6 @@ module Tanda::CLI
         end
       end
 
-      @[JSON::Field(key: "id")]
       getter id : Int32
 
       @[JSON::Field(key: "type", converter: Tanda::CLI::Types::ClockIn::TypeConverter)]

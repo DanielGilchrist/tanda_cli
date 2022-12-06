@@ -15,20 +15,6 @@ module Tanda::CLI
           end
         end
 
-        # {
-        #   "id": "374673344",
-        #   "date": "2022-12-01",
-        #   "all_day": true,
-        #   "department_id": "3543532",
-        #   "start_time": null,
-        #   "finish_time": null,
-        #   "hours": 8.0,
-        #   "is_holiday": false,
-        #   "times": {},
-        #   "timesheet_on_this_day_is_exported": false,
-        #   "filled_from": "other"
-        # }
-
         @[JSON::Field(key: "id", converter: Tanda::CLI::Types::LeaveRequest::DailyBreakdown::StringIDConverter)]
         getter shift_id : Int32
 
