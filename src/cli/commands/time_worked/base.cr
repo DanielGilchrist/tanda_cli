@@ -1,5 +1,3 @@
-require "../../../api/collection/shift"
-
 module Tanda::CLI
   module CLI::Commands
     module TimeWorked
@@ -15,7 +13,7 @@ module Tanda::CLI
           display
         end
 
-        private def calculate_time_worked(shifts : API::Collection::Shift) : Tuple(Time::Span, Time::Span)
+        private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
           total_time_worked = Time::Span.zero
           total_leave_hours = Time::Span.zero
 
