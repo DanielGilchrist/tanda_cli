@@ -8,16 +8,18 @@ module Tanda::CLI
           # Allow types that include `JSON::Serializable`
         {% elsif T.has_method?(:to_json) %}
           # This accounts for stdlib types like `Array` that are "serializable"
-        {% elsif T == Nil %}
-          # Special case - if we don't care about a successful response's value we use Nil
-          result = response.success? ? nil : Types::Error.from_json(response.body)
-          new(result)
         {% else %}
           # If above conditions aren't met, throw a compiler error
           {{ raise "Unsupported type #{T}" }}
         {% end %}
 
-        result = (response.success? ? T : Types::Error).from_json(response.body)
+        result = {% if T == Nil %}
+          # Special case - if we don't care about a successful response's value we use Nil
+          response.success? ? nil : Types::Error.from_json(response.body)
+        {% else %}
+          (response.success? ? T : Types::Error).from_json(response.body)
+        {% end %}
+
         new(result)
       end
 
