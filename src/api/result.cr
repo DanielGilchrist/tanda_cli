@@ -14,8 +14,6 @@ module Tanda::CLI
         {% end %}
 
         result = begin
-          # TODO-ameba: Pending https://github.com/crystal-ameba/ameba/issues/318
-          # ameba:disable Lint/LiteralsComparison
           {% if T == Nil %}
             # Special case - if we don't care about a successful response's value we use Nil
             response.success? ? nil : Types::Error.from_json(response.body)
