@@ -25,8 +25,7 @@ module Tanda::CLI
           "user_id" => Current.user.id.to_s,
         })
 
-        error = Types::Error.from_json(response.body) unless response.success?
-        API::Result(Nil).new(error)
+        API::Result(Nil).from(response)
       end
     end
   end
