@@ -27,6 +27,8 @@ module Tanda::CLI
           Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
           handle_fatal_error!(response)
         end
+      rescue Socket::Addrinfo::Error
+        Utils::Display.fatal!("There appears to be a problem with your internet connection")
       end
 
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
@@ -38,6 +40,8 @@ module Tanda::CLI
           Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
           handle_fatal_error!(response)
         end
+      rescue Socket::Addrinfo::Error
+        Utils::Display.fatal!("There appears to be a problem with your internet connection")
       end
 
       private getter base_uri : String

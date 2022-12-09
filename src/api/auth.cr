@@ -12,16 +12,20 @@ module Tanda::CLI
       extend self
 
       def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
-        response = HTTP::Client.post(
-          build_endpoint(site_prefix),
-          headers: build_headers,
-          body: {
-            username:   email,
-            password:   password,
-            scope:      build_scopes,
-            grant_type: "password",
-          }.to_json
-        )
+        response = begin
+          HTTP::Client.post(
+            build_endpoint(site_prefix),
+            headers: build_headers,
+            body: {
+              username:   email,
+              password:   password,
+              scope:      build_scopes,
+              grant_type: "password",
+            }.to_json
+          )
+        rescue Socket::Addrinfo::Error
+          Utils::Display.fatal!("There appears to be a problem with your internet connection")
+        end
 
         Log.debug(&.emit("Response", body: response.body))
 
