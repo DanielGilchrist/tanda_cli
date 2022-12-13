@@ -122,21 +122,17 @@ module Tanda::CLI
         end
       end || site_prefix
 
-      API::Auth.fetch_access_token!(auth_site_prefix, email, password).match do
-        ok do |access_token|
-          Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
-          config.overwrite!(site_prefix, email, access_token)
-        end
+      access_token = API::Auth.fetch_access_token!(auth_site_prefix, email, password).or do |error|
+        Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
+          sub_errors << "Error Type: #{error.error}\n"
 
-        error do |error|
-          Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
-            sub_errors << "Error Type: #{error.error}\n"
-
-            description = error.error_description
-            sub_errors << "Message: #{description}" if description
-          end
+          description = error.error_description
+          sub_errors << "Message: #{description}" if description
         end
       end
+
+      Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
+      config.overwrite!(site_prefix, email, access_token)
     end
   end
 end

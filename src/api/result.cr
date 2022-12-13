@@ -45,12 +45,6 @@ module Tanda::CLI
       # This class should only be initialized with the `from` method
       private def initialize(@value : T | Types::Error); end
 
-      def match(&) : ::Nil
-        with self yield
-
-        nil
-      end
-
       def or(& : Types::Error -> _)
         value = self.value
         return value unless value.is_a?(Types::Error)
@@ -59,24 +53,6 @@ module Tanda::CLI
       end
 
       private getter value : T | Types::Error
-
-      private def ok(& : T -> _) : ::Nil
-        value = self.value
-        return if value.is_a?(Types::Error)
-
-        yield(value)
-
-        nil
-      end
-
-      private def error(& : Types::Error -> _) : ::Nil
-        value = self.value
-        return unless value.is_a?(Types::Error)
-
-        yield(value)
-
-        nil
-      end
     end
   end
 end

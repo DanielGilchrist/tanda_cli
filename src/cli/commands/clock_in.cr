@@ -7,13 +7,9 @@ module Tanda::CLI
 
       def execute
         now = Utils::Time.now
-        client.send_clock_in(now, clock_type.to_underscore).match do
-          ok do
-            display_success_message
-          end
+        client.send_clock_in(now, clock_type.to_underscore).or(&.display!)
 
-          error(&.display)
-        end
+        display_success_message
       end
 
       private getter client
