@@ -49,6 +49,10 @@ module Tanda::CLI
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
           length = breakdown.hours
+
+          # Don't bother showing days where there are no hours for leave
+          return if length.zero?
+
           puts "Leave taken: #{length.hours} hours and #{length.minutes} minutes"
 
           Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
