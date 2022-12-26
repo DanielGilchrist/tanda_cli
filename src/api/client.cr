@@ -20,28 +20,28 @@ module Tanda::CLI
       end
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
-        uri = build_uri(endpoint, query)
-        headers = build_headers
+        with_no_internet_handler! do
+          uri = build_uri(endpoint, query)
+          headers = build_headers
 
-        HTTP::Client.get(uri, headers: headers).tap do |response|
-          Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
-          handle_fatal_error!(response)
+          HTTP::Client.get(uri, headers: headers).tap do |response|
+            Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
+            handle_fatal_error!(response)
+          end
         end
-      rescue Socket::Addrinfo::Error
-        Utils::Display.fatal!("There appears to be a problem with your internet connection")
       end
 
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
-        uri = build_uri(endpoint)
-        headers = build_headers
-        request_body = body.to_json
+        with_no_internet_handler! do
+          uri = build_uri(endpoint)
+          headers = build_headers
+          request_body = body.to_json
 
-        HTTP::Client.post(uri, headers: headers, body: request_body).tap do |response|
-          Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
-          handle_fatal_error!(response)
+          HTTP::Client.post(uri, headers: headers, body: request_body).tap do |response|
+            Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
+            handle_fatal_error!(response)
+          end
         end
-      rescue Socket::Addrinfo::Error
-        Utils::Display.fatal!("There appears to be a problem with your internet connection")
       end
 
       private getter base_uri : String
@@ -61,6 +61,12 @@ module Tanda::CLI
         }.tap do |headers|
           headers["X-User-Id"] = Current.user.id.to_s if Current.user?
         end
+      end
+
+      private def with_no_internet_handler!(&)
+        yield
+      rescue Socket::Addrinfo::Error
+        Utils::Display.fatal!("There appears to be a problem with your internet connection")
       end
 
       private def handle_fatal_error!(response : HTTP::Client::Response)
