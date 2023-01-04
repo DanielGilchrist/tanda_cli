@@ -16,7 +16,7 @@ module Tanda::CLI
       private abstract def build_display
 
       protected def with_padding(key : String, value)
-         builder << "    #{key}: #{value}\n"
+        builder << "    #{key}: #{value}\n"
       end
 
       private getter object : T
