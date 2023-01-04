@@ -26,15 +26,12 @@ module Tanda::CLI
       end
 
       private def try_set_new_current_user!(id_or_name : String)
-        maybe_user_id = id_or_name.to_i32?
-        organisation = config.organisations.find do |org|
-          if maybe_user_id
-            org.user_id == maybe_user_id
+        organisation = begin
+          if (user_id = id_or_name.to_i?)
+            config.organisations.find(&.user_id.==(user_id))
           else
-            name = org.name.downcase
             input_name = id_or_name.downcase
-
-            name.includes?(input_name)
+            config.organisations.find(&.name.downcase.includes?(input_name))
           end
         end
 
