@@ -60,6 +60,10 @@ module Tanda::CLI
           CLI::Parser::ClockIn.new(parser, client).parse
         end
 
+        parser.on("balance", "Check your leave balances") do
+          CLI::Parser::LeaveBalance.new(parser, client).parse
+        end
+
         parser.on("refetch_token", "Refetch token for the current environment") do
           config.reset_environment!
           fetch_new_token!
