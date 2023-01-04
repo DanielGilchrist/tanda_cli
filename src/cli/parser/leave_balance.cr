@@ -7,7 +7,7 @@ module Tanda::CLI
 
       def parse
         leave_balance = client.leave_balances.or(&.display!).find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
-        return Utils::Display.error!("No leave balances") if leave_balance.nil?
+        return Utils::Display.error!("No leave balances to display") if leave_balance.nil?
 
         Representers::LeaveBalance.new(leave_balance).display
       end

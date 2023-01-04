@@ -68,6 +68,9 @@ tanda_cli clockin status
 # Display clock ins for today
 tanda_cli clockin display
 
+# Display leave balance information
+tanda_cli balance
+
 # Set "mode" (production | staging)
 tanda_cli mode production # default
 tanda_cli mode staging
