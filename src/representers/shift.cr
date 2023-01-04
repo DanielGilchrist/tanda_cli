@@ -6,7 +6,7 @@ require "../types/shift_break"
 module Tanda::CLI
   module Representers
     class Shift < Base(Types::Shift)
-      private def build_display
+      private def build_display(builder : String::Builder)
         builder << "ID: #{object.id}\n"
         builder << "User ID: #{object.user_id}\n"
         builder << "Date: #{object.pretty_date}\n"
@@ -19,12 +19,12 @@ module Tanda::CLI
 
         builder << "Status: #{object.status}\n"
 
-        display_shift_breaks if !object.breaks.empty?
+        display_shift_breaks(builder) if !object.breaks.empty?
 
         builder << "\n"
       end
 
-      private def display_shift_breaks
+      private def display_shift_breaks(builder : String::Builder)
         builder << "Breaks:\n"
         object.breaks.sort_by(&.id).each do |shift_break|
           ShiftBreak.new(shift_break).display

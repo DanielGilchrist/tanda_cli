@@ -8,7 +8,7 @@ module Tanda::CLI
         super(object)
       end
 
-      private def build_display
+      private def build_display(builder : String::Builder)
         builder << "Shift ID: #{object.shift_id}\n"
         builder << "User ID: #{leave_request.user_id}\n"
         builder << "Date: #{object.pretty_date}\n"
