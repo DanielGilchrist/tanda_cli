@@ -8,21 +8,21 @@ module Tanda::CLI
         super(object)
       end
 
-      def display
-        puts "Shift ID: #{object.shift_id}"
-        puts "User ID: #{leave_request.user_id}"
-        puts "Date: #{object.pretty_date}"
+      private def build_display
+        builder << "Shift ID: #{object.shift_id}\n"
+        builder << "User ID: #{leave_request.user_id}\n"
+        builder << "Date: #{object.pretty_date}\n"
 
         start = object.start_time
-        puts "Start: #{start}" if start
+        builder << "Start: #{start}\n" if start
 
         finish = object.finish_time
-        puts "Finish: #{finish}" if finish
+        builder << "Finish: #{finish}\n" if finish
 
-        puts "Status: #{leave_request.status}"
-        puts "Leave type: #{leave_request.leave_type}"
+        builder << "Status: #{leave_request.status}\n"
+        builder << "Leave type: #{leave_request.leave_type}\n"
 
-        puts "\n"
+        builder << "\n"
       end
 
       private getter leave_request : Types::LeaveRequest

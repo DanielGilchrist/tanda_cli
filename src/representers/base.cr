@@ -1,17 +1,26 @@
 module Tanda::CLI
   module Representers
     abstract class Base(T)
+      DEFAULT_CAPACITY = 1024
+
       def initialize(object : T)
         @object = object
+        @builder = String::Builder.new(DEFAULT_CAPACITY)
       end
 
-      abstract def display
+      def display
+        build_display
+        puts builder.to_s
+      end
 
-      protected def display_with_padding(key : String, value)
-        puts "    #{key}: #{value}"
+      private abstract def build_display
+
+      protected def with_padding(key : String, value)
+         builder << "    #{key}: #{value}\n"
       end
 
       private getter object : T
+      private getter builder : String::Builder
     end
   end
 end
