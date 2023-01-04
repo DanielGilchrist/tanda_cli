@@ -10,6 +10,11 @@ module Tanda::CLI
 
       def display
         build_display
+
+        {% if flag?(:debug) %}
+          puts "\n\n#{self.class.name} CAPACITY: #{builder.capacity}\n\n"
+        {% end %}
+
         puts builder.to_s
       end
 
