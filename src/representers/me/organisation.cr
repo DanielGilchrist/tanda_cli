@@ -5,13 +5,13 @@ module Tanda::CLI
   module Representers
     class Me
       class Organisation < Base(Types::Me::Organisation)
-        def display
-          display_with_padding("ID", object.id)
-          display_with_padding("Name", object.name)
-          display_with_padding("Country", object.country)
-          display_with_padding("User ID", object.user_id)
-          display_with_padding("Locale", object.locale)
-          puts "\n"
+        private def build_display(builder : String::Builder)
+          with_padding("ID", object.id, builder)
+          with_padding("Name", object.name, builder)
+          with_padding("Country", object.country, builder)
+          with_padding("User ID", object.user_id, builder)
+          with_padding("Locale", object.locale, builder)
+          builder << "\n"
         end
       end
     end
