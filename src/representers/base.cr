@@ -1,23 +1,15 @@
 module Tanda::CLI
   module Representers
     abstract class Base(T)
-      DEFAULT_CAPACITY = 150
-
       def initialize(object : T)
         @object = object
       end
 
       def display
-        result = build
-
-        {% if flag?(:debug) %}
-          puts "\n\n#{self.class.name} CAPACITY: #{result.size}\n\n"
-        {% end %}
-
-        puts result
+        puts build
       end
 
-      def build
+      def build : String
         String.build do |builder|
           build_display(builder)
         end
