@@ -8,15 +8,19 @@ module Tanda::CLI
       end
 
       def display
-        result = String.build do |builder|
-          build_display(builder)
-        end
+        result = build
 
         {% if flag?(:debug) %}
           puts "\n\n#{self.class.name} CAPACITY: #{result.size}\n\n"
         {% end %}
 
         puts result
+      end
+
+      def build
+        String.build do |builder|
+          build_display(builder)
+        end
       end
 
       private abstract def build_display(builder : String::Builder)
