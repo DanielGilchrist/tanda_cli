@@ -9,9 +9,9 @@ Regardless of this, if you find this useful and have feature requests / ideas fe
 
 ## Installation
 
-You will need Crystal 1.7.0 installed. I recommend using [`asdf`](https://github.com/asdf-vm/asdf) with the [crystal plugin](https://github.com/asdf-community/asdf-crystal).
+You will need Crystal 1.7.1 installed. I recommend using [`asdf`](https://github.com/asdf-vm/asdf) with the [crystal plugin](https://github.com/asdf-community/asdf-crystal).
 ```sh
-asdf install crystal 1.7.0
+asdf install crystal 1.7.1
 ```
 Or you can checkout [this link](https://crystal-lang.org/install/) for platform specific instructions
 
