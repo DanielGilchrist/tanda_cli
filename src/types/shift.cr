@@ -95,13 +95,17 @@ module Tanda::CLI
         return if s.nil?
 
         now = Utils::Time.now
-        return unless now.date == s.date
+        return if now.date != s.date
 
         (now - s) - total_break_minutes
       end
 
+      def effective_breaks : Array(ShiftBreak)
+        breaks.reject(&.length.zero?)
+      end
+
       def total_break_minutes : Time::Span
-        breaks.sum(&.length).minutes
+        effective_breaks.sum(&.length).minutes
       end
     end
   end
