@@ -29,11 +29,7 @@ module Tanda::CLI
       getter id : Int32
       getter name : String
       getter user_id : Int32
-      property current : Bool
-
-      def current? : Bool
-        current
-      end
+      property? current : Bool
     end
 
     class AccessToken
