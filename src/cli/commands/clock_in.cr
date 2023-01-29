@@ -41,6 +41,12 @@ module Tanda::CLI
       end
 
       private struct ClockInValidator
+        private enum ClockInStatus
+          ClockedIn
+          ClockedOut
+          BreakStarted
+        end
+
         @clockins_by_type : Hash(Types::ClockIn::Type, Array(Types::ClockIn))? = nil
 
         def self.validate!(client : API::Client, clock_type : ClockType, now : Time)
@@ -66,44 +72,55 @@ module Tanda::CLI
           end
         end
 
-        private def validate_clockin_start!
-          # If we are currently clocked in we shouldn't clock in again
-          return unless clocked_in?
+        private def determine_status : ClockInStatus
+          return ClockInStatus::BreakStarted if break_started?
+          return ClockInStatus::ClockedOut if clocked_out?
 
-          Utils::Display.error!("You are already clocked in!")
+          ClockInStatus::ClockedIn
+        end
+
+        private def validate_clockin_start!
+          case determine_status
+          in ClockInStatus::ClockedIn
+            Utils::Display.error!("You are already clocked in!")
+          in ClockInStatus::ClockedOut
+            return
+          in ClockInStatus::BreakStarted
+            Utils::Display.error!("You can't clockin when a break has started!")
+          end
         end
 
         private def validate_clockin_finish!
-          # If we aren't clocked in we shouldn't be clocking out
-          if !clocked_in?
+          case determine_status
+          in ClockInStatus::ClockedIn
+            return
+          in ClockInStatus::ClockedOut
             Utils::Display.error!("You haven't clocked in yet!")
+          in ClockInStatus::BreakStarted
+            Utils::Display.error!("You need to finish your break before clocking out!")
           end
-
-          # If a break hasn't been finished we shouldn't be clocking out
-          return unless break_started?
-          Utils::Display.error!("You need to finish your break before clocking out!")
         end
 
         private def validate_clockin_break_start!
-          # If we're clocked out we shouldn't be able to start a break
-          if clocked_out?
+          case determine_status
+          in ClockInStatus::ClockedIn
+            return
+          in ClockInStatus::ClockedOut
             Utils::Display.error!("You need to clock in to start a break!")
+          in ClockInStatus::BreakStarted
+            Utils::Display.error!("You have already started a break!")
           end
-
-          # If we've already started a break we shouldn't be starting another one before finishing
-          return unless break_started?
-          Utils::Display.error!("You have already started a break!")
         end
 
         private def validate_clockin_break_finish!
-          # If we're clocked out we shouldn't be finishing a break
-          if clocked_out?
+          case determine_status
+          in ClockInStatus::ClockedIn
+            Utils::Display.error!("You must start a break to finish a break!")
+          in ClockInStatus::ClockedOut
             Utils::Display.error!("You aren't clocked in!")
+          in ClockInStatus::BreakStarted
+            return
           end
-
-          # if we haven't started a break we shouldn't be able to finish one
-          return unless break_not_started?
-          Utils::Display.error!("You must start a break to finish a break!")
         end
 
         private def clocked_in? : Bool
@@ -128,10 +145,6 @@ module Tanda::CLI
           return true if breaks_finished.nil?
 
           breaks_started.size > breaks_finished.size
-        end
-
-        private def break_not_started? : Bool
-          !break_started?
         end
 
         private def clockins_for(key : Types::ClockIn::Type) : Array(Types::ClockIn)?

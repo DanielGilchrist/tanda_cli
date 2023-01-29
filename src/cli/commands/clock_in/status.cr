@@ -4,6 +4,9 @@ module Tanda::CLI
       class Status
         def initialize(@client : API::Client); end
 
+        # TODO: Fix lazy logic
+        # The logic here should match the status logic in ClockInValidator in src/cli/commands/clock_in.cr
+        # to handle the case where clock ins aren't in a sound order
         def execute
           now = Utils::Time.now
           clockins = client.clockins(now).or(&.display!)
