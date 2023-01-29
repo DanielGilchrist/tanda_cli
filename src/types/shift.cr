@@ -97,11 +97,20 @@ module Tanda::CLI
         now = Utils::Time.now
         return unless now.date == s.date
 
-        (now - s) - total_break_minutes
+        (now - s) - total_break_minutes(now)
       end
 
-      def total_break_minutes : Time::Span
-        breaks.sum(&.length).minutes
+      private def total_break_minutes(now : Time = Utils::Time.now) : Time::Span
+        breaks
+          .sum do |shift_break|
+            next shift_break.length if shift_break.finish_time
+
+            start_time = shift_break.start_time
+            next 0 if start_time.nil?
+
+            (now - start_time).minutes
+          end
+          .minutes
       end
     end
   end
