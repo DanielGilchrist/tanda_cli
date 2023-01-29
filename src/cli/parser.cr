@@ -48,20 +48,20 @@ module Tanda::CLI
     private def parse_api_options!
       OptionParser.parse(args) do |parser|
         parser.on("me", "Get your own information") do
-          me = client.me.or(&.display!)
+          me = build_client_with_current_user.me.or(&.display!)
           Representers::Me.new(me).display
         end
 
         parser.on("time_worked", "See how many hours you've worked") do
-          CLI::Parser::TimeWorked.new(parser, client).parse
+          CLI::Parser::TimeWorked.new(parser, build_client_with_current_user).parse
         end
 
         parser.on("clockin", "Clock in/out") do
-          CLI::Parser::ClockIn.new(parser, client).parse
+          CLI::Parser::ClockIn.new(parser, build_client_with_current_user).parse
         end
 
         parser.on("balance", "Check your leave balances") do
-          CLI::Parser::LeaveBalance.new(parser, client).parse
+          CLI::Parser::LeaveBalance.new(parser, build_client_with_current_user).parse
         end
 
         parser.on("refetch_token", "Refetch token for the current environment") do
@@ -74,13 +74,13 @@ module Tanda::CLI
         end
 
         parser.on("refetch_users", "Refetch users from the API and save to config") do
-          CLI::Request.ask_which_organisation_and_save!(client, config)
+          CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, config)
           exit
         end
       end
     end
 
-    private def client : API::Client
+    private def build_client_with_current_user : API::Client
       @client ||= begin
         client = create_client_from_config
         CLI::CurrentUser.new(client, config).set!
