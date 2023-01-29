@@ -164,13 +164,6 @@ module Tanda::CLI
       config.mode = value
     end
 
-    def token! : String
-      token = access_token.token
-      Utils::Display.fatal!("Token is missing") if token.nil?
-
-      token
-    end
-
     def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)
       self.site_prefix = site_prefix
       self.access_token.email = email

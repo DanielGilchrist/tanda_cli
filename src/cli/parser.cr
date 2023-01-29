@@ -107,10 +107,12 @@ module Tanda::CLI
       token = config.access_token.token
 
       # if a token can't be parsed from the config, get username and password from user and request a token
-      fetch_new_token! if token.nil?
+      if token.nil?
+        fetch_new_token!
+        return create_client_from_config
+      end
 
       url = config.api_url
-      token = config.token!
       API::Client.new(url, token)
     end
 
