@@ -73,10 +73,13 @@ module Tanda::CLI
         end
 
         private def determine_status : ClockInStatus
-          return ClockInStatus::BreakStarted if break_started?
-          return ClockInStatus::ClockedOut if clocked_out?
-
-          ClockInStatus::ClockedIn
+          if break_started?
+            ClockInStatus::BreakStarted
+          elsif clocked_in?
+            ClockInStatus::ClockedIn
+          else
+            ClockInStatus::ClockedOut
+          end
         end
 
         private def validate_clockin_start!
@@ -131,10 +134,6 @@ module Tanda::CLI
           return true if clockouts.nil?
 
           clockins.size > clockouts.size
-        end
-
-        private def clocked_out? : Bool
-          !clocked_in?
         end
 
         private def break_started? : Bool
