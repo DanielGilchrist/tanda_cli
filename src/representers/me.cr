@@ -17,7 +17,8 @@ module Tanda::CLI
       private def display_organisations(builder : String::Builder)
         builder << "Organisations:\n"
         object.organisations.each do |organisation|
-          Organisation.new(organisation).display
+          builder << Organisation.new(organisation).build
+          builder << "\n"
         end
       end
     end
