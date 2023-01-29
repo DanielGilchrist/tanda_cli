@@ -43,7 +43,10 @@ module Tanda::CLI
 
         if !leave_requests_by_id.empty?
           shifts.each do |shift|
-            leave_request = leave_requests_by_id[shift.leave_request_id]?
+            leave_request_id = shift.leave_request_id
+            next if leave_request_id.nil?
+
+            leave_request = leave_requests_by_id[leave_request_id]?
             next if leave_request.nil?
 
             shift.set_leave_request!(leave_request)
