@@ -27,7 +27,7 @@ module Tanda::CLI
 
       private def try_set_new_current_user!(id_or_name : String)
         organisation = begin
-          if (user_id = id_or_name.to_i?)
+          if user_id = id_or_name.to_i?
             config.organisations.find(&.user_id.==(user_id))
           else
             input_name = id_or_name.downcase
