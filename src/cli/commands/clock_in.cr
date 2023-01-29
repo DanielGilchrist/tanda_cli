@@ -1,3 +1,5 @@
+require "./clock_in/determine_status"
+
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
@@ -41,19 +43,14 @@ module Tanda::CLI
       end
 
       private struct ClockInValidator
-        private enum ClockInStatus
-          ClockedIn
-          ClockedOut
-          BreakStarted
-        end
-
-        @clockins_by_type : Hash(Types::ClockIn::Type, Array(Types::ClockIn))? = nil
+        include ClockIn::DetermineStatus
 
         def self.validate!(client : API::Client, clock_type : ClockType, now : Time)
           todays_clockins = client.clockins(now).or(&.display!)
           new(todays_clockins, clock_type).validate!
         end
 
+        # this struct should only be initialized from the `validate!` class method
         private def initialize(@clockins : Array(Types::ClockIn), @clock_type : ClockType); end
 
         private getter clockins : Array(Types::ClockIn)
@@ -69,16 +66,6 @@ module Tanda::CLI
             validate_clockin_break_start!
           in ClockType::BreakFinish
             validate_clockin_break_finish!
-          end
-        end
-
-        private def determine_status : ClockInStatus
-          if break_started?
-            ClockInStatus::BreakStarted
-          elsif clocked_in?
-            ClockInStatus::ClockedIn
-          else
-            ClockInStatus::ClockedOut
           end
         end
 
@@ -124,33 +111,6 @@ module Tanda::CLI
           in ClockInStatus::BreakStarted
             return
           end
-        end
-
-        private def clocked_in? : Bool
-          clockins = clockins_for(Types::ClockIn::Type::Start)
-          return false if clockins.nil?
-
-          clockouts = clockins_for(Types::ClockIn::Type::Finish)
-          return true if clockouts.nil?
-
-          clockins.size > clockouts.size
-        end
-
-        private def break_started? : Bool
-          breaks_started = clockins_for(Types::ClockIn::Type::BreakStart)
-          return false if breaks_started.nil?
-
-          breaks_finished = clockins_for(Types::ClockIn::Type::BreakFinish)
-          return true if breaks_finished.nil?
-
-          breaks_started.size > breaks_finished.size
-        end
-
-        private def clockins_for(key : Types::ClockIn::Type) : Array(Types::ClockIn)?
-          @clockins_by_type ||= clockins.group_by(&.type)
-
-          clockins_by_type = @clockins_by_type
-          clockins_by_type[key]? if clockins_by_type
         end
       end
     end

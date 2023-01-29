@@ -42,7 +42,7 @@ module Tanda::CLI
         new(yield(result))
       end
 
-      # This class should only be initialized with the `from` method
+      # This class should only be initialized with the `from` class method
       private def initialize(@value : T | Types::Error); end
 
       def or(& : Types::Error -> _)
