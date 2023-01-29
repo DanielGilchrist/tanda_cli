@@ -50,6 +50,7 @@ module Tanda::CLI
           new(todays_clockins, clock_type).validate!
         end
 
+        # this class should only be initialized from the `validate!` class method
         private def initialize(@clockins : Array(Types::ClockIn), @clock_type : ClockType); end
 
         private getter clockins : Array(Types::ClockIn)
