@@ -23,21 +23,29 @@ module Tanda::CLI
           CLI::Commands::ClockIn::Display.new(client).execute
         end
 
+        skip_validations = false
+
+        OptionParser.parse do |skip_validations_parser|
+          skip_validations_parser.on("--skip-validations", "Skip clock in validations") do
+            skip_validations = true
+          end
+        end
+
         parser.on("start", "Clock in") do
-          execute_clock_in(ClockType::Start)
+          execute_clock_in(ClockType::Start, skip_validations)
         end
 
         parser.on("finish", "Clock out") do
-          execute_clock_in(ClockType::Finish)
+          execute_clock_in(ClockType::Finish, skip_validations)
         end
 
         parser.on("break", "Clock a break") do
           parser.on("start", "Start break") do
-            execute_clock_in(ClockType::BreakStart)
+            execute_clock_in(ClockType::BreakStart, skip_validations)
           end
 
           parser.on("finish", "Finish break") do
-            execute_clock_in(ClockType::BreakFinish)
+            execute_clock_in(ClockType::BreakFinish, skip_validations)
           end
         end
       end
@@ -45,8 +53,8 @@ module Tanda::CLI
       private getter parser : OptionParser
       private getter client : API::Client
 
-      private def execute_clock_in(type : ClockType)
-        CLI::Commands::ClockIn.new(client, type).execute
+      private def execute_clock_in(type : ClockType, skip_validations : Bool = false)
+        CLI::Commands::ClockIn.new(client, type, skip_validations).execute
         exit
       end
     end
