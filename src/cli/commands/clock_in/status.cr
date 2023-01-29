@@ -6,8 +6,6 @@ module Tanda::CLI
       class Status
         include ClockIn::DetermineStatus
 
-        @clockins : Array(Types::ClockIn)? = nil
-
         def initialize(@client : API::Client); end
 
         def execute
@@ -66,7 +64,7 @@ module Tanda::CLI
         end
 
         private def clockins : Array(Types::ClockIn)
-          @clockins ||= client.clockins(Utils::Time.now).or(&.display!)
+          client.clockins(Utils::Time.now).or(&.display!)
         end
       end
     end
