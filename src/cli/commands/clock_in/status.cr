@@ -29,9 +29,7 @@ module Tanda::CLI
           if finished_break = clockins.find(&.type.==(Types::ClockIn::Type::BreakFinish))
             puts "You finished your break at #{finished_break.pretty_date_time}"
           else
-            latest_clockin = clockins.find(&.type.==(Types::ClockIn::Type::Start))
-
-            if latest_clockin.nil?
+            if (latest_clockin = clockins.find(&.type.==(Types::ClockIn::Type::Start))).nil?
               Utils::Display.fatal!("Clock in status is clocked in but clock in can't be found!")
             end
 
