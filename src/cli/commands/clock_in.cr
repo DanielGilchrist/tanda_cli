@@ -86,7 +86,7 @@ module Tanda::CLI
           in ClockInStatus::ClockedOut
             return
           in ClockInStatus::BreakStarted
-            Utils::Display.error!("You can't clockin when a break has started!")
+            Utils::Display.error!("You can't clock in when a break has started!")
           end
         end
 
