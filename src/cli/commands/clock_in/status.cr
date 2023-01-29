@@ -26,8 +26,7 @@ module Tanda::CLI
         private def handle_clocked_in(clockins : Array(Types::ClockIn))
           puts "You are clocked in"
 
-          finished_break = clockins.find(&.type.==(Types::ClockIn::Type::BreakFinish))
-          if finished_break
+          if finished_break = clockins.find(&.type.==(Types::ClockIn::Type::BreakFinish))
             puts "You finished your break at #{finished_break.pretty_date_time}"
           else
             latest_clockin = clockins.find(&.type.==(Types::ClockIn::Type::Start))
@@ -43,8 +42,7 @@ module Tanda::CLI
         private def handle_clocked_out(clockins : Array(Types::ClockIn))
           puts "You are clocked out"
 
-          latest_clockout = clockins.find(&.type.==(Types::ClockIn::Type::Finish))
-          if latest_clockout
+          if latest_clockout = clockins.find(&.type.==(Types::ClockIn::Type::Finish))
             puts "You clocked out at #{latest_clockout.pretty_date_time}"
           else
             puts "You aren't currently clocked in"
@@ -54,9 +52,7 @@ module Tanda::CLI
         private def handle_break_started(clockins : Array(Types::ClockIn))
           puts "You are on break"
 
-          latest_break_start = clockins.find(&.type.==(Types::ClockIn::Type::BreakStart))
-
-          if latest_break_start.nil?
+          if (latest_break_start = clockins.find(&.type.==(Types::ClockIn::Type::BreakStart))).nil?
             Utils::Display.fatal!("Clock in status is break start but break start can't be found!")
           end
 
