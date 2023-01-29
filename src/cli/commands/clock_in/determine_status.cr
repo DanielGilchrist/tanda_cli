@@ -4,7 +4,7 @@ module Tanda::CLI
       module DetermineStatus
         @clockins_by_type : Hash(Types::ClockIn::Type, Array(Types::ClockIn))? = nil
 
-        enum ClockInStatus
+        private enum ClockInStatus
           ClockedIn
           ClockedOut
           BreakStarted
