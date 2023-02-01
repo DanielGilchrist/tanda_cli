@@ -45,7 +45,7 @@ module Tanda::CLI
       # This class should only be initialized with the `from` class method
       private def initialize(@value : T | Types::Error); end
 
-      def or(& : Types::Error -> _)
+      def or(& : Types::Error -> U) : T | U forall U
         value = self.value
         return value unless value.is_a?(Types::Error)
 

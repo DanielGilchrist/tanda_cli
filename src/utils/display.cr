@@ -48,7 +48,7 @@ module Tanda::CLI
         display_message(Type::Error, message, value)
       end
 
-      def error(message : String, value = nil, & : String::Builder -> _)
+      def error(message : String, value = nil, & : String::Builder ->)
         error(message, value)
 
         string = String.build do |builder|
@@ -70,7 +70,7 @@ module Tanda::CLI
         exit
       end
 
-      def error!(message : String, value = nil, &block : String::Builder -> _) : NoReturn
+      def error!(message : String, value = nil, &block : String::Builder ->) : NoReturn
         error(message, value, &block)
         exit
       end
