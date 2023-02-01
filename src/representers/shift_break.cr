@@ -15,7 +15,7 @@ module Tanda::CLI
         pretty_finish = object.pretty_finish_time
         with_padding("Finish", pretty_finish, builder) if pretty_finish
 
-        with_padding("Length", object.length, builder)
+        with_padding("Length", object.pretty_ongoing_length, builder)
         builder << "\n"
       end
     end

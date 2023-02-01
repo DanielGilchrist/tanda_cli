@@ -43,7 +43,10 @@ module Tanda::CLI
 
         if !leave_requests_by_id.empty?
           shifts.each do |shift|
-            leave_request = leave_requests_by_id[shift.leave_request_id]?
+            leave_request_id = shift.leave_request_id
+            next if leave_request_id.nil?
+
+            leave_request = leave_requests_by_id[leave_request_id]?
             next if leave_request.nil?
 
             shift.set_leave_request!(leave_request)
@@ -81,31 +84,27 @@ module Tanda::CLI
       end
 
       def time_worked : Time::Span?
-        s = start_time
-        return if s.nil?
+        start_time = self.start_time
+        return if start_time.nil?
 
-        f = finish_time
-        return if f.nil?
+        finish_time = self.finish_time
+        return if finish_time.nil?
 
-        (f - s) - total_break_minutes
+        (finish_time - start_time) - total_break_minutes
       end
 
       def worked_so_far : Time::Span?
-        s = start_time
-        return if s.nil?
+        start_time = self.start_time
+        return if start_time.nil?
 
         now = Utils::Time.now
-        return if now.date != s.date
+        return if now.date != start_time.date
 
-        (now - s) - total_break_minutes
+        (now - start_time) - total_break_minutes
       end
 
-      def effective_breaks : Array(ShiftBreak)
-        breaks.reject(&.length.zero?)
-      end
-
-      def total_break_minutes : Time::Span
-        effective_breaks.sum(&.length).minutes
+      private def total_break_minutes : Time::Span
+        breaks.sum(&.ongoing_length).minutes
       end
     end
   end

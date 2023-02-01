@@ -29,11 +29,7 @@ module Tanda::CLI
       getter id : Int32
       getter name : String
       getter user_id : Int32
-      property current : Bool
-
-      def current? : Bool
-        current
-      end
+      property? current : Bool
     end
 
     class AccessToken
@@ -166,13 +162,6 @@ module Tanda::CLI
 
     def mode=(value : String)
       config.mode = value
-    end
-
-    def token! : String
-      token = access_token.token
-      Utils::Display.fatal!("Token is missing") if token.nil?
-
-      token
     end
 
     def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)

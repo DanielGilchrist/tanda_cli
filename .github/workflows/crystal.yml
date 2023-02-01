@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     container:
@@ -16,13 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Install dependencies
       run: shards install
+
     - name: Check formatting
       run: crystal tool format --check
+
     - name: Lint
       run: ./bin/ameba
+
     - name: Compile
       run: crystal build src/tanda_cli.cr
+
     - name: Run tests
       run: ./scripts/run-spec.sh

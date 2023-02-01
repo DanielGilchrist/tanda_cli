@@ -63,6 +63,9 @@ tanda_cli clockin start
 tanda_cli clockin finish
 tanda_cli clockin break start
 tanda_cli clockin break finish
+# Skip clock in validations
+tanda_cli clockin start --skip-validations
+
 # View current clock in status
 tanda_cli clockin status
 # Display clock ins for today
