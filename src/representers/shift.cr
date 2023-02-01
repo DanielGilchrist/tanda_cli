@@ -26,7 +26,7 @@ module Tanda::CLI
 
       private def display_shift_breaks(builder : String::Builder)
         builder << "Breaks:\n"
-        object.effective_breaks.sort_by(&.id).each do |shift_break|
+        object.breaks.sort_by(&.id).each do |shift_break|
           builder << ShiftBreak.new(shift_break).build
           builder << "\n"
         end
