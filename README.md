@@ -3,9 +3,9 @@
 ## Disclaimer
 This is a work in progress and (currently) primarily built to suit my own needs.
 
-This repo is severely lacking tests at the moment so I'll probably be a bit relucant to accept pull requests as it will be difficult to write your own without a solid base.
+This repo is severely lacking tests at the moment so I may be a bit relucant to accept pull requests depending on complexity as without tests it can be very diffcult to avoid regressions.
 
-Regardless of this, if you find this useful and have feature requests / ideas feel free to submit a pull request / issue.
+Regardless of this, if you find this useful and have feature requests / ideas feel free to submit a pull request / issue :~)
 
 ## Installation
 
