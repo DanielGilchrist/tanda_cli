@@ -1,6 +1,16 @@
 module Tanda::CLI
   class CLI::Parser
     module Helpers
+      @config : Configuration? = nil
+
+      private def config
+        @config ||= config_builder.call
+      end
+
+      private def config_builder : -> Configuration
+        ->{ Configuration.init }
+      end
+
       private def build_client_with_current_user : API::Client
         client = create_client_from_config
         CLI::CurrentUser.new(client, config).set!

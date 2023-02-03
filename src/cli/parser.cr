@@ -9,7 +9,11 @@ module Tanda::CLI
   class CLI::Parser
     include CLI::Parser::Helpers
 
-    def initialize(@config : Configuration, @args = ARGV); end
+    def self.parse!
+      new.parse!
+    end
+
+    def initialize(@args = ARGV); end
 
     def parse!
       OptionParser.parse(args) do |parser|
@@ -19,23 +23,22 @@ module Tanda::CLI
       end
     end
 
-    private getter config : Configuration
     private getter args : Array(String)
 
     # Options that don't make API requests
     private def parse_standard_options!(parser : OptionParser)
       parser.on("time_zone", "See the currently set time zone") do
         maybe_display_staging_warning
-        CLI::Parser::TimeZone.new(parser, config).parse
+        CLI::Parser::TimeZone.new(parser, config_builder).parse
       end
 
       parser.on("current_user", "Display the current user") do
         maybe_display_staging_warning
-        CLI::Parser::CurrentUser.new(parser, config).parse
+        CLI::Parser::CurrentUser.new(parser, config_builder).parse
       end
 
       parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
-        CLI::Parser::Mode.new(parser, config).parse
+        CLI::Parser::Mode.new(parser, config_builder).parse
       end
     end
 
