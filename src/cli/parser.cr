@@ -47,15 +47,15 @@ module Tanda::CLI
       end
 
       parser.on("time_worked", "See how many hours you've worked") do
-        CLI::Parser::TimeWorked.new(parser, build_client_with_current_user).parse
+        CLI::Parser::TimeWorked.new(parser, ->{ build_client_with_current_user }).parse
       end
 
       parser.on("clockin", "Clock in/out") do
-        CLI::Parser::ClockIn.new(parser, build_client_with_current_user).parse
+        CLI::Parser::ClockIn.new(parser, ->{ build_client_with_current_user }).parse
       end
 
       parser.on("balance", "Check your leave balances") do
-        CLI::Parser::LeaveBalance.new(parser, build_client_with_current_user).parse
+        CLI::Parser::LeaveBalance.new(parser, ->{ build_client_with_current_user }).parse
       end
 
       parser.on("refetch_token", "Refetch token for the current environment") do

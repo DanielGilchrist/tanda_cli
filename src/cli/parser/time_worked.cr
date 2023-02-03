@@ -1,8 +1,6 @@
 module Tanda::CLI
   class CLI::Parser
-    class TimeWorked
-      def initialize(@parser : OptionParser, @client : API::Client); end
-
+    class TimeWorked < APIParser
       def parse
         display = false
 
@@ -20,9 +18,6 @@ module Tanda::CLI
           CLI::Commands::TimeWorked::Week.new(client, display).execute
         end
       end
-
-      private getter parser : OptionParser
-      private getter client : API::Client
     end
   end
 end

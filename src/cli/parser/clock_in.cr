@@ -1,6 +1,6 @@
 module Tanda::CLI
   class CLI::Parser
-    class ClockIn
+    class ClockIn < APIParser
       enum ClockType
         Start
         Finish
@@ -11,8 +11,6 @@ module Tanda::CLI
           to_s.underscore
         end
       end
-
-      def initialize(@parser : OptionParser, @client : API::Client); end
 
       def parse
         parser.on("status", "Check clockin status") do
@@ -49,9 +47,6 @@ module Tanda::CLI
           end
         end
       end
-
-      private getter parser : OptionParser
-      private getter client : API::Client
 
       private def execute_clock_in(type : ClockType, skip_validations : Bool = false)
         CLI::Commands::ClockIn.new(client, type, skip_validations).execute

@@ -1,9 +1,7 @@
 module Tanda::CLI
   class CLI::Parser
-    class LeaveBalance
+    class LeaveBalance < APIParser
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
-
-      def initialize(@parser : OptionParser, @client : API::Client); end
 
       def parse
         leave_balance = client.leave_balances.or(&.display!).find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
@@ -11,9 +9,6 @@ module Tanda::CLI
 
         Representers::LeaveBalance.new(leave_balance).display
       end
-
-      private getter parser : OptionParser
-      private getter client : API::Client
     end
   end
 end
