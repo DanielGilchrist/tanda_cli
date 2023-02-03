@@ -1,7 +1,7 @@
 module Tanda::CLI
   class CLI::Parser
     abstract class ConfigParser
-      def initialize(@parser : OptionParser, @config : Config); end
+      def initialize(@parser : OptionParser, @config : Configuration); end
 
       abstract def parse
 
