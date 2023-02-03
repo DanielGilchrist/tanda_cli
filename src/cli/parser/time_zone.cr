@@ -1,8 +1,6 @@
 module Tanda::CLI
   class CLI::Parser
-    class TimeZone
-      def initialize(@parser : OptionParser, @config : Configuration); end
-
+    class TimeZone < ConfigParser
       def parse
         new_time_zone : String? = nil
 
@@ -15,9 +13,6 @@ module Tanda::CLI
         CLI::Commands::TimeZone.new(config, new_time_zone).execute
         exit
       end
-
-      private getter parser : OptionParser
-      private getter config : Configuration
     end
   end
 end

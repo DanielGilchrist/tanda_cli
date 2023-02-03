@@ -12,8 +12,7 @@ module Tanda::CLI
   extend self
 
   def main
-    config = Configuration.init
-    CLI::Parser.new(config).parse!
+    CLI::Parser.parse!
   end
 end
 

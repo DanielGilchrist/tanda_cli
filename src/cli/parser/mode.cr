@@ -2,9 +2,7 @@ require "uri"
 
 module Tanda::CLI
   class CLI::Parser
-    class Mode
-      def initialize(@parser : OptionParser, @config : Configuration); end
-
+    class Mode < ConfigParser
       def parse
         parser.on("production", "Set mode to production") do
           config.mode = "production"
@@ -49,9 +47,6 @@ module Tanda::CLI
           exit
         end
       end
-
-      private getter parser
-      private getter config
     end
   end
 end
