@@ -46,7 +46,7 @@ module Tanda::CLI
         organisations[index]? || handle_invalid_selection(organisations.size, user_input)
       else
         handle_invalid_selection
-      end.tap { puts }
+      end
     end
 
     private def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil) : Nil
