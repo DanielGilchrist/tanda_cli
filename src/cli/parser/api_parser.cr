@@ -9,4 +9,3 @@ module Tanda::CLI
     end
   end
 end
-
