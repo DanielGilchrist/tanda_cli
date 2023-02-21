@@ -90,7 +90,7 @@ module Tanda::CLI
         finish_time = self.finish_time
         return if finish_time.nil?
 
-        (finish_time - start_time) - total_break_minutes
+        (finish_time - start_time) - total_unpaid_break_minutes
       end
 
       def worked_so_far : Time::Span?
@@ -100,11 +100,11 @@ module Tanda::CLI
         now = Utils::Time.now
         return if now.date != start_time.date
 
-        (now - start_time) - total_break_minutes
+        (now - start_time) - total_unpaid_break_minutes
       end
 
-      private def total_break_minutes : Time::Span
-        breaks.sum(&.ongoing_length).minutes
+      private def total_unpaid_break_minutes : Time::Span
+        breaks.reject(&.paid?).sum(&.ongoing_length).minutes
       end
     end
   end
