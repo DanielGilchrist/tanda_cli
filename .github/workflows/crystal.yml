@@ -7,26 +7,37 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        crystal: [latest, nightly]
 
-    container:
-      image: crystallang/crystal:1.7.2
+    runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Download source
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: shards install
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: ${{ matrix.crystal }}
 
-    - name: Check formatting
-      run: crystal tool format --check
+      - name: Install shards
+        run: shards install
 
-    - name: Lint
-      run: ./bin/ameba
+      - name: Check formatting
+        run: crystal tool format; git diff --exit-code
+        if: matrix.crystal == 'latest'
 
-    - name: Compile
-      run: crystal build src/tanda_cli.cr
+      - name: Lint
+        run: ./bin/ameba
 
-    - name: Run tests
-      run: ./scripts/run-spec.sh
+      - name: Compile
+        run: crystal build src/tanda_cli.cr
+
+      - name: Run tests
+        run: ./scripts/run-spec.sh
+
