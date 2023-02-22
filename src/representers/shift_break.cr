@@ -6,8 +6,10 @@ module Tanda::CLI
   module Representers
     class ShiftBreak < Base(Types::ShiftBreak)
       private def build_display(builder : String::Builder)
-        with_padding("ID", object.id, builder)
-        with_padding("Shift ID", object.shift_id, builder)
+        {% if flag?(:debug) %}
+          with_padding("ID", object.id, builder)
+          with_padding("Shift ID", object.shift_id, builder)
+        {% end %}
 
         pretty_start = object.pretty_start_time
         with_padding("Start", pretty_start, builder) if pretty_start

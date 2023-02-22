@@ -5,7 +5,10 @@ module Tanda::CLI
   module Representers
     class ClockIn < Base(Types::ClockIn)
       private def build_display(builder : String::Builder)
-        with_padding("ID", object.id, builder)
+        {% if flag?(:debug) %}
+          with_padding("ID", object.id, builder)
+        {% end %}
+
         with_padding("Time", object.pretty_date_time, builder)
         with_padding("Type", object.type, builder)
         builder << "\n"
