@@ -13,8 +13,8 @@ module Tanda::CLI
 
           with_padding("Name", object.name, builder)
           with_padding("Country", object.country, builder)
-
           with_padding("Locale", object.locale, builder)
+
           builder << "\n"
         end
       end
