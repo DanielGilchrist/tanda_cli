@@ -7,8 +7,11 @@ module Tanda::CLI
   module Representers
     class Shift < Base(Types::Shift)
       private def build_display(builder : String::Builder)
-        builder << "ID: #{object.id}\n"
-        builder << "User ID: #{object.user_id}\n"
+        {% if flag?(:debug) %}
+          builder << "ID: #{object.id}\n"
+          builder << "User ID: #{object.user_id}\n"
+        {% end %}
+
         builder << "Date: #{object.pretty_date}\n"
 
         pretty_start = object.pretty_start_time

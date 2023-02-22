@@ -9,8 +9,11 @@ module Tanda::CLI
       end
 
       private def build_display(builder : String::Builder)
-        builder << "Shift ID: #{object.shift_id}\n"
-        builder << "User ID: #{leave_request.user_id}\n"
+        {% if flag?(:debug) %}
+          builder << "Shift ID: #{object.shift_id}\n"
+          builder << "User ID: #{leave_request.user_id}\n"
+        {% end %}
+
         builder << "Date: #{object.pretty_date}\n"
 
         start = object.start_time
