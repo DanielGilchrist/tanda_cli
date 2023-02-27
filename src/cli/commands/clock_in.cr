@@ -5,25 +5,34 @@ module Tanda::CLI
     class ClockIn
       alias ClockType = CLI::Parser::ClockIn::ClockType
 
-      def initialize(@client : API::Client, @clock_type : ClockType, @skip_validations : Bool = false); end
+      def initialize(@client : API::Client, @clock_type : ClockType, @options : CLI::Parser::ClockIn::Options::Frozen); end
 
       def execute
         now = Utils::Time.now
 
-        if skip_validations?
+        if options.clockin_photo?
+          photo_bytes = File.read("/Users/daniel/Pictures/thumbs_up.png")
+          photo = "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
+          puts "PHOTO_ENCODED"
+          puts photo
+        end
+
+        puts "#{photo.size / 1.37}" if photo
+
+        if options.skip_validations?
           Utils::Display.warning("Skipping clock in validations")
         else
           ClockInValidator.validate!(client, clock_type, now)
         end
 
-        client.send_clock_in(now, clock_type.to_underscore).or(&.display!)
+        client.send_clock_in(now, clock_type.to_underscore, photo).or(&.display!)
 
         display_success_message
       end
 
       private getter client
       private getter clock_type
-      private getter? skip_validations
+      private getter options
 
       private def display_success_message
         success_message =
