@@ -1,34 +1,42 @@
 module Tanda::CLI
   class CLI::Parser
     class ClockIn < APIParser
-      struct Options
+      module Options
         struct Frozen
-          def initialize(@skip_validations : Bool = false, @clockin_photo : Bool = false); end
+          def initialize(@skip_validations : Bool, @clockin_photo : Bool); end
+
           getter? skip_validations, clockin_photo
         end
 
-        def self.parse : Options
-          options = Options.new
+        struct Setter
+          def self.parse : self
+            options = new
 
-          OptionParser.parse do |clockin_options_parser|
-            clockin_options_parser.on("-p", "--with-clockin-photo", "Use a clockin photo") do
-              options.clockin_photo = true
+            OptionParser.parse do |clockin_options_parser|
+              clockin_options_parser.on("-p", "--with-clockin-photo", "Use a clockin photo") do
+                options.clockin_photo = true
+              end
+
+              clockin_options_parser.on("--skip-validations", "Skip clock in validations") do
+                options.skip_validations = true
+              end
             end
 
-            clockin_options_parser.on("--skip-validations", "Skip clock in validations") do
-              options.skip_validations = true
-            end
+            options
           end
 
-          options
-        end
+          def initialize
+            @skip_validations = false
+            @clockin_photo = false
+          end
 
-        def initialize(@skip_validations : Bool = false, @clockin_photo : Bool = false); end
+          setter skip_validations, clockin_photo
 
-        property? skip_validations, clockin_photo
+          def to_frozen : Frozen
+            Frozen.new(skip_validations: skip_validations?, clockin_photo: clockin_photo?)
+          end
 
-        def to_frozen : Frozen
-          Frozen.new(skip_validations: skip_validations?, clockin_photo: clockin_photo?)
+          private getter? skip_validations, clockin_photo
         end
       end
 
@@ -52,7 +60,7 @@ module Tanda::CLI
           CLI::Commands::ClockIn::Display.new(client).execute
         end
 
-        options = Options.parse
+        options = Options::Setter.parse
 
         parser.on("start", "Clock in") do
           execute_clock_in(ClockType::Start, options)
@@ -73,7 +81,7 @@ module Tanda::CLI
         end
       end
 
-      private def execute_clock_in(type : ClockType, options : Options)
+      private def execute_clock_in(type : ClockType, options : Options::Setter)
         CLI::Commands::ClockIn.new(client, type, options.to_frozen).execute
         exit
       end
