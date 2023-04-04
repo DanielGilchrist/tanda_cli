@@ -3,6 +3,7 @@ require "file_utils"
 
 require "./configuration/**"
 require "./types/access_token"
+require "./utils/url"
 
 module Tanda::CLI
   class Configuration
@@ -12,13 +13,6 @@ module Tanda::CLI
     CONFIG_PATH = "#{CONFIG_DIR}/config.json"
 
     DEFAULT_SITE_PREFIX = "eu"
-
-    VALID_HOSTS = [
-      ".tanda.co",
-      ".workforce.com",
-    ]
-
-    alias ErrorString = String
 
     class Organisation
       include JSON::Serializable
@@ -125,19 +119,6 @@ module Tanda::CLI
       end || new
     end
 
-    def self.validate_url(url : String) : URI | ErrorString
-      uri = URI.parse(url).normalize!
-      return "Invalid URL" if uri.opaque?
-      return "URL must be prefixed with \"https://\"" if uri.scheme != "https"
-      return "URL cannot contain query parameters" if uri.query
-
-      host = uri.host
-      doesnt_contain_valid_host = host && VALID_HOSTS.none? { |valid_host| host.includes?(valid_host) }
-      return "Host must contain #{VALID_HOSTS.join(" or ")}" if doesnt_contain_valid_host
-
-      uri
-    end
-
     def initialize(@config : Config = Config.new); end
 
     delegate mode, to: config
@@ -188,7 +169,7 @@ module Tanda::CLI
         prefix = "#{site_prefix}." if site_prefix != "my"
         "https://staging.#{prefix}tanda.co/api/v2"
       else
-        validated_uri = self.class.validate_url(mode)
+        validated_uri = Utils::URL.validate_url(mode)
         Utils::Display.error!(validated_uri, mode) if validated_uri.is_a?(String)
 
         "#{validated_uri}/api/v2"
