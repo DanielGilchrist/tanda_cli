@@ -169,7 +169,7 @@ module Tanda::CLI
         prefix = "#{site_prefix}." if site_prefix != "my"
         "https://staging.#{prefix}tanda.co/api/v2"
       else
-        validated_uri = Utils::URL.validate_url(mode)
+        validated_uri = Utils::URL.validate(mode)
         Utils::Display.error!(validated_uri, mode) if validated_uri.is_a?(String)
 
         "#{validated_uri}/api/v2"

@@ -23,7 +23,7 @@ module Tanda::CLI
         parser.on("--custom=CUSTOM", "Set mode to custom URL") do |custom|
           Utils::Display.error!("Must pass an argument to custom") if custom.blank?
 
-          uri = Utils::URL.validate_url(custom)
+          uri = Utils::URL.validate(custom)
 
           Utils::Display.error!(uri.message, custom) if uri.is_a?(Utils::URL::Error)
 
