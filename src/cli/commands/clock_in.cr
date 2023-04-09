@@ -43,18 +43,10 @@ module Tanda::CLI
       end
 
       private struct ClockInValidator
-        include ClockIn::DetermineStatus
-
         def self.validate!(client : API::Client, clock_type : ClockType, now : Time)
-          todays_clockins = client.clockins(now).or(&.display!)
-          new(todays_clockins, clock_type).validate!
+          todays_shifts = client.todays_shifts.or(&.display!)
+          new(todays_shifts, clock_type).validate!
         end
-
-        # this struct should only be initialized from the `validate!` class method
-        private def initialize(@clockins : Array(Types::ClockIn), @clock_type : ClockType); end
-
-        private getter clockins : Array(Types::ClockIn)
-        private getter clock_type : ClockType
 
         def validate!
           case clock_type
@@ -67,6 +59,36 @@ module Tanda::CLI
           in ClockType::BreakFinish
             validate_clockin_break_finish!
           end
+        end
+
+        # this struct should only be initialized from the `validate!` class method
+        private def initialize(@shifts : Array(Types::Shift), @clock_type : ClockType); end
+
+        private getter shifts : Array(Types::Shift)
+        private getter clock_type : ClockType
+
+        private enum ClockInStatus
+          ClockedIn
+          ClockedOut
+          BreakStarted
+        end
+
+        private def determine_status : ClockInStatus
+          if break_started?
+            ClockInStatus::BreakStarted
+          elsif clocked_in?
+            ClockInStatus::ClockedIn
+          else
+            ClockInStatus::ClockedOut
+          end
+        end
+
+        private def break_started? : Bool
+          shifts.any?(&.ongoing_break?)
+        end
+
+        private def clocked_in? : Bool
+          shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }
         end
 
         private def validate_clockin_start!

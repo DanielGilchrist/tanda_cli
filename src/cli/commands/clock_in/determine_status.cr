@@ -1,6 +1,7 @@
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
+      # TODO - This is only used for the status command, so it should be moved
       module DetermineStatus
         @clockins_by_type : Hash(Types::ClockIn::Type, Array(Types::ClockIn))? = nil
 
