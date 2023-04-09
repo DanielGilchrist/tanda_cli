@@ -83,6 +83,10 @@ module Tanda::CLI
         @leave_request = leave_request
       end
 
+      def ongoing_break? : Bool
+        breaks.any?(&.ongoing?)
+      end
+
       def time_worked : Time::Span?
         start_time = self.start_time
         return if start_time.nil?
