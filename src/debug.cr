@@ -11,10 +11,11 @@ module Tanda::CLI
       def write(entry : Log::Entry)
         puts "\n"
         pp "================================= DEBUG ================================="
-        puts entry.message.colorize(:yellow)
+        puts entry.message.colorize.yellow
         puts "\n"
         entry.data.each do |(k, v)|
-          print "#{"#{k}:".colorize(:light_yellow)} "
+          key = "#{k}:"
+          print "#{key.colorize.light_yellow}"
           pp v
           puts "\n" unless http_debug_message?(entry)
         end

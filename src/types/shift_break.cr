@@ -26,6 +26,12 @@ module Tanda::CLI
         (Utils::Time.now - start_time).minutes.to_u16
       end
 
+      def ongoing? : Bool
+        return false unless start_time
+
+        finish_time.nil?
+      end
+
       def pretty_ongoing_length : String
         "#{ongoing_length} minutes"
       end

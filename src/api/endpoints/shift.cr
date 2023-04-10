@@ -6,6 +6,10 @@ module Tanda::CLI
     module Endpoints::Shift
       include Endpoints::Interface
 
+      def todays_shifts : API::Result(Array(Types::Shift))
+        shifts(Utils::Time.now)
+      end
+
       def shifts(date : Time) : API::Result(Array(Types::Shift))
         request_shifts(date, date)
       end
