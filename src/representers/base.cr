@@ -1,6 +1,8 @@
 module Tanda::CLI
   module Representers
     abstract class Base(T)
+      NEWLINE_BYTE = 10_u8
+
       def initialize(object : T)
         @object = object
       end
@@ -12,6 +14,9 @@ module Tanda::CLI
       def build : String
         String.build do |builder|
           build_display(builder)
+          builder.chomp!(NEWLINE_BYTE)
+          builder.chomp!(NEWLINE_BYTE)
+          builder << "\n\n"
         end
       end
 

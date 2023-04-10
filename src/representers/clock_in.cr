@@ -11,8 +11,6 @@ module Tanda::CLI
 
         with_padding("Time", object.pretty_date_time, builder)
         with_padding("Type", object.type, builder)
-
-        builder << "\n"
       end
     end
   end

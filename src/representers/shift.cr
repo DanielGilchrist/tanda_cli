@@ -23,15 +23,12 @@ module Tanda::CLI
         builder << "Status: #{object.status}\n"
 
         display_shift_breaks(builder) if !object.valid_breaks.empty?
-
-        builder << "\n"
       end
 
       private def display_shift_breaks(builder : String::Builder)
         builder << "Breaks:\n"
         object.valid_breaks.sort_by(&.id).each do |shift_break|
           builder << ShiftBreak.new(shift_break).build
-          builder << "\n"
         end
       end
     end
