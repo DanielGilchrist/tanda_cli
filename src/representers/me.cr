@@ -18,7 +18,6 @@ module Tanda::CLI
         builder << "Organisations:\n"
         object.organisations.each do |organisation|
           builder << Organisation.new(organisation).build
-          builder << "\n"
         end
       end
     end

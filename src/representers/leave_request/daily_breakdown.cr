@@ -24,8 +24,6 @@ module Tanda::CLI
 
         builder << "Status: #{leave_request.status}\n"
         builder << "Leave type: #{leave_request.leave_type}\n"
-
-        builder << "\n"
       end
 
       private getter leave_request : Types::LeaveRequest

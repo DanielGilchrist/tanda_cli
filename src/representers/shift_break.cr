@@ -19,8 +19,6 @@ module Tanda::CLI
 
         with_padding("Length", object.pretty_ongoing_length, builder)
         with_padding("Paid", object.paid?, builder)
-
-        builder << "\n"
       end
     end
   end
