@@ -1,5 +1,3 @@
-require "./clock_in/determine_status"
-
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
