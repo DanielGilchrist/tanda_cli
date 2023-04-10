@@ -6,12 +6,14 @@ module Tanda::CLI
       extend self
 
       SUCCESS_STRING = "Success:".colorize.green
+      INFO_STRING    = "Info:".colorize.light_green
       WARNING_STRING = "Warning:".colorize.yellow
       ERROR_STRING   = "Error:".colorize.light_red
       FATAL_STRING   = "Fatal Error:".colorize.red
 
       enum Type
         Success
+        Info
         Warning
         Error
         Fatal
@@ -19,6 +21,10 @@ module Tanda::CLI
 
       def success(message : String, value = nil)
         display_message(Type::Success, message, value)
+      end
+
+      def info(message : String, value = nil)
+        display_message(Type::Info, message, value)
       end
 
       def warning(message : String)
@@ -92,6 +98,8 @@ module Tanda::CLI
         case type
         in Type::Success
           SUCCESS_STRING
+        in Type::Info
+          INFO_STRING
         in Type::Warning
           WARNING_STRING
         in Type::Error

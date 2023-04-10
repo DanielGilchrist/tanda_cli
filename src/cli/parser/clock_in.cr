@@ -3,9 +3,10 @@ module Tanda::CLI
     class ClockIn < APIParser
       module Options
         struct Frozen
-          def initialize(@skip_validations : Bool, @clockin_photo : Bool); end
+          def initialize(@skip_validations : Bool, @clockin_photo : String?); end
 
-          getter? skip_validations, clockin_photo
+          getter clockin_photo : String?
+          getter? skip_validations
         end
 
         struct Setter
@@ -13,8 +14,8 @@ module Tanda::CLI
             options = new
 
             OptionParser.parse do |clockin_options_parser|
-              clockin_options_parser.on("-p", "--with-clockin-photo", "Use a clockin photo") do
-                options.clockin_photo = true
+              clockin_options_parser.on("--photo=PHOTO", "Use a clockin photo") do |photo_path|
+                options.clockin_photo = photo_path
               end
 
               clockin_options_parser.on("--skip-validations", "Skip clock in validations") do
@@ -27,10 +28,11 @@ module Tanda::CLI
 
           def initialize
             @skip_validations = false
-            @clockin_photo = false
+            @clockin_photo = nil
           end
 
-          setter skip_validations, clockin_photo
+          setter skip_validations : Bool
+          setter clockin_photo : String?
 
           def to_frozen : Frozen
             Frozen.new(skip_validations: skip_validations?, clockin_photo: clockin_photo?)

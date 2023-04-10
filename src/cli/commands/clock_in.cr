@@ -1,6 +1,9 @@
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
+      ONE_MEGABYTE            = 1 * 1024 * 1024
+      MAGIC_IMAGE_CALC_NUMBER = 1.37
+
       alias ClockType = CLI::Parser::ClockIn::ClockType
 
       def initialize(@client : API::Client, @clock_type : ClockType, @options : CLI::Parser::ClockIn::Options::Frozen); end
@@ -8,19 +11,16 @@ module Tanda::CLI
       def execute
         now = Utils::Time.now
 
-        if options.clockin_photo?
-          photo_bytes = File.read("/Users/daniel/Pictures/thumbs_up.png")
-          photo = "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
-          puts "PHOTO_ENCODED"
-          puts photo
-        end
-
-        puts "#{photo.size / 1.37}" if photo
-
         if options.skip_validations?
           Utils::Display.warning("Skipping clock in validations")
         else
           ClockInValidator.validate!(client, clock_type, now)
+        end
+
+        if clockin_photo = options.clockin_photo
+          photo_bytes = File.read(clockin_photo)
+          photo = "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
+          Utils::Display.error!("Photo size is too big!") if (photo_bytes.size / MAGIC_IMAGE_CALC_NUMBER) > ONE_MEGABYTE
         end
 
         client.send_clock_in(now, clock_type.to_underscore, photo).or(&.display!)
