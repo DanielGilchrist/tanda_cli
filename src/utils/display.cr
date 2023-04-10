@@ -5,10 +5,10 @@ module Tanda::CLI
     module Display
       extend self
 
-      SUCCESS_STRING = "Success:".colorize(:green)
-      WARNING_STRING = "Warning:".colorize(:yellow)
-      ERROR_STRING   = "Error:".colorize(:light_red)
-      FATAL_STRING   = "Fatal Error:".colorize(:red)
+      SUCCESS_STRING = "Success:".colorize.green
+      WARNING_STRING = "Warning:".colorize.yellow
+      ERROR_STRING   = "Error:".colorize.light_red
+      FATAL_STRING   = "Fatal Error:".colorize.red
 
       enum Type
         Success
