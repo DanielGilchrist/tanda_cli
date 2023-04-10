@@ -65,6 +65,8 @@ tanda_cli clockin break start
 tanda_cli clockin break finish
 # Skip clock in validations
 tanda_cli clockin start --skip-validations
+# Specify a clock in photo (JPG or PNG <= 1MB)
+tanda_cli clockin start --photo "/path/to/photo"
 
 # View current clock in status
 tanda_cli clockin status
