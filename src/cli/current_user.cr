@@ -14,8 +14,8 @@ module Tanda::CLI
       user = user_from_config || user_from_api
 
       {% if flag?(:debug) %}
-        Utils::Display.warning("Current user is #{user.id} | #{user.organisation_name}")
-        Utils::Display.warning("Time Zone is #{user.time_zone}")
+        Utils::Display.info("Current user is #{user.id} | #{user.organisation_name}")
+        Utils::Display.info("Time Zone is #{user.time_zone}")
       {% end %}
 
       Current.set_user!(user)

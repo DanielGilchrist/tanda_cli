@@ -18,12 +18,18 @@ module Tanda::CLI
         API::Result(Array(Types::ClockIn)).from(response)
       end
 
-      def send_clock_in(time : Time, type : String) : API::Result(Nil)
+      def send_clock_in(
+        time : Time,
+        type : String,
+        photo : String? = nil
+      ) : API::Result(Nil)
         response = post("/clockins", body: {
           "time"    => time.to_unix.to_s,
           "type"    => type,
           "user_id" => Current.user.id.to_s,
-        })
+        }.tap do |options|
+          options["photo"] = photo if photo
+        end)
 
         API::Result(Nil).from(response)
       end
