@@ -57,7 +57,7 @@ module Tanda::CLI
           photo_bytes = read_file!
           validate_photo_size!(photo_bytes)
 
-          "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
+          encode_base_64!(photo_bytes)
         end
 
         private getter photo : String
@@ -76,6 +76,26 @@ module Tanda::CLI
           Utils::Display.error!("Photo is too large! (#{photo_bytes.bytesize} bytes)") do |sub_error|
             sub_error << "Please select a photo that is less than 1MB."
           end
+        end
+
+        private def encode_base_64!(photo_bytes : String) : String
+          if jpeg?
+            "data:image/jpeg;base64,#{Base64.strict_encode(photo_bytes)}"
+          elsif png?
+            "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
+          else
+            Utils::Display.error!("Unsupported photo format!") do |sub_error|
+              sub_error << "Please select a photo that is either a JPEG or PNG."
+            end
+          end
+        end
+
+        private def jpeg? : Bool
+          photo.ends_with?(".jpg") || photo.ends_with?(".jpeg")
+        end
+
+        private def png? : Bool
+          photo.ends_with?(".png")
         end
       end
 
