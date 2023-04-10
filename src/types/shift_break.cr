@@ -18,6 +18,10 @@ module Tanda::CLI
       @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
       getter finish_time : Time?
 
+      def valid? : Bool
+        !!start_time || length > 0
+      end
+
       def ongoing_length : UInt16
         start_time = self.start_time
         finish_time = self.finish_time

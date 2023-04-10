@@ -11,6 +11,7 @@ module Tanda::CLI
       # defaults
       @leave_request : Types::LeaveRequest? = nil
       @leave_request_set : Bool = false
+      @valid_breaks : Array(ShiftBreak)? = nil
 
       enum Status
         Pending
@@ -83,6 +84,10 @@ module Tanda::CLI
         @leave_request = leave_request
       end
 
+      def valid_breaks : Array(ShiftBreak)
+        @valid_breaks ||= breaks.select(&.valid?)
+      end
+
       def ongoing? : Bool
         return false unless start_time
 
@@ -90,7 +95,7 @@ module Tanda::CLI
       end
 
       def ongoing_break? : Bool
-        breaks.any?(&.ongoing?)
+        valid_breaks.any?(&.ongoing?)
       end
 
       def time_worked : Time::Span?
@@ -114,7 +119,7 @@ module Tanda::CLI
       end
 
       private def total_unpaid_break_minutes : Time::Span
-        breaks.reject(&.paid?).sum(&.ongoing_length).minutes
+        valid_breaks.reject(&.paid?).sum(&.ongoing_length).minutes
       end
     end
   end
