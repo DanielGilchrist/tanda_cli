@@ -81,7 +81,7 @@ module Tanda::CLI
       end
 
       private def sub_error(message : String)
-        puts "#{" " * ERROR_STRING.default.to_s.size} #{message}"
+        puts "#{" " * raw_size(ERROR_STRING)} #{message}"
       end
 
       private def display_message(type, message : String, value = nil)
@@ -99,6 +99,13 @@ module Tanda::CLI
         in Type::Fatal
           FATAL_STRING
         end
+      end
+
+      # Gets the size of the string without the colour codes
+      # "Error:".colorize.red.to_s         => "\e[31m\"Error:\"\e[0m" => 15
+      # "Error:".colorize.red.default.to_s => "Error:"                => 6
+      private def raw_size(colorized_string : Colorize::Object(String)) : UInt8
+        colorized_string.default.to_s.size.to_u8
       end
     end
   end
