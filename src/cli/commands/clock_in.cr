@@ -1,9 +1,6 @@
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
-      ONE_MEGABYTE            = 1 * 1024 * 1024
-      MAGIC_IMAGE_CALC_NUMBER = 1.37
-
       alias ClockType = CLI::Parser::ClockIn::ClockType
 
       def initialize(@client : API::Client, @clock_type : ClockType, @options : CLI::Parser::ClockIn::Options::Frozen); end
@@ -18,12 +15,10 @@ module Tanda::CLI
         end
 
         if clockin_photo = options.clockin_photo
-          photo_bytes = File.read(clockin_photo)
-          photo = "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
-          Utils::Display.error!("Photo size is too big!") if (photo_bytes.size / MAGIC_IMAGE_CALC_NUMBER) > ONE_MEGABYTE
+          parsed_photo = PhotoParser.parse(clockin_photo)
         end
 
-        client.send_clock_in(now, clock_type.to_underscore, photo).or(&.display!)
+        client.send_clock_in(now, clock_type.to_underscore, parsed_photo).or(&.display!)
 
         display_success_message
       end
@@ -47,6 +42,41 @@ module Tanda::CLI
 
         current_user = Current.user
         Utils::Display.success("#{success_message} (#{current_user.id} | #{current_user.organisation_name})")
+      end
+
+      private struct PhotoParser
+        ONE_MEGABYTE = 1 * 1024 * 1024
+
+        def self.parse(photo : String) : String?
+          new(photo).parse
+        end
+
+        def initialize(@photo : String); end
+
+        def parse : String?
+          photo_bytes = read_file!
+          validate_photo_size!(photo_bytes)
+
+          "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
+        end
+
+        private getter photo : String
+
+        private def read_file! : String
+          File.read(photo)
+        rescue File::NotFoundError
+          Utils::Display.error!("File not found!") do |sub_error|
+            sub_error << "The file '#{photo}' could not be found."
+          end
+        end
+
+        private def validate_photo_size!(photo_bytes : String)
+          return if photo_bytes.bytesize <= ONE_MEGABYTE
+
+          Utils::Display.error!("Photo is too large! (#{photo_bytes.bytesize} bytes)") do |sub_error|
+            sub_error << "Please select a photo that is less than 1MB."
+          end
+        end
       end
 
       private struct ClockInValidator
