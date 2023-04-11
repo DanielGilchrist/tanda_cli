@@ -84,6 +84,7 @@ tanda_cli mode staging
 # This will take you through the auth flow allowing a different region to be selected as well
 tanda_cli refetch_token
 ```
+<img width="582" alt="image" src="https://user-images.githubusercontent.com/13454550/231261211-21a90d65-1580-4c04-8bbc-d9a4fe419419.png">
 
 ## Development
 
