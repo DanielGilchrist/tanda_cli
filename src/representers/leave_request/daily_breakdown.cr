@@ -14,16 +14,14 @@ module Tanda::CLI
           builder << "User ID: #{leave_request.user_id}\n"
         {% end %}
 
-        builder << "Date: #{object.pretty_date}\n"
+        builder << "📅 #{object.pretty_date}\n"
 
         start = object.start_time
-        builder << "Start: #{start}\n" if start
-
         finish = object.finish_time
-        builder << "Finish: #{finish}\n" if finish
+        builder << "🕔 #{start} - #{finish}\n" if start || finish
 
-        builder << "Status: #{leave_request.status}\n"
-        builder << "Leave type: #{leave_request.leave_type}\n"
+        builder << "🚧 #{leave_request.status}\n"
+        builder << "🌴 #{leave_request.leave_type}\n"
       end
 
       private getter leave_request : Types::LeaveRequest

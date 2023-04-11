@@ -1,3 +1,5 @@
+require "colorize"
+
 module Tanda::CLI
   module CLI::Commands
     module TimeWorked
@@ -41,8 +43,8 @@ module Tanda::CLI
         end
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
-          time_worked && puts "Time worked: #{time_worked.hours} hours and #{time_worked.minutes} minutes"
-          (!time_worked && worked_so_far) && puts "Worked so far: #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+          time_worked && puts "#{"Time worked:".colorize.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+          (!time_worked && worked_so_far) && puts "#{"Worked so far:".colorize.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
 
           Representers::Shift.new(shift).display
         end
@@ -53,7 +55,7 @@ module Tanda::CLI
           # Don't bother showing days where there are no hours for leave
           return if length.zero?
 
-          puts "Leave taken: #{length.hours} hours and #{length.minutes} minutes"
+          puts "#{"Leave taken:".colorize.bold} #{length.hours} hours and #{length.minutes} minutes"
 
           Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
         end
