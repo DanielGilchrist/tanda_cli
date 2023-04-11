@@ -1,3 +1,5 @@
+require "colorize"
+
 require "./base"
 require "./shift_break"
 require "../types/shift"
@@ -25,7 +27,7 @@ module Tanda::CLI
       end
 
       private def display_shift_breaks(builder : String::Builder)
-        builder << "Breaks:\n"
+        builder << "Breaks:\n".colorize.bold
         object.valid_breaks.sort_by(&.id).each do |shift_break|
           builder << ShiftBreak.new(shift_break).build
         end
