@@ -22,8 +22,12 @@ module Tanda::CLI
 
       private abstract def build_display(builder : String::Builder)
 
-      protected def with_padding(key : String, value, builder : String::Builder)
-        builder << "    #{key}: #{value}\n"
+      protected def with_padding(value : String, builder : String::Builder)
+        builder << "    #{value}\n"
+      end
+
+      protected def titled_with_padding(title : String, value, builder : String::Builder)
+        with_padding("#{title}: #{value}", builder)
       end
 
       private getter object : T
