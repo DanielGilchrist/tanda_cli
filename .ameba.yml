@@ -6,7 +6,7 @@ Lint/DebugCalls:
 # Disabled by default
 Layout/LineLength:
   Enabled: true
-  MaxLength: 140 # default
+  MaxLength: 180 # default
 
 Lint/ComparisonToBoolean:
   Enabled: true
