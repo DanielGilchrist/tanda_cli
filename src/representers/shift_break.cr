@@ -13,8 +13,7 @@ module Tanda::CLI
 
         pretty_start = object.pretty_start_time
         pretty_finish = object.pretty_finish_time
-
-        with_padding("🕓 #{pretty_start} - #{pretty_finish}", builder)
+        with_padding("🕓 #{pretty_start} - #{pretty_finish}", builder) if pretty_start || pretty_finish
 
         with_padding("⏸️  #{object.pretty_ongoing_length}", builder)
         with_padding("💰 #{object.paid?}", builder)

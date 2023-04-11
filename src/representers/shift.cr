@@ -18,8 +18,7 @@ module Tanda::CLI
 
         pretty_start = object.pretty_start_time
         pretty_finish = object.pretty_finish_time
-
-        builder << "🕓 #{pretty_start} - #{pretty_finish}\n"
+        builder << "🕓 #{pretty_start} - #{pretty_finish}\n" if pretty_start || pretty_finish
 
         builder << "🚧 #{object.status}\n"
 
