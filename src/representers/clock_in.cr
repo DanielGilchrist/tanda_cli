@@ -9,8 +9,8 @@ module Tanda::CLI
           titled_with_padding("ID", object.id, builder)
         {% end %}
 
-        titled_with_padding("Time", object.pretty_date_time, builder)
-        titled_with_padding("Type", object.type, builder)
+        with_padding("🕔 #{object.pretty_date_time}", builder)
+        with_padding("🤔 #{object.type}", builder)
       end
     end
   end

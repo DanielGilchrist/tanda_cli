@@ -18,7 +18,6 @@ module Tanda::CLI
 
         start = object.start_time
         finish = object.finish_time
-
         builder << "🕔 #{start} - #{finish}\n"
 
         builder << "🚧 #{leave_request.status}\n"
