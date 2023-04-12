@@ -5,7 +5,7 @@ module Tanda::CLI
 
       record Error, message : String
 
-      def self.validate(url : String) : URI | Error
+      def validate(url : String) : URI | Error
         uri = URI.parse(url).normalize!
         Validator.new(uri).validate
       end
