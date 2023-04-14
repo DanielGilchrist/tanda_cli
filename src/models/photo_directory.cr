@@ -6,7 +6,7 @@ module Tanda::CLI
       def initialize(@path : String); end
 
       def valid? : Bool
-        Dir.exists?(@path) && valid_photo
+        Dir.exists?(@path) && !!valid_photo
       end
 
       def sample_photo : Photo?
