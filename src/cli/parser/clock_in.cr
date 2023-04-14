@@ -14,7 +14,7 @@ module Tanda::CLI
             options = new
 
             OptionParser.parse do |clockin_options_parser|
-              clockin_options_parser.on("--photo=PHOTO", "Use a clockin photo") do |photo_path|
+              clockin_options_parser.on("--photo=PHOTO", "Specify a clockin photo") do |photo_path|
                 options.clockin_photo = photo_path
               end
 
@@ -54,6 +54,35 @@ module Tanda::CLI
       end
 
       def parse
+        parser.on("photo", "View, set or clear clockin photo to be used by default") do
+          parser.on("-s PHOTO", "--set=PHOTO", "Set a clockin photo") do |path|
+            config = Current.config
+            config.clockin_photo_path = path
+            config.save!
+
+            exit
+          end
+
+          parser.on("view", "View a clockin photo") do
+            config = Current.config
+            if (path = config.clockin_photo_path)
+              puts "Clockin photo: #{config.clockin_photo_path}"
+            else
+              puts "No clockin photo set"
+            end
+
+            exit
+          end
+
+          parser.on("clear", "Clear set clockin photo") do
+            config = Current.config
+            config.clockin_photo_path = nil
+            config.save!
+
+            exit
+          end
+        end
+
         parser.on("status", "Check clockin status") do
           CLI::Commands::ClockIn::Status.new(client).execute
         end
@@ -62,28 +91,27 @@ module Tanda::CLI
           CLI::Commands::ClockIn::Display.new(client).execute
         end
 
-        options = Options::Setter.parse
-
         parser.on("start", "Clock in") do
-          execute_clock_in(ClockType::Start, options)
+          execute_clock_in(ClockType::Start)
         end
 
         parser.on("finish", "Clock out") do
-          execute_clock_in(ClockType::Finish, options)
+          execute_clock_in(ClockType::Finish)
         end
 
         parser.on("break", "Clock a break") do
           parser.on("start", "Start break") do
-            execute_clock_in(ClockType::BreakStart, options)
+            execute_clock_in(ClockType::BreakStart)
           end
 
           parser.on("finish", "Finish break") do
-            execute_clock_in(ClockType::BreakFinish, options)
+            execute_clock_in(ClockType::BreakFinish)
           end
         end
       end
 
-      private def execute_clock_in(type : ClockType, options : Options::Setter)
+      private def execute_clock_in(type : ClockType)
+        options = Options::Setter.parse
         CLI::Commands::ClockIn.new(client, type, options.to_frozen).execute
         exit
       end
