@@ -1,3 +1,5 @@
+require "../../models/photo_parser"
+
 module Tanda::CLI
   module CLI::Commands
     class ClockIn
@@ -15,8 +17,27 @@ module Tanda::CLI
         end
 
         if clockin_photo = options.clockin_photo
-          parsed_photo = PhotoParser.parse(clockin_photo)
+          parsed_photo = Models::Photo.new(clockin_photo).base_64_encoded
         end
+
+        parsed_photo ||= begin
+          config_photo_path = Current.config.clockin_photo_path
+
+          if config_photo_path
+            photo_or_dir = Models::PhotoParser.new(config_photo_path).parse
+
+            case photo_or_dir
+            when Models::Photo
+              photo_or_dir.base_64_encoded
+            when Models::PhotoDirectory
+              photo_or_dir.sample_photo.try(&.base_64_encoded)
+            else
+              Utils::Display.fatal!(photo_or_dir)
+            end
+          end
+        end
+
+        Utils::Display.fatal!(parsed_photo) if parsed_photo.is_a?(Exception)
 
         client.send_clock_in(now, clock_type.to_underscore, parsed_photo).or(&.display!)
 
@@ -42,61 +63,6 @@ module Tanda::CLI
 
         current_user = Current.user
         Utils::Display.success("#{success_message} (#{current_user.id} | #{current_user.organisation_name})")
-      end
-
-      private struct PhotoParser
-        ONE_MEGABYTE = 1 * 1024 * 1024
-
-        def self.parse(photo : String) : String?
-          new(photo).parse
-        end
-
-        def initialize(@photo : String); end
-
-        def parse : String?
-          photo_bytes = read_file!
-          validate_photo_size!(photo_bytes)
-
-          encode_base_64!(photo_bytes)
-        end
-
-        private getter photo : String
-
-        private def read_file! : String
-          File.read(photo)
-        rescue File::NotFoundError
-          Utils::Display.error!("File not found!") do |sub_error|
-            sub_error << "The file '#{photo}' could not be found."
-          end
-        end
-
-        private def validate_photo_size!(photo_bytes : String)
-          return if photo_bytes.bytesize <= ONE_MEGABYTE
-
-          Utils::Display.error!("Photo is too large! (#{photo_bytes.bytesize} bytes)") do |sub_error|
-            sub_error << "Please select a photo that is less than 1MB."
-          end
-        end
-
-        private def encode_base_64!(photo_bytes : String) : String
-          if jpeg?
-            "data:image/jpeg;base64,#{Base64.strict_encode(photo_bytes)}"
-          elsif png?
-            "data:image/png;base64,#{Base64.strict_encode(photo_bytes)}"
-          else
-            Utils::Display.error!("Unsupported photo format!") do |sub_error|
-              sub_error << "Please select a photo that is either a JPEG or PNG."
-            end
-          end
-        end
-
-        private def jpeg? : Bool
-          photo.ends_with?(".jpg") || photo.ends_with?(".jpeg")
-        end
-
-        private def png? : Bool
-          photo.ends_with?(".png")
-        end
       end
 
       private struct ClockInValidator
