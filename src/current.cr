@@ -24,7 +24,7 @@ module Tanda::CLI
       end
     end
 
-    delegate user, user?, to: instance
+    delegate config, user, user?, to: instance
 
     def set_user!(user : User)
       Utils::Display.fatal!(UserAlreadySet.new) if @@user_set
@@ -45,10 +45,11 @@ module Tanda::CLI
     end
 
     private class CurrentInstance
-      getter maybe_user : User?
+      @config : Configuration? = nil
+      @maybe_user : User? = nil
 
-      def initialize
-        @maybe_user = nil
+      def config : Configuration
+        @config ||= Configuration.init
       end
 
       def user=(user : User)
@@ -66,9 +67,14 @@ module Tanda::CLI
         !!maybe_user
       end
 
-      def reset!
-        @maybe_user = nil
-      end
+      {% if flag?(:test) %}
+        def reset!
+          @config = nil
+          @maybe_user = nil
+        end
+      {% end %}
+
+      private getter maybe_user : User?
     end
   end
 end

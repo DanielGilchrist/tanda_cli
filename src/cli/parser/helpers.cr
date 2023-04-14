@@ -1,24 +1,15 @@
 module Tanda::CLI
   class CLI::Parser
     module Helpers
-      @config : Configuration? = nil
-
-      private def config
-        @config ||= config_builder.call
-      end
-
-      private def config_builder : -> Configuration
-        ->{ Configuration.init }
-      end
-
       private def build_client_with_current_user : API::Client
         client = create_client_from_config
-        CLI::CurrentUser.new(client, config).set!
+        CLI::CurrentUser.new(client).set!
 
         client
       end
 
       private def maybe_display_staging_warning
+        config = Current.config
         return unless config.staging?
 
         message = begin
@@ -33,6 +24,7 @@ module Tanda::CLI
       end
 
       private def create_client_from_config : API::Client
+        config = Current.config
         token = config.access_token.token
 
         # if a token can't be parsed from the config, get username and password from user and request a token
@@ -46,6 +38,7 @@ module Tanda::CLI
       end
 
       private def fetch_new_token!
+        config = Current.config
         site_prefix, email, password = CLI::Auth.request_user_information!
 
         auth_site_prefix = begin
