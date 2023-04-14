@@ -60,7 +60,7 @@ module Tanda::CLI
             config.clockin_photo_path = path
             config.save!
 
-            Utils::Display.success("\"Clockin photo set to #{path}\"")
+            Utils::Display.success("\"Clock in photo set to #{path}\"")
 
             exit
           end
@@ -68,9 +68,9 @@ module Tanda::CLI
           parser.on("view", "View a clockin photo") do
             config = Current.config
             if path = config.clockin_photo_path
-              puts "Clockin photo: #{path}"
+              puts "Clock in photo: #{path}"
             else
-              puts "No clockin photo set"
+              puts "No clock in photo set"
             end
 
             exit
@@ -80,6 +80,8 @@ module Tanda::CLI
             config = Current.config
             config.clockin_photo_path = nil
             config.save!
+
+            Utils::Display.success("Clock in photo cleared")
 
             exit
           end
