@@ -63,6 +63,7 @@ module Tanda::CLI
         super
       end
 
+      property clockin_photo_path : String?
       property site_prefix : String
       property access_token : AccessToken
       property organisations : Array(Organisation)
@@ -73,6 +74,7 @@ module Tanda::CLI
       include JSON::Serializable
 
       # defaults
+      @clockin_photo_path : String? = nil
       @production : Environment = Environment.new
       @staging : Environment = Environment.new
       @mode : String = "production"
@@ -85,6 +87,7 @@ module Tanda::CLI
 
       getter production
       getter staging
+      property clockin_photo_path : String?
       property mode : String
 
       def reset_staging!
@@ -121,7 +124,8 @@ module Tanda::CLI
 
     def initialize(@config : Config = Config.new); end
 
-    delegate mode, to: config
+    delegate clockin_photo_path, :clockin_photo_path=, to: config
+    delegate mode, :mode=, to: config
 
     # properties that return from a different environment depending on `mode`
     mode_property time_zone : String?
@@ -139,10 +143,6 @@ module Tanda::CLI
       else
         config.reset_production!
       end
-    end
-
-    def mode=(value : String)
-      config.mode = value
     end
 
     def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)
