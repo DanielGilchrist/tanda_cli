@@ -29,16 +29,16 @@ module Tanda::CLI
     private def parse_standard_options!(parser : OptionParser)
       parser.on("time_zone", "See the currently set time zone") do
         maybe_display_staging_warning
-        CLI::Parser::TimeZone.new(parser, config_builder).parse
+        CLI::Parser::TimeZone.new(parser).parse
       end
 
       parser.on("current_user", "Display the current user") do
         maybe_display_staging_warning
-        CLI::Parser::CurrentUser.new(parser, config_builder).parse
+        CLI::Parser::CurrentUser.new(parser).parse
       end
 
       parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
-        CLI::Parser::Mode.new(parser, config_builder).parse
+        CLI::Parser::Mode.new(parser).parse
       end
     end
 
@@ -62,6 +62,7 @@ module Tanda::CLI
       end
 
       parser.on("refetch_token", "Refetch token for the current environment") do
+        config = Current.config
         config.reset_environment!
         fetch_new_token!
 
@@ -71,7 +72,7 @@ module Tanda::CLI
       end
 
       parser.on("refetch_users", "Refetch users from the API and save to config") do
-        CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, config)
+        CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, Current.config)
         exit
       end
     end

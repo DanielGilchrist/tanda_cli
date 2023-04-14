@@ -5,10 +5,7 @@ module Tanda::CLI
   class CLI::CurrentUser
     @me : Types::Me?
 
-    def initialize(client : API::Client, config : Configuration)
-      @client = client
-      @config = config
-    end
+    def initialize(@client : API::Client); end
 
     def set!
       user = user_from_config || user_from_api
@@ -22,7 +19,10 @@ module Tanda::CLI
     end
 
     private getter client : API::Client
-    private getter config : Configuration
+
+    private def config : Configuration
+      Current.config
+    end
 
     private def user_from_config : Current::User?
       organisation = config.organisations.find(&.current?)
