@@ -5,6 +5,10 @@ module Tanda::CLI
     class PhotoDirectory
       def initialize(@path : String); end
 
+      def valid? : Bool
+        Dir.exists?(@path) && valid_photo
+      end
+
       def sample_photo : Photo?
         valid_photo.tap do |photo|
           Utils::Display.warning("No valid photos found in #{@path}") if photo.nil?

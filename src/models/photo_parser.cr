@@ -8,6 +8,13 @@ module Tanda::CLI
         def initialize(@message : String); end
       end
 
+      def self.valid?(path : String) : Bool
+        photo_or_dir = new(path).parse
+        return false if photo_or_dir.is_a?(InvalidPath)
+
+        photo_or_dir.valid?
+      end
+
       def initialize(@path : String)
         @path = path
       end
