@@ -74,6 +74,16 @@ tanda_cli clockin status
 # Display clock ins for today
 tanda_cli clockin display
 
+# Configure clockin photo to be used on each clockin if not specified
+# View configured photo or directory of photos
+tanda_cli clockin photo view
+# Set configured photo or directory (if a directory a photo is randomly picked)
+tanda_cli clockin photo --set "/path/to/photo.png"
+# or
+tanda_cli clockin photo --set "/path/to/dir/with/photos/"
+# Clear configuration photo or directory
+tanda_cli clockin photo clear
+
 # Display leave balance information
 tanda_cli balance
 

@@ -64,7 +64,7 @@ module Tanda::CLI
             config.clockin_photo_path = path
             config.save!
 
-            Utils::Display.success("\"Clock in photo set to #{path}\"")
+            Utils::Display.success("Clock in photo set to \"#{path}\"")
 
             exit
           end
