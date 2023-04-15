@@ -1,5 +1,7 @@
 require "colorize"
 
+require "../error/base"
+
 module Tanda::CLI
   module Utils
     module Display
@@ -69,6 +71,15 @@ module Tanda::CLI
 
         error_description = error_object.error_description
         sub_error(error_description) if error_description
+      end
+
+      def error!(exception : Error::Base) : NoReturn
+        {% if flag?(:debug) || flag?(:test) %}
+          raise exception
+        {% else %}
+          error(exception.title, exception.message)
+          exit
+        {% end %}
       end
 
       def error!(message : String, value = nil) : NoReturn

@@ -1,16 +1,13 @@
+require "../error/invalid_path"
 require "./photo"
 require "./photo_directory"
 
 module Tanda::CLI
   module Models
     class PhotoParser
-      class InvalidPath < Exception
-        def initialize(@message : String); end
-      end
-
       def self.valid?(path : String) : Bool
         photo_or_dir = new(path).parse
-        return false if photo_or_dir.is_a?(InvalidPath)
+        return false if photo_or_dir.is_a?(Error::InvalidPath)
 
         photo_or_dir.valid?
       end
@@ -19,13 +16,13 @@ module Tanda::CLI
         @path = path
       end
 
-      def parse : Photo | PhotoDirectory | InvalidPath
+      def parse : Photo | PhotoDirectory | Error::InvalidPath
         if File.directory?(@path)
           PhotoDirectory.new(@path)
         elsif File.file?(@path)
           Photo.new(@path)
         else
-          InvalidPath.new("Invalid path: #{@path}")
+          Error::InvalidPath.new("Invalid path: #{@path}")
         end
       end
     end
