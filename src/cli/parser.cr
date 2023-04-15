@@ -17,9 +17,22 @@ module Tanda::CLI
 
     def parse!
       OptionParser.parse(args) do |parser|
+        parser.banner = "Usage: tanda_cli [arguments]"
+
         parse_standard_options!(parser)
         maybe_display_staging_warning
         parse_api_options!(parser)
+
+        parser.on("-h", "--help", "Show this help") do
+          puts parser
+          exit
+        end
+
+        parser.invalid_option do |flag|
+          STDERR.puts "ERROR: #{flag} is not a valid option."
+          STDERR.puts parser
+          exit(1)
+        end
       end
     end
 
