@@ -11,10 +11,10 @@ module Tanda::CLI
         builder << "Time Zone: #{object.time_zone}\n"
         builder << "Permissions: #{object.permissions.join(", ")}\n"
 
-        display_organisations(builder)
+        build_organisations(builder)
       end
 
-      private def display_organisations(builder : String::Builder)
+      private def build_organisations(builder : String::Builder)
         builder << "Organisations:\n"
         object.organisations.each do |organisation|
           builder << Organisation.new(organisation).build

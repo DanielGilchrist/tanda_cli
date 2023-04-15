@@ -7,6 +7,7 @@ module Tanda::CLI
       include Endpoints::LeaveBalance
       include Endpoints::LeaveRequest
       include Endpoints::Me
+      include Endpoints::PersonalDetails
       include Endpoints::Shift
     end
   end
