@@ -68,6 +68,10 @@ module Tanda::CLI
       property access_token : AccessToken
       property organisations : Array(Organisation)
       property time_zone : String?
+
+      def clear_access_token!
+        @access_token = AccessToken.new
+      end
     end
 
     class Config
@@ -135,6 +139,14 @@ module Tanda::CLI
 
     def staging? : Bool
       mode != "production"
+    end
+
+    def clear_access_token!
+      if staging?
+        config.staging.clear_access_token!
+      else
+        config.production.clear_access_token!
+      end
     end
 
     def reset_environment!
