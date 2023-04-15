@@ -5,7 +5,7 @@ module Tanda::CLI
     module TimeWorked
       class Today < Base
         def execute
-          shifts = client.todays_shifts(show_notes: true).or(&.display!)
+          shifts = client.todays_shifts(show_notes: display?).or(&.display!)
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
