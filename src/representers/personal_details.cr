@@ -17,11 +17,11 @@ module Tanda::CLI
         tax_file_number = object.tax_file_number
         builder << "🪪 #{tax_file_number}\n" if tax_file_number
 
-        display_emergency_contacts(builder)
-        display_address(builder)
+        build_emergency_contacts(builder)
+        build_address(builder)
       end
 
-      private def display_emergency_contacts(builder : String::Builder)
+      private def build_emergency_contacts(builder : String::Builder)
         return if object.emergency_contacts.empty?
 
         builder << "\n🚑 Emergency Contacts\n".colorize.white
@@ -31,7 +31,7 @@ module Tanda::CLI
         end
       end
 
-      private def display_address(builder : String::Builder)
+      private def build_address(builder : String::Builder)
         address = object.residential_address
         return if address.nil?
 
