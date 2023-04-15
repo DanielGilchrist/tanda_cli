@@ -11,7 +11,37 @@ module Tanda::CLI
     module Auth
       extend self
 
-      def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
+      def fetch_new_token!
+        config = Current.config
+        site_prefix, email, password = CLI::Auth.request_user_information!
+
+        auth_site_prefix = begin
+          if config.staging?
+            case site_prefix
+            when "my"
+              "staging"
+            when "eu"
+              "staging.eu"
+            when "us"
+              "staging.us"
+            end
+          end
+        end || site_prefix
+
+        access_token = fetch_access_token!(auth_site_prefix, email, password).or do |error|
+          Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
+            sub_errors << "Error Type: #{error.error}\n"
+
+            description = error.error_description
+            sub_errors << "Message: #{description}" if description
+          end
+        end
+
+        Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
+        config.overwrite!(site_prefix, email, access_token)
+      end
+
+      private def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
         response = begin
           HTTP::Client.post(
             build_endpoint(site_prefix),

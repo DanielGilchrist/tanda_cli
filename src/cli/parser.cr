@@ -69,7 +69,7 @@ module Tanda::CLI
       parser.on("refetch_token", "Refetch token for the current environment") do
         config = Current.config
         config.reset_environment!
-        fetch_new_token!
+        API::Auth.fetch_new_token!
 
         client = create_client_from_config
         CLI::Request.ask_which_organisation_and_save!(client, config)

@@ -22,11 +22,12 @@ module Tanda::CLI
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
         with_no_internet_handler! do
           uri = build_uri(endpoint, query)
-          headers = build_headers
 
-          HTTP::Client.get(uri, headers: headers).tap do |response|
-            Log.debug(&.emit("Response", headers: headers.to_s, response: response.body))
-            handle_fatal_error!(response)
+          execute_request! do |request_headers|
+            HTTP::Client.get(uri, headers: request_headers).tap do |response|
+              Log.debug(&.emit("Response", headers: request_headers.to_s, response: response.body))
+              handle_fatal_error!(response)
+            end
           end
         end
       end
@@ -34,12 +35,13 @@ module Tanda::CLI
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
         with_no_internet_handler! do
           uri = build_uri(endpoint)
-          headers = build_headers
           request_body = body.to_json
 
-          HTTP::Client.post(uri, headers: headers, body: request_body).tap do |response|
-            Log.debug(&.emit("Response", headers: headers.to_s, body: request_body, response: response.body))
-            handle_fatal_error!(response)
+          execute_request! do |request_headers|
+            HTTP::Client.post(uri, headers: request_headers, body: request_body).tap do |response|
+              Log.debug(&.emit("Response", headers: request_headers.to_s, body: request_body, response: response.body))
+              handle_fatal_error!(response)
+            end
           end
         end
       end
@@ -67,6 +69,32 @@ module Tanda::CLI
         yield
       rescue Socket::Addrinfo::Error
         Utils::Display.fatal!("There appears to be a problem with your internet connection")
+      end
+
+      private def execute_request!(&request : HTTP::Headers -> HTTP::Client::Response) : HTTP::Client::Response
+        response = yield(build_headers)
+        refetched_response = handle_invalid_token!(response, &request)
+
+        refetched_response || response
+      end
+
+      private def handle_invalid_token!(response : HTTP::Client::Response, & : HTTP::Headers -> HTTP::Client::Response) : HTTP::Client::Response?
+        return if response.status_code != 401
+
+        Utils::Display.warning("Your token is invalid, do you want to refetch a token and continue running the command? (y/n)")
+        response = gets.try(&.chomp)
+        return if response != "y"
+
+        config = Current.config
+        config.clear_access_token!
+
+        API::Auth.fetch_new_token!
+
+        token = config.access_token.token
+        return if token.nil?
+
+        @token = token
+        yield(build_headers)
       end
 
       private def handle_fatal_error!(response : HTTP::Client::Response)
