@@ -7,7 +7,8 @@ module Tanda::CLI
   module Representers
     class Me < Base(Types::Me)
       private def build_display(builder : String::Builder)
-        builder << "🏷  #{object.name}\n"
+        builder << "👤 #{object.name}\n".colorize.white
+
         builder << "📧 #{object.email}\n"
         builder << "🌍 #{object.country}\n"
         builder << "⏰ #{object.time_zone}\n"
