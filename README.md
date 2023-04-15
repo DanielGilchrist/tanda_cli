@@ -37,6 +37,9 @@ The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure 
 # View information about the currently authenticated user (including organisations)
 tanda_cli me
 
+# View your personal details
+tanda_cli personal_details
+
 # View or set the current user/organisation
 tanda_cli current_user
 tanda_cli current_user --set "Dan's Donuts"
