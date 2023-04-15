@@ -1,13 +1,13 @@
+require "colorize"
+
 require "./base"
 require "../types/me/**"
-
-require "colorize"
 
 module Tanda::CLI
   module Representers
     class Me < Base(Types::Me)
       private def build_display(builder : String::Builder)
-        builder << "👤 #{object.name}\n".colorize.white
+        builder << "👤 #{object.name}\n".colorize.white.bold
 
         builder << "📧 #{object.email}\n"
         builder << "🌍 #{object.country}\n"
@@ -18,7 +18,7 @@ module Tanda::CLI
       end
 
       private def build_organisations(builder : String::Builder)
-        builder << "\n🏢 Organisations:\n".colorize.white
+        builder << "\n🏢 Organisations:\n".colorize.white.bold
         object.organisations.each do |organisation|
           builder << Organisation.new(organisation).build
         end

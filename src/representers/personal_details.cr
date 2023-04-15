@@ -1,7 +1,7 @@
+require "colorize"
+
 require "./base"
 require "../types/personal_details/**"
-
-require "colorize"
 
 module Tanda::CLI
   module Representers
@@ -24,7 +24,7 @@ module Tanda::CLI
       private def build_emergency_contacts(builder : String::Builder)
         return if object.emergency_contacts.empty?
 
-        builder << "\n🚑 Emergency Contacts\n".colorize.white
+        builder << "\n🚑 Emergency Contacts\n".colorize.white.bold
 
         object.emergency_contacts.each do |contact|
           builder << EmergencyContact.new(contact).build
@@ -35,7 +35,7 @@ module Tanda::CLI
         address = object.residential_address
         return if address.nil?
 
-        builder << "🏠 Address\n".colorize.white
+        builder << "🏠 Address\n".colorize.white.bold
         builder << Address.new(address).build
       end
     end
