@@ -11,9 +11,9 @@ module Tanda::CLI
             titled_with_padding("User ID", object.user_id, builder)
           {% end %}
 
-          titled_with_padding("Name", object.name, builder)
-          titled_with_padding("Country", object.country, builder)
-          titled_with_padding("Locale", object.locale, builder)
+          with_padding("🏷  #{object.name}", builder)
+          with_padding("🌏 #{object.country}", builder)
+          with_padding("📍 #{object.locale}", builder)
         end
       end
     end
