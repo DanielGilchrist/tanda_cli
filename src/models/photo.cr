@@ -1,31 +1,14 @@
+require "../error/base"
+require "../error/photo_cant_be_found"
+require "../error/photo_too_large"
+require "../error/unsupported_photo_format"
+
 module Tanda::CLI
   module Models
     class Photo
       @base_64_encoded : (String | Error::Base)? = nil
 
       ONE_MEGABYTE = 1 * 1024 * 1024
-
-      module Error
-        abstract class Base < Exception; end
-
-        class PhotoCantBeFound < Base
-          def initialize(path : String)
-            @message = "The file '#{path}' could not be found."
-          end
-        end
-
-        class PhotoTooLarge < Base
-          def initialize(photo_bytes : String)
-            @message = "Photo is over 1 MB (#{photo_bytes.bytesize} bytes)"
-          end
-        end
-
-        class UnsupportedPhotoFormat < Base
-          def initialize
-            @message = "Photo must be a JPEG or PNG."
-          end
-        end
-      end
 
       def initialize(@path : String); end
 

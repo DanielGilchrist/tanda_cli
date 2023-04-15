@@ -32,12 +32,12 @@ module Tanda::CLI
             when Models::PhotoDirectory
               photo_or_dir.sample_photo.try(&.base_64_encoded)
             else
-              Utils::Display.fatal!(photo_or_dir)
+              Utils::Display.error!(photo_or_dir)
             end
           end
         end
 
-        Utils::Display.fatal!(parsed_photo) if parsed_photo.is_a?(Exception)
+        Utils::Display.error!(parsed_photo) if parsed_photo.is_a?(Error::Base)
 
         client.send_clock_in(now, clock_type.to_underscore, parsed_photo).or(&.display!)
 
