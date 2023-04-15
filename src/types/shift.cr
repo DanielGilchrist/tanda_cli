@@ -76,6 +76,13 @@ module Tanda::CLI
 
       getter leave_request : Types::LeaveRequest?
 
+      @[JSON::Field(key: "notes")]
+      getter nilable_notes : Array(Types::Note)?
+
+      def notes : Array(Types::Note)
+        nilable_notes || Array(Types::Note).new
+      end
+
       def set_leave_request!(leave_request : Types::LeaveRequest)
         Utils::Display.fatal!("Leave request already set!") if @leave_request_set
         Utils::Display.fatal!("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
