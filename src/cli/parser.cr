@@ -9,8 +9,8 @@ module Tanda::CLI
   class CLI::Parser
     include CLI::Parser::Helpers
 
-    def self.parse!
-      new.parse!
+    def self.parse!(args = ARGV)
+      new(args).parse!
     end
 
     def initialize(@args = ARGV); end

@@ -11,8 +11,8 @@ require "./cli/**"
 module Tanda::CLI
   extend self
 
-  def main
-    CLI::Parser.parse!
+  def main(args = ARGV)
+    CLI::Parser.parse!(args)
   end
 end
 
@@ -21,7 +21,7 @@ end
   Tanda::CLI::Debug.setup
 {% end %}
 
-# TODO: Test `Tanda::CLI.main`
+# Tests should call this explicitly
 {% unless flag?(:test) %}
   Tanda::CLI.main
 {% end %}

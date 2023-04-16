@@ -1,14 +1,9 @@
 require "./spec_helper"
 
-# TODO: Need to stub/mock API requests
-# describe Tanda::CLI do
-#   context "Main" do
-#     before_each do
-#       Tanda::CLI::Current.reset!
-#     end
-
-#     it "Running main with no arguments passes" do
-#       Tanda::CLI.main
-#     end
-#   end
-# end
+Spectator.describe Tanda::CLI do
+  context "Main" do
+    it "Running main with no arguments passes" do
+      Tanda::CLI.main([] of String)
+    end
+  end
+end
