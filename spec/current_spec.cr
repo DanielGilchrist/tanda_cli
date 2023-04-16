@@ -1,10 +1,6 @@
 require "./spec_helper"
 
 Spectator.describe Tanda::CLI::Current do
-  before_each do
-    Tanda::CLI::Current.reset!
-  end
-
   context "Current user" do
     it "Raises when Current.user is called without a user set" do
       expect_raises Tanda::CLI::Current::UserNotSet do
