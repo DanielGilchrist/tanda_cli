@@ -21,6 +21,7 @@ end
   Tanda::CLI::Debug.setup
 {% end %}
 
+# Tests should call this explicitly
 {% unless flag?(:test) %}
   Tanda::CLI.main
 {% end %}
