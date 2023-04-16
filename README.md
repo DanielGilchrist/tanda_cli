@@ -1,13 +1,6 @@
 # tanda_cli
 <img width="454" alt="image" src="https://user-images.githubusercontent.com/13454550/231261971-a5fb9c80-2710-44e5-b6f4-b65673caa264.png">
 
-## Disclaimer
-This is a work in progress and (currently) primarily built to suit my own needs.
-
-This repo is severely lacking tests at the moment so I may be a bit relucant to accept pull requests depending on complexity as without tests it can be very difficult to avoid regressions.
-
-Regardless of this, if you find this useful and have feature requests / ideas feel free to submit a pull request / issue :~)
-
 ## Installation
 
 You will need Crystal 1.8.0 installed. I recommend using [`asdf`](https://github.com/asdf-vm/asdf) with the [crystal plugin](https://github.com/asdf-community/asdf-crystal).
