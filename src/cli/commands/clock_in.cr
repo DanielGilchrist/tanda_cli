@@ -32,7 +32,7 @@ module Tanda::CLI
             when Models::PhotoDirectory
               photo_or_dir.sample_photo.try(&.base_64_encoded)
             else
-              Utils::Display.error!(photo_or_dir)
+              photo_or_dir
             end
           end
         end
