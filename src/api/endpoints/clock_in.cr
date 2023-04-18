@@ -25,9 +25,10 @@ module Tanda::CLI
         mobile_clockin : Bool = false
       ) : API::Result(Nil)
         response = post("/clockins", body: {
-          "time"    => time.to_unix.to_s,
-          "type"    => type,
-          "user_id" => Current.user.id.to_s,
+          "time"           => time.to_unix.to_s,
+          "type"           => type,
+          "user_id"        => Current.user.id.to_s,
+          "mobile_clockin" => mobile_clockin.to_s,
         }.tap do |options|
           options["photo"] = photo if photo
         end)
