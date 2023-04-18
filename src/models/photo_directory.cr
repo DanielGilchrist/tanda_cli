@@ -16,16 +16,16 @@ module Tanda::CLI
       end
 
       private def valid_photo : Photo?
-        valid_photo : Photo? = nil
-
-        Dir.open(@path).children.shuffle.each do |photo_name|
-          path = path_with_dir(photo_name)
-          photo = Photo.new(path)
-
-          break valid_photo = photo if photo.valid?
-        end
-
-        valid_photo
+        Dir
+          .open(@path)
+          .children
+          .shuffle
+          .each
+          .map do |photo_name|
+            path = path_with_dir(photo_name)
+            Photo.new(path)
+          end
+          .find(&.valid?)
       end
 
       private def path_with_dir(photo_name) : String
