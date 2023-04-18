@@ -85,7 +85,7 @@ module Tanda::CLI
 
       def error!(error_object : Error::Base) : NoReturn
         {% if flag?(:debug) || flag?(:test) %}
-          raise exception
+          raise error_object
         {% else %}
           error(error_object)
           exit
