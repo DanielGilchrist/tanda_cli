@@ -21,7 +21,8 @@ module Tanda::CLI
       def send_clock_in(
         time : Time,
         type : String,
-        photo : String? = nil
+        photo : String? = nil,
+        mobile_clockin : Bool = false
       ) : API::Result(Nil)
         response = post("/clockins", body: {
           "time"    => time.to_unix.to_s,
