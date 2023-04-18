@@ -1,11 +1,13 @@
+require "./interface"
+
 module Tanda::CLI
   module Error
-    class Base < Exception
-      def initialize(@title : String, @message : String)
-        super("#{title}: #{message}")
-      end
+    abstract class Base < Exception
+      include Error::Interface
 
-      getter title : String
+      def initialize(@error : String, @error_description : String?)
+        super("#{error}: #{error_description}")
+      end
     end
   end
 end
