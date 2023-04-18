@@ -66,20 +66,11 @@ module Tanda::CLI
         string.split("\n").each(&->sub_error(String))
       end
 
-      def error(error_object : Types::Error)
+      def error(error_object : Error::Interface)
         error(error_object.error)
 
         error_description = error_object.error_description
         sub_error(error_description) if error_description
-      end
-
-      def error!(exception : Error::Base) : NoReturn
-        {% if flag?(:debug) || flag?(:test) %}
-          raise exception
-        {% else %}
-          error(exception.title, exception.message)
-          exit
-        {% end %}
       end
 
       def error!(message : String, value = nil) : NoReturn
@@ -92,7 +83,16 @@ module Tanda::CLI
         exit
       end
 
-      def error!(error_object : Types::Error) : NoReturn
+      def error!(error_object : Error::Base) : NoReturn
+        {% if flag?(:debug) || flag?(:test) %}
+          raise error_object
+        {% else %}
+          error(error_object)
+          exit
+        {% end %}
+      end
+
+      def error!(error_object : Error::Interface) : NoReturn
         error(error_object)
         exit
       end

@@ -37,7 +37,7 @@ module Tanda::CLI
           end
         end
 
-        Utils::Display.error!(parsed_photo) if parsed_photo.is_a?(Error::Base)
+        parsed_photo.display! if parsed_photo.is_a?(Error::Base)
 
         client.send_clock_in(now, clock_type.to_underscore, parsed_photo, mobile_clockin: true).or(&.display!)
 
