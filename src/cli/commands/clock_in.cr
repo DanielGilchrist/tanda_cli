@@ -17,7 +17,7 @@ module Tanda::CLI
         end
 
         if clockin_photo = options.clockin_photo
-          parsed_photo = Models::Photo.new(clockin_photo).base_64_encoded
+          parsed_photo = Models::Photo.new(clockin_photo).to_base64
         end
 
         parsed_photo ||= begin
@@ -28,9 +28,9 @@ module Tanda::CLI
 
             case photo_or_dir
             when Models::Photo
-              photo_or_dir.base_64_encoded
+              photo_or_dir.to_base64
             when Models::PhotoDirectory
-              photo_or_dir.sample_photo.try(&.base_64_encoded)
+              photo_or_dir.sample_photo.try(&.to_base64)
             else
               photo_or_dir
             end

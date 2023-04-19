@@ -6,25 +6,30 @@ require "../error/unsupported_photo_format"
 module Tanda::CLI
   module Models
     class Photo
-      @base_64_encoded : (String | Error::Base)? = nil
+      @to_base64 : (String | Error::Base)? = nil
 
       ONE_MEGABYTE = 1 * 1024 * 1024
 
       def initialize(@path : String); end
 
-      def base_64_encoded : String | Error::Base
-        @base_64_encoded ||= begin
-          photo_bytes = read_and_validate_file
-          if photo_bytes.is_a?(Error::Base)
+      def to_base64 : String | Error::Base
+        @to_base64 ||= begin
+          case photo_bytes = read_and_validate_file
+          in String
+            encode_base64(photo_bytes)
+          in Error::Base
             photo_bytes
-          else
-            encode_base_64(photo_bytes)
           end
         end
       end
 
       def valid? : Bool
-        base_64_encoded.is_a?(String)
+        case to_base64
+        in String
+          true
+        in Error::Base
+          false
+        end
       end
 
       private getter path : String
@@ -60,7 +65,7 @@ module Tanda::CLI
         Error::PhotoTooLarge.new(photo_bytes)
       end
 
-      private def encode_base_64(photo_bytes : String) : String | Error::Base
+      private def encode_base64(photo_bytes : String) : String | Error::Base
         if jpeg?
           "data:image/jpeg;base64,#{Base64.strict_encode(photo_bytes)}"
         elsif png?
