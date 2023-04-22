@@ -4,12 +4,13 @@ module Tanda::CLI
   module CLI::Commands
     module TimeWorked
       abstract class Base
-        def initialize(@client : API::Client, @display : Bool); end
+        def initialize(@client : API::Client, @display : Bool, @offset : Int32?); end
 
         abstract def execute
 
         private getter client : API::Client
         private getter? display : Bool
+        private getter offset : Int32?
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
           total_time_worked = Time::Span.zero

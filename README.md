@@ -50,10 +50,12 @@ tanda_cli time_zone --set "Australia/Brisbane"
 # Check time worked today
 tanda_cli time_worked today
 tanda_cli time_worked today --display
+tanda_cli time_worked today --offset -3 # shows time worked 3 days ago
 
 # Check time worked this week
 tanda_cli time_worked week
 tanda_cli time_worked week --display
+tanda_cli time_worked week --offset -1 # shows time worked last week
 
 # Configure start of week
 # See currently set start day

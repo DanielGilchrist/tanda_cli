@@ -5,9 +5,17 @@ module Tanda::CLI
     module TimeWorked
       class Week < Base
         def execute
-          now = Utils::Time.now
+          to = Utils::Time.now
           start_day = Current.config.start_of_week
-          shifts = client.shifts(now.at_beginning_of_week(start_day), now, show_notes: display?).or(&.display!)
+
+          if offset = self.offset
+            from = (to + offset.weeks).at_beginning_of_week(start_day)
+            to = from + 6.days
+            Utils::Display.info("Showing time worked offset #{offset} weeks")
+          end
+
+          from ||= to.at_beginning_of_week(start_day)
+          shifts = client.shifts(from, to, show_notes: display?).or(&.display!)
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
