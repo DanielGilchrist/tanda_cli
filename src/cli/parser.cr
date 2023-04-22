@@ -53,6 +53,10 @@ module Tanda::CLI
       parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
         CLI::Parser::Mode.new(parser).parse
       end
+
+      parser.on("start_of_week", "Set the start of the week (e.g. monday/sunday)") do
+        CLI::Parser::StartOfWeek.new(parser).parse
+      end
     end
 
     # Options that make API requests
