@@ -2,6 +2,7 @@ require "json"
 require "file_utils"
 
 require "./configuration/**"
+require "./error/invalid_start_of_week"
 require "./types/access_token"
 require "./utils/url"
 
@@ -82,6 +83,7 @@ module Tanda::CLI
       @production : Environment = Environment.new
       @staging : Environment = Environment.new
       @mode : String = "production"
+      @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
 
       # Allows initialization with default values
       # i.e. `Config.new` vs `Config.from_json(%({}))`
@@ -91,6 +93,7 @@ module Tanda::CLI
 
       getter production
       getter staging
+      getter start_of_week
       property clockin_photo_path : String?
       property mode : String
 
@@ -100,6 +103,18 @@ module Tanda::CLI
 
       def reset_production!
         @production = Environment.new
+      end
+
+      def pretty_start_of_week : String
+        @start_of_week.to_s
+      end
+
+      def set_start_of_week(value : String) : Error::InvalidStartOfWeek?
+        start_of_week = Time::DayOfWeek.parse?(value)
+        return Error::InvalidStartOfWeek.new(value) if start_of_week.nil?
+
+        @start_of_week = start_of_week
+        nil
       end
     end
 
@@ -130,6 +145,7 @@ module Tanda::CLI
 
     delegate clockin_photo_path, :clockin_photo_path=, to: config
     delegate mode, :mode=, to: config
+    delegate start_of_week, pretty_start_of_week, set_start_of_week, to: config
 
     # properties that return from a different environment depending on `mode`
     mode_property time_zone : String?
