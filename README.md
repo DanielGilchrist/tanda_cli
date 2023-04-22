@@ -55,6 +55,12 @@ tanda_cli time_worked today --display
 tanda_cli time_worked week
 tanda_cli time_worked week --display
 
+# Configure start of week
+# See currently set start day
+tanda_cli start_of_week display
+# Set start of week
+tanda_cli start_of_week --set sunday
+
 # Clock in or clock out (including breaks)
 tanda_cli clockin start
 tanda_cli clockin finish
