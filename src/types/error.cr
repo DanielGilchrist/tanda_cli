@@ -5,8 +5,6 @@ module Tanda::CLI
     class Error
       include Tanda::CLI::Error::Interface
       include JSON::Serializable
-
-      # @error_description : String? = nil
     end
   end
 end

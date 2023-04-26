@@ -1,4 +1,4 @@
-require "../../models/photo_parser"
+require "../../models/photo_path_parser"
 
 module Tanda::CLI
   module CLI::Commands
@@ -24,7 +24,7 @@ module Tanda::CLI
           config_photo_path = Current.config.clockin_photo_path
 
           if config_photo_path
-            photo_or_dir = Models::PhotoParser.new(config_photo_path).parse
+            photo_or_dir = Models::PhotoPathParser.new(config_photo_path).parse
 
             case photo_or_dir
             when Models::Photo

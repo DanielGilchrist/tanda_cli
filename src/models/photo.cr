@@ -59,13 +59,13 @@ module Tanda::CLI
         Error::PhotoCantBeFound.new(path)
       end
 
-      private def validate_photo_size(photo_bytes : String) : Error::Base?
+      private def validate_photo_size(photo_bytes : String) : Error::PhotoTooLarge?
         return if photo_bytes.bytesize <= ONE_MEGABYTE
 
         Error::PhotoTooLarge.new(photo_bytes)
       end
 
-      private def encode_base64(photo_bytes : String) : String | Error::Base
+      private def encode_base64(photo_bytes : String) : String | Error::UnsupportedPhotoFormat
         if jpeg?
           "data:image/jpeg;base64,#{Base64.strict_encode(photo_bytes)}"
         elsif png?

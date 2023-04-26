@@ -56,7 +56,7 @@ module Tanda::CLI
       def parse
         parser.on("photo", "View, set or clear clockin photo to be used by default") do
           parser.on("-s PHOTO", "--set=PHOTO", "Set a clockin photo") do |path|
-            if !Models::PhotoParser.valid?(path)
+            if !Models::PhotoPathParser.valid?(path)
               Utils::Display.error!("Invalid photo path")
             end
 

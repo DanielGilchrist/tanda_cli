@@ -4,12 +4,14 @@ require "./photo_directory"
 
 module Tanda::CLI
   module Models
-    class PhotoParser
+    class PhotoPathParser
       def self.valid?(path : String) : Bool
-        photo_or_dir = new(path).parse
-        return false if photo_or_dir.is_a?(Error::InvalidPath)
-
-        photo_or_dir.valid?
+        case photo_or_dir = new(path).parse
+        in Photo, PhotoDirectory
+          photo_or_dir.valid?
+        in Error::InvalidPath
+          false
+        end
       end
 
       def initialize(@path : String)
