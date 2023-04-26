@@ -11,7 +11,7 @@ module Tanda::CLI
       INFO_STRING    = "Info:".colorize.light_green
       WARNING_STRING = "Warning:".colorize.yellow
       ERROR_STRING   = "Error:".colorize.light_red
-      FATAL_STRING   = "Fatal Error:".colorize.red
+      FATAL_STRING   = "Fatal:".colorize.red
 
       enum Type
         Success

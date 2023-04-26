@@ -9,6 +9,9 @@ module Tanda::CLI
     class Client
       include Tanda::CLI::API::Endpoints
 
+      GET  = "GET"
+      POST = "POST"
+
       INTERNAL_SERVER_ERROR_STRING = "Internal Server Error"
 
       alias TQuery = Hash(String, String)
@@ -20,34 +23,29 @@ module Tanda::CLI
       end
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
-        with_no_internet_handler! do
-          uri = build_uri(endpoint, query)
-
-          execute_request! do |request_headers|
-            HTTP::Client.get(uri, headers: request_headers).tap do |response|
-              Log.debug(&.emit("Response", headers: request_headers.to_s, response: response.body))
-              handle_fatal_error!(response)
-            end
-          end
-        end
+        exec(GET, endpoint, query: query)
       end
 
       def post(endpoint : String, body : TBody) : HTTP::Client::Response
-        with_no_internet_handler! do
-          uri = build_uri(endpoint)
-          request_body = body.to_json
-
-          execute_request! do |request_headers|
-            HTTP::Client.post(uri, headers: request_headers, body: request_body).tap do |response|
-              Log.debug(&.emit("Response", headers: request_headers.to_s, body: request_body, response: response.body))
-              handle_fatal_error!(response)
-            end
-          end
-        end
+        exec(POST, endpoint, body: body)
       end
 
       private getter base_uri : String
       private getter token : String
+
+      private def exec(method : String, endpoint : String, query : TQuery? = nil, body : TBody? = nil) : HTTP::Client::Response
+        with_no_internet_handler! do
+          uri = build_uri(endpoint, query)
+          request_body = body.try(&.to_json)
+
+          execute_request! do |request_headers|
+            HTTP::Client.exec(method, url: uri, headers: request_headers, body: request_body).tap do |response|
+              Log.debug(&.emit("#{method} response (#{uri})", headers: request_headers.to_s, body: request_body, response: response.body))
+              handle_fatal_error!(response)
+            end
+          end
+        end
+      end
 
       private def build_uri(endpoint, query : TQuery? = nil) : URI
         uri = URI.parse("#{base_uri}#{endpoint}")
