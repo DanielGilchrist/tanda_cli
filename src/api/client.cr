@@ -35,21 +35,29 @@ module Tanda::CLI
 
       private def exec(method : String, endpoint : String, query : TQuery? = nil, body : TBody? = nil) : HTTP::Client::Response
         with_no_internet_handler! do
-          uri = build_uri(endpoint, query)
+          encoded_params = URI::Params.encode(query) if query
+          uri = build_uri(endpoint, encoded_params)
           request_body = body.try(&.to_json)
 
           execute_request! do |request_headers|
             HTTP::Client.exec(method, url: uri, headers: request_headers, body: request_body).tap do |response|
-              Log.debug(&.emit("#{method} response (#{uri})", headers: request_headers.to_s, body: request_body, response: response.body))
+              Log.debug(&.emit(
+                "#{method} response for #{endpoint}",
+                headers: request_headers.to_s,
+                query: encoded_params,
+                body: request_body,
+                response: response.body
+              ))
+
               handle_fatal_error!(response)
             end
           end
         end
       end
 
-      private def build_uri(endpoint, query : TQuery? = nil) : URI
+      private def build_uri(endpoint, query : String? = nil) : URI
         uri = URI.parse("#{base_uri}#{endpoint}")
-        uri.query = URI::Params.encode(query) if query
+        uri.query = query if query
 
         uri
       end
