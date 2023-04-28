@@ -6,12 +6,16 @@ module Tanda::CLI
       me = client.me.or(&.display!)
       organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
 
-      organisation = organisations.size == 1 ? organisations[0] : nil
+      if organisations.empty?
+        Utils::Display.error!("You don't have access to any organisations")
+      end
+
+      organisation = organisations.first if organisations.one?
       while organisation.nil?
         organisation = ask_for_organisation(organisations)
       end
 
-      Utils::Display.success("Selected organisation #{organisation.name}")
+      Utils::Display.success("Selected organisation \"#{organisation.name}\"")
 
       organisation.tap do
         save_config!(config, organisations, organisation, me.time_zone)
