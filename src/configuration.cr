@@ -66,7 +66,7 @@ module Tanda::CLI
         @site_prefix : String = DEFAULT_SITE_PREFIX,
         @access_token : AccessToken = AccessToken.new,
         @organisations : Array(Organisation) = Array(Organisation).new,
-        @time_zone : String? = nil,
+        @time_zone : String? = nil
       ); end
 
       property site_prefix : String
