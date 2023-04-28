@@ -43,10 +43,10 @@ module Tanda::CLI
             HTTP::Client.exec(method, url: uri, headers: request_headers, body: request_body).tap do |response|
               Log.debug(&.emit(
                 "#{method} response for #{endpoint}",
-                headers: request_headers.to_s,
+                headers: request_headers.pretty_inspect,
                 query: encoded_params,
-                body: request_body,
-                response: response.body
+                body: request_body.try(&.to_parsed_pretty_json),
+                response: response.body.try(&.to_parsed_pretty_json),
               ))
 
               handle_fatal_error!(response)
