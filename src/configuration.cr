@@ -67,14 +67,12 @@ module Tanda::CLI
         @access_token : AccessToken = AccessToken.new,
         @organisations : Array(Organisation) = Array(Organisation).new,
         @time_zone : String? = nil,
-        @clockin_photo_path : String? = nil
       ); end
 
       property site_prefix : String
       property access_token : AccessToken
       property organisations : Array(Organisation)
       property time_zone : String?
-      property clockin_photo_path : String?
 
       def clear_access_token!
         @access_token = AccessToken.new
