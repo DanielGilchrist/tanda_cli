@@ -21,6 +21,20 @@ module Tanda::CLI
       # defaults
       @current : Bool = false
 
+      def self.from(organisation : Types::Me::Organisation) : self
+        new(
+          organisation.id,
+          organisation.name,
+          organisation.user_id
+        )
+      end
+
+      def self.from(me : Types::Me) : Array(self)
+        me.organisations.map(&->from(Types::Me::Organisation))
+      end
+
+      def initialize(@id : Int32, @name : String, @user_id : Int32); end
+
       getter id : Int32
       getter name : String
       getter user_id : Int32

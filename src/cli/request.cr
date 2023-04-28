@@ -4,7 +4,7 @@ module Tanda::CLI
 
     def ask_which_organisation_and_save!(client : API::Client, config : Configuration) : Configuration::Organisation
       me = client.me.or(&.display!)
-      organisations = Array(Configuration::Organisation).from_json(me.organisations.to_json)
+      organisations = Configuration::Organisation.from(me)
 
       if organisations.empty?
         Utils::Display.error!("You don't have access to any organisations")
