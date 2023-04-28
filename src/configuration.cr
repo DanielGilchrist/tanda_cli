@@ -15,11 +15,11 @@ module Tanda::CLI
 
     DEFAULT_SITE_PREFIX = "eu"
 
+    PRODUCTION = "production"
+    STAGING    = "staging"
+
     class Organisation
       include JSON::Serializable
-
-      # defaults
-      @current : Bool = false
 
       def self.from(organisation : Types::Me::Organisation) : self
         new(
@@ -33,7 +33,7 @@ module Tanda::CLI
         me.organisations.map(&->from(Types::Me::Organisation))
       end
 
-      def initialize(@id : Int32, @name : String, @user_id : Int32); end
+      def initialize(@id : Int32, @name : String, @user_id : Int32, @current : Bool = false); end
 
       getter id : Int32
       getter name : String
@@ -44,18 +44,13 @@ module Tanda::CLI
     class AccessToken
       include JSON::Serializable
 
-      # defaults
-      @email : String? = nil
-      @token : String? = nil
-      @token_type : String? = nil
-      @scope : String? = nil
-      @created_at : Int32? = nil
-
-      # Allows initialization with default values
-      # i.e. `Config.new` vs `Config.from_json(%({}))`
-      def self.new
-        super
-      end
+      def initialize(
+        @email : String? = nil,
+        @token : String? = nil,
+        @token_type : String? = nil,
+        @scope : String? = nil,
+        @created_at : Int32? = nil
+      ); end
 
       property email : String?
       property token : String?
@@ -67,22 +62,19 @@ module Tanda::CLI
     class Environment
       include JSON::Serializable
 
-      # defaults
-      @site_prefix : String = DEFAULT_SITE_PREFIX
-      @access_token : AccessToken = AccessToken.new
-      @organisations : Array(Organisation) = [] of Organisation
+      def initialize(
+        @site_prefix : String = DEFAULT_SITE_PREFIX,
+        @access_token : AccessToken = AccessToken.new,
+        @organisations : Array(Organisation) = Array(Organisation).new,
+        @time_zone : String? = nil,
+        @clockin_photo_path : String? = nil
+      ); end
 
-      # Allows initialization with default values
-      # i.e. `Config.new` vs `Config.from_json(%({}))`
-      def self.new
-        super
-      end
-
-      property clockin_photo_path : String?
       property site_prefix : String
       property access_token : AccessToken
       property organisations : Array(Organisation)
       property time_zone : String?
+      property clockin_photo_path : String?
 
       def clear_access_token!
         @access_token = AccessToken.new
@@ -92,18 +84,13 @@ module Tanda::CLI
     class Config
       include JSON::Serializable
 
-      # defaults
-      @clockin_photo_path : String? = nil
-      @production : Environment = Environment.new
-      @staging : Environment = Environment.new
-      @mode : String = "production"
-      @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
-
-      # Allows initialization with default values
-      # i.e. `Config.new` vs `Config.from_json(%({}))`
-      def self.new
-        super
-      end
+      def initialize(
+        @clockin_photo_path : String? = nil,
+        @production : Environment = Environment.new,
+        @staging : Environment = Environment.new,
+        @mode : String = PRODUCTION,
+        @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
+      ); end
 
       getter production
       getter staging
@@ -168,7 +155,7 @@ module Tanda::CLI
     mode_property access_token : AccessToken
 
     def staging? : Bool
-      mode != "production"
+      mode != PRODUCTION
     end
 
     def clear_access_token!
@@ -205,9 +192,9 @@ module Tanda::CLI
 
     def api_url : String
       case mode
-      when "production"
+      when PRODUCTION
         "https://#{site_prefix}.tanda.co/api/v2"
-      when "staging"
+      when STAGING
         prefix = "#{site_prefix}." if site_prefix != "my"
         "https://staging.#{prefix}tanda.co/api/v2"
       else
