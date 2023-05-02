@@ -20,9 +20,20 @@ module Tanda::CLI
       end
 
       module FromISODate
+        FORMAT = "%Y-%m-%d"
+
         def self.from_json(value : JSON::PullParser) : ::Time
           date = value.read_string
-          ::Time.parse(date, "%Y-%m-%d", Current.user.time_zone)
+          ::Time.parse(date, FORMAT, Current.user.time_zone)
+        end
+      end
+
+      module FromTimeString
+        FORMAT = "%H:%M"
+
+        def self.from_json(value : JSON::PullParser) : ::Time
+          time = value.read_string
+          ::Time.parse(time, FORMAT, Current.user.time_zone)
         end
       end
     end

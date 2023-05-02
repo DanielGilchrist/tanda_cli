@@ -1,11 +1,8 @@
-require "./interface.cr"
 require "../client"
 
 module Tanda::CLI
   module API
     module Endpoints::ClockIn
-      include Endpoints::Interface
-
       def clockins(date : Time) : API::Result(Array(Types::ClockIn))
         date_string = date.to_s("%Y-%m-%d")
 

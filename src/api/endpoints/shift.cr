@@ -1,11 +1,8 @@
-require "./interface.cr"
 require "../client"
 
 module Tanda::CLI
   module API
     module Endpoints::Shift
-      include Endpoints::Interface
-
       def todays_shifts(show_notes : Bool = false) : API::Result(Array(Types::Shift))
         shifts(Utils::Time.now)
       end

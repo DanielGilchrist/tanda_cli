@@ -18,6 +18,44 @@ module Tanda::CLI
     PRODUCTION = "production"
     STAGING    = "staging"
 
+    class RegularHours
+      include JSON::Serializable
+
+      class Day
+        include JSON::Serializable
+
+        def initialize(
+          @day : Time::DayOfWeek,
+          @start : Time,
+          @finish : Time,
+          @breaks : Array(Tuple(Time, Time))
+        ); end
+
+        getter day : Time::DayOfWeek
+        getter start : Time
+        getter finish : Time
+        getter breaks : Tuple(Time, Time)
+      end
+
+      def initialize(
+        @monday : Day,
+        @tuesday : Day,
+        @wednesday : Day,
+        @thursday : Day,
+        @friday : Day,
+        @saturday : Day,
+        @sunday : Day
+      ); end
+
+      getter monday : Day
+      getter tuesday : Day
+      getter wednesday : Day
+      getter thursday : Day
+      getter friday : Day
+      getter saturday : Day
+      getter sunday : Day
+    end
+
     class Organisation
       include JSON::Serializable
 

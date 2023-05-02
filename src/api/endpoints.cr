@@ -9,6 +9,7 @@ module Tanda::CLI
       include Endpoints::Me
       include Endpoints::PersonalDetails
       include Endpoints::Shift
+      include Endpoints::User
     end
   end
 end
