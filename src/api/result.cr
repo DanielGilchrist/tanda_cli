@@ -39,13 +39,22 @@ module Tanda::CLI
       private def initialize(@value : T | Types::Error); end
 
       def or(& : Types::Error -> U) : T | U forall U
-        value = self.value
-        return value unless value.is_a?(Types::Error)
-
-        yield(value)
+        case value = @value
+        in T
+          value
+        in Types::Error
+          yield(value)
+        end
       end
 
-      private getter value : T | Types::Error
+      def or? : T?
+        case value = @value
+        in T
+          value
+        in Types::Error
+          nil
+        end
+      end
     end
   end
 end
