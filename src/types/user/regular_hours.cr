@@ -9,10 +9,17 @@ module Tanda::CLI
 
         class Schedule
           include JSON::Serializable
+          include Utils::Mixins::PrettyTimes
 
           class Break
-            def initialize(@start : Time, @finish : Time); end
-            getter start, finish
+            include Utils::Mixins::PrettyTimes
+
+            def initialize(@start_time : Time, @finish_time : Time); end
+            getter start_time, finish_time
+
+            def length : Time::Span
+              finish_time - start_time
+            end
           end
 
           module BreaksConverter
@@ -22,18 +29,20 @@ module Tanda::CLI
 
               status_string.split(",").map do |break_string|
                 start, finish = break_string.split("-")
-                time_zone = Current.user.time_zone
+
+                # TODO: handle this properly instead of using a default
+                time_zone = Current.user?.try(&.time_zone) || ::Time::Location.load("Europe/London")
 
                 Break.new(
-                  start: Time.parse(start, "%H:%M", time_zone),
-                  finish: Time.parse(finish, "%H:%M", time_zone)
+                  start_time: Time.parse(start, "%H:%M", time_zone),
+                  finish_time: Time.parse(finish, "%H:%M", time_zone)
                 )
               end
             end
 
             def self.to_json(value, json_builder : JSON::Builder)
               json = value.map do |break_|
-                "#{break_.start.to_s("%H:%M")}-#{break_.finish.to_s("%H:%M")}"
+                "#{break_.start_time.to_s("%H:%M")}-#{break_.finish_time.to_s("%H:%M")}"
               end.join(",")
 
               json_builder.string(json)
@@ -54,11 +63,11 @@ module Tanda::CLI
           @[JSON::Field(converter: Tanda::CLI::Types::User::RegularHours::Schedule::DayConverter)]
           getter day : Time::DayOfWeek
 
-          @[JSON::Field(converter: Tanda::CLI::Types::Converters::Time::FromTimeString)]
-          getter start : Time
+          @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromTimeString)]
+          getter start_time : Time
 
           @[JSON::Field(key: "end", converter: Tanda::CLI::Types::Converters::Time::FromTimeString)]
-          getter finish : Time
+          getter finish_time : Time
 
           @[JSON::Field(converter: Tanda::CLI::Types::User::RegularHours::Schedule::BreaksConverter)]
           getter breaks : Array(Break)
