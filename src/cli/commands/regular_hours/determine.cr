@@ -4,12 +4,16 @@ module Tanda::CLI
       def initialize(@client : API::Client); end
 
       def execute
-        user = @client.user(id: Current.user.id, show_regular_hours: true, force: true).or(&.display!)
+        determine_from_user_regular_hours || determine_from_recent_roster
+      end
+
+      private def determine_from_user_regular_hours : Bool
+        user = @client.user(id: Current.user.id, show_regular_hours: true, force: true).or?
+        return false if user.nil?
+
         regular_hours = user.regular_hours
 
-        if regular_hours.nil?
-          Utils::Display.error!("Regular hours aren't set for #{user.name}!")
-        end
+        return false if regular_hours.nil?
 
         config = Current.config
         organisation = config.current_environment.current_organisation!
@@ -18,6 +22,12 @@ module Tanda::CLI
         config.save!
 
         Utils::Display.success("Regular hours set for organisation \"#{organisation.name}\"")
+
+        true
+      end
+
+      private def determine_from_recent_roster
+
       end
     end
   end
