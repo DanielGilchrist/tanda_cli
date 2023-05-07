@@ -15,6 +15,7 @@ module Tanda::CLI
             include Utils::Mixins::PrettyTimes
 
             def initialize(@start_time : Time, @finish_time : Time); end
+
             getter start_time, finish_time
 
             def length : Time::Span
