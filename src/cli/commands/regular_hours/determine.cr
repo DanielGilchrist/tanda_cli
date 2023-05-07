@@ -27,7 +27,6 @@ module Tanda::CLI
       end
 
       private def determine_from_recent_roster
-
       end
     end
   end
