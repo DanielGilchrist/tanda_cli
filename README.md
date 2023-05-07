@@ -81,7 +81,7 @@ tanda_cli clockin display
 # Configure clockin photo to be used on each clockin if not specified
 # View configured photo or directory of photos
 tanda_cli clockin photo view
-# Set configured photo or directory (if a directory a photo is randomly picked)
+# Set configured photo or directory (if set to a directory, a valid photo from that directory is randomly picked)
 tanda_cli clockin photo --set "/path/to/photo.png"
 # or
 tanda_cli clockin photo --set "/path/to/dir/with/photos/"
