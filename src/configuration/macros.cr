@@ -1,8 +1,6 @@
 module Tanda::CLI
   class Configuration
     module Macros
-      abstract def staging? : Bool
-
       #
       # Defines getter and setter methods for accessing `Configuration::Environment` methods based on `Configuration#mode`
       #

@@ -35,6 +35,10 @@ module Tanda::CLI
           time = value.read_string
           ::Time.parse(time, FORMAT, Current.user.time_zone)
         end
+
+        def self.to_json(value : ::Time, json_builder : JSON::Builder)
+          json_builder.string(value.to_s(FORMAT))
+        end
       end
     end
   end

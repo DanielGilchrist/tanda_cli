@@ -12,6 +12,7 @@ module Tanda::CLI
 
           class Break
             def initialize(@start : Time, @finish : Time); end
+            getter start, finish
           end
 
           module BreaksConverter
@@ -29,12 +30,24 @@ module Tanda::CLI
                 )
               end
             end
+
+            def self.to_json(value, json_builder : JSON::Builder)
+              json = value.map do |break_|
+                "#{break_.start.to_s("%H:%M")}-#{break_.finish.to_s("%H:%M")}"
+              end.join(",")
+
+              json_builder.string(json)
+            end
           end
 
           module DayConverter
             def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
               day_string = value.read_string
               Time::DayOfWeek.parse?(day_string) || Utils::Display.fatal!("Invalid day of week: #{day_string}")
+            end
+
+            def self.to_json(value, json_builder : JSON::Builder)
+              json_builder.string(value.to_s)
             end
           end
 
@@ -51,6 +64,7 @@ module Tanda::CLI
           getter breaks : Array(Break)
         end
 
+        @[JSON::Field(key: "schedules")]
         private getter _schedules : Array(Schedule)?
 
         def schedules : Array(Schedule)

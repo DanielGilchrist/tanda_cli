@@ -18,46 +18,10 @@ module Tanda::CLI
     PRODUCTION = "production"
     STAGING    = "staging"
 
-    class RegularHours
-      include JSON::Serializable
-
-      class Day
-        include JSON::Serializable
-
-        def initialize(
-          @day : Time::DayOfWeek,
-          @start : Time,
-          @finish : Time,
-          @breaks : Array(Tuple(Time, Time))
-        ); end
-
-        getter day : Time::DayOfWeek
-        getter start : Time
-        getter finish : Time
-        getter breaks : Tuple(Time, Time)
-      end
-
-      def initialize(
-        @monday : Day,
-        @tuesday : Day,
-        @wednesday : Day,
-        @thursday : Day,
-        @friday : Day,
-        @saturday : Day,
-        @sunday : Day
-      ); end
-
-      getter monday : Day
-      getter tuesday : Day
-      getter wednesday : Day
-      getter thursday : Day
-      getter friday : Day
-      getter saturday : Day
-      getter sunday : Day
-    end
-
     class Organisation
       include JSON::Serializable
+
+      alias RegularHours = Types::User::RegularHours
 
       def self.from(organisation : Types::Me::Organisation) : self
         new(
@@ -77,6 +41,9 @@ module Tanda::CLI
       getter name : String
       getter user_id : Int32
       property? current : Bool
+
+      @[JSON::Field(key: "regular_hours", emit_null: true)]
+      property regular_hours : RegularHours?
     end
 
     class AccessToken
@@ -114,6 +81,10 @@ module Tanda::CLI
 
       def clear_access_token!
         @access_token = AccessToken.new
+      end
+
+      def current_organisation! : Organisation
+        @organisations.find(&.current?) || Utils::Display.error!("No current organisation set!")
       end
     end
 
@@ -153,6 +124,14 @@ module Tanda::CLI
         @start_of_week = start_of_week
         nil
       end
+
+      def staging? : Bool
+        mode != PRODUCTION
+      end
+
+      def current_environment : Environment
+        staging? ? staging : production
+      end
     end
 
     def self.init : Configuration
@@ -182,17 +161,13 @@ module Tanda::CLI
 
     delegate clockin_photo_path, :clockin_photo_path=, to: config
     delegate mode, :mode=, to: config
-    delegate start_of_week, pretty_start_of_week, set_start_of_week, to: config
+    delegate start_of_week, pretty_start_of_week, set_start_of_week, staging?, current_environment, to: config
 
     # properties that return from a different environment depending on `mode`
     mode_property time_zone : String?
     mode_property organisations : Array(Organisation)
     mode_property site_prefix : String
     mode_property access_token : AccessToken
-
-    def staging? : Bool
-      mode != PRODUCTION
-    end
 
     def clear_access_token!
       if staging?
