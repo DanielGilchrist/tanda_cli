@@ -6,42 +6,26 @@ module Tanda::CLI
       #
       # Example:
       # ```
-      # mode_property time_zone : String?
+      # environment_property time_zone : String?
       #
       # # expands to
       #
       # def time_zone : String | ::Nil
-      #   if staging?
-      #     config.staging.time_zone
-      #   else
-      #     config.production.time_zone
-      #   end
+      #   current_environment.time_zone
       # end
       #
       # def time_zone=(value : String | ::Nil)
-      #   if staging?
-      #     config.staging.time_zone = value
-      #   else
-      #     config.production.time_zone = value
-      #   end
+      #   current_environment.time_zone = value
       # end
       # ```
       #
-      macro mode_property(name)
+      macro environment_property(name)
         def {{name.var.id}} : {{name.type}}
-          if staging?
-            config.staging.{{name.var.id}}
-          else
-            config.production.{{name.var.id}}
-          end
+          current_environment.{{name.var.id}}
         end
 
         def {{name.var.id}}=(value : {{name.type}})
-          if staging?
-            config.staging.{{name.var.id}} = value
-          else
-            config.production.{{name.var.id}} = value
-          end
+          current_environment.{{name.var.id}} = value
         end
       end
     end

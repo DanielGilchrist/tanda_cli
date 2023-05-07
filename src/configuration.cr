@@ -163,11 +163,11 @@ module Tanda::CLI
     delegate mode, :mode=, to: config
     delegate start_of_week, pretty_start_of_week, set_start_of_week, staging?, current_environment, to: config
 
-    # properties that return from a different environment depending on `mode`
-    mode_property time_zone : String?
-    mode_property organisations : Array(Organisation)
-    mode_property site_prefix : String
-    mode_property access_token : AccessToken
+    # properties that are delegated based on the current environment
+    environment_property time_zone : String?
+    environment_property organisations : Array(Organisation)
+    environment_property site_prefix : String
+    environment_property access_token : AccessToken
 
     def clear_access_token!
       if staging?
