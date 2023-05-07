@@ -63,8 +63,8 @@ module Tanda::CLI
         nilable_user
       end
 
-      def user? : Bool
-        !!maybe_user
+      def user? : User?
+        maybe_user
       end
 
       {% if flag?(:test) %}

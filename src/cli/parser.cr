@@ -83,6 +83,10 @@ module Tanda::CLI
         CLI::Parser::LeaveBalance.new(parser, ->{ build_client_with_current_user }).parse
       end
 
+      parser.on("regular_hours", "View or set your regular hours") do
+        CLI::Parser::RegularHours.new(parser, ->{ build_client_with_current_user }).parse
+      end
+
       parser.on("refetch_token", "Refetch token for the current environment") do
         config = Current.config
         config.reset_environment!

@@ -3,8 +3,6 @@ module Tanda::CLI
     module Mixins
       module PrettyTimes
         module PrettyMaybeStart
-          abstract def start_time : ::Time?
-
           def pretty_start_time : String?
             start_time = self.start_time
             return if start_time.nil?
@@ -14,8 +12,6 @@ module Tanda::CLI
         end
 
         module PrettyMaybeFinish
-          abstract def finish_time : ::Time?
-
           def pretty_finish_time : String?
             finish_time = self.finish_time
             return if finish_time.nil?
@@ -25,16 +21,12 @@ module Tanda::CLI
         end
 
         module PrettyDateTime
-          abstract def time : ::Time
-
           def pretty_date_time : String
             Utils::Time.pretty_date_time(time)
           end
         end
 
         module PrettyDate
-          abstract def date : ::Time
-
           def pretty_date : String
             Utils::Time.pretty_date(date)
           end
