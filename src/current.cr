@@ -24,7 +24,7 @@ module Tanda::CLI
       end
     end
 
-    delegate config, user, user?, to: instance
+    delegate config, user, user?, time_zone, to: instance
 
     def set_user!(user : User)
       Utils::Display.fatal!(UserAlreadySet.new) if @@user_set
@@ -47,9 +47,14 @@ module Tanda::CLI
     private class CurrentInstance
       @config : Configuration? = nil
       @maybe_user : User? = nil
+      @default_time_zone : Time::Location? = nil
 
       def config : Configuration
         @config ||= Configuration.init
+      end
+
+      def time_zone : Time::Location
+        ((user = user?) && user.time_zone) || (@default_time_zone ||= Time::Location.load_local)
       end
 
       def user=(user : User)
@@ -57,14 +62,14 @@ module Tanda::CLI
       end
 
       def user : User
-        nilable_user = maybe_user
+        nilable_user = @maybe_user
         Utils::Display.fatal!(UserNotSet.new) if nilable_user.nil?
 
         nilable_user
       end
 
       def user? : User?
-        maybe_user
+        @maybe_user
       end
 
       {% if flag?(:test) %}
@@ -73,8 +78,6 @@ module Tanda::CLI
           @maybe_user = nil
         end
       {% end %}
-
-      private getter maybe_user : User?
     end
   end
 end

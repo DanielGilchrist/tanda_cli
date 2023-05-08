@@ -67,7 +67,9 @@ module Tanda::CLI
           "Authorization" => "Bearer #{token}",
           "Content-Type"  => "application/json",
         }.tap do |headers|
-          headers["X-User-Id"] = Current.user.id.to_s if Current.user?
+          if user = Current.user?
+            headers["X-User-Id"] = user.id.to_s
+          end
         end
       end
 

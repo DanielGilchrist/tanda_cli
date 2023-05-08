@@ -6,7 +6,7 @@ module Tanda::CLI
       module FromUnix
         def self.from_json(value : JSON::PullParser) : ::Time?
           timestamp = value.read_int
-          ::Time.unix(timestamp.to_i32).in(Current.user.time_zone)
+          ::Time.unix(timestamp.to_i32).in(Current.time_zone)
         end
       end
 
@@ -15,7 +15,7 @@ module Tanda::CLI
           timestamp = value.read_int_or_null
           return unless timestamp
 
-          ::Time.unix(timestamp.to_i32).in(Current.user.time_zone)
+          ::Time.unix(timestamp.to_i32).in(Current.time_zone)
         end
       end
 
@@ -24,7 +24,7 @@ module Tanda::CLI
 
         def self.from_json(value : JSON::PullParser) : ::Time
           date = value.read_string
-          ::Time.parse(date, FORMAT, Current.user.time_zone)
+          ::Time.parse(date, FORMAT, Current.time_zone)
         end
       end
 
@@ -33,16 +33,11 @@ module Tanda::CLI
 
         def self.from_json(value : JSON::PullParser) : ::Time
           time = value.read_string
-          ::Time.parse(time, FORMAT, determine_time_zone)
+          ::Time.parse(time, FORMAT, Current.time_zone)
         end
 
         def self.to_json(value : ::Time, json_builder : JSON::Builder)
           json_builder.string(value.to_s(FORMAT))
-        end
-
-        private def self.determine_time_zone : ::Time::Location
-          # TODO: Handle this case properly instead of hard coding a default
-          Current.user?.try(&.time_zone) || ::Time::Location.load("Europe/London")
         end
       end
     end

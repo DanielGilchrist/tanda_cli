@@ -8,7 +8,7 @@ module Tanda::CLI
       DEFAULT_DATE_TIME_FORMAT = "#{DEFAULT_DATE_FORMAT} | #{DEFAULT_TIME_FORMAT}"
 
       def now : ::Time
-        ::Time.local(location: Current.user.time_zone)
+        ::Time.local(location: Current.time_zone)
       end
 
       def pretty_date(date : ::Time) : String

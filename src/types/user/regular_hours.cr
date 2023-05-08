@@ -28,11 +28,9 @@ module Tanda::CLI
               status_string = value.read_string
               return [] of Break if status_string.presence.nil?
 
+              time_zone = Current.time_zone
               status_string.split(",").map do |break_string|
                 start, finish = break_string.split("-")
-
-                # TODO: handle this properly instead of using a default
-                time_zone = Current.user?.try(&.time_zone) || ::Time::Location.load("Europe/London")
 
                 Break.new(
                   start_time: Time.parse(start, "%H:%M", time_zone),
