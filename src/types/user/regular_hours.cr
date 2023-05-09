@@ -92,6 +92,11 @@ module Tanda::CLI
         def schedules : Array(Schedule)
           _schedules || Array(Schedule).new
         end
+
+        def blank? : Bool
+          schedules = _schedules
+          schedules.nil? || schedules.empty?
+        end
       end
     end
   end
