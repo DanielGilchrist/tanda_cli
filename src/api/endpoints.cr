@@ -8,6 +8,7 @@ module Tanda::CLI
       include Endpoints::LeaveRequest
       include Endpoints::Me
       include Endpoints::PersonalDetails
+      include Endpoints::Roster
       include Endpoints::Shift
       include Endpoints::User
     end

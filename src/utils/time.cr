@@ -6,6 +6,7 @@ module Tanda::CLI
       DEFAULT_DATE_FORMAT      = "%A, %d %b %Y"
       DEFAULT_TIME_FORMAT      = "%l:%M %p"
       DEFAULT_DATE_TIME_FORMAT = "#{DEFAULT_DATE_FORMAT} | #{DEFAULT_TIME_FORMAT}"
+      ISO_DATE                 = "%Y-%m-%d"
 
       def now : ::Time
         ::Time.local(location: Current.time_zone)
@@ -21,6 +22,10 @@ module Tanda::CLI
 
       def pretty_date_time(time : ::Time) : String
         ::Time::Format.new(DEFAULT_DATE_TIME_FORMAT).format(time).squeeze(' ')
+      end
+
+      def iso_date(date : ::Time) : String
+        ::Time::Format.new(ISO_DATE).format(date)
       end
     end
   end

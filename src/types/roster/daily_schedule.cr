@@ -1,5 +1,5 @@
 require "json"
-require "./schedule"
+require "../schedule"
 
 module Tanda::CLI
   module Types
@@ -10,7 +10,7 @@ module Tanda::CLI
         @[JSON::Field(key: "date")]
         getter date : Time
 
-        getter schedules : Array(Types::Roster::Schedule)
+        getter schedules : Array(Types::Schedule)
       end
     end
   end
