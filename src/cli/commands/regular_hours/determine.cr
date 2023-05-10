@@ -26,13 +26,14 @@ module Tanda::CLI
       end
 
       private def determine_from_recent_roster(date : Time = Utils::Time.now) : Bool
-        roster = @client.roster_on_date(date).or(&.display!)
-        daily_schedules = roster.daily_schedules
+        # roster = @client.roster_on_date(date).or(&.display!)
+        # daily_schedules = roster.daily_schedules
 
-        if daily_schedules.empty?
-          previous_week = date - 1.week
-          return determine_from_recent_roster(previous_week)
-        end
+        # if daily_schedules.empty?
+        #   previous_week = date - 1.week
+        #   return determine_from_recent_roster(previous_week)
+        # end
+        false
       end
     end
   end
