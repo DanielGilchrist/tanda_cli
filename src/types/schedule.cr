@@ -10,10 +10,10 @@ module Tanda::CLI
         include JSON::Serializable
 
         @[JSON::Field(key: "start", converter: Tanda::CLI::Converters::Time::FromMaybeUnix)]
-        getter start_time : Time
+        getter start_time : Time?
 
         @[JSON::Field(key: "finish", converter: Tanda::CLI::Converters::Time::FromMaybeUnix)]
-        getter finish_time : Time
+        getter finish_time : Time?
       end
 
       # {
@@ -39,10 +39,10 @@ module Tanda::CLI
       # }
 
       @[JSON::Field(key: "start", converter: Tanda::CLI::Converters::Time::FromMaybeUnix)]
-      getter start_time : Time
+      getter start_time : Time?
 
       @[JSON::Field(key: "finish", converter: Tanda::CLI::Converters::Time::FromMaybeUnix)]
-      getter finish_time : Time
+      getter finish_time : Time?
 
       getter breaks : Array(Schedule::Break)
     end
