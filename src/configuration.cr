@@ -96,7 +96,8 @@ module Tanda::CLI
         @production : Environment = Environment.new,
         @staging : Environment = Environment.new,
         @mode : String = PRODUCTION,
-        @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
+        @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
+        @treat_paid_breaks_as_unpaid : Bool? = false
       ); end
 
       getter production
@@ -104,6 +105,11 @@ module Tanda::CLI
       getter start_of_week
       property clockin_photo_path : String?
       property mode : String
+
+      # Secret manual configuration options
+      # TODO: Remove this - currently to get around annoying issue where breaks get marked as paid which doesn't work for my needs
+      @[JSON::Field(emit_null: true)]
+      getter? treat_paid_breaks_as_unpaid : Bool?
 
       def reset_staging!
         @staging = Environment.new
@@ -161,7 +167,13 @@ module Tanda::CLI
 
     delegate clockin_photo_path, :clockin_photo_path=, to: config
     delegate mode, :mode=, to: config
-    delegate start_of_week, pretty_start_of_week, set_start_of_week, staging?, current_environment, to: config
+    delegate start_of_week,
+      pretty_start_of_week,
+      set_start_of_week,
+      staging?,
+      current_environment,
+      treat_paid_breaks_as_unpaid?,
+      to: config
 
     # properties that are delegated based on the current environment
     environment_property time_zone : String?
