@@ -50,7 +50,7 @@ module Tanda::CLI
         CLI::Parser::CurrentUser.new(parser).parse
       end
 
-      parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>") do
+      parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>)") do
         CLI::Parser::Mode.new(parser).parse
       end
 
