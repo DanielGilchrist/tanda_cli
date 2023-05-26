@@ -42,6 +42,9 @@ module Tanda::CLI
       getter user_id : Int32
       property? current : Bool
 
+      # TODO: Refactor to use separate type
+      # Having this type used here limits us to what we can do with the RegularHours type as config gets loaded
+      # and is global meaning it has certain constraints
       @[JSON::Field(key: "regular_hours", emit_null: true)]
       property regular_hours : RegularHours?
     end
