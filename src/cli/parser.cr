@@ -61,16 +61,6 @@ module Tanda::CLI
 
     # Options that make API requests
     private def parse_api_options!(parser : OptionParser)
-      parser.on("me", "Get your own information") do
-        me = build_client_with_current_user.me.or(&.display!)
-        Representers::Me.new(me).display
-      end
-
-      parser.on("personal_details", "Get your personal details") do
-        personal_details = build_client_with_current_user.personal_details.or(&.display!)
-        Representers::PersonalDetails.new(personal_details).display
-      end
-
       parser.on("time_worked", "See how many hours you've worked") do
         CLI::Parser::TimeWorked.new(parser, ->{ build_client_with_current_user }).parse
       end
@@ -85,21 +75,6 @@ module Tanda::CLI
 
       parser.on("regular_hours", "View or set your regular hours") do
         CLI::Parser::RegularHours.new(parser, ->{ build_client_with_current_user }).parse
-      end
-
-      parser.on("refetch_token", "Refetch token for the current environment") do
-        config = Current.config
-        config.reset_environment!
-        API::Auth.fetch_new_token!
-
-        client = create_client_from_config
-        CLI::Request.ask_which_organisation_and_save!(client, config)
-        exit
-      end
-
-      parser.on("refetch_users", "Refetch users from the API and save to config") do
-        CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, Current.config)
-        exit
       end
     end
   end
