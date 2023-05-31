@@ -1,7 +1,7 @@
 require "colorize"
 
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     module TimeWorked
       abstract class Base
         def initialize(@client : API::Client, @display : Bool, @offset : Int32?); end

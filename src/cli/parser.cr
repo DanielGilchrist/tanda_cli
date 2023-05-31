@@ -1,4 +1,4 @@
-require "./commands/**"
+require "./executors/**"
 require "./parser/helpers"
 require "../current"
 require "../api/client"
