@@ -9,6 +9,8 @@ targets:
     main: src/tanda_cli.cr
 
 development_dependencies:
+  admiral:
+    github: jwaldrip/admiral.cr # https://github.com/jwaldrip/admiral.cr
   ameba:
     github: crystal-ameba/ameba # https://github.com/crystal-ameba/ameba
     version: ~> 1
