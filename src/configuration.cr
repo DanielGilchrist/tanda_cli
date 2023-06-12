@@ -47,6 +47,10 @@ module Tanda::CLI
       # and is global meaning it has certain constraints
       @[JSON::Field(key: "regular_hours", emit_null: true)]
       property regular_hours : RegularHours?
+
+      def set_regular_hours_from_roster!(schedules : Array(Types::Schedule))
+        pp schedules.first.inspect
+      end
     end
 
     class AccessToken

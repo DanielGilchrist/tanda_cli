@@ -7,8 +7,8 @@ module Tanda::CLI
       class DailySchedule
         include JSON::Serializable
 
-        @[JSON::Field(key: "date")]
-        getter date : Time
+        # @[JSON::Field(key: "date")]
+        # getter date : Time
 
         getter schedules : Array(Types::Schedule)
       end
