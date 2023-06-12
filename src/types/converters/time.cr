@@ -27,19 +27,6 @@ module Tanda::CLI
           ::Time.parse(date, FORMAT, Current.time_zone)
         end
       end
-
-      module FromTimeString
-        FORMAT = "%H:%M"
-
-        def self.from_json(value : JSON::PullParser) : ::Time
-          time = value.read_string
-          ::Time.parse(time, FORMAT, Current.time_zone)
-        end
-
-        def self.to_json(value : ::Time, json_builder : JSON::Builder)
-          json_builder.string(value.to_s(FORMAT))
-        end
-      end
     end
   end
 end
