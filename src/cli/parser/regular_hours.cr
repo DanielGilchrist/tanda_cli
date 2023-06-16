@@ -29,8 +29,10 @@ module Tanda::CLI
             end
 
             if automatic_break_length = schedule.automatic_break_length
-              puts "Automatic break length: #{automatic_break_length}"
+              puts "    Automatic break length: #{automatic_break_length} minutes"
             end
+
+            puts
           end
         end
       end
