@@ -5,6 +5,7 @@ require "./configuration/**"
 require "./error/invalid_start_of_week"
 require "./types/access_token"
 require "./utils/url"
+require "./utils/mixins/pretty_times"
 
 module Tanda::CLI
   class Configuration
@@ -20,8 +21,6 @@ module Tanda::CLI
 
     class Organisation
       include JSON::Serializable
-
-      alias RegularHours = Types::User::RegularHours
 
       def self.from(organisation : Types::Me::Organisation) : self
         new(
@@ -42,14 +41,99 @@ module Tanda::CLI
       getter user_id : Int32
       property? current : Bool
 
-      # TODO: Refactor to use separate type
-      # Having this type used here limits us to what we can do with the RegularHours type as config gets loaded
-      # and is global meaning it has certain constraints
-      @[JSON::Field(key: "regular_hours", emit_null: true)]
-      property regular_hours : RegularHours?
+      @[JSON::Field(key: "regular_hours")]
+      property regular_hours_schedules : Array(RegularHoursSchedule)?
 
       def set_regular_hours_from_roster!(schedules : Array(Types::Schedule))
         pp schedules.first.inspect
+      end
+
+      class RegularHoursSchedule
+        include JSON::Serializable
+        include Utils::Mixins::PrettyTimes
+
+        TIME_STRING_FORMAT = "%H:%M"
+
+        module DayConverter
+          def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
+            day_string = value.read_string
+            Time::DayOfWeek.parse?(day_string) || Utils::Display.fatal!("Invalid day of week: #{day_string}")
+          end
+
+          def self.to_json(value, json_builder : JSON::Builder)
+            json_builder.string(value.to_s)
+          end
+        end
+
+        class Break
+          include JSON::Serializable
+          include Utils::Mixins::PrettyTimes
+
+          def initialize(@_start_time : String, @_finish_time : String); end
+
+          def start_time : Time
+            Time.parse(_start_time, TIME_STRING_FORMAT, Current.time_zone)
+          end
+
+          def finish_time : Time
+            Time.parse(_finish_time, TIME_STRING_FORMAT, Current.time_zone)
+          end
+
+          def length : Time::Span
+            finish_time - start_time
+          end
+
+          private getter _start_time : String
+          private getter _finish_time : String
+        end
+
+        def initialize(
+          @day_of_week : Time::DayOfWeek,
+          @breaks : Array(Break) = Array(Break).new,
+          @automatic_break_length : UInt16? = nil,
+          start_time : (String | Time)? = nil,
+          finish_time : (String | Time)? = nil,
+        )
+          @_start_time = begin
+            case start_time
+            in String
+              start_time
+            in Time
+              start_time.to_s(TIME_STRING_FORMAT)
+            in NilClass
+            end
+          end
+
+          @_finish_time = begin
+            case finish_time
+            in String
+              finish_time
+            in Time
+              finish_time.to_s(TIME_STRING_FORMAT)
+            in NilClass
+            end
+          end
+        end
+
+        @[JSON::Field(converter: Tanda::CLI::Configuration::Organisation::RegularHoursSchedule::DayConverter)]
+        getter day_of_week : Time::DayOfWeek
+
+        getter breaks : Array(Break)
+
+        getter automatic_break_length : UInt16?
+
+        def start_time : Time?
+          start_time = _start_time
+          Time.parse(start_time, TIME_STRING_FORMAT, Current.time_zone) if start_time
+        end
+
+        def finish_time : Time?
+          finish_time = _finish_time
+          Time.parse(finish_time, TIME_STRING_FORMAT, Current.time_zone) if finish_time
+        end
+
+        private getter _start_time : String?
+        private getter _finish_time : String?
       end
     end
 

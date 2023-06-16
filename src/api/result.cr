@@ -27,11 +27,14 @@ module Tanda::CLI
           {{ raise "Unsupported type #{T}" }}
         {% end %}
 
+        body = response.body
+        body = %({}) if body.presence.nil?
+
         {% if T == Nil %}
           # Special case - if we don't care about a successful response's value we use Nil
-          response.success? ? nil : Types::Error.from_json(response.body)
+          response.success? ? nil : Types::Error.from_json(body)
         {% else %}
-          (response.success? ? T : Types::Error).from_json(response.body)
+          (response.success? ? T : Types::Error).from_json(body)
         {% end %}
       end
 
