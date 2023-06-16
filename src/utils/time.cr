@@ -27,6 +27,10 @@ module Tanda::CLI
       def iso_date(date : ::Time) : String
         ::Time::Format.new(ISO_DATE).format(date)
       end
+
+      def iso_date(date : String) : ::Time
+        ::Time.parse(date, ISO_DATE, location: Current.time_zone)
+      end
     end
   end
 end

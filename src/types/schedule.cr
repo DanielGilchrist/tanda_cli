@@ -6,15 +6,15 @@ module Tanda::CLI
     class Schedule
       include JSON::Serializable
 
-      # class Break
-      #   include JSON::Serializable
+      class Break
+        include JSON::Serializable
 
-      #   @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
-      #   getter start_time : Time?
+        @[JSON::Field(key: "start", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
+        getter start_time : Time?
 
-      #   @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
-      #   getter finish_time : Time?
-      # end
+        @[JSON::Field(key: "finish", converter: Tanda::CLI::Types::Converters::Time::FromMaybeUnix)]
+        getter finish_time : Time?
+      end
 
       # {
       #   "id": 31337157,
@@ -45,7 +45,7 @@ module Tanda::CLI
       getter finish_time : Time?
 
       getter automatic_break_length : UInt16
-      # getter breaks : Array(Schedule::Break)
+      getter breaks : Array(Schedule::Break)
       getter user_id : Int32
     end
   end

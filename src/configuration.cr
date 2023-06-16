@@ -22,6 +22,8 @@ module Tanda::CLI
     class Organisation
       include JSON::Serializable
 
+      TIME_STRING_FORMAT = "%H:%M"
+
       def self.from(organisation : Types::Me::Organisation) : self
         new(
           organisation.id,
@@ -34,7 +36,13 @@ module Tanda::CLI
         me.organisations.map(&->from(Types::Me::Organisation))
       end
 
-      def initialize(@id : Int32, @name : String, @user_id : Int32, @current : Bool = false); end
+      def initialize(
+        @id : Int32,
+        @name : String,
+        @user_id : Int32,
+        @current : Bool = false,
+        @regular_hours_schedules : Array(RegularHoursSchedule)? = nil
+      ); end
 
       getter id : Int32
       getter name : String
@@ -42,17 +50,43 @@ module Tanda::CLI
       property? current : Bool
 
       @[JSON::Field(key: "regular_hours")]
-      property regular_hours_schedules : Array(RegularHoursSchedule)?
+      getter regular_hours_schedules : Array(RegularHoursSchedule)?
 
-      def set_regular_hours_from_roster!(schedules : Array(Types::Schedule))
-        pp schedules.first.inspect
+      def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
+        mapped_schedules = schedules_with_day_of_week.map do |schedule_with_day_of_week|
+          schedule = schedule_with_day_of_week[:schedule]
+          day_of_week = schedule_with_day_of_week[:day_of_week]
+
+          breaks = if (schedule_breaks = schedule.breaks).empty?
+            Array(RegularHoursSchedule::Break).new
+          else
+            schedule_breaks.compact_map do |schedule_break|
+              start_time = schedule_break.start_time
+              finish_time = schedule_break.finish_time
+              next if start_time.nil? || finish_time.nil?
+
+              RegularHoursSchedule::Break.new(
+                start_time.to_s(TIME_STRING_FORMAT),
+                finish_time.to_s(TIME_STRING_FORMAT)
+              )
+            end
+          end
+
+          RegularHoursSchedule.new(
+            day_of_week: day_of_week,
+            breaks: breaks,
+            automatic_break_length: schedule.automatic_break_length,
+            start_time: schedule.start_time,
+            finish_time: schedule.finish_time
+          )
+        end
+
+        @regular_hours_schedules = mapped_schedules
       end
 
       class RegularHoursSchedule
         include JSON::Serializable
         include Utils::Mixins::PrettyTimes
-
-        TIME_STRING_FORMAT = "%H:%M"
 
         module DayConverter
           def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
@@ -100,7 +134,7 @@ module Tanda::CLI
               start_time
             in Time
               start_time.to_s(TIME_STRING_FORMAT)
-            in NilClass
+            in Nil
             end
           end
 
@@ -110,7 +144,7 @@ module Tanda::CLI
               finish_time
             in Time
               finish_time.to_s(TIME_STRING_FORMAT)
-            in NilClass
+            in Nil
             end
           end
         end
