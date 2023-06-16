@@ -27,11 +27,15 @@ module Tanda::CLI
           {{ raise "Unsupported type #{T}" }}
         {% end %}
 
+        # Handles the case that the response is "blank" but still needs to be parsed into a specific object
+        body = response.body
+        body = %({}) if body.presence.nil?
+
         {% if T == Nil %}
           # Special case - if we don't care about a successful response's value we use Nil
-          response.success? ? nil : Types::Error.from_json(response.body)
+          response.success? ? nil : Types::Error.from_json(body)
         {% else %}
-          (response.success? ? T : Types::Error).from_json(response.body)
+          (response.success? ? T : Types::Error).from_json(body)
         {% end %}
       end
 
@@ -39,13 +43,22 @@ module Tanda::CLI
       private def initialize(@value : T | Types::Error); end
 
       def or(& : Types::Error -> U) : T | U forall U
-        value = self.value
-        return value unless value.is_a?(Types::Error)
-
-        yield(value)
+        case value = @value
+        in T
+          value
+        in Types::Error
+          yield(value)
+        end
       end
 
-      private getter value : T | Types::Error
+      def or? : T?
+        case value = @value
+        in T
+          value
+        in Types::Error
+          nil
+        end
+      end
     end
   end
 end
