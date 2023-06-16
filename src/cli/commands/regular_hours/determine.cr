@@ -11,7 +11,7 @@ module Tanda::CLI
         roster = @client.roster_on_date(date).or(&.display!)
         current_user_id = Current.user.id
         schedules_with_day_of_week = roster.daily_schedules.compact_map do |daily_schedule|
-          schedule = daily_schedule.schedules.find { |schedule| schedule.user_id == current_user_id }
+          schedule = daily_schedule.schedules.find { |s| s.user_id == current_user_id }
           {day_of_week: daily_schedule.date.day_of_week, schedule: schedule} if schedule
         end
 
