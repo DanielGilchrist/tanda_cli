@@ -57,18 +57,20 @@ module Tanda::CLI
           schedule = schedule_with_day_of_week[:schedule]
           day_of_week = schedule_with_day_of_week[:day_of_week]
 
-          breaks = if (schedule_breaks = schedule.breaks).empty?
-            Array(RegularHoursSchedule::Break).new
-          else
-            schedule_breaks.compact_map do |schedule_break|
-              start_time = schedule_break.start_time
-              finish_time = schedule_break.finish_time
-              next if start_time.nil? || finish_time.nil?
+          breaks = begin
+            if (schedule_breaks = schedule.breaks).empty?
+              Array(RegularHoursSchedule::Break).new
+            else
+              schedule_breaks.compact_map do |schedule_break|
+                start_time = schedule_break.start_time
+                finish_time = schedule_break.finish_time
+                next if start_time.nil? || finish_time.nil?
 
-              RegularHoursSchedule::Break.new(
-                start_time.to_s(TIME_STRING_FORMAT),
-                finish_time.to_s(TIME_STRING_FORMAT)
-              )
+                RegularHoursSchedule::Break.new(
+                  start_time.to_s(TIME_STRING_FORMAT),
+                  finish_time.to_s(TIME_STRING_FORMAT)
+                )
+              end
             end
           end
 

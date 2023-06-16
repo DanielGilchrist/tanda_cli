@@ -27,6 +27,7 @@ module Tanda::CLI
           {{ raise "Unsupported type #{T}" }}
         {% end %}
 
+        # Handles the case that the response is "blank" but still needs to be parsed into a specific object
         body = response.body
         body = %({}) if body.presence.nil?
 
