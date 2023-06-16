@@ -92,7 +92,7 @@ module Tanda::CLI
           @breaks : Array(Break) = Array(Break).new,
           @automatic_break_length : UInt16? = nil,
           start_time : (String | Time)? = nil,
-          finish_time : (String | Time)? = nil,
+          finish_time : (String | Time)? = nil
         )
           @_start_time = begin
             case start_time
