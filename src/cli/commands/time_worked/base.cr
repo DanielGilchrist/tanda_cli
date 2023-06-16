@@ -40,8 +40,24 @@ module Tanda::CLI
         end
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
-          time_worked && puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
-          (!time_worked && worked_so_far) && puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+          if time_worked
+            puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+          elsif worked_so_far
+            puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+
+            organisation = Current.config.current_environment.current_organisation!
+            regular_hours_schedule = organisation.regular_hours_schedules.try(&.find(&.day_of_week.==(shift.date.day_of_week)))
+            if regular_hours_schedule
+              ongoing_break_length = if shift.breaks.empty?
+                regular_hours_schedule.break_length
+              else
+                0.minutes
+              end
+
+              time_left = regular_hours_schedule.length - worked_so_far - ongoing_break_length
+              puts "#{"Time left:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
+            end
+          end
 
           Representers::Shift.new(shift).display
         end

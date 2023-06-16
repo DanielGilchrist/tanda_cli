@@ -53,9 +53,13 @@ module Tanda::CLI
       getter regular_hours_schedules : Array(RegularHoursSchedule)?
 
       def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
-        mapped_schedules = schedules_with_day_of_week.map do |schedule_with_day_of_week|
+        mapped_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
           schedule = schedule_with_day_of_week[:schedule]
           day_of_week = schedule_with_day_of_week[:day_of_week]
+
+          schedule_start_time = schedule.start_time
+          schedule_finish_time = schedule.finish_time
+          next if schedule_start_time.nil? || schedule_finish_time.nil?
 
           breaks = begin
             if (schedule_breaks = schedule.breaks).empty?
@@ -78,8 +82,8 @@ module Tanda::CLI
             day_of_week: day_of_week,
             breaks: breaks,
             automatic_break_length: schedule.automatic_break_length,
-            start_time: schedule.start_time,
-            finish_time: schedule.finish_time
+            start_time: schedule_start_time,
+            finish_time: schedule_finish_time
           )
         end
 
@@ -125,10 +129,10 @@ module Tanda::CLI
 
         def initialize(
           @day_of_week : Time::DayOfWeek,
+          start_time : (String | Time),
+          finish_time : (String | Time),
           @breaks : Array(Break) = Array(Break).new,
-          @automatic_break_length : UInt16? = nil,
-          start_time : (String | Time)? = nil,
-          finish_time : (String | Time)? = nil
+          @automatic_break_length : UInt16 = 0
         )
           @_start_time = begin
             case start_time
@@ -136,7 +140,6 @@ module Tanda::CLI
               start_time
             in Time
               start_time.to_s(TIME_STRING_FORMAT)
-            in Nil
             end
           end
 
@@ -146,7 +149,6 @@ module Tanda::CLI
               finish_time
             in Time
               finish_time.to_s(TIME_STRING_FORMAT)
-            in Nil
             end
           end
         end
@@ -158,18 +160,28 @@ module Tanda::CLI
 
         getter automatic_break_length : UInt16?
 
-        def start_time : Time?
-          start_time = _start_time
-          Time.parse(start_time, TIME_STRING_FORMAT, Current.time_zone) if start_time
+        def start_time : Time
+          Time.parse(_start_time, TIME_STRING_FORMAT, Current.time_zone)
         end
 
-        def finish_time : Time?
-          finish_time = _finish_time
-          Time.parse(finish_time, TIME_STRING_FORMAT, Current.time_zone) if finish_time
+        def finish_time : Time
+          Time.parse(_finish_time, TIME_STRING_FORMAT, Current.time_zone)
         end
 
-        private getter _start_time : String?
-        private getter _finish_time : String?
+        def length : Time::Span
+          finish_time - start_time
+        end
+
+        def break_length : Time::Span
+          if !(breaks = self.breaks).empty?
+            breaks.sum(&.length)
+          else
+            (automatic_break_length || 0).minutes
+          end
+        end
+
+        private getter _start_time : String
+        private getter _finish_time : String
       end
     end
 
