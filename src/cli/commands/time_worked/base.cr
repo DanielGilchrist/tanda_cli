@@ -48,13 +48,7 @@ module Tanda::CLI
             organisation = Current.config.current_environment.current_organisation!
             regular_hours_schedule = organisation.regular_hours_schedules.try(&.find(&.day_of_week.==(shift.date.day_of_week)))
             if regular_hours_schedule
-              ongoing_break_length = if shift.breaks.empty?
-                regular_hours_schedule.break_length
-              else
-                0.minutes
-              end
-
-              time_left = regular_hours_schedule.length - worked_so_far - ongoing_break_length
+              time_left = regular_hours_schedule.length - worked_so_far - regular_hours_schedule.break_length
               puts "#{"Time left:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
             end
           end
