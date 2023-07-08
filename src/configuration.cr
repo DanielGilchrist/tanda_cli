@@ -47,8 +47,6 @@ module Tanda::CLI
       @treat_paid_breaks_as_unpaid : Bool? = false
     ); end
 
-    getter production
-    getter staging
     getter start_of_week
     property clockin_photo_path : String?
     property mode : String
@@ -57,6 +55,18 @@ module Tanda::CLI
     # TODO: Remove this - currently to get around annoying issue where breaks get marked as paid which doesn't work for my needs
     @[JSON::Field(emit_null: true)]
     getter? treat_paid_breaks_as_unpaid : Bool?
+
+    # properties that are delegated based on the current environment
+    environment_property time_zone : String?
+    environment_property organisations : Array(Organisation)
+    environment_property site_prefix : String
+    environment_property access_token : AccessToken
+
+    delegate clear_access_token!, to: current_environment
+
+    def current_environment : Environment
+      staging? ? @staging : @production
+    end
 
     def reset_staging!
       @staging = Environment.new
@@ -80,24 +90,6 @@ module Tanda::CLI
 
     def staging? : Bool
       mode != PRODUCTION
-    end
-
-    def current_environment : Environment
-      staging? ? staging : production
-    end
-
-    # properties that are delegated based on the current environment
-    environment_property time_zone : String?
-    environment_property organisations : Array(Organisation)
-    environment_property site_prefix : String
-    environment_property access_token : AccessToken
-
-    def clear_access_token!
-      if staging?
-        staging.clear_access_token!
-      else
-        production.clear_access_token!
-      end
     end
 
     def reset_environment!
