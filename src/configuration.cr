@@ -8,6 +8,7 @@ require "./utils/url"
 
 module Tanda::CLI
   class Configuration
+    include JSON::Serializable
     include Configuration::Macros
 
     CONFIG_DIR  = "#{Path.home}/.tanda_cli"
@@ -16,66 +17,12 @@ module Tanda::CLI
     PRODUCTION = "production"
     STAGING    = "staging"
 
-    class Config
-      include JSON::Serializable
-
-      def initialize(
-        @clockin_photo_path : String? = nil,
-        @production : Environment = Environment.new,
-        @staging : Environment = Environment.new,
-        @mode : String = PRODUCTION,
-        @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
-        @treat_paid_breaks_as_unpaid : Bool? = false
-      ); end
-
-      getter production
-      getter staging
-      getter start_of_week
-      property clockin_photo_path : String?
-      property mode : String
-
-      # Secret manual configuration options
-      # TODO: Remove this - currently to get around annoying issue where breaks get marked as paid which doesn't work for my needs
-      @[JSON::Field(emit_null: true)]
-      getter? treat_paid_breaks_as_unpaid : Bool?
-
-      def reset_staging!
-        @staging = Environment.new
-      end
-
-      def reset_production!
-        @production = Environment.new
-      end
-
-      def pretty_start_of_week : String
-        @start_of_week.to_s
-      end
-
-      def set_start_of_week(value : String) : Error::InvalidStartOfWeek?
-        start_of_week = Time::DayOfWeek.parse?(value)
-        return Error::InvalidStartOfWeek.new(value) if start_of_week.nil?
-
-        @start_of_week = start_of_week
-        nil
-      end
-
-      def staging? : Bool
-        mode != PRODUCTION
-      end
-
-      def current_environment : Environment
-        staging? ? staging : production
-      end
-    end
-
     def self.init : Configuration
       return new unless File.exists?(CONFIG_PATH)
 
       File.open(CONFIG_PATH) do |file|
         config_contents = file.gets_to_end
-        parsed_config = Config.from_json(config_contents)
-
-        new(parsed_config)
+        from_json(config_contents)
       rescue error
         {% if flag?(:debug) %}
           raise(error)
@@ -91,17 +38,53 @@ module Tanda::CLI
       end || new
     end
 
-    def initialize(@config : Config = Config.new); end
+    def initialize(
+      @clockin_photo_path : String? = nil,
+      @production : Environment = Environment.new,
+      @staging : Environment = Environment.new,
+      @mode : String = PRODUCTION,
+      @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
+      @treat_paid_breaks_as_unpaid : Bool? = false
+    ); end
 
-    delegate clockin_photo_path, :clockin_photo_path=, to: config
-    delegate mode, :mode=, to: config
-    delegate start_of_week,
-      pretty_start_of_week,
-      set_start_of_week,
-      staging?,
-      current_environment,
-      treat_paid_breaks_as_unpaid?,
-      to: config
+    getter production
+    getter staging
+    getter start_of_week
+    property clockin_photo_path : String?
+    property mode : String
+
+    # Secret manual configuration options
+    # TODO: Remove this - currently to get around annoying issue where breaks get marked as paid which doesn't work for my needs
+    @[JSON::Field(emit_null: true)]
+    getter? treat_paid_breaks_as_unpaid : Bool?
+
+    def reset_staging!
+      @staging = Environment.new
+    end
+
+    def reset_production!
+      @production = Environment.new
+    end
+
+    def pretty_start_of_week : String
+      @start_of_week.to_s
+    end
+
+    def set_start_of_week(value : String) : Error::InvalidStartOfWeek?
+      start_of_week = Time::DayOfWeek.parse?(value)
+      return Error::InvalidStartOfWeek.new(value) if start_of_week.nil?
+
+      @start_of_week = start_of_week
+      nil
+    end
+
+    def staging? : Bool
+      mode != PRODUCTION
+    end
+
+    def current_environment : Environment
+      staging? ? staging : production
+    end
 
     # properties that are delegated based on the current environment
     environment_property time_zone : String?
@@ -111,17 +94,17 @@ module Tanda::CLI
 
     def clear_access_token!
       if staging?
-        config.staging.clear_access_token!
+        staging.clear_access_token!
       else
-        config.production.clear_access_token!
+        production.clear_access_token!
       end
     end
 
     def reset_environment!
       if staging?
-        config.reset_staging!
+        reset_staging!
       else
-        config.reset_production!
+        reset_production!
       end
     end
 
@@ -138,7 +121,7 @@ module Tanda::CLI
 
     def save!
       create_config_dir_if_not_exists!
-      File.write(CONFIG_PATH, content: config.to_json)
+      File.write(CONFIG_PATH, content: to_json)
     end
 
     def api_url : String
@@ -155,8 +138,6 @@ module Tanda::CLI
         "#{validated_uri}/api/v2"
       end
     end
-
-    private getter config : Config
 
     private def create_config_dir_if_not_exists!
       FileUtils.mkdir_p(CONFIG_DIR) unless File.directory?(CONFIG_DIR)
