@@ -18,8 +18,6 @@ module Tanda::CLI
       Current.set_user!(user)
     end
 
-    private getter client : API::Client
-
     private def config : Configuration
       Current.config
     end
@@ -32,12 +30,12 @@ module Tanda::CLI
     end
 
     private def user_from_api : Current::User
-      organisation = CLI::Request.ask_which_organisation_and_save!(client, config)
+      organisation = CLI::Request.ask_which_organisation_and_save!(@client, config)
       Current::User.new(organisation.user_id, organisation.name, time_zone)
     end
 
     private def me : Types::Me
-      @me ||= client.me.or(&.display!)
+      @me ||= @client.me.or(&.display!)
     end
 
     private def time_zone : String

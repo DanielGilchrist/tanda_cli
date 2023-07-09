@@ -54,8 +54,8 @@ module Tanda::CLI
       end
 
       def parse
-        parser.on("photo", "View, set or clear clockin photo to be used by default") do
-          parser.on("-s PHOTO", "--set=PHOTO", "Set a clockin photo") do |path|
+        @parser.on("photo", "View, set or clear clockin photo to be used by default") do
+          @parser.on("-s PHOTO", "--set=PHOTO", "Set a clockin photo") do |path|
             if !Models::PhotoPathParser.valid?(path)
               Utils::Display.error!("Invalid photo path")
             end
@@ -69,7 +69,7 @@ module Tanda::CLI
             exit
           end
 
-          parser.on("view", "View a clockin photo") do
+          @parser.on("view", "View a clockin photo") do
             config = Current.config
             if path = config.clockin_photo_path
               puts "Clock in photo: #{path}"
@@ -80,7 +80,7 @@ module Tanda::CLI
             exit
           end
 
-          parser.on("clear", "Clear set clockin photo") do
+          @parser.on("clear", "Clear set clockin photo") do
             config = Current.config
             config.clockin_photo_path = nil
             config.save!
@@ -91,28 +91,28 @@ module Tanda::CLI
           end
         end
 
-        parser.on("status", "Check clockin status") do
+        @parser.on("status", "Check clockin status") do
           CLI::Commands::ClockIn::Status.new(client).execute
         end
 
-        parser.on("display", "Display current clockins") do
+        @parser.on("display", "Display current clockins") do
           CLI::Commands::ClockIn::Display.new(client).execute
         end
 
-        parser.on("start", "Clock in") do
+        @parser.on("start", "Clock in") do
           execute_clock_in(ClockType::Start)
         end
 
-        parser.on("finish", "Clock out") do
+        @parser.on("finish", "Clock out") do
           execute_clock_in(ClockType::Finish)
         end
 
-        parser.on("break", "Clock a break") do
-          parser.on("start", "Start break") do
+        @parser.on("break", "Clock a break") do
+          @parser.on("start", "Start break") do
             execute_clock_in(ClockType::BreakStart)
           end
 
-          parser.on("finish", "Finish break") do
+          @parser.on("finish", "Finish break") do
             execute_clock_in(ClockType::BreakFinish)
           end
         end

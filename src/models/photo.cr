@@ -32,8 +32,6 @@ module Tanda::CLI
         end
       end
 
-      private getter path : String
-
       private def read_and_validate_file : String | Error::Base
         photo_bytes = validate_file_exists || validate_file_type || read_file
         return photo_bytes unless photo_bytes.is_a?(String)
@@ -42,9 +40,9 @@ module Tanda::CLI
       end
 
       private def read_file : String | Error::PhotoCantBeFound
-        File.read(path)
+        File.read(@path)
       rescue File::NotFoundError
-        Error::PhotoCantBeFound.new(path)
+        Error::PhotoCantBeFound.new(@path)
       end
 
       private def validate_file_type : Error::UnsupportedPhotoFormat?
@@ -54,9 +52,9 @@ module Tanda::CLI
       end
 
       private def validate_file_exists : Error::PhotoCantBeFound?
-        return if File.exists?(path)
+        return if File.exists?(@path)
 
-        Error::PhotoCantBeFound.new(path)
+        Error::PhotoCantBeFound.new(@path)
       end
 
       private def validate_photo_size(photo_bytes : String) : Error::PhotoTooLarge?
@@ -76,11 +74,11 @@ module Tanda::CLI
       end
 
       private def jpeg? : Bool
-        path.ends_with?(".jpg") || path.ends_with?(".jpeg")
+        @path.ends_with?(".jpg") || @path.ends_with?(".jpeg")
       end
 
       private def png? : Bool
-        path.ends_with?(".png")
+        @path.ends_with?(".png")
       end
     end
   end

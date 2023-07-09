@@ -30,9 +30,6 @@ module Tanda::CLI
         exec(POST, endpoint, body: body)
       end
 
-      private getter base_uri : String
-      private getter token : String
-
       private def exec(method : String, endpoint : String, query : TQuery? = nil, body : TBody? = nil) : HTTP::Client::Response
         with_no_internet_handler! do
           encoded_params = URI::Params.encode(query) if query
@@ -56,7 +53,7 @@ module Tanda::CLI
       end
 
       private def build_uri(endpoint, query : String? = nil) : URI
-        uri = URI.parse("#{base_uri}#{endpoint}")
+        uri = URI.parse("#{@base_uri}#{endpoint}")
         uri.query = query if query
 
         uri
@@ -64,7 +61,7 @@ module Tanda::CLI
 
       private def build_headers : HTTP::Headers
         HTTP::Headers{
-          "Authorization" => "Bearer #{token}",
+          "Authorization" => "Bearer #{@token}",
           "Content-Type"  => "application/json",
         }.tap do |headers|
           if user = Current.user?
@@ -81,9 +78,9 @@ module Tanda::CLI
 
       private def execute_request!(&request : HTTP::Headers -> HTTP::Client::Response) : HTTP::Client::Response
         response = yield(build_headers)
-        refetched_response = handle_invalid_token!(response, &request)
+        maybe_refetched_response = handle_invalid_token!(response, &request)
 
-        refetched_response || response
+        maybe_refetched_response || response
       end
 
       private def handle_invalid_token!(response : HTTP::Client::Response, & : HTTP::Headers -> HTTP::Client::Response) : HTTP::Client::Response?

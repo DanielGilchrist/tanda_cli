@@ -22,13 +22,11 @@ module Tanda::CLI
           error = determine_error?
           return Error.new(error) if error
 
-          uri
+          @uri
         end
 
-        private getter uri : URI
-
         private def determine_error? : String?
-          if uri.opaque?
+          if @uri.opaque?
             "Invalid URL"
           elsif !https?
             "URL must be prefixed with \"https://\""
@@ -40,15 +38,15 @@ module Tanda::CLI
         end
 
         private def https? : Bool
-          uri.scheme == "https"
+          @uri.scheme == "https"
         end
 
         private def query_params?
-          !!uri.query
+          !!@uri.query
         end
 
         private def invalid_host? : Bool
-          host = uri.host
+          host = @uri.host
           return true if host.nil?
 
           VALID_HOSTS.none? { |valid_host| host.includes?(valid_host) }

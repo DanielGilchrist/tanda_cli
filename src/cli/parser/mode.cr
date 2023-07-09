@@ -4,7 +4,7 @@ module Tanda::CLI
   class CLI::Parser
     class Mode < ConfigParser
       def parse
-        parser.on("production", "Set mode to production") do
+        @parser.on("production", "Set mode to production") do
           config.mode = "production"
           config.save!
 
@@ -12,7 +12,7 @@ module Tanda::CLI
           exit
         end
 
-        parser.on("staging", "Set mode to staging") do
+        @parser.on("staging", "Set mode to staging") do
           config.mode = "staging"
           config.save!
 
@@ -20,7 +20,7 @@ module Tanda::CLI
           exit
         end
 
-        parser.on("--custom=CUSTOM", "Set mode to custom URL") do |custom|
+        @parser.on("--custom=CUSTOM", "Set mode to custom URL") do |custom|
           Utils::Display.error!("Must pass an argument to custom") if custom.blank?
 
           uri = Utils::URL.validate(custom)
@@ -35,7 +35,7 @@ module Tanda::CLI
           exit
         end
 
-        parser.on("current", "View currently set mode") do
+        @parser.on("current", "View currently set mode") do
           mode = config.mode
 
           if {"production", "staging"}.includes?(mode)

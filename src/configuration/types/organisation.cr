@@ -95,19 +95,16 @@ module Tanda::CLI
           def initialize(@_start_time : String, @_finish_time : String); end
 
           def start_time : Time
-            Time.parse(_start_time, TIME_STRING_FORMAT, Current.time_zone)
+            Time.parse(@_start_time, TIME_STRING_FORMAT, Current.time_zone)
           end
 
           def finish_time : Time
-            Time.parse(_finish_time, TIME_STRING_FORMAT, Current.time_zone)
+            Time.parse(@_finish_time, TIME_STRING_FORMAT, Current.time_zone)
           end
 
           def length : Time::Span
             finish_time - start_time
           end
-
-          private getter _start_time : String
-          private getter _finish_time : String
         end
 
         def initialize(
@@ -117,6 +114,7 @@ module Tanda::CLI
           @breaks : Array(Break) = Array(Break).new,
           @automatic_break_length : UInt16 = 0
         )
+          # TODO: I don't believe we should have to `.as(String)` here
           @_start_time = begin
             case start_time
             in String
@@ -124,8 +122,9 @@ module Tanda::CLI
             in Time
               start_time.to_s(TIME_STRING_FORMAT)
             end
-          end
+          end.as(String)
 
+          # TODO: I don't believe we should have to `.as(String)` here
           @_finish_time = begin
             case finish_time
             in String
@@ -133,7 +132,7 @@ module Tanda::CLI
             in Time
               finish_time.to_s(TIME_STRING_FORMAT)
             end
-          end
+          end.as(String)
         end
 
         @[JSON::Field(converter: Tanda::CLI::Configuration::Organisation::RegularHoursSchedule::DayConverter)]
@@ -144,11 +143,11 @@ module Tanda::CLI
         getter automatic_break_length : UInt16?
 
         def start_time : Time
-          Time.parse(_start_time, TIME_STRING_FORMAT, Current.time_zone)
+          Time.parse(@_start_time, TIME_STRING_FORMAT, Current.time_zone)
         end
 
         def finish_time : Time
-          Time.parse(_finish_time, TIME_STRING_FORMAT, Current.time_zone)
+          Time.parse(@_finish_time, TIME_STRING_FORMAT, Current.time_zone)
         end
 
         def length : Time::Span
@@ -162,9 +161,6 @@ module Tanda::CLI
             (automatic_break_length || 0).minutes
           end
         end
-
-        private getter _start_time : String
-        private getter _finish_time : String
       end
     end
   end

@@ -10,13 +10,13 @@ module Tanda::CLI
       def execute
         now = Utils::Time.now
 
-        if options.skip_validations?
+        if @options.skip_validations?
           Utils::Display.warning("Skipping clock in validations")
         else
-          ClockInValidator.validate!(client, clock_type, now)
+          ClockInValidator.validate!(@client, @clock_type, now)
         end
 
-        if clockin_photo = options.clockin_photo
+        if clockin_photo = @options.clockin_photo
           parsed_photo = Models::Photo.new(clockin_photo).to_base64
         end
 
@@ -39,18 +39,14 @@ module Tanda::CLI
 
         parsed_photo.display! if parsed_photo.is_a?(Error::Base)
 
-        client.send_clock_in(now, clock_type.to_underscore, parsed_photo, mobile_clockin: true).or(&.display!)
+        @client.send_clock_in(now, @clock_type.to_underscore, parsed_photo, mobile_clockin: true).or(&.display!)
 
         display_success_message
       end
 
-      private getter client
-      private getter clock_type
-      private getter options
-
       private def display_success_message
         success_message =
-          case clock_type
+          case @clock_type
           in ClockType::Start
             "You are now clocked in!"
           in ClockType::Finish
@@ -72,7 +68,7 @@ module Tanda::CLI
         end
 
         def validate!
-          case clock_type
+          case @clock_type
           in ClockType::Start
             validate_clockin_start!
           in ClockType::Finish
@@ -86,9 +82,6 @@ module Tanda::CLI
 
         # this struct should only be initialized from the `validate!` class method
         private def initialize(@shifts : Array(Types::Shift), @clock_type : ClockType); end
-
-        private getter shifts : Array(Types::Shift)
-        private getter clock_type : ClockType
 
         private enum ClockInStatus
           ClockedIn
@@ -107,11 +100,11 @@ module Tanda::CLI
         end
 
         private def break_started? : Bool
-          shifts.any?(&.ongoing_break?)
+          @shifts.any?(&.ongoing_break?)
         end
 
         private def clocked_in? : Bool
-          shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }
+          @shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }
         end
 
         private def validate_clockin_start!

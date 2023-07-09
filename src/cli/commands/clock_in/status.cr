@@ -5,7 +5,7 @@ module Tanda::CLI
         def initialize(@client : API::Client); end
 
         def execute
-          todays_shifts = client.todays_shifts.or(&.display!).sort_by(&.id)
+          todays_shifts = @client.todays_shifts.or(&.display!).sort_by(&.id)
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
           return handle_ongoing_shift(ongoing_shift) if ongoing_shift
 
@@ -14,8 +14,6 @@ module Tanda::CLI
 
           handle_clocked_out(last_shift)
         end
-
-        private getter client
 
         def handle_ongoing_shift(shift : Types::Shift)
           if !(shift_breaks = shift.breaks).empty?

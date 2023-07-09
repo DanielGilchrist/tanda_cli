@@ -6,7 +6,7 @@ module Tanda::CLI
 
         def execute
           now = Utils::Time.now
-          clockins = client.clockins(now).or(&.display!).sort_by(&.time)
+          clockins = @client.clockins(now).or(&.display!).sort_by(&.time)
           return puts "You aren't currently clocked in" if clockins.empty?
 
           puts "Clock ins for today"
@@ -14,8 +14,6 @@ module Tanda::CLI
             Representers::ClockIn.new(clockin).display
           end
         end
-
-        private getter client
       end
     end
   end

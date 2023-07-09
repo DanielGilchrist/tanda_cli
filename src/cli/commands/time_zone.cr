@@ -9,18 +9,15 @@ module Tanda::CLI
       def execute
         puts "\n"
 
-        if time_zone = new_time_zone
+        if time_zone = @new_time_zone
           set_time_zone!(time_zone)
         else
           display_time_zone
         end
       end
 
-      private getter config : Configuration
-      private getter new_time_zone : String?
-
       private def display_time_zone
-        if time_zone = config.time_zone
+        if time_zone = @config.time_zone
           puts "The current time zone is #{time_zone}"
         else
           puts "A time zone isn't currently set"
@@ -31,10 +28,10 @@ module Tanda::CLI
       private def set_time_zone!(time_zone : String)
         validate_time_zone!(time_zone)
 
-        config.time_zone = time_zone
-        config.save!
+        @config.time_zone = time_zone
+        @config.save!
 
-        Utils::Display.success("Set current time zone to", new_time_zone)
+        Utils::Display.success("Set current time zone to", time_zone)
       end
 
       private def validate_time_zone!(time_zone : String)

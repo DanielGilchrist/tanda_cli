@@ -9,14 +9,14 @@ module Tanda::CLI
   class CLI::Parser
     include CLI::Parser::Helpers
 
-    def self.parse!(args = ARGV)
+    def self.parse!(args : Array(String) = ARGV)
       new(args).parse!
     end
 
-    def initialize(@args = ARGV); end
+    def initialize(@args : Array(String) = ARGV); end
 
     def parse!
-      OptionParser.parse(args) do |parser|
+      OptionParser.parse(@args) do |parser|
         parser.banner = "Usage: tanda_cli [arguments]"
 
         parse_standard_options!(parser)
@@ -35,8 +35,6 @@ module Tanda::CLI
         end
       end
     end
-
-    private getter args : Array(String)
 
     # Options that don't make API requests
     private def parse_standard_options!(parser : OptionParser)

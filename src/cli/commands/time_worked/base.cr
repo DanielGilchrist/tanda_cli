@@ -8,9 +8,7 @@ module Tanda::CLI
 
         abstract def execute
 
-        private getter client : API::Client
         private getter? display : Bool
-        private getter offset : Int32?
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
           total_time_worked = Time::Span.zero

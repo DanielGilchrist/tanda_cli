@@ -9,8 +9,6 @@ module Tanda::CLI
 
       abstract def parse
 
-      private getter parser : OptionParser
-
       private def client : Client
         @client ||= @client_builder.call
       end

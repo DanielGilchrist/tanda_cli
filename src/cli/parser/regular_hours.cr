@@ -2,12 +2,12 @@ module Tanda::CLI
   class CLI::Parser
     class RegularHours < APIParser
       def parse
-        parser.on("determine", "Determine the regular hours for a user") do
+        @parser.on("determine", "Determine the regular hours for a user") do
           CLI::Commands::RegularHours::Determine.new(client).execute
         end
 
         # TODO: Make output pretty
-        parser.on("display", "Display the regular hours for a user") do
+        @parser.on("display", "Display the regular hours for a user") do
           config = Current.config
           organisation = config.current_environment.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
