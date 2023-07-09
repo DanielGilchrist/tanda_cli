@@ -11,7 +11,7 @@ targets:
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba # https://github.com/crystal-ameba/ameba
-    version: ~> 1
+    commit: 5cff76071a8b34a88a889d1fdf5b0cd9ec0bd54e
   spectator:
     gitlab: arctic-fox/spectator # https://gitlab.com/arctic-fox/spectator
     version: ~> 0
