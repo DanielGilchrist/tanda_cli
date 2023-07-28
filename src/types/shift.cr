@@ -79,6 +79,10 @@ module Tanda::CLI
       @[JSON::Field(key: "notes")]
       getter nilable_notes : Array(Types::Note)?
 
+      def day_of_week : Time::DayOfWeek
+        date.day_of_week
+      end
+
       def notes : Array(Types::Note)
         nilable_notes || Array(Types::Note).new
       end
