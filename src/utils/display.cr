@@ -62,6 +62,7 @@ module Tanda::CLI
         string = String.build do |builder|
           yield(builder)
         end
+        return if string.empty?
 
         string.split("\n").each(&->sub_error(String))
       end
