@@ -5,9 +5,12 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-env:
-  CRYSTAL_VERSION: 1.9.2
+  workflow_dispatch:
+    inputs:
+      crystal_version:
+        description: "Crystal version"
+        required: false
+        default: "1.9.2"
 
 jobs:
   test:
@@ -15,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        crystal: [$CRYSTAL_VERSION, nightly]
+        crystal: ["${{ inputs.crystal_version }}", nightly]
 
     runs-on: ${{ matrix.os }}
 
@@ -30,7 +33,7 @@ jobs:
 
       - name: Install shards
         run: shards install --frozen
-        if: matrix.crystal == env.CRYSTAL_VERSION
+        if: matrix.crystal == inputs.crystal_version
 
       # If development shards break on nightly that's okay, we mostly only care about our app code
       - name: Install shards without development
@@ -39,16 +42,16 @@ jobs:
 
       - name: Check formatting
         run: crystal tool format; git diff --exit-code
-        if: matrix.crystal == env.CRYSTAL_VERSION
+        if: matrix.crystal == inputs.crystal_version
 
       - name: Lint
         run: ./bin/ameba
-        if: matrix.crystal == env.CRYSTAL_VERSION
+        if: matrix.crystal == inputs.crystal_version
 
       - name: Compile
         run: crystal build src/tanda_cli.cr
 
       - name: Run tests
         run: ./scripts/run-spec.sh
-        if: matrix.crystal == env.CRYSTAL_VERSION
+        if: matrix.crystal == inputs.crystal_version
 
