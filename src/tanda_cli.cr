@@ -8,9 +8,6 @@ require "./utils/**"
 require "./api/**"
 require "./cli/**"
 
-# to upstream
-require "./core_ext/**"
-
 module Tanda::CLI
   extend self
 

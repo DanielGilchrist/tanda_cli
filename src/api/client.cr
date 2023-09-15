@@ -42,14 +42,22 @@ module Tanda::CLI
                 "#{method} response for #{endpoint}",
                 headers: request_headers.pretty_inspect,
                 query: encoded_params,
-                body: request_body.try(&.to_parsed_pretty_json),
-                response: response.body.try(&.to_parsed_pretty_json),
+                body: request_body.try(&->to_parsed_pretty_json(String)),
+                response: response.body.try(&->to_parsed_pretty_json(String)),
               ))
 
               handle_fatal_error!(response)
             end
           end
         end
+      end
+
+      private def to_parsed_pretty_json(string : String) : String
+        begin
+          JSON.parse(string)
+        rescue JSON::ParseException
+          string
+        end.to_pretty_json
       end
 
       private def build_uri(endpoint, query : String? = nil) : URI
