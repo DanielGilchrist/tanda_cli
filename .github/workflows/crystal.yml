@@ -27,10 +27,16 @@ jobs:
 
       - name: Install shards
         run: shards install
+        if: matrix.crystal == '1.9.2'
+
+      # If development shards break on nightly that's okay, we mostly only care about our app code
+      - name: Install shards without development
+        run: shards install --without-development
+        if: matrix.crystal == 'nightly'
 
       - name: Check formatting
         run: crystal tool format; git diff --exit-code
-        if: matrix.crystal == 'latest'
+        if: matrix.crystal == '1.9.2'
 
       - name: Lint
         run: ./bin/ameba
