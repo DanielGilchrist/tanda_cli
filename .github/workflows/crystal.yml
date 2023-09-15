@@ -26,12 +26,12 @@ jobs:
           crystal: ${{ matrix.crystal }}
 
       - name: Install shards
-        run: shards install
+        run: shards install --frozen
         if: matrix.crystal == '1.9.2'
 
       # If development shards break on nightly that's okay, we mostly only care about our app code
       - name: Install shards without development
-        run: shards install --without-development
+        run: shards install --production
         if: matrix.crystal == 'nightly'
 
       - name: Check formatting
@@ -47,4 +47,5 @@ jobs:
 
       - name: Run tests
         run: ./scripts/run-spec.sh
+        if: matrix.crystal == '1.9.2'
 
