@@ -74,11 +74,6 @@ module Tanda::CLI
       parser.on("regular_hours", "View or set your regular hours") do
         CLI::Parser::RegularHours.new(parser, ->{ build_client_with_current_user }).parse
       end
-
-      parser.on("refetch_users", "Refetch users from the API and save to config") do
-        CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, Current.config)
-        exit
-      end
     end
   end
 end
