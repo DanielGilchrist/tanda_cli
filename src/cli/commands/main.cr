@@ -5,15 +5,16 @@ module Tanda::CLI
   module CLI::Commands
     class Main < Cling::Command
       def self.execute(args = ARGV)
-        cli = new
-        cli.add_commands(
+        new.tap(&.add_commands(
           Me.new,
           PersonalDetails.new,
+          TimeWorked.new.tap(&.add_commands(
+            TimeWorked::Today.new,
+            TimeWorked::Week.new
+          )),
           RefetchToken.new,
           RefetchUsers.new
-        )
-
-        cli.execute(args)
+        )).execute(args)
       end
 
       def setup : Nil
@@ -24,7 +25,7 @@ module Tanda::CLI
       end
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
-        if options.has? "help"
+        if options.has?("help")
           puts help_template
 
           false
