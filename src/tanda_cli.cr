@@ -12,7 +12,7 @@ module Tanda::CLI
   extend self
 
   def main(args = ARGV)
-    CLI::Parser.parse!(args)
+    CLI::Commands::Main.execute(args)
   end
 end
 
