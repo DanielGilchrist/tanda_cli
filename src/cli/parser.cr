@@ -59,11 +59,6 @@ module Tanda::CLI
 
     # Options that make API requests
     private def parse_api_options!(parser : OptionParser)
-      parser.on("personal_details", "Get your personal details") do
-        personal_details = build_client_with_current_user.personal_details.or(&.display!)
-        Representers::PersonalDetails.new(personal_details).display
-      end
-
       parser.on("time_worked", "See how many hours you've worked") do
         CLI::Parser::TimeWorked.new(parser, ->{ build_client_with_current_user }).parse
       end

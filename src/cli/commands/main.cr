@@ -7,7 +7,8 @@ module Tanda::CLI
       def self.execute(args = ARGV)
         cli = new
         cli.add_commands(
-          Me.new
+          Me.new,
+          PersonalDetails.new
         )
 
         cli.execute(args)
