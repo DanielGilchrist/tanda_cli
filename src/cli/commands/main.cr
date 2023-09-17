@@ -11,6 +11,7 @@ module Tanda::CLI
           Me.new,
           PersonalDetails.new,
           TimeWorked.new,
+          ClockIn.new,
           RefetchToken.new,
           RefetchUsers.new
         )

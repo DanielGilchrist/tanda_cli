@@ -3,9 +3,10 @@ require "../../models/photo_path_parser"
 module Tanda::CLI
   module CLI::Executors
     class ClockIn
-      alias ClockType = CLI::Parser::ClockIn::ClockType
+      alias ClockType = CLI::Commands::ClockIn::ClockType
+      alias Options = CLI::Commands::ClockIn::Options
 
-      def initialize(@client : API::Client, @clock_type : ClockType, @options : CLI::Parser::ClockIn::Options::Frozen); end
+      def initialize(@client : API::Client, @clock_type : ClockType, @options : Options); end
 
       def execute
         now = Utils::Time.now
