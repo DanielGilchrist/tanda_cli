@@ -8,7 +8,7 @@ module Tanda::CLI
 
       def setup : Nil
         @name = "personal_details"
-        @description = "Get your personal details"
+        @summary = @description = "Get your personal details"
       end
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

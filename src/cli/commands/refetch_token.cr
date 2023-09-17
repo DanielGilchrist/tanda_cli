@@ -8,7 +8,7 @@ module Tanda::CLI
 
       def setup : Nil
         @name = "refetch_token"
-        @description = "Refetch token for the current environment"
+        @summary = @description = "Refetch token for the current environment"
       end
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil

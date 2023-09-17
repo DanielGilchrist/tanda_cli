@@ -10,8 +10,10 @@ targets:
 
 dependencies:
   cling:
-    github: devnote-dev/cling # https://github.com/devnote-dev/cling
-    version: ~> 3
+    # github: devnote-dev/cling # https://github.com/devnote-dev/cling
+    github: DanielGilchrist/cling # https://github.com/DanielGilchrist/cling
+    # version: ~> 3
+    branch: fix-subcommand-summary
 
 development_dependencies:
   ameba:
