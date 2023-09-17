@@ -34,7 +34,9 @@ module Tanda::CLI
         end
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil; end
+      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        puts help_template
+      end
     end
   end
 end
