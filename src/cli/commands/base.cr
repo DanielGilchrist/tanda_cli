@@ -1,4 +1,5 @@
 require "cling"
+require "./help"
 
 module Tanda::CLI
   module CLI::Commands
@@ -12,7 +13,10 @@ module Tanda::CLI
 
       def setup : Nil
         on_setup
-        add_option 'h', "help", description: "sends help information"
+
+        help_command = Help.new
+        add_option 'h', help_command.name, description: help_command.description
+        add_command(help_command)
       end
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
