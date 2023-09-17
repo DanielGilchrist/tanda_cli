@@ -75,16 +75,6 @@ module Tanda::CLI
         CLI::Parser::RegularHours.new(parser, ->{ build_client_with_current_user }).parse
       end
 
-      parser.on("refetch_token", "Refetch token for the current environment") do
-        config = Current.config
-        config.reset_environment!
-        API::Auth.fetch_new_token!
-
-        client = create_client_from_config
-        CLI::Request.ask_which_organisation_and_save!(client, config)
-        exit
-      end
-
       parser.on("refetch_users", "Refetch users from the API and save to config") do
         CLI::Request.ask_which_organisation_and_save!(build_client_with_current_user, Current.config)
         exit

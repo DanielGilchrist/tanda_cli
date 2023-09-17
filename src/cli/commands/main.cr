@@ -8,7 +8,8 @@ module Tanda::CLI
         cli = new
         cli.add_commands(
           Me.new,
-          PersonalDetails.new
+          PersonalDetails.new,
+          RefetchToken.new
         )
 
         cli.execute(args)
