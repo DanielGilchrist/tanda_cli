@@ -16,11 +16,11 @@ module Tanda::CLI
         end
 
         @parser.on("today", "Time you've worked today") do
-          CLI::Commands::TimeWorked::Today.new(client, display, offset).execute
+          CLI::Executors::TimeWorked::Today.new(client, display, offset).execute
         end
 
         @parser.on("week", "Time you've worked this week") do
-          CLI::Commands::TimeWorked::Week.new(client, display, offset).execute
+          CLI::Executors::TimeWorked::Week.new(client, display, offset).execute
         end
       end
     end

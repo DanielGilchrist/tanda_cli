@@ -1,7 +1,7 @@
 require "./base"
 
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     module TimeWorked
       class Today < Base
         def execute

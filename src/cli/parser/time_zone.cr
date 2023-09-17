@@ -10,7 +10,7 @@ module Tanda::CLI
           end
         end
 
-        CLI::Commands::TimeZone.new(config, new_time_zone).execute
+        CLI::Executors::TimeZone.new(config, new_time_zone).execute
         exit
       end
     end

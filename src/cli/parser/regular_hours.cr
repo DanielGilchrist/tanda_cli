@@ -3,7 +3,7 @@ module Tanda::CLI
     class RegularHours < APIParser
       def parse
         @parser.on("determine", "Determine the regular hours for a user") do
-          CLI::Commands::RegularHours::Determine.new(client).execute
+          CLI::Executors::RegularHours::Determine.new(client).execute
         end
 
         # TODO: Make output pretty

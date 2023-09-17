@@ -15,7 +15,7 @@ module Tanda::CLI
           end
         end
 
-        CLI::Commands::CurrentUser.new(config, new_id_or_name, list).execute
+        CLI::Executors::CurrentUser.new(config, new_id_or_name, list).execute
         exit
       end
     end

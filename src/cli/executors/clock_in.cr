@@ -1,7 +1,7 @@
 require "../../models/photo_path_parser"
 
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     class ClockIn
       alias ClockType = CLI::Parser::ClockIn::ClockType
 

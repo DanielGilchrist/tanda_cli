@@ -1,5 +1,5 @@
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     class CurrentUser
       def initialize(@config : Configuration, @id_or_name : String?, @list : Bool = false); end
 

@@ -1,5 +1,5 @@
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     class ClockIn
       class Status
         def initialize(@client : API::Client); end

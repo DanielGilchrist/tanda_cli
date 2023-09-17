@@ -2,7 +2,7 @@ require "colorize"
 require "../../../configuration/types/organisation"
 
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     module TimeWorked
       abstract class Base
         alias RegularHoursScheduleBreak = Configuration::Organisation::RegularHoursSchedule::Break

@@ -92,11 +92,11 @@ module Tanda::CLI
         end
 
         @parser.on("status", "Check clockin status") do
-          CLI::Commands::ClockIn::Status.new(client).execute
+          CLI::Executors::ClockIn::Status.new(client).execute
         end
 
         @parser.on("display", "Display current clockins") do
-          CLI::Commands::ClockIn::Display.new(client).execute
+          CLI::Executors::ClockIn::Display.new(client).execute
         end
 
         @parser.on("start", "Clock in") do
@@ -120,7 +120,7 @@ module Tanda::CLI
 
       private def execute_clock_in(type : ClockType)
         options = Options::Setter.parse
-        CLI::Commands::ClockIn.new(client, type, options.to_frozen).execute
+        CLI::Executors::ClockIn.new(client, type, options.to_frozen).execute
         exit
       end
     end

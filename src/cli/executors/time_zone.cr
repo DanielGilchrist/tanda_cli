@@ -1,5 +1,5 @@
 module Tanda::CLI
-  module CLI::Commands
+  module CLI::Executors
     class TimeZone
       def initialize(config : Configuration, new_time_zone : String?)
         @config = config
