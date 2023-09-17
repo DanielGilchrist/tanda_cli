@@ -1,12 +1,11 @@
-require "cling"
 require "../client_builder"
 
 module Tanda::CLI
   module CLI::Commands
-    class RefetchToken < Cling::Command
+    class RefetchToken < Base
       include CLI::ClientBuilder
 
-      def setup : Nil
+      def on_setup
         @name = "refetch_token"
         @summary = @description = "Refetch token for the current environment"
       end

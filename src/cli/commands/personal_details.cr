@@ -1,12 +1,11 @@
-require "cling"
 require "../client_builder"
 
 module Tanda::CLI
   module CLI::Commands
-    class PersonalDetails < Cling::Command
+    class PersonalDetails < Base
       include CLI::ClientBuilder
 
-      def setup : Nil
+      def on_setup
         @name = "personal_details"
         @summary = @description = "Get your personal details"
       end

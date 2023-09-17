@@ -1,31 +1,18 @@
-require "cling"
 require "../../client_builder"
 require "../../executors/time_worked/week"
 
 module Tanda::CLI
   module CLI::Commands
     class TimeWorked
-      class Week < Cling::Command
+      class Week < CLI::Commands::Base
         include CLI::ClientBuilder
 
-        def setup : Nil
+        def on_setup
           @name = "week"
           @summary = @description = "Show time worked for a week"
 
           add_option 'd', "display", description: "Print Shift"
           add_option 'o', "offset", description: "Offset from today"
-
-          add_option 'h', "help", description: "shows help information"
-        end
-
-        def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
-          if options.has?("help")
-            puts help_template
-
-            false
-          else
-            true
-          end
         end
 
         def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
