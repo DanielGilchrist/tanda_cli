@@ -6,7 +6,7 @@ shards:
 
   cling:
     git: https://github.com/devnote-dev/cling.git
-    version: 3.0.0+git.commit.a8b075aafa18ca3db441a234cde7fff3ec4fdf5e
+    version: 3.0.0+git.commit.e606b7263a3438b7e560e4557a1cf018cc65d866
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
