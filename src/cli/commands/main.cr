@@ -11,6 +11,7 @@ module Tanda::CLI
           TimeWorked.new,
           ClockIn.new,
           Balance.new,
+          RegularHours.new,
           RefetchToken.new,
           RefetchUsers.new
         )

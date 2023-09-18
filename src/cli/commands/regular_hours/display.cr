@@ -1,13 +1,19 @@
+require "../../client_builder"
+require "../base"
+
 module Tanda::CLI
-  class CLI::Parser
-    class RegularHours < APIParser
-      def parse
-        @parser.on("determine", "Determine the regular hours for a user") do
-          CLI::Executors::RegularHours::Determine.new(client).execute
+  module CLI::Commands
+    class RegularHours
+      class Display < Base
+        include CLI::ClientBuilder
+
+        def on_setup
+          @name = "display"
+          @summary = @description = "Display the regular hours for a user"
         end
 
         # TODO: Make output pretty
-        @parser.on("display", "Display the regular hours for a user") do
+        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config = Current.config
           organisation = config.current_environment.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules

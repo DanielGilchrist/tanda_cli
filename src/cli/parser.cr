@@ -21,7 +21,6 @@ module Tanda::CLI
 
         parse_standard_options!(parser)
         maybe_display_staging_warning
-        parse_api_options!(parser)
 
         parser.on("-h", "--help", "Show this help") do
           puts parser
@@ -54,14 +53,6 @@ module Tanda::CLI
 
       parser.on("start_of_week", "Set the start of the week (e.g. monday/sunday)") do
         CLI::Parser::StartOfWeek.new(parser).parse
-      end
-    end
-
-    # Options that make API requests
-    private def parse_api_options!(parser : OptionParser)
-
-      parser.on("regular_hours", "View or set your regular hours") do
-        CLI::Parser::RegularHours.new(parser, ->{ build_client_with_current_user }).parse
       end
     end
   end
