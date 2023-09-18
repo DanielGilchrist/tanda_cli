@@ -4,12 +4,12 @@ module Tanda::CLI
   module CLI::Commands
     class TimeZone
       class Display < Base
-        def on_setup
+        def setup_
           @name = "display"
           @summary = @description = "Display the current time zone"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config = Current.config
           if time_zone = config.time_zone
             puts "The current time zone is #{time_zone}"

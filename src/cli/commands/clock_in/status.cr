@@ -6,12 +6,12 @@ module Tanda::CLI
       class Status < CLI::Commands::Base
         include CLI::ClientBuilder
 
-        def on_setup
+        def setup_
           @name = "status"
           @summary = @description = "Check current clockin status"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           todays_shifts = client.todays_shifts.or(&.display!).sort_by(&.id)
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
           return handle_ongoing_shift(ongoing_shift) if ongoing_shift

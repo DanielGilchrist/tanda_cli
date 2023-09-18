@@ -3,7 +3,7 @@ require "./base"
 module Tanda::CLI
   module CLI::Commands
     class Mode < Base
-      def on_setup
+      def setup_
         @name = "mode"
         @summary = @description = "Set the mode to run commands in (production/staging/custom <url>)"
 
@@ -15,7 +15,7 @@ module Tanda::CLI
         )
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         puts help_template
       end
     end

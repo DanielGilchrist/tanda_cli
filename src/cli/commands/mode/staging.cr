@@ -4,12 +4,12 @@ module Tanda::CLI
   module CLI::Commands
     class Mode
       class Staging < Base
-        def on_setup
+        def setup_
           @name = "staging"
           @summary = @description = "Set the app to run commands in staging mode"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config = Current.config
           config.mode = "staging"
           config.save!

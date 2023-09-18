@@ -5,12 +5,12 @@ module Tanda::CLI
     class RefetchUsers < Base
       include CLI::ClientBuilder
 
-      def on_setup
+      def setup_
         @name = "refetch_users"
         @summary = @description = "Refetch users from the API and save to config"
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         CLI::Request.ask_which_organisation_and_save!(client, Current.config)
       end
     end

@@ -4,7 +4,8 @@ require "./help"
 module Tanda::CLI
   module CLI::Commands
     abstract class Base < Cling::Command
-      abstract def on_setup
+      abstract def setup_
+      abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
 
       # override this to extend `pre_run` behaviour
       def before_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
@@ -12,7 +13,7 @@ module Tanda::CLI
       end
 
       def setup : Nil
-        on_setup
+        setup_
 
         help_command = Help.new
         add_option 'h', help_command.name, description: help_command.description
@@ -27,6 +28,11 @@ module Tanda::CLI
         else
           before_run(arguments, options)
         end
+      end
+
+      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        maybe_display_staging_warning
+        run_(arguments, options)
       end
 
       # A hook method for when the command raises an exception during execution
@@ -75,6 +81,21 @@ module Tanda::CLI
         Utils::Display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}")
         puts help_template
         exit
+      end
+
+      private def maybe_display_staging_warning
+        config = Current.config
+        return unless config.staging?
+
+        message = begin
+          if (mode = config.mode) != "staging"
+            "Command running on #{mode}"
+          else
+            "Command running in staging mode"
+          end
+        end
+
+        Utils::Display.warning(message)
       end
     end
   end

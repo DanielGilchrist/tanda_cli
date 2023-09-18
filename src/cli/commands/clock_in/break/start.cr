@@ -7,13 +7,13 @@ module Tanda::CLI
         class Start < CLI::Commands::Base
           include CLI::ClientBuilder
 
-          def on_setup
+          def setup_
             @name = "start"
             @summary = @description = "Start break"
             @inherit_options = true
           end
 
-          def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
             parsed_options = ClockIn.parse_options(options)
             CLI::Executors::ClockIn.new(client, ClockIn::ClockType::BreakStart, parsed_options).execute
           end

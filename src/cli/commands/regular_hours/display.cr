@@ -7,13 +7,13 @@ module Tanda::CLI
       class Display < Base
         include CLI::ClientBuilder
 
-        def on_setup
+        def setup_
           @name = "display"
           @summary = @description = "Display the regular hours for a user"
         end
 
         # TODO: Make output pretty
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config = Current.config
           organisation = config.current_environment.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules

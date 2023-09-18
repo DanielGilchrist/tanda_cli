@@ -4,12 +4,12 @@ module Tanda::CLI
   module CLI::Commands
     class CurrentUser
       class Display < Base
-        def on_setup
+        def setup_
           @name = "display"
           @summary = @description = "Display the current user"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           if organisation = Current.config.organisations.find(&.current?)
             puts "The current user is #{display(organisation)}"
           else

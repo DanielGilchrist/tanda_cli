@@ -3,7 +3,7 @@ require "./base"
 module Tanda::CLI
   module CLI::Commands
     class CurrentUser < Base
-      def on_setup
+      def setup_
         @name = "current_user"
         @summary = @description = "View the current user, list available users or set the current user"
 
@@ -14,7 +14,7 @@ module Tanda::CLI
         )
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         puts help_template
       end
     end

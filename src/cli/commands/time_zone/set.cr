@@ -4,14 +4,14 @@ module Tanda::CLI
   module CLI::Commands
     class TimeZone
       class Set < Base
-        def on_setup
+        def setup_
           @name = "set"
           @summary = @description = "Set the current time zone"
 
           add_argument "time_zone", description: "The time zone to set", required: true
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           time_zone = arguments.get("time_zone").as_s
           validate_time_zone!(time_zone)
 

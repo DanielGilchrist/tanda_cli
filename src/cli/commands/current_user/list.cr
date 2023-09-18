@@ -4,12 +4,12 @@ module Tanda::CLI
   module CLI::Commands
     class CurrentUser
       class List < Base
-        def on_setup
+        def setup_
           @name = "list"
           @summary = @description = "List available current users"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           Current.config.organisations.each do |organisation|
             puts "Name: #{organisation.name}\nUser ID: #{organisation.user_id}\n\n"
           end

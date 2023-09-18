@@ -1,7 +1,7 @@
 module Tanda::CLI
   module CLI::Commands
     class Main < Base
-      def on_setup
+      def setup_
         @name = "tanda_cli"
         @description = "A CLI application for people using Tanda/Workforce.com"
 
@@ -21,7 +21,7 @@ module Tanda::CLI
         )
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         puts help_template
       end
     end

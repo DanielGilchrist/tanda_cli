@@ -5,12 +5,12 @@ module Tanda::CLI
     class RefetchToken < Base
       include CLI::ClientBuilder
 
-      def on_setup
+      def setup_
         @name = "refetch_token"
         @summary = @description = "Refetch token for the current environment"
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         config = Current.config
         config.reset_environment!
         API::Auth.fetch_new_token!

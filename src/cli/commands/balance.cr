@@ -8,12 +8,12 @@ module Tanda::CLI
 
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
 
-      def on_setup
+      def setup_
         @name = "balance"
         @summary = @description = "Check your leave balances"
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         leave_balance = client.leave_balances.or(&.display!).find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
         return Utils::Display.error!("No leave balances to display") if leave_balance.nil?
 

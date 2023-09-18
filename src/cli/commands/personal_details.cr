@@ -5,12 +5,12 @@ module Tanda::CLI
     class PersonalDetails < Base
       include CLI::ClientBuilder
 
-      def on_setup
+      def setup_
         @name = "personal_details"
         @summary = @description = "Get your personal details"
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         personal_details = client.personal_details.or(&.display!)
         Representers::PersonalDetails.new(personal_details).display
       end

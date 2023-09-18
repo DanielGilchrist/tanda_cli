@@ -2,7 +2,7 @@ module Tanda::CLI
   module CLI::Commands
     class ClockIn
       class Photo < CLI::Commands::Base
-        def on_setup
+        def setup_
           @name = "photo"
           @summary = @description = "View, set or clear clockin photo to be used by default"
 
@@ -13,7 +13,7 @@ module Tanda::CLI
           )
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           puts help_template
         end
       end

@@ -4,14 +4,14 @@ module Tanda::CLI
   module CLI::Commands
     class Mode
       class Custom < Base
-        def on_setup
+        def setup_
           @name = "custom"
           @summary = @description = "Set the app to run commands from a custom environment"
 
           add_argument "url", description: "The URL of the custom environment", required: true
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           url = arguments.get("url").as_s
 
           Utils::Display.error!("Must pass an argument to custom") if url.blank?

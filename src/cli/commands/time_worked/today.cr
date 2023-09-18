@@ -7,7 +7,7 @@ module Tanda::CLI
       class Today < CLI::Commands::Base
         include CLI::ClientBuilder
 
-        def on_setup
+        def setup_
           @name = "today"
           @summary = @description = "Show time worked for today"
 
@@ -15,7 +15,7 @@ module Tanda::CLI
           add_option 'o', "offset", description: "Offset from today"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           display = options.has?("display")
           offset = options.get?("offset").try(&.as_i32)
 

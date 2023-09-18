@@ -5,12 +5,12 @@ module Tanda::CLI
     class Me < Base
       include CLI::ClientBuilder
 
-      def on_setup
+      def setup_
         @name = "me"
         @summary = @description = "Get your own information"
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         me = client.me.or(&.display!)
         Representers::Me.new(me).display
       end

@@ -4,12 +4,12 @@ module Tanda::CLI
   module CLI::Commands
     class Mode
       class Display < Base
-        def on_setup
+        def setup_
           @name = "display"
           @summary = @description = "Display the currently set mode"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           mode = Current.config.mode
 
           if {"production", "staging"}.includes?(mode)

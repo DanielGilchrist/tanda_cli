@@ -4,7 +4,7 @@ module Tanda::CLI
   module CLI::Commands
     class CurrentUser
       class Set < Base
-        def on_setup
+        def setup_
           @name = "set"
           @summary = @description = "Set the current user"
 
@@ -13,7 +13,7 @@ module Tanda::CLI
             required: true
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           id_or_name = arguments.get("id_or_name").as_s
           config = Current.config
 

@@ -7,6 +7,8 @@ require "./current"
 require "./utils/**"
 require "./api/**"
 require "./cli/**"
+require "./representers/**"
+require "./types/**"
 
 module Tanda::CLI
   extend self

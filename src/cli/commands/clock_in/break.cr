@@ -2,7 +2,7 @@ module Tanda::CLI
   module CLI::Commands
     class ClockIn
       class Break < CLI::Commands::Base
-        def on_setup
+        def setup_
           @name = "break"
           @summary = @description = "Clock a break"
           @inherit_options = true
@@ -10,7 +10,7 @@ module Tanda::CLI
           add_commands(Break::Start.new, Break::Finish.new)
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           puts help_template
         end
       end

@@ -5,14 +5,14 @@ module Tanda::CLI
     class TimeWorked < Base
       include CLI::ClientBuilder
 
-      def on_setup
+      def setup_
         @name = "time_worked"
         @summary = @description = "See how many hours you've worked"
 
         add_commands(Today.new, Week.new)
       end
 
-      def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
         puts help_template
       end
     end

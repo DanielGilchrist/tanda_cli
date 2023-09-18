@@ -3,12 +3,12 @@ module Tanda::CLI
     class ClockIn
       class Photo
         class View < CLI::Commands::Base
-          def on_setup
+          def setup_
             @name = "view"
             @summary = @description = "View the currently set clockin photo or directory"
           end
 
-          def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
             config = Current.config
 
             if path = config.clockin_photo_path

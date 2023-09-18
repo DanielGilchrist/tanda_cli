@@ -7,12 +7,12 @@ module Tanda::CLI
       class Determine < Base
         include CLI::ClientBuilder
 
-        def on_setup
+        def setup_
           @name = "determine"
           @summary = @description = "Determine the regular hours for a user"
         end
 
-        def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           CLI::Executors::RegularHours::Determine.new(client).execute
         end
       end
