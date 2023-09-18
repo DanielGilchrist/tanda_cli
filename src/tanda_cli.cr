@@ -1,6 +1,3 @@
-# shards
-require "option_parser"
-
 # internal
 require "./configuration"
 require "./current"
