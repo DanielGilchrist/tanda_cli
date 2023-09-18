@@ -1,31 +1,25 @@
-require "./base"
+require "../../client_builder"
+require "../../executors/time_worked/today"
 
 module Tanda::CLI
   module CLI::Commands
-    module TimeWorked
-      class Today < Base
-        def execute
-          now = Utils::Time.now
+    class TimeWorked
+      class Today < CLI::Commands::Base
+        include CLI::ClientBuilder
 
-          if offset = @offset
-            now = now + offset.days
-            Utils::Display.info("Showing time worked offset #{offset} days")
-          end
+        def setup_
+          @name = "today"
+          @summary = @description = "Show time worked for today"
 
-          shifts = @client.shifts(date: now, show_notes: display?).or(&.display!)
+          add_option 'd', "display", description: "Print Shift"
+          add_option 'o', "offset", description: "Offset from today"
+        end
 
-          total_time_worked, total_leave_hours = calculate_time_worked(shifts)
-          if total_time_worked.zero? && total_leave_hours.zero?
-            puts "You haven't clocked in today"
-          end
+        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
+          display = options.has?("display")
+          offset = options.get?("offset").try(&.as_i32)
 
-          unless total_time_worked.zero?
-            puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes today")
-          end
-
-          return if total_leave_hours.zero?
-
-          puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave today")
+          CLI::Executors::TimeWorked::Today.new(client, display, offset).execute
         end
       end
     end

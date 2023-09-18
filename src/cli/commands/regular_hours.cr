@@ -2,12 +2,12 @@ require "./base"
 
 module Tanda::CLI
   module CLI::Commands
-    class TimeZone < Base
+    class RegularHours < Base
       def setup_
-        @name = "time_zone"
-        @summary = @description = "See or set the current time zone"
+        @name = "regular_hours"
+        @summary = @description = "View or set your regular hours"
 
-        add_commands(TimeZone::Display.new, TimeZone::Set.new)
+        add_commands(RegularHours::Determine.new, RegularHours::Display.new)
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil

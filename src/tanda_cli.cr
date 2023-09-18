@@ -7,12 +7,14 @@ require "./current"
 require "./utils/**"
 require "./api/**"
 require "./cli/**"
+require "./representers/**"
+require "./types/**"
 
 module Tanda::CLI
   extend self
 
   def main(args = ARGV)
-    CLI::Parser.parse!(args)
+    CLI::Commands::Main.new.execute(args)
   end
 end
 

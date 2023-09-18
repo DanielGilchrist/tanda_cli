@@ -4,6 +4,10 @@ shards:
     git: https://github.com/crystal-ameba/ameba.git
     version: 1.5.0
 
+  cling:
+    git: https://github.com/devnote-dev/cling.git
+    version: 3.0.0+git.commit.e606b7263a3438b7e560e4557a1cf018cc65d866
+
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
     version: 0.11.6
