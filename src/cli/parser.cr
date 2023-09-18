@@ -37,10 +37,6 @@ module Tanda::CLI
 
     # Options that don't make API requests
     private def parse_standard_options!(parser : OptionParser)
-      parser.on("current_user", "Display the current user") do
-        maybe_display_staging_warning
-        CLI::Parser::CurrentUser.new(parser).parse
-      end
 
       parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>)") do
         CLI::Parser::Mode.new(parser).parse

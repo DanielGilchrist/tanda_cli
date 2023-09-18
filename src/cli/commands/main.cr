@@ -12,6 +12,7 @@ module Tanda::CLI
           TimeWorked.new,
           Balance.new,
           RegularHours.new,
+          CurrentUser.new,
           TimeZone.new,
           RefetchToken.new,
           RefetchUsers.new
