@@ -37,7 +37,7 @@ Commands:
 	me                  Get your own information
 	personal_details    Get your personal details
 	clockin             Clock in/out
-	time_worked         See how many hours you've worked
+	time_worked         See how many hours you‎’ve worked
 	balance             Check your leave balances
 	regular_hours       View or set your regular hours
 	current_user        View the current user, list available users or set the current user
