@@ -34,12 +34,12 @@ module Tanda::CLI
         add_option('s', "skip-validations", description: "Skip clock in validations")
 
         add_commands(
-          Start.new,
-          Finish.new,
-          Break.new,
-          # Photo.new,
-          # Status.new,
-          # Display.new
+          ClockIn::Start.new,
+          ClockIn::Finish.new,
+          ClockIn::Break.new,
+          ClockIn::Photo.new,
+          ClockIn::Status.new,
+          ClockIn::Display.new
         )
       end
 

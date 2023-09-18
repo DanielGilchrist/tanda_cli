@@ -59,10 +59,6 @@ module Tanda::CLI
 
     # Options that make API requests
     private def parse_api_options!(parser : OptionParser)
-      parser.on("clockin", "Clock in/out") do
-        CLI::Parser::ClockIn.new(parser, ->{ build_client_with_current_user }).parse
-      end
-
       parser.on("balance", "Check your leave balances") do
         CLI::Parser::LeaveBalance.new(parser, ->{ build_client_with_current_user }).parse
       end
