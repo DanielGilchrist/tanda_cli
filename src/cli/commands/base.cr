@@ -41,33 +41,28 @@ module Tanda::CLI
       # A hook method for when the command receives missing arguments during execution
       def on_missing_arguments(arguments : Array(String))
         Utils::Display.error("Missing required argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
-        puts help_template
       end
 
       # A hook method for when the command receives unknown arguments during execution
       def on_unknown_arguments(arguments : Array(String))
         Utils::Display.error("Unknown argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
-        puts help_template
       end
 
       # A hook method for when the command receives an invalid option, for example, a value given to
       # an option that takes no arguments
       def on_invalid_option(message : String)
         Utils::Display.error(message)
-        puts help_template
       end
 
       # A hook method for when the command receives missing options that are required during
-      # execution. By default, this raises an `CommandError`.
+      # execution
       def on_missing_options(options : Array(String))
         Utils::Display.error("Missing required option#{"s" if options.size > 1}: #{options.join(", ")}")
-        puts help_template
       end
 
       # A hook method for when the command receives unknown options during execution
       def on_unknown_options(options : Array(String))
         Utils::Display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}")
-        puts help_template
       end
     end
   end
