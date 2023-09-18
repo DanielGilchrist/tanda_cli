@@ -19,7 +19,6 @@ module Tanda::CLI
       OptionParser.parse(@args) do |parser|
         parser.banner = "Usage: tanda_cli [arguments]"
 
-        parse_standard_options!(parser)
         maybe_display_staging_warning
 
         parser.on("-h", "--help", "Show this help") do
@@ -32,18 +31,6 @@ module Tanda::CLI
           STDERR.puts parser
           exit(1)
         end
-      end
-    end
-
-    # Options that don't make API requests
-    private def parse_standard_options!(parser : OptionParser)
-
-      parser.on("mode", "Set the mode to run commands in (production/staging/custom <url>)") do
-        CLI::Parser::Mode.new(parser).parse
-      end
-
-      parser.on("start_of_week", "Set the start of the week (e.g. monday/sunday)") do
-        CLI::Parser::StartOfWeek.new(parser).parse
       end
     end
   end

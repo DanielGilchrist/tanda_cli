@@ -15,7 +15,9 @@ module Tanda::CLI
           CurrentUser.new,
           TimeZone.new,
           RefetchToken.new,
-          RefetchUsers.new
+          RefetchUsers.new,
+          Mode.new,
+          StartOfWeek.new
         )
       end
 
