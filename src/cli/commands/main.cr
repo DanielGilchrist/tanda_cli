@@ -8,10 +8,11 @@ module Tanda::CLI
         add_commands(
           Me.new,
           PersonalDetails.new,
-          TimeWorked.new,
           ClockIn.new,
+          TimeWorked.new,
           Balance.new,
           RegularHours.new,
+          TimeZone.new,
           RefetchToken.new,
           RefetchUsers.new
         )

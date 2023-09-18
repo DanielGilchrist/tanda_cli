@@ -37,11 +37,6 @@ module Tanda::CLI
 
     # Options that don't make API requests
     private def parse_standard_options!(parser : OptionParser)
-      parser.on("time_zone", "See the currently set time zone") do
-        maybe_display_staging_warning
-        CLI::Parser::TimeZone.new(parser).parse
-      end
-
       parser.on("current_user", "Display the current user") do
         maybe_display_staging_warning
         CLI::Parser::CurrentUser.new(parser).parse
