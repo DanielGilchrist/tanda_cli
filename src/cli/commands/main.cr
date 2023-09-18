@@ -1,5 +1,3 @@
-require "./**"
-
 module Tanda::CLI
   module CLI::Commands
     class Main < Base
@@ -12,6 +10,7 @@ module Tanda::CLI
           PersonalDetails.new,
           TimeWorked.new,
           ClockIn.new,
+          Balance.new,
           RefetchToken.new,
           RefetchUsers.new
         )
