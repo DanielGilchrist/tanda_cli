@@ -52,7 +52,7 @@ Options:
 	-h, --help    Shows help information
 ```
 
-### Examples
+#### Examples
 ```sh
 # Clock in
 tanda_cli clockin start
