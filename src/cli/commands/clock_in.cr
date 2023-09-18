@@ -1,7 +1,7 @@
 module Tanda::CLI
   module CLI::Commands
     class ClockIn < Base
-      class Options
+      struct Options
         def initialize(@skip_validations : Bool = false, @clockin_photo : String? = nil); end
 
         getter clockin_photo : String?
@@ -19,7 +19,7 @@ module Tanda::CLI
         end
       end
 
-      def self.parse_options(options : Cling::Options) : Options
+      def self.parse_options(options : Cling::Options) : ClockIn::Options
         Options.new(
           skip_validations: options.has?("skip-validations"),
           clockin_photo: options.get?("photo").try(&.as_s)
