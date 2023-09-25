@@ -22,7 +22,7 @@ module Tanda::CLI
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
         if options.has?("help")
-          children["help"].run(arguments, options)
+          help_command.run(arguments, options)
 
           false
         else
@@ -96,6 +96,10 @@ module Tanda::CLI
         end
 
         Utils::Display.warning(message)
+      end
+
+      private def help_command : Cling::Command
+        children["help"]
       end
     end
   end
