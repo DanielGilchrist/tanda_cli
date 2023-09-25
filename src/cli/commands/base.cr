@@ -22,7 +22,7 @@ module Tanda::CLI
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
         if options.has?("help")
-          puts help_template
+          children["help"].run(arguments, options)
 
           false
         else
