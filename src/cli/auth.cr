@@ -32,7 +32,7 @@ module Tanda::CLI
 
     private def request_site_prefix(message : String) : String
       input = try_request_input(message: message)
-      (input || "my").tap do |site_prefix|
+      (input || "my").tap do
         Utils::Display.warning("Defaulting to \"my\"") if input.nil?
       end
     end
