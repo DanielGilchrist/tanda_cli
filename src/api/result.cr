@@ -50,15 +50,6 @@ module Tanda::CLI
           yield(value)
         end
       end
-
-      def or? : T?
-        case value = @value
-        in T
-          value
-        in Types::Error
-          nil
-        end
-      end
     end
   end
 end

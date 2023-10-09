@@ -4,10 +4,6 @@ module Tanda::CLI
       getter error : String
       getter error_description : String?
 
-      def display
-        Utils::Display.error(self)
-      end
-
       def display! : NoReturn
         Utils::Display.error!(self)
       end
