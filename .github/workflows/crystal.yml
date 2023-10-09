@@ -48,17 +48,14 @@ jobs:
             exit 1
           fi
         if: matrix.crystal == inputs.crystal_version
-        continue-on-error: true
 
       - name: Check formatting
         run: crystal tool format; git diff --exit-code
         if: matrix.crystal == inputs.crystal_version
-        continue-on-error: true
 
       - name: Lint
         run: ./bin/ameba
         if: matrix.crystal == inputs.crystal_version
-        continue-on-error: true
 
       - name: Compile
         run: crystal build src/tanda_cli.cr
