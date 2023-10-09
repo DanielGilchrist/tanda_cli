@@ -12,10 +12,6 @@ module Tanda::CLI
             date_string = value.read_string
             Utils::Time.iso_date(date_string)
           end
-
-          def self.to_json(value, json_builder : JSON::Builder)
-            json_builder.string(Utils::Time.iso_date(value))
-          end
         end
 
         @[JSON::Field(key: "date", converter: Tanda::CLI::Types::Roster::DailySchedule::DateConverter)]

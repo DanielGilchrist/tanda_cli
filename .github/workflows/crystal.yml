@@ -10,7 +10,7 @@ on:
       crystal_version:
         description: "Crystal version"
         required: false
-        default: "1.9.2"
+        default: "1.10.0"
 
 jobs:
   test:
@@ -39,6 +39,15 @@ jobs:
       - name: Install shards without development
         run: shards install --production
         if: matrix.crystal == 'nightly'
+
+      - name: Check for dead code
+        run: |
+          output=$(crystal tool unreachable src/tanda_cli.cr)
+          echo "$output"
+          if [ -n "$output" ]; then
+            exit 1
+          fi
+        if: matrix.crystal == inputs.crystal_version
 
       - name: Check formatting
         run: crystal tool format; git diff --exit-code
