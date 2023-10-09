@@ -41,7 +41,12 @@ jobs:
         if: matrix.crystal == 'nightly'
 
       - name: Check for dead code
-        run: crystal tool unreachable src/tanda_cli.cr >&2
+        run: |
+          output=$(crystal tool unreachable src/tanda_cli.cr)
+          echo "$output"
+          if [ -n "$output" ]; then
+            exit 1
+          fi
         if: matrix.crystal == inputs.crystal_version
 
       - name: Check formatting
