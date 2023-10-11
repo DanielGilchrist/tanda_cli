@@ -5,7 +5,6 @@ module Tanda::CLI
         def setup_
           @name = "break"
           @summary = @description = "Clock a break"
-          @inherit_options = true
 
           add_commands(Break::Start.new, Break::Finish.new)
         end

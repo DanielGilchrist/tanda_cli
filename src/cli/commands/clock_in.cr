@@ -19,6 +19,11 @@ module Tanda::CLI
         end
       end
 
+      def self.add_options(command : Cling::Command)
+        command.add_option('p', "photo", description: "Specify a clockin photo")
+        command.add_option('s', "skip-validations", description: "Skip clock in validations")
+      end
+
       def self.parse_options(options : Cling::Options) : ClockIn::Options
         Options.new(
           skip_validations: options.has?("skip-validations"),
@@ -29,9 +34,6 @@ module Tanda::CLI
       def setup_
         @name = "clockin"
         @summary = @description = "Clock in/out"
-
-        add_option('p', "photo", description: "Specify a clockin photo")
-        add_option('s', "skip-validations", description: "Skip clock in validations")
 
         add_commands(
           ClockIn::Start.new,

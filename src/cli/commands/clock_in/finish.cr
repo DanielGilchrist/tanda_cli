@@ -9,7 +9,8 @@ module Tanda::CLI
         def setup_
           @name = "finish"
           @summary = @description = "Clock out"
-          @inherit_options = true
+
+          ClockIn.add_options(self)
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil

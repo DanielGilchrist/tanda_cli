@@ -10,7 +10,8 @@ module Tanda::CLI
           def setup_
             @name = "start"
             @summary = @description = "Start break"
-            @inherit_options = true
+
+            ClockIn.add_options(self)
           end
 
           def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
