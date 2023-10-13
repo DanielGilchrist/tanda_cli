@@ -3,9 +3,9 @@
 
 ## Installation
 
-You will need Crystal 1.9.2 installed. I recommend using [`asdf`](https://github.com/asdf-vm/asdf) with the [crystal plugin](https://github.com/asdf-community/asdf-crystal).
+You will need Crystal 1.10.1 installed. I recommend using [`asdf`](https://github.com/asdf-vm/asdf) with the [crystal plugin](https://github.com/asdf-community/asdf-crystal).
 ```sh
-asdf install crystal 1.9.2
+asdf install crystal 1.10.1
 ```
 Or you can checkout [this link](https://crystal-lang.org/install/) for platform specific instructions
 
@@ -25,79 +25,49 @@ alias tanda_cli="/link/to/tanda_cli/bin/tanda_cli"
 Upon running any command for the first time, you will be taken through an authentication flow where you will need to enter your username and password.
 The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure is subject to change at the moment)
 
+See `--help` for a list of commands (each subcommand also accepts a `--help` flag)
+```sh
+❯ tanda_cli --help
+A CLI application for people using Tanda/Workforce.com
+
+Usage:
+	tanda_cli [options]
+
+Commands:
+	me                  Get your own information
+	personal_details    Get your personal details
+	clockin             Clock in/out
+	time_worked         See how many hours you‎’ve worked
+	balance             Check your leave balances
+	regular_hours       View or set your regular hours
+	current_user        View the current user, list available users or set the current user
+	time_zone           See or set the current time zone
+	refetch_token       Refetch token for the current environment
+	refetch_users       Refetch users from the API and save to config
+	mode                Set the mode to run commands in (production/staging/custom <url>)
+	start_of_week       Set the start of the week (e.g. monday/sunday)
+	help                Shows help information
+
+Options:
+	-h, --help    Shows help information
+```
+
 #### Examples
 ```sh
-# View information about the currently authenticated user (including organisations)
-tanda_cli me
-
-# View your personal details
-tanda_cli personal_details
-
-# View or set the current user/organisation
-tanda_cli current_user
-tanda_cli current_user --set "Dan's Donuts"
-# shows "current users" saved in config file
-# if you want a fresh version use `tanda_cli refetch_users` to refetch from API or `tanda_cli me` to view from API
-tanda_cli current_user --list
-
-# refetch and save users/organisations to config
-tanda_cli refetch_users
-
-# View or set the current time zone
-tanda_cli time_zone
-tanda_cli time_zone --set "Australia/Brisbane"
-
-# Check time worked today
-tanda_cli time_worked today
-tanda_cli time_worked today --display
-tanda_cli time_worked today --offset -3 # shows time worked 3 days ago
-
-# Check time worked this week
-tanda_cli time_worked week
-tanda_cli time_worked week --display
-tanda_cli time_worked week --offset -1 # shows time worked last week
-
-# Configure start of week
-# See currently set start day
-tanda_cli start_of_week display
-# Set start of week
-tanda_cli start_of_week --set sunday
-
-# Clock in or clock out (including breaks)
+# Clock in
 tanda_cli clockin start
-tanda_cli clockin finish
-tanda_cli clockin break start
-tanda_cli clockin break finish
-# Skip clock in validations
-tanda_cli clockin start --skip-validations
-# Specify a clock in photo (JPG or PNG <= 1MB)
-tanda_cli clockin start --photo "/path/to/photo.png"
 
-# View current clock in status
-tanda_cli clockin status
-# Display clock ins for today
-tanda_cli clockin display
+# Set a default clockin photo to be used with clockins (can be a specific photo or directory of photos to be chosen at random)
+tanda_cli clockin photo set /Users/me/Pictures/clockin_photos/my_cool_photo.png
+tanda_cli clockin photo set /users/me/Pictures/clockin_photos # as a directory
 
-# Configure clockin photo to be used on each clockin if not specified
-# View configured photo or directory of photos
-tanda_cli clockin photo view
-# Set configured photo or directory (if set to a directory, a valid photo from that directory is randomly picked)
-tanda_cli clockin photo --set "/path/to/photo.png"
-# or
-tanda_cli clockin photo --set "/path/to/dir/with/photos/"
-# Clear configuration photo or directory
-tanda_cli clockin photo clear
+# See time worked today or for the week
+tanda_cli time_worked today
+tanda_cli time_worked week --display # both options accept a flag to display the shifts
 
-# Display leave balance information
-tanda_cli balance
-
-# Set "mode" (production | staging)
-tanda_cli mode production # default
+# Set the mode to run commands in
+tanda_cli mode production # this is the default mode
 tanda_cli mode staging
-
-# Refetch token for the current environment
-# This will take you through the auth flow allowing a different region to be selected as well
-tanda_cli refetch_token
 ```
 
 ## Development

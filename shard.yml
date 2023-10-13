@@ -8,14 +8,20 @@ targets:
   tanda_cli:
     main: src/tanda_cli.cr
 
+dependencies:
+  cling:
+    github: devnote-dev/cling # https://github.com/devnote-dev/cling
+    # version: ~> 3
+    branch: main
+
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba # https://github.com/crystal-ameba/ameba
-    commit: 5cff76071a8b34a88a889d1fdf5b0cd9ec0bd54e
+    version: ~> 1
   spectator:
     gitlab: arctic-fox/spectator # https://gitlab.com/arctic-fox/spectator
     version: ~> 0
 
-crystal: 1.9.2
+crystal: 1.10.1
 
 license: MIT
