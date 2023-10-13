@@ -5,14 +5,13 @@ module TandaCLI
   extend self
 
   def main(args = ARGV)
+    {% if flag?(:debug) %}
+      TandaCLI::Debug.setup
+    {% end %}
+
     Commands::Main.new.execute(args)
   end
 end
-
-{% if flag?(:debug) %}
-  require "./debug"
-  TandaCLI::Debug.setup
-{% end %}
 
 # Tests should call this explicitly
 {% unless flag?(:test) %}

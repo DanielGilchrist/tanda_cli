@@ -75,7 +75,7 @@ module TandaCLI
 
       class RegularHoursSchedule
         include JSON::Serializable
-        include TandaCLI::Utils::Mixins::PrettyTimes
+        include Utils::Mixins::PrettyTimes
 
         module DayConverter
           def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
@@ -90,7 +90,7 @@ module TandaCLI
 
         class Break
           include JSON::Serializable
-          include TandaCLI::Utils::Mixins::PrettyTimes
+          include Utils::Mixins::PrettyTimes
 
           def initialize(@_start_time : String, @_finish_time : String); end
 

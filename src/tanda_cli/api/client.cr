@@ -7,7 +7,7 @@ require "./endpoints"
 module TandaCLI
   module API
     class Client
-      include TandaCLI::API::Endpoints
+      include Endpoints
 
       GET  = "GET"
       POST = "POST"
