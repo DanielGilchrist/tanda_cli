@@ -40,17 +40,16 @@ module TandaCLI
           shifts_by_day_of_week = shifts.index_by(&.day_of_week)
 
           applicable_regular_hours_schedules = regular_hours_schedules.select do |schedule|
-            shifts_by_day_of_week[schedule.day_of_week]
+            shifts_by_day_of_week.has_key?(schedule.day_of_week)
           end
 
           scheduled_time = applicable_regular_hours_schedules.sum do |schedule|
             schedule.length - schedule.break_length
           end
 
-          time_left = scheduled_time - total_time_worked - total_leave_hours
+          time_left = (scheduled_time - total_time_worked - total_leave_hours).abs
 
           header_text = time_left.positive? ? "Time left" : "Overtime"
-          time_left = time_left.abs if time_left.negative?
           puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
         end
       end
