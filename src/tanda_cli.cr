@@ -1,26 +1,20 @@
 # internal
-require "./configuration"
-require "./current"
-require "./utils/**"
-require "./api/**"
-require "./cli/**"
-require "./representers/**"
-require "./types/**"
+require "./tanda_cli/**"
 
-module Tanda::CLI
+module TandaCLI
   extend self
 
   def main(args = ARGV)
-    CLI::Commands::Main.new.execute(args)
+    Commands::Main.new.execute(args)
   end
 end
 
 {% if flag?(:debug) %}
   require "./debug"
-  Tanda::CLI::Debug.setup
+  TandaCLI::Debug.setup
 {% end %}
 
 # Tests should call this explicitly
 {% unless flag?(:test) %}
-  Tanda::CLI.main
+  TandaCLI.main
 {% end %}
