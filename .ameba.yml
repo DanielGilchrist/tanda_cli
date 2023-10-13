@@ -1,7 +1,7 @@
 # Exclusions
 Lint/DebugCalls:
   Excluded:
-    - src/debug.cr
+    - src/tanda_cli/debug.cr
 
 # Disabled by default
 Layout/LineLength:
