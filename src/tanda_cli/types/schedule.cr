@@ -24,7 +24,7 @@ module TandaCLI
 
       getter automatic_break_length : UInt16
       getter breaks : Array(Schedule::Break)
-      getter user_id : Int32
+      getter user_id : Int32?
     end
   end
 end
