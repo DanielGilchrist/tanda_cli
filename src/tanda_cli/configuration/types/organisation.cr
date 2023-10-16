@@ -36,7 +36,7 @@ module TandaCLI
       getter regular_hours_schedules : Array(RegularHoursSchedule)?
 
       def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
-        mapped_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
+        @regular_hours_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
           schedule = schedule_with_day_of_week[:schedule]
           day_of_week = schedule_with_day_of_week[:day_of_week]
 
@@ -69,8 +69,6 @@ module TandaCLI
             finish_time: schedule_finish_time
           )
         end
-
-        @regular_hours_schedules = mapped_schedules
       end
 
       class RegularHoursSchedule
