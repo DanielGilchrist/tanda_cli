@@ -45,7 +45,12 @@ module TandaCLI
             puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
             puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
-            maybe_print_time_left_or_overtime(shift, worked_so_far)
+            case self
+            in TimeWorked::Today
+              maybe_print_time_left_or_overtime(shift, worked_so_far)
+            in TimeWorked::Week
+              # no-op
+            end
           end
 
           Representers::Shift.new(shift).display
