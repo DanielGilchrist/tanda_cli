@@ -68,9 +68,9 @@ module TandaCLI
           shifts_by_day_of_week = begin
             case shifts
             in Types::Shift
-              {shifts.day_of_week => shifts}
+              {shifts.day_of_week => [shifts]}
             in Array(Types::Shift)
-              shifts.index_by(&.day_of_week)
+              shifts.group_by(&.day_of_week)
             end
           end
 
@@ -81,7 +81,8 @@ module TandaCLI
 
           time_left = applicable_regular_hours_schedules.sum do |regular_hours_schedule|
             break_length = begin
-              if regular_hours_schedule.breaks.any? { |regular_hours_break| break_past_current_time?(regular_hours_break) }
+              shifts = shifts_by_day_of_week[regular_hours_schedule.day_of_week]?
+              if (shifts && shifts.any?(&.finish_time.nil?)) || regular_hours_schedule.breaks.any? { |regular_hours_break| break_past_current_time?(regular_hours_break) }
                 regular_hours_schedule.break_length
               else
                 0.minutes
