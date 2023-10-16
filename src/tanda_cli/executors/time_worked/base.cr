@@ -51,20 +51,41 @@ module TandaCLI
           Representers::Shift.new(shift).display
         end
 
-        private def maybe_print_time_left_or_overtime(shift : Types::Shift, worked_so_far : Time::Span)
+        private def maybe_print_time_left_or_overtime(
+          shifts : Types::Shift | Array(Types::Shift),
+          worked_so_far : Time::Span,
+          leave_taken_so_far : Time::Span = Time::Span.zero
+        )
           organisation = Current.config.current_environment.current_organisation!
-          regular_hours_schedule = organisation.regular_hours_schedules.try(&.find(&.day_of_week.==(shift.date.day_of_week)))
-          return unless regular_hours_schedule
+          regular_hours_schedules = organisation.regular_hours_schedules
+          return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 
-          break_length = begin
-            if regular_hours_schedule.breaks.any? { |regular_hours_break| break_past_current_time?(regular_hours_break) }
-              regular_hours_schedule.break_length
-            else
-              0.minutes
+          shifts_by_day_of_week = begin
+            case shifts
+            in Types::Shift
+              {shifts.day_of_week => shifts}
+            in Array(Types::Shift)
+              shifts.index_by(&.day_of_week)
             end
           end
 
-          time_left = regular_hours_schedule.length - worked_so_far - break_length
+          applicable_regular_hours_schedules = regular_hours_schedules.select do |schedule|
+            shifts_by_day_of_week.has_key?(schedule.day_of_week)
+          end
+          return if applicable_regular_hours_schedules.empty?
+
+          time_left = applicable_regular_hours_schedules.sum do |regular_hours_schedule|
+            break_length = begin
+              if regular_hours_schedule.breaks.any? { |regular_hours_break| break_past_current_time?(regular_hours_break) }
+                regular_hours_schedule.break_length
+              else
+                0.minutes
+              end
+            end
+
+            regular_hours_schedule.length - break_length
+          end - worked_so_far - leave_taken_so_far
+
           header_text = time_left.positive? ? "Time left" : "Overtime"
           time_left = time_left.abs if time_left.negative?
           puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
