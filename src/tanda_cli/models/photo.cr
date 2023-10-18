@@ -33,10 +33,12 @@ module TandaCLI
       end
 
       private def read_and_validate_file : String | Error::Base
-        photo_bytes = validate_file_exists || validate_file_type || read_file
-        return photo_bytes unless photo_bytes.is_a?(String)
-
-        validate_photo_size(photo_bytes) || photo_bytes
+        case maybe_photo_bytes = validate_file_exists || validate_file_type || read_file
+        in Error::Base
+          maybe_photo_bytes
+        in String
+          validate_photo_size(maybe_photo_bytes)
+        end
       end
 
       private def read_file : String | Error::PhotoCantBeFound
@@ -57,10 +59,12 @@ module TandaCLI
         Error::PhotoCantBeFound.new(@path)
       end
 
-      private def validate_photo_size(photo_bytes : String) : Error::PhotoTooLarge?
-        return if photo_bytes.bytesize <= ONE_MEGABYTE
-
-        Error::PhotoTooLarge.new(photo_bytes)
+      private def validate_photo_size(photo_bytes : String) : String | Error::PhotoTooLarge
+        if photo_bytes.bytesize <= ONE_MEGABYTE
+          photo_bytes
+        else
+          Error::PhotoTooLarge.new(photo_bytes)
+        end
       end
 
       private def encode_base64(photo_bytes : String) : String | Error::UnsupportedPhotoFormat
