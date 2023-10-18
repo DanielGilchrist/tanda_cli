@@ -152,6 +152,10 @@ module TandaCLI
           finish_time - start_time
         end
 
+        def worked_length : Time::Span
+          length - break_length
+        end
+
         def break_length : Time::Span
           if !(breaks = self.breaks).empty?
             breaks.sum(&.length)
