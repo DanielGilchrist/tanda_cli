@@ -32,11 +32,7 @@ module TandaCLI
           end
         end
 
-        private def maybe_print_time_left_or_overtime(
-          shifts : Array(Types::Shift),
-          worked_so_far : Time::Span,
-          leave_taken_so_far : Time::Span = Time::Span.zero
-        )
+        private def maybe_print_time_left_or_overtime(shifts : Array(Types::Shift), worked_so_far : Time::Span, leave_taken_so_far : Time::Span)
           organisation = Current.config.current_environment.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
           return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
@@ -49,7 +45,7 @@ module TandaCLI
           return if applicable_regular_hours_schedules.empty?
 
           time_left = applicable_regular_hours_schedules.sum(&.worked_length) - worked_so_far - leave_taken_so_far
-          header_text = time_left.positive? ? "Time left" : "Overtime"
+          header_text = time_left.positive? ? "Time left today" : "Overtime this week"
           time_left = time_left.abs if time_left.negative?
           puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
         end
