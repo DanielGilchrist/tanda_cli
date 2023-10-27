@@ -1,3 +1,8 @@
+require "colorize"
+
+# Makes asserting on output much easier
+Colorize.enabled = false
+
 require "spectator"
 require "webmock"
 
@@ -21,23 +26,19 @@ end
 # if you happen to come across this and think it might be a good idea to do something similar,
 # please instead consider using interfaces and dependency injection with mock objects.
 #
-def command_wrapper(&)
+def with_command_output(&)
   begin
     yield
   rescue Spectator::SystemExit
   end
 
-  TandaCLI::Utils::Display.output
+  format_command_output(TandaCLI::Utils::Display.output)
 end
 
-def assert_output(output : IO, & : String -> U) : U forall U
-  bad_text = "\e[32mSuccess:\e[0m Selected organisation \"Hogwarts\"\n\e[32mSuccess:\e[0m Organisations saved to config\n\e[97;1m"
-  actual = output
+def format_command_output(output : IO) : String
+  output
     .to_s
-    .gsub(bad_text, "")
-    .gsub(/\e\[\d+(;\d+)*m/, "") # remove ANSI escape sequences to make asserting on output easier
-
-  yield(actual)
+    .gsub(/Success: Selected organisation \"[^\"]+\"\nSuccess: Organisations saved to config\n/, "")
 end
 
 module TandaCLI

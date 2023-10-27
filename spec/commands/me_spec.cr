@@ -26,28 +26,26 @@ Spectator.describe TandaCLI::Current do
         }.to_json
       )
 
-    output = command_wrapper do
+    output = with_command_output do
       TandaCLI.main(["me"])
     end
 
-    assert_output(output) do |actual|
-      expected = <<-OUTPUT
-      👤 Harry Potter
-      📧 harrypotter@hogwarts.com
-      🌍 United Kingdom
-      ⏰ Europe/London
-      🔑 Wizard
+    expected = <<-OUTPUT
+    👤 Harry Potter
+    📧 harrypotter@hogwarts.com
+    🌍 United Kingdom
+    ⏰ Europe/London
+    🔑 Wizard
 
-      🏢 Organisations:
-          🏷  Hogwarts
-          🌏 United Kingdom
-          📍 en-GB
+    🏢 Organisations:
+        🏷  Hogwarts
+        🌏 United Kingdom
+        📍 en-GB
 
 
-      OUTPUT
+    OUTPUT
 
-      expect(actual).to eq(expected)
-    end
+    expect(output).to eq(expected)
   end
 
   it "outputs correctly on failure" do
@@ -61,18 +59,16 @@ Spectator.describe TandaCLI::Current do
         }.to_json
       )
 
-    output = command_wrapper do
+    output = with_command_output do
       TandaCLI.main(["me"])
     end
 
-    assert_output(output) do |actual|
-      expected = <<-OUTPUT
-      Error: Bad Request
-             Something went wrong!
+    expected = <<-OUTPUT
+    Error: Bad Request
+           Something went wrong!
 
-      OUTPUT
+    OUTPUT
 
-      expect(actual).to eq(expected)
-    end
+    expect(output).to eq(expected)
   end
 end
