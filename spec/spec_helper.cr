@@ -68,9 +68,9 @@ end
 
 module TandaCLI
   class Configuration
-    DEFAULT_SITE_PREFIX = "eu"
-    DEFAULT_EMAIL = "testemail@email.com"
-    ACCESS_TOKEN_BODY = %({ "access_token": "test_access_token", "token_type": "bearer", "scope": "me", "created_at": #{Time.utc.to_unix.to_i32} })
+    DEFAULT_SITE_PREFIX  = "eu"
+    DEFAULT_EMAIL        = "testemail@email.com"
+    ACCESS_TOKEN_BODY    = %({ "access_token": "test_access_token", "token_type": "bearer", "scope": "me", "created_at": #{Time.utc.to_unix.to_i32} })
     DEFAULT_ACCESS_TOKEN = TandaCLI::Types::AccessToken.from_json(ACCESS_TOKEN_BODY)
 
     def self.init : Configuration

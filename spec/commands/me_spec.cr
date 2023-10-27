@@ -8,21 +8,21 @@ Spectator.describe TandaCLI::Current do
       .to_return(
         status: 200,
         body: {
-          name: "Harry Potter",
-          email: "harrypotter@hogwarts.com",
-          country: "United Kingdom",
-          time_zone: "Europe/London",
-          user_ids: [1],
-          permissions: ["wizard"],
+          name:          "Harry Potter",
+          email:         "harrypotter@hogwarts.com",
+          country:       "United Kingdom",
+          time_zone:     "Europe/London",
+          user_ids:      [1],
+          permissions:   ["wizard"],
           organisations: [
             {
-              id: 1,
-              name: "Hogwarts",
-              locale: "en-GB",
+              id:      1,
+              name:    "Hogwarts",
+              locale:  "en-GB",
               country: "United Kingdom",
               user_id: 1,
-            }
-          ]
+            },
+          ],
         }.to_json
       )
 
@@ -56,7 +56,7 @@ Spectator.describe TandaCLI::Current do
       .to_return(
         status: 400,
         body: {
-          error: "Bad Request",
+          error:             "Bad Request",
           error_description: "Something went wrong!",
         }.to_json
       )
