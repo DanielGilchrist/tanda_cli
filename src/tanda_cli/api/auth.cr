@@ -132,7 +132,7 @@ module TandaCLI
       end
 
       private def try_request_input(message : String) : String?
-        puts "#{message}"
+        Utils::Display.print "#{message}"
         gets.try(&.chomp).presence
       end
     end

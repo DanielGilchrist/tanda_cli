@@ -26,7 +26,7 @@ module TandaCLI
 
           if schedules_with_day_of_week.empty?
             Utils::Display.warning("Unable to find roster with schedules for #{date}")
-            puts "Would you like to check the week before #{date}? (y/n)"
+            Utils::Display.print "Would you like to check the week before #{date}? (y/n)"
             response = gets.try(&.chomp)
             Utils::Display.error!("Unable to set regular hours from previous roster") if response != "y"
 

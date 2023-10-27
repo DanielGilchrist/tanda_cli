@@ -21,6 +21,10 @@ module TandaCLI
         Fatal
       end
 
+      def print(*objects)
+        puts *objects
+      end
+
       def success(message : String, value = nil)
         display_message(Type::Success, message, value)
       end
@@ -99,11 +103,11 @@ module TandaCLI
       end
 
       private def sub_error(message : String)
-        puts "#{" " * raw_size(ERROR_STRING)} #{message}"
+        self.print "#{" " * raw_size(ERROR_STRING)} #{message}"
       end
 
       private def display_message(type, message : String, value = nil)
-        puts "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
+        self.print "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
       end
 
       private def prefix(type : Type) : Colorize::Object(String)

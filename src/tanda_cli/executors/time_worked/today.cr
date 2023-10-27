@@ -16,7 +16,7 @@ module TandaCLI
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
-            puts "You haven't clocked in today"
+            Utils::Display.print "You haven't clocked in today"
           end
 
           unless total_time_worked.zero?

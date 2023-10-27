@@ -14,9 +14,9 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           now = Utils::Time.now
           clockins = client.clockins(now).or(&.display!).sort_by(&.time)
-          return puts "You aren't currently clocked in" if clockins.empty?
+          return Utils::Display.print "You aren't currently clocked in" if clockins.empty?
 
-          puts "Clock ins for today"
+          Utils::Display.print "Clock ins for today"
           clockins.each do |clockin|
             Representers::ClockIn.new(clockin).display
           end
