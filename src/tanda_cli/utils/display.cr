@@ -112,15 +112,15 @@ module TandaCLI
 
       private def prefix(type : Type) : Colorize::Object(String)
         case type
-        in Type::Success
+        in .success?
           SUCCESS_STRING
-        in Type::Info
+        in .info?
           INFO_STRING
-        in Type::Warning
+        in .warning?
           WARNING_STRING
-        in Type::Error
+        in .error?
           ERROR_STRING
-        in Type::Fatal
+        in .fatal?
           FATAL_STRING
         end
       end
