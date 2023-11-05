@@ -14,7 +14,7 @@ Spectator.configure do |config|
   config.randomize = true
   config.before_each do
     TandaCLI::Current.reset!
-    TandaCLI::Utils::Display.reset_output!
+    CommandOutput.clear
     WebMock.reset
   end
 end
@@ -32,13 +32,30 @@ def with_command_output(&)
   rescue Spectator::SystemExit
   end
 
-  format_command_output(TandaCLI::Utils::Display.output)
+  CommandOutput.format
 end
 
-def format_command_output(output : IO) : String
-  output
-    .to_s
-    .gsub(/Success: Selected organisation \"[^\"]+\"\nSuccess: Organisations saved to config\n/, "")
+module CommandOutput
+  extend self
+
+  delegate :clear, :format, :puts, to: instance
+
+  private def instance
+    @@_instance ||= Instance.new
+  end
+
+  private class Instance
+    HEADER_REGEX = /Success: Selected organisation \"[^\"]+\"\nSuccess: Organisations saved to config\n/
+
+    def initialize(@io : IO::Memory = IO::Memory.new)
+    end
+
+    delegate :clear, :puts, to: @io
+
+    def format
+      @io.to_s.gsub(HEADER_REGEX, "")
+    end
+  end
 end
 
 module TandaCLI
@@ -46,22 +63,8 @@ module TandaCLI
     module Display
       extend self
 
-      @@io = IO::Memory.new
-
       def print(*objects)
-        @@io.puts(*objects)
-      end
-
-      def output
-        @@io
-      end
-
-      def reset_output!
-        @@io = IO::Memory.new
-      end
-
-      def print_output
-        puts @@io
+        CommandOutput.puts(*objects)
       end
     end
   end
@@ -75,9 +78,7 @@ module TandaCLI
     DEFAULT_ACCESS_TOKEN = TandaCLI::Types::AccessToken.from_json(ACCESS_TOKEN_BODY)
 
     def self.init : Configuration
-      new.tap do |config|
-        config.overwrite!(DEFAULT_SITE_PREFIX, DEFAULT_EMAIL, DEFAULT_ACCESS_TOKEN)
-      end
+      new.tap(&.overwrite!(DEFAULT_SITE_PREFIX, DEFAULT_EMAIL, DEFAULT_ACCESS_TOKEN))
     end
 
     def save!
