@@ -48,13 +48,13 @@ module TandaCLI
       private def display_success_message
         success_message =
           case @clock_type
-          in ClockType::Start
+          in .start?
             "You are now clocked in!"
-          in ClockType::Finish
+          in .finish?
             "You are now clocked out!"
-          in ClockType::BreakStart
+          in .break_start?
             "Your break has started!"
-          in ClockType::BreakFinish
+          in .break_finish?
             "Your break has ended!"
           end
 
@@ -70,13 +70,13 @@ module TandaCLI
 
         def validate!
           case @clock_type
-          in ClockType::Start
+          in .start?
             validate_clockin_start!
-          in ClockType::Finish
+          in .finish?
             validate_clockin_finish!
-          in ClockType::BreakStart
+          in .break_start?
             validate_clockin_break_start!
-          in ClockType::BreakFinish
+          in .break_finish?
             validate_clockin_break_finish!
           end
         end
@@ -110,44 +110,44 @@ module TandaCLI
 
         private def validate_clockin_start!
           case determine_status
-          in ClockInStatus::ClockedIn
+          in .clocked_in?
             Utils::Display.error!("You are already clocked in!")
-          in ClockInStatus::ClockedOut
+          in .clocked_out?
             return
-          in ClockInStatus::BreakStarted
+          in .break_started?
             Utils::Display.error!("You can't clock in when a break has started!")
           end
         end
 
         private def validate_clockin_finish!
           case determine_status
-          in ClockInStatus::ClockedIn
+          in .clocked_in?
             return
-          in ClockInStatus::ClockedOut
+          in .clocked_out?
             Utils::Display.error!("You haven't clocked in yet!")
-          in ClockInStatus::BreakStarted
+          in .break_started?
             Utils::Display.error!("You need to finish your break before clocking out!")
           end
         end
 
         private def validate_clockin_break_start!
           case determine_status
-          in ClockInStatus::ClockedIn
+          in .clocked_in?
             return
-          in ClockInStatus::ClockedOut
+          in .clocked_out?
             Utils::Display.error!("You need to clock in to start a break!")
-          in ClockInStatus::BreakStarted
+          in .break_started?
             Utils::Display.error!("You have already started a break!")
           end
         end
 
         private def validate_clockin_break_finish!
           case determine_status
-          in ClockInStatus::ClockedIn
+          in .clocked_in?
             Utils::Display.error!("You must start a break to finish a break!")
-          in ClockInStatus::ClockedOut
+          in .clocked_out?
             Utils::Display.error!("You aren't clocked in!")
-          in ClockInStatus::BreakStarted
+          in .break_started?
             return
           end
         end
