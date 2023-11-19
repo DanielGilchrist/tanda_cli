@@ -32,6 +32,10 @@ module TandaCLI
         end
       end
 
+      def path_includes?(name : String) : Bool
+        @path.includes?(name)
+      end
+
       private def read_and_validate_file : String | Error::Base
         case maybe_photo_bytes = validate_file_exists || validate_file_type || read_file
         in Error::Base

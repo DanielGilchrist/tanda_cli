@@ -17,23 +17,28 @@ module TandaCLI
           ClockInValidator.validate!(@client, @clock_type, now)
         end
 
-        if clockin_photo = @options.clockin_photo
-          parsed_photo = Models::Photo.new(clockin_photo).to_base64
-        end
+        clockin_photo = @options.clockin_photo
+        parsed_photo = begin
+          if clockin_photo && File.exists?(clockin_photo)
+            Models::Photo.new(clockin_photo).to_base64
+          else
+            config_photo_path = Current.config.clockin_photo_path
 
-        parsed_photo ||= begin
-          config_photo_path = Current.config.clockin_photo_path
+            if config_photo_path
+              photo_or_dir = Models::PhotoPathParser.new(config_photo_path).parse
 
-          if config_photo_path
-            photo_or_dir = Models::PhotoPathParser.new(config_photo_path).parse
-
-            case photo_or_dir
-            when Models::Photo
-              photo_or_dir.to_base64
-            when Models::PhotoDirectory
-              photo_or_dir.sample_photo.try(&.to_base64)
-            else
-              photo_or_dir
+              case photo_or_dir
+              when Models::Photo
+                photo_or_dir.to_base64
+              when Models::PhotoDirectory
+                if clockin_photo
+                  photo_or_dir.find_photo(clockin_photo).try(&.to_base64)
+                else
+                  photo_or_dir.sample_photo.try(&.to_base64)
+                end
+              else
+                photo_or_dir
+              end
             end
           end
         end
