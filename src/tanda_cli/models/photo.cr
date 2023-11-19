@@ -32,10 +32,6 @@ module TandaCLI
         end
       end
 
-      def ==(name : String) : Bool
-        @path == name
-      end
-
       def path_includes?(name : String) : Bool
         @path.includes?(name)
       end

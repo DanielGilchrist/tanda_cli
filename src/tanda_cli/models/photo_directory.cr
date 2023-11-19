@@ -21,29 +21,24 @@ module TandaCLI
         end
       end
 
-      private def valid_photo_from_name(name : String)
-        photo_names
-          .each
-          .map do |photo_name|
-            path = path_with_dir(photo_name)
-            Photo.new(path)
-          end
-          .find { |photo| (photo == name || photo.path_includes?(name)) && photo.valid? }
+      private def valid_photo_from_name(name : String) : Photo?
+        each_photo.find { |photo| photo.path_includes?(name) && photo.valid? }
       end
 
       private def valid_photo : Photo?
-        photo_names
-          .shuffle
+        each_photo(shuffle: true).find(&.valid?)
+      end
+
+      private def each_photo(shuffle : Bool = false)
+        Dir
+          .open(@path)
+          .children
+          .tap { |names| names.shuffle! if shuffle }
           .each
           .map do |photo_name|
             path = path_with_dir(photo_name)
             Photo.new(path)
           end
-          .find(&.valid?)
-      end
-
-      private def photo_names : Array(String)
-        Dir.open(@path).children
       end
 
       private def path_with_dir(photo_name) : String
