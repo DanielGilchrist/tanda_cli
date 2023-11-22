@@ -33,7 +33,7 @@ module TandaCLI
         end
 
         private def maybe_print_time_left_or_overtime(shifts : Array(Types::Shift), worked_so_far : Time::Span, leave_taken_so_far : Time::Span)
-          organisation = Current.config.current_environment.current_organisation!
+          organisation = Current.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
           return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 
