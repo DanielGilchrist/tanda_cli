@@ -62,7 +62,7 @@ module TandaCLI
     environment_property site_prefix : String
     environment_property access_token : AccessToken
 
-    delegate clear_access_token!, current_organisation!, to: current_environment
+    delegate clear_access_token!, current_organisation?, current_organisation!, to: current_environment
 
     def pretty_start_of_week : String
       @start_of_week.to_s
