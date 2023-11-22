@@ -50,6 +50,10 @@ module TandaCLI
           Representers::Shift.new(shift).display
         end
 
+        private def break_past_current_time?(regular_hours_break : RegularHoursScheduleBreak) : Bool
+          Utils::Time.now >= regular_hours_break.finish_time
+        end
+
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
           length = breakdown.hours
 

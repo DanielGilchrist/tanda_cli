@@ -21,8 +21,12 @@ module TandaCLI
         @access_token = AccessToken.new
       end
 
-      def current_organisation! : Organisation
-        @organisations.find(&.current?) || Utils::Display.error!("No current organisation set!")
+      def current_organisation! : Organisation | NoReturn
+        current_organisation? || Utils::Display.error!("No current organisation set!")
+      end
+
+      def current_organisation? : Organisation?
+        @organisations.find(&.current?)
       end
     end
   end

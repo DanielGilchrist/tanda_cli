@@ -35,7 +35,7 @@ module TandaCLI
           end
 
           config = Current.config
-          organisation = config.current_environment.current_organisation!
+          organisation = config.current_organisation!
 
           organisation.set_regular_hours!(schedules_with_day_of_week)
           config.save!
