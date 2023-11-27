@@ -52,7 +52,7 @@ module TandaCLI
         end
 
         private def maybe_print_time_left_or_overtime(shift : Types::Shift, worked_so_far : Time::Span)
-          organisation = Current.config.current_environment.current_organisation!
+          organisation = Current.config.current_organisation!
           regular_hours_schedule = organisation.regular_hours_schedules.try(&.find(&.day_of_week.==(shift.date.day_of_week)))
           return unless regular_hours_schedule
 

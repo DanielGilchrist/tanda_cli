@@ -20,7 +20,7 @@ module TandaCLI
       end
 
       def self.add_options(command : Cling::Command)
-        command.add_option('p', "photo", description: "Specify a clockin photo")
+        command.add_option('p', "photo", type: :single, description: "Specify a clockin photo (file path or specify photo name if directory has been set)")
         command.add_option('s', "skip-validations", description: "Skip clock in validations")
       end
 

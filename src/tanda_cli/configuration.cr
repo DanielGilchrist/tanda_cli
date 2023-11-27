@@ -62,19 +62,7 @@ module TandaCLI
     environment_property site_prefix : String
     environment_property access_token : AccessToken
 
-    delegate clear_access_token!, to: current_environment
-
-    def current_environment : Environment
-      staging? ? @staging : @production
-    end
-
-    def reset_staging!
-      @staging = Environment.new
-    end
-
-    def reset_production!
-      @production = Environment.new
-    end
+    delegate clear_access_token!, current_organisation?, current_organisation!, to: current_environment
 
     def pretty_start_of_week : String
       @start_of_week.to_s
@@ -129,6 +117,18 @@ module TandaCLI
 
         "#{validated_uri}/api/v2"
       end
+    end
+
+    private def current_environment : Environment
+      staging? ? @staging : @production
+    end
+
+    private def reset_staging!
+      @staging = Environment.new
+    end
+
+    private def reset_production!
+      @production = Environment.new
     end
 
     private def create_config_dir_if_not_exists!

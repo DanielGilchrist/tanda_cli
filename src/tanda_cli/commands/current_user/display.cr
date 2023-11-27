@@ -10,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          if organisation = Current.config.organisations.find(&.current?)
+          if organisation = Current.config.current_organisation?
             Utils::Display.print "The current user is #{display(organisation)}"
           else
             Utils::Display.print "A current user hasn't been set!"

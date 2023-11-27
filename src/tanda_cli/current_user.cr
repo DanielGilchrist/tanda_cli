@@ -23,7 +23,7 @@ module TandaCLI
     end
 
     private def user_from_config : Current::User?
-      organisation = config.organisations.find(&.current?)
+      organisation = config.current_organisation?
       return if organisation.nil?
 
       Current::User.new(organisation.user_id, organisation.name, time_zone)
