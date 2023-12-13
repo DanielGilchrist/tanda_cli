@@ -4,12 +4,9 @@ module TandaCLI
       extend self
 
       def request(message : String, display_type : Utils::Display::Type? = nil) : String?
-        puts message
-        messsage = gets.try(&.chomp).presence
-
         case display_type
         in Nil
-          message
+          puts message
         in .success?
           Utils::Display.success(message)
         in .warning?
@@ -23,6 +20,8 @@ module TandaCLI
         in .fatal?
           Utils::Display.fatal!(message)
         end
+
+        gets.try(&.chomp).presence
       end
 
       def request_or(message : String, &) : String
