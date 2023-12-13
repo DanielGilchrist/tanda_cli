@@ -42,7 +42,7 @@ module TandaCLI
         puts "#{index}: #{org.name}"
       end
 
-      user_input = Utils::Input.request_input("\nEnter a number: ")
+      user_input = Utils::Input.request("\nEnter a number: ")
       number = user_input.try(&.to_i32?)
 
       if number

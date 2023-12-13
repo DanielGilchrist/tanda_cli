@@ -109,13 +109,13 @@ module TandaCLI
         end
         puts
 
-        email = Utils::Input.request_input_or(message: "Whats your email?") do
+        email = Utils::Input.request_or(message: "Whats your email?") do
           Utils::Display.error!("Email cannot be blank")
         end
         puts
 
         password = STDIN.noecho do
-          Utils::Input.request_input_or(message: "What's your password?") do
+          Utils::Input.request_or(message: "What's your password?") do
             Utils::Display.error!("Password cannot be blank")
           end
         end
@@ -125,7 +125,7 @@ module TandaCLI
       end
 
       private def request_site_prefix(message : String) : String
-        Utils::Input.request_input_or(message) do
+        Utils::Input.request_or(message) do
           "my".tap do |default|
             Utils::Display.warning("Defaulting to \"#{default}\"")
           end

@@ -95,7 +95,7 @@ module TandaCLI
         return if response.status_code != 401
 
         message = "Your token is invalid, do you want to refetch a token and continue running the command? (y/n)"
-        response = Utils::Input.request_input(message, display_type: :warning)
+        response = Utils::Input.request(message, display_type: :warning)
         return if response != "y"
 
         config = Current.config

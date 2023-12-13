@@ -3,7 +3,7 @@ module TandaCLI
     module Input
       extend self
 
-      def request_input(message : String, display_type : Utils::Display::Type? = nil) : String?
+      def request(message : String, display_type : Utils::Display::Type? = nil) : String?
         puts message
         messsage = gets.try(&.chomp).presence
 
@@ -25,8 +25,8 @@ module TandaCLI
         end
       end
 
-      def request_input_or(message : String, &) : String
-        request_input(message) || yield
+      def request_or(message : String, &) : String
+        request(message) || yield
       end
     end
   end
