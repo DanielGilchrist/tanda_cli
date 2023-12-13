@@ -6,7 +6,7 @@ module TandaCLI
       def request(message : String, display_type : Utils::Display::Type? = nil) : String?
         case display_type
         in Nil
-          puts message
+          Utils::Display.print message
         in .success?
           Utils::Display.success(message)
         in .warning?
