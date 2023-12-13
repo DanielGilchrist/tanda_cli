@@ -41,15 +41,16 @@ module TandaCLI
       organisations.each_with_index(1) do |org, index|
         Utils::Display.print "#{index}: #{org.name}"
       end
-      Utils::Display.print "\nEnter a number: "
-      user_input = gets.try(&.chomp)
-      number = user_input.try(&.to_i32?)
 
-      if number
-        index = number - 1
-        organisations[index]? || handle_invalid_selection(organisations.size, user_input)
-      else
-        handle_invalid_selection
+      Utils::Input.request_and(message: "\nEnter a number: ") do |input|
+        number = input.try(&.to_i32?)
+
+        if number
+          index = number - 1
+          organisations[index]? || handle_invalid_selection(organisations.size, input)
+        else
+          handle_invalid_selection
+        end
       end
     end
 
