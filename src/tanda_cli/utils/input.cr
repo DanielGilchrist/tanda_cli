@@ -24,7 +24,7 @@ module TandaCLI
         gets.try(&.chomp).presence
       end
 
-      def request_or(message : String, &) : String
+      def request_or(message : String, & : -> U) : String | U forall U
         request(message) || yield
       end
     end
