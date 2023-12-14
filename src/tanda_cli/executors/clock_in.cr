@@ -32,10 +32,10 @@ module TandaCLI
                 photo_or_dir.to_base64
               when Models::PhotoDirectory
                 if clockin_photo
-                  photo_or_dir.find_photo(clockin_photo).try(&.to_base64)
+                  photo_or_dir.find_photo(clockin_photo)
                 else
-                  photo_or_dir.sample_photo.try(&.to_base64)
-                end
+                  photo_or_dir.sample_photo
+                end.try(&.to_base64)
               else
                 photo_or_dir
               end
