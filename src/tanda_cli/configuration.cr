@@ -23,11 +23,11 @@ module TandaCLI
       File.open(CONFIG_PATH) do |file|
         config_contents = file.gets_to_end
         from_json(config_contents)
-      rescue error
+      rescue ex
         {% if flag?(:debug) %}
-          raise(error)
+          raise(ex)
         {% else %}
-          reason = error.message.try(&.split("\n").first) if error.is_a?(JSON::SerializableError) || error.is_a?(JSON::ParseException)
+          reason = ex.message.try(&.split("\n").first) if ex.is_a?(JSON::SerializableError) || ex.is_a?(JSON::ParseException)
           Utils::Display.error("Invalid Config!", reason) do |sub_errors|
             sub_errors << "If you want to try and fix the config manually press Ctrl+C to quit\n"
             sub_errors << "Press enter if you want to proceed with a default config (this will override the existing config)"
@@ -68,12 +68,11 @@ module TandaCLI
       @start_of_week.to_s
     end
 
-    def set_start_of_week(value : String) : Error::InvalidStartOfWeek?
+    def start_of_week=(value : String) : Time::DayOfWeek | Error::InvalidStartOfWeek
       start_of_week = Time::DayOfWeek.parse?(value)
       return Error::InvalidStartOfWeek.new(value) if start_of_week.nil?
 
       @start_of_week = start_of_week
-      nil
     end
 
     def staging? : Bool
