@@ -68,7 +68,7 @@ module TandaCLI
       @start_of_week.to_s
     end
 
-    def start_of_week=(value : String) : Time::DayOfWeek | Error::InvalidStartOfWeek?
+    def start_of_week=(value : String) : Time::DayOfWeek | Error::InvalidStartOfWeek
       start_of_week = Time::DayOfWeek.parse?(value)
       return Error::InvalidStartOfWeek.new(value) if start_of_week.nil?
 
