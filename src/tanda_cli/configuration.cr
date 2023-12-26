@@ -23,11 +23,11 @@ module TandaCLI
       File.open(CONFIG_PATH) do |file|
         config_contents = file.gets_to_end
         from_json(config_contents)
-      rescue e
+      rescue ex
         {% if flag?(:debug) %}
-          raise(e)
+          raise(ex)
         {% else %}
-          reason = e.message.try(&.split("\n").first) if e.is_a?(JSON::SerializableError) || e.is_a?(JSON::ParseException)
+          reason = ex.message.try(&.split("\n").first) if ex.is_a?(JSON::SerializableError) || ex.is_a?(JSON::ParseException)
           Utils::Display.error("Invalid Config!", reason) do |sub_errors|
             sub_errors << "If you want to try and fix the config manually press Ctrl+C to quit\n"
             sub_errors << "Press enter if you want to proceed with a default config (this will override the existing config)"
