@@ -20,3 +20,9 @@ Style/LargeNumbers:
 
 Style/PredicateName:
   Enabled: true
+
+### DISABLED ###
+
+Documentation/DocumentationAdmonition:
+  Enabled: false
+
