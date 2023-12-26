@@ -15,9 +15,10 @@ module TandaCLI
           day = arguments.get("day").as_s
           config = Current.config
 
-          if parse_error = config.set_start_of_week(day)
-            Utils::Display.error!(parse_error)
-          else
+          case parse_error = (config.start_of_week = day)
+          in Error::InvalidStartOfWeek
+            parse_error.display!
+          in Time::DayOfWeek
             config.save!
             Utils::Display.success("Start of the week set to #{config.pretty_start_of_week}")
           end
