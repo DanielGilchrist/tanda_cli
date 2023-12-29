@@ -12,9 +12,9 @@ module TandaCLI
             config = Current.config
 
             if path = config.clockin_photo_path
-              puts "Clock in photo: #{path}"
+              Utils::Display.print "Clock in photo: #{path}"
             else
-              puts "No clock in photo set"
+              Utils::Display.print "No clock in photo set"
             end
           end
         end

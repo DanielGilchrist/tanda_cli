@@ -36,27 +36,27 @@ module TandaCLI
       end
 
       # A hook method for when the command raises an exception during execution
-      def on_error(ex : Exception)
-        {% if flag?(:debug) %}
-          super
-        {% else %}
-          Utils::Display.error(ex.message || "An error occurred")
-          puts help_template
-          exit
-        {% end %}
-      end
+      # def on_error(ex : Exception)
+      #   {% if flag?(:debug) %}
+      #     super
+      #   {% else %}
+      #     Utils::Display.error(ex.message || "An error occurred")
+      #     Utils::Display.print help_template
+      #     exit
+      #   {% end %}
+      # end
 
       # A hook method for when the command receives missing arguments during execution
       def on_missing_arguments(arguments : Array(String))
         Utils::Display.error("Missing required argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
-        puts help_template
+        Utils::Display.print help_template
         exit
       end
 
       # A hook method for when the command receives unknown arguments during execution
       def on_unknown_arguments(arguments : Array(String))
         Utils::Display.error("Unknown argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
-        puts help_template
+        Utils::Display.print help_template
         exit
       end
 
@@ -64,7 +64,7 @@ module TandaCLI
       # an option that takes no arguments
       def on_invalid_option(message : String)
         Utils::Display.error(message)
-        puts help_template
+        Utils::Display.print help_template
         exit
       end
 
@@ -72,14 +72,14 @@ module TandaCLI
       # execution
       def on_missing_options(options : Array(String))
         Utils::Display.error("Missing required option#{"s" if options.size > 1}: #{options.join(", ")}")
-        puts help_template
+        Utils::Display.print help_template
         exit
       end
 
       # A hook method for when the command receives unknown options during execution
       def on_unknown_options(options : Array(String))
         Utils::Display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}")
-        puts help_template
+        Utils::Display.print help_template
         exit
       end
 

@@ -9,20 +9,20 @@ module TandaCLI
 
     class Backend < Log::IOBackend
       def write(entry : Log::Entry)
-        puts "\n"
+        Utils::Display.print "\n"
         pp "================================= DEBUG ================================="
-        puts entry.message.colorize.yellow
-        puts "\n"
+        Utils::Display.print entry.message.colorize.yellow
+        Utils::Display.print "\n"
         entry.data.each do |(k, v)|
           next if v.raw.nil?
 
           key = "#{k}: "
           print "#{key.colorize.light_yellow}"
           pp v
-          puts "\n" unless http_debug_message?(entry)
+          Utils::Display.print "\n" unless http_debug_message?(entry)
         end
         pp "================================= DEBUG ================================="
-        puts "\n"
+        Utils::Display.print "\n"
       end
 
       private def http_debug_message?(entry : Log::Entry)

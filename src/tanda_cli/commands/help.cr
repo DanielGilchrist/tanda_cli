@@ -10,7 +10,7 @@ module TandaCLI
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
         parent = self.parent
-        puts parent.help_template if parent
+        Utils::Display.print parent.help_template if parent
       end
     end
   end

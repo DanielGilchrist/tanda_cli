@@ -42,9 +42,9 @@ module TandaCLI
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
           if time_worked
-            puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+            Utils::Display.print "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
-            puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+            Utils::Display.print "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
             maybe_print_time_left_or_overtime(shift, worked_so_far)
           end
 
@@ -67,7 +67,7 @@ module TandaCLI
           time_left = regular_hours_schedule.length - worked_so_far - break_length
           header_text = time_left.positive? ? "Time left" : "Overtime"
           time_left = time_left.abs if time_left.negative?
-          puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
+          Utils::Display.print "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
         end
 
         private def break_past_current_time?(regular_hours_break : RegularHoursScheduleBreak) : Bool
@@ -80,7 +80,7 @@ module TandaCLI
           # Don't bother showing days where there are no hours for leave
           return if length.zero?
 
-          puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
+          Utils::Display.print "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
           Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
         end

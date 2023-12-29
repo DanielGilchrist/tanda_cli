@@ -8,7 +8,7 @@ module TandaCLI
       end
 
       def display
-        puts build
+        Utils::Display.print build
       end
 
       def build : String
