@@ -26,7 +26,7 @@ module TandaCLI
           puts "Regular hours for #{organisation.name}:"
           regular_hours_schedules.each do |schedule|
             puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
-            if !(schedule_breaks = schedule.breaks).empty?
+            if (schedule_breaks = schedule.breaks).present?
               puts "  Breaks:"
               schedule_breaks.each do |break_|
                 puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"

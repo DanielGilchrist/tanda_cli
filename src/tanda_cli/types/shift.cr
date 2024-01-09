@@ -42,7 +42,7 @@ module TandaCLI
 
         leave_requests_by_id = client.leave_requests(ids: leave_request_ids).or { |error| return error }.index_by(&.id)
 
-        if !leave_requests_by_id.empty?
+        if leave_requests_by_id.present?
           shifts.each do |shift|
             leave_request_id = shift.leave_request_id
             next if leave_request_id.nil?
