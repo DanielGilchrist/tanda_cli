@@ -71,6 +71,10 @@ module TandaCLI
         end
       end
 
+      def unreachable_method
+        puts "I'm unreachable"
+      end
+
       class RegularHoursSchedule
         include JSON::Serializable
         include Utils::Mixins::PrettyTimes
