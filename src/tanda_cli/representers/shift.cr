@@ -22,8 +22,8 @@ module TandaCLI
 
         builder << "🚧 #{@object.status}\n"
 
-        build_shift_breaks(builder) if !@object.valid_breaks.empty?
-        build_notes(builder) if !@object.notes.empty?
+        build_shift_breaks(builder) if @object.valid_breaks.present?
+        build_notes(builder) if @object.notes.present?
       end
 
       private def build_shift_breaks(builder : String::Builder)

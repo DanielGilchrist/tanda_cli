@@ -23,7 +23,7 @@ module TandaCLI
         end
 
         private def handle_ongoing_shift(shift : Types::Shift)
-          if !(shift_breaks = shift.breaks).empty?
+          if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
               puts "You are on break"
