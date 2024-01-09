@@ -157,7 +157,7 @@ module TandaCLI
         end
 
         def break_length : Time::Span
-          if !(breaks = self.breaks).empty?
+          if (breaks = self.breaks).present?
             breaks.sum(&.length)
           else
             (automatic_break_length || 0).minutes
