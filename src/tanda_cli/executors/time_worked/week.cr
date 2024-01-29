@@ -54,8 +54,14 @@ module TandaCLI
           end - worked_so_far - leave_taken_so_far
 
           header_text = time_left.positive? ? "Time left today" : "Overtime this week"
-          time_left = time_left.abs if time_left.negative?
-          puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
+          absolute_time_left = time_left.abs
+          puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
+
+          clock_out_text = time_left.positive? ? "You can clock out at" : "Overtime since"
+
+          pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
+          puts "#{clock_out_text}: #{pretty_time}"
+          puts
         end
 
         private def ongoing_without_break?(shift : Types::Shift) : Bool
