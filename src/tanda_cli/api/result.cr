@@ -18,10 +18,12 @@ module TandaCLI
       end
 
       private def self.parse(response : HTTP::Client::Response) : T | Types::Error
-        {% if T < JSON::Serializable %}
+        {% if T == Nil %}
+          # Nil is a special case we use if we don't care about the value for a successful response
+        {% elsif T < JSON::Serializable %}
           # Allow types that include `JSON::Serializable`
-        {% elsif T.has_method?(:to_json) %}
-          # This accounts for stdlib types like `Array` that are "serializable"
+        {% elsif T < Array && T.type_vars.all?(&.<(JSON::Serializable)) %}
+          # Allow array types only if they only contain objects that include JSON::Serializable
         {% else %}
           # If above conditions aren't met, throw a compiler error
           {{ raise "Unsupported type #{T}" }}
