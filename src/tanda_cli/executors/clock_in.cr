@@ -40,6 +40,8 @@ module TandaCLI
         return if clockin_photo_path.nil?
 
         case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
+        when Models::Photo
+          photo_or_dir.to_base64
         when Models::PhotoDirectory
           if clockin_photo
             photo_or_dir.find_photo(clockin_photo).tap do |maybe_photo|
@@ -50,8 +52,6 @@ module TandaCLI
               Utils::Display.warning("No valid photos found in #{clockin_photo_path}") if maybe_photo.nil?
             end
           end.try(&.to_base64)
-        when Models::Photo
-          photo_or_dir.to_base64
         else
           photo_or_dir
         end
