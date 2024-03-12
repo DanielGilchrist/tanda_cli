@@ -26,13 +26,10 @@ module TandaCLI
           end
         end
 
-        case base64_photo
-        when Error::Base
-          base64_photo.display!
-        else
-          @client.send_clock_in(now, @clock_type.to_underscore, base64_photo, mobile_clockin: true).or(&.display!)
-          display_success_message
-        end
+        base64_photo.display if base64_photo.is_a?(Error::Base)
+
+        @client.send_clock_in(now, @clock_type.to_underscore, base64_photo, mobile_clockin: true).or(&.display!)
+        display_success_message
       end
 
       private def base64_photo_from_clockin_photo_path(clockin_photo : String?) : String? | Error::Base
