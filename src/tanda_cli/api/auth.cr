@@ -1,6 +1,7 @@
 # shards
 require "http"
 require "json"
+require "term-prompt"
 
 # internal
 require "../types/access_token"
@@ -13,9 +14,33 @@ module TandaCLI
 
       VALID_SITE_PREFIXES = {"my", "eu", "us"}
 
+      enum Scope
+        Me
+        Roster
+        Timesheet
+        Department
+        User
+        Cost
+        Leave
+        Unavailability
+        Datastream
+        Device
+        Qualifications
+        Settings
+        Organisation
+        SMS
+        Personal
+        Financial
+        Platform
+
+        def to_api_name : String
+          to_s.downcase
+        end
+      end
+
       def fetch_new_token!
         config = Current.config
-        site_prefix, email, password = request_user_information!
+        site_prefix, email, password, scopes = request_user_information!
 
         auth_site_prefix = begin
           if config.staging?
@@ -30,7 +55,7 @@ module TandaCLI
           end
         end || site_prefix
 
-        access_token = fetch_access_token!(auth_site_prefix, email, password).or do |error|
+        access_token = fetch_access_token!(auth_site_prefix, email, password, scopes).or do |error|
           Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
             sub_errors << "Error Type: #{error.error}\n"
 
@@ -43,7 +68,7 @@ module TandaCLI
         config.overwrite!(site_prefix, email, access_token)
       end
 
-      private def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
+      private def fetch_access_token!(site_prefix : String, email : String, password : String, scopes : Array(Scope)?) : API::Result(Types::AccessToken)
         response = begin
           HTTP::Client.post(
             build_endpoint(site_prefix),
@@ -51,7 +76,7 @@ module TandaCLI
             body: {
               username:   email,
               password:   password,
-              scope:      build_scopes,
+              scope:      build_scopes(scopes),
               grant_type: "password",
             }.to_json
           )
@@ -75,30 +100,23 @@ module TandaCLI
         }
       end
 
-      private def build_scopes : String
-        {
-          "me",
-          "roster",
-          "timesheet",
-          "department",
-          "user",
-          "cost",
-          "leave",
-          "unavailability",
-          "datastream",
-          "device",
-          "qualifications",
-          "settings",
-          "organisation",
-          "sms",
-          "personal",
-          "financial",
-          "platform",
-        }
-          .join(" ")
+      private def build_scopes(scopes : Array(Scope)?) : String
+        scopes = Scope.values if scopes.nil?
+        scopes.map(&.to_api_name).join(" ")
       end
 
-      private def request_user_information! : Tuple(String, String, String)
+      private def request_user_information! : Tuple(String, String, String, Array(Scope)?)
+        prompt = Term::Prompt.new
+        scopes = ["All"] + Scope.names
+        choices = prompt.multi_select("Which scopes do you want to allow?", scopes, min: 1)
+        selected_scopes = if choices.includes?("All")
+          nil
+        else
+          choices.compact.compact_map(&->Scope.parse?(String))
+        end
+        puts selected_scopes
+        puts
+
         valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
         site_prefix = request_site_prefix(message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):")
 
@@ -121,7 +139,7 @@ module TandaCLI
         end
         puts
 
-        {site_prefix, email, password}
+        {site_prefix, email, password, selected_scopes}
       end
 
       private def request_site_prefix(message : String) : String
