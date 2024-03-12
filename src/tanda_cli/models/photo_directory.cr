@@ -6,26 +6,14 @@ module TandaCLI
       def initialize(@path : String); end
 
       def valid? : Bool
-        Dir.exists?(@path) && !!valid_photo
+        Dir.exists?(@path) && !!sample_photo
       end
 
       def find_photo(name : String) : Photo?
-        valid_photo_from_name(name).tap do |photo|
-          Utils::Display.warning("No valid photo in #{@path} matching #{name}") if photo.nil?
-        end
-      end
-
-      def sample_photo : Photo?
-        valid_photo.tap do |photo|
-          Utils::Display.warning("No valid photos found in #{@path}") if photo.nil?
-        end
-      end
-
-      private def valid_photo_from_name(name : String) : Photo?
         each_photo.find { |photo| photo.path_includes?(name) && photo.valid? }
       end
 
-      private def valid_photo : Photo?
+      def sample_photo : Photo?
         each_photo(shuffle: true).find(&.valid?)
       end
 
