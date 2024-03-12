@@ -18,7 +18,7 @@ module TandaCLI
 
           key = "#{k}: "
           print "#{key.colorize.light_yellow}"
-          pp v
+          puts v
           puts "\n" unless http_debug_message?(entry)
         end
         pp "================================= DEBUG ================================="

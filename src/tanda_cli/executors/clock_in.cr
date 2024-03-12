@@ -18,36 +18,40 @@ module TandaCLI
         end
 
         clockin_photo = @options.clockin_photo
-        parsed_photo = begin
+        base64_photo = begin
           if clockin_photo && File.exists?(clockin_photo)
             Models::Photo.new(clockin_photo).to_base64
           else
-            config_photo_path = Current.config.clockin_photo_path
-
-            if config_photo_path
-              photo_or_dir = Models::PhotoPathParser.new(config_photo_path).parse
-
-              case photo_or_dir
-              when Models::Photo
-                photo_or_dir.to_base64
-              when Models::PhotoDirectory
-                if clockin_photo
-                  photo_or_dir.find_photo(clockin_photo)
-                else
-                  photo_or_dir.sample_photo
-                end.try(&.to_base64)
-              else
-                photo_or_dir
-              end
-            end
+            base64_photo_from_clockin_photo_path(clockin_photo)
           end
         end
 
-        parsed_photo.display! if parsed_photo.is_a?(Error::Base)
+        base64_photo.display! if base64_photo.is_a?(Error::Base)
 
-        @client.send_clock_in(now, @clock_type.to_underscore, parsed_photo, mobile_clockin: true).or(&.display!)
-
+        @client.send_clock_in(now, @clock_type.to_underscore, base64_photo, mobile_clockin: true).or(&.display!)
         display_success_message
+      end
+
+      private def base64_photo_from_clockin_photo_path(clockin_photo : String?) : String? | Error::Base
+        clockin_photo_path = Current.config.clockin_photo_path
+        return if clockin_photo_path.nil?
+
+        case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
+        when Models::Photo
+          photo_or_dir.to_base64
+        when Models::PhotoDirectory
+          if clockin_photo
+            photo_or_dir.find_photo(clockin_photo).tap do |maybe_photo|
+              Utils::Display.warning("No valid photo in #{clockin_photo_path} matching #{clockin_photo}") if maybe_photo.nil?
+            end
+          else
+            photo_or_dir.sample_photo.tap do |maybe_photo|
+              Utils::Display.warning("No valid photos found in #{clockin_photo_path}") if maybe_photo.nil?
+            end
+          end.try(&.to_base64)
+        else
+          photo_or_dir
+        end
       end
 
       private def display_success_message
