@@ -85,10 +85,12 @@ module TandaCLI
         prompt = Term::Prompt.new
         scopes = ["All"] + Scope.names
         choices = prompt.multi_select("Which scopes do you want to allow?", scopes, min: 1)
-        selected_scopes = if choices.includes?("All")
-          nil
-        else
-          choices.compact.compact_map(&->Scope.parse?(String))
+        selected_scopes = begin
+          if choices.includes?("All")
+            nil
+          else
+            choices.compact.compact_map(&->Scope.parse?(String))
+          end
         end
         puts selected_scopes
         puts

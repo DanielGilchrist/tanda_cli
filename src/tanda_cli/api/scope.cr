@@ -16,6 +16,7 @@ module TandaCLI
       Organisation
       # SMS
       Personal
+
       # Financial
       # Platform
 
