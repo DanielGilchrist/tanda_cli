@@ -5,7 +5,7 @@ module TandaCLI
 
       macro included
         def self.required_scopes(*args : API::Scope)
-          @@required_scopes += args.to_a
+          @@required_scopes.concat(args)
         end
       end
 
