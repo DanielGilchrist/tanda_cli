@@ -14,30 +14,6 @@ module TandaCLI
 
       VALID_SITE_PREFIXES = {"my", "eu", "us"}
 
-      enum Scope
-        Me
-        Roster
-        Timesheet
-        Department
-        User
-        Cost
-        Leave
-        Unavailability
-        Datastream
-        Device
-        Qualifications
-        Settings
-        Organisation
-        SMS
-        Personal
-        Financial
-        Platform
-
-        def to_api_name : String
-          to_s.downcase
-        end
-      end
-
       def fetch_new_token!
         config = Current.config
         site_prefix, email, password, scopes = request_user_information!

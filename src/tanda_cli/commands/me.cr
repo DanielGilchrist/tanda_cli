@@ -5,6 +5,8 @@ module TandaCLI
     class Me < Base
       include ClientBuilder
 
+      required_scopes :me
+
       def setup_
         @name = "me"
         @summary = @description = "Get your own information"
