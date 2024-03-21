@@ -17,7 +17,6 @@ module TandaCLI
         scopes = config.access_token.scope
         return if scopes.nil?
 
-        # missing_scopes = missing_scopes(scopes)
         missing_scopes = @@required_scopes - scopes
 
         if missing_scopes.present?
@@ -26,10 +25,6 @@ module TandaCLI
             sub_errors << "Need #{friendly_scopes} scopes for this command"
           end
         end
-      end
-
-      private def missing_scopes(scopes : Array(API::Scope)) : Array(API::Scope)
-        @@required_scopes.reject { |scope| scopes.includes?(scope) }
       end
     end
   end
