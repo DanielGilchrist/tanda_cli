@@ -16,11 +16,12 @@ module TandaCLI
         scopes = config.access_token.scopes
         return if scopes.nil?
 
-        if (missing_scopes = @@required_scopes - scopes).present?
-          Utils::Display.error!("Missing scopes!") do |sub_errors|
-            friendly_scopes = missing_scopes.map { |scope| "\"#{scope.to_api_name}\"" }.join(", ")
-            sub_errors << "Need #{friendly_scopes} scopes for this command"
-          end
+        missing_scopes = @@required_scopes - scopes
+        return if missing_scopes.empty?
+
+        Utils::Display.error!("Missing scopes!") do |sub_errors|
+          friendly_scopes = missing_scopes.map { |scope| "\"#{scope.to_api_name}\"" }.join(", ")
+          sub_errors << "Need #{friendly_scopes} scopes for this command"
         end
       end
     end
