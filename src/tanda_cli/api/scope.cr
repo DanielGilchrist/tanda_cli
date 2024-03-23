@@ -4,21 +4,10 @@ module TandaCLI
       Me
       Roster
       Timesheet
-      # Department
-      # User
-      # Cost
-      # Leave
-      # Unavailability
-      # Datastream
-      # Device
-      # Qualifications
-      # Settings
+      Leave
+      Device
       Organisation
-      # SMS
       Personal
-
-      # Financial
-      # Platform
 
       def to_api_name : String
         to_s.downcase

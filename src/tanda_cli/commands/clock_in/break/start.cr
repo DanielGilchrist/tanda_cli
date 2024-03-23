@@ -7,6 +7,8 @@ module TandaCLI
         class Start < Commands::Base
           include ClientBuilder
 
+          required_scopes :device
+
           def setup_
             @name = "start"
             @summary = @description = "Start break"

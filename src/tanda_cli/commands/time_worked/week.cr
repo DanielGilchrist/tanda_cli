@@ -7,6 +7,8 @@ module TandaCLI
       class Week < Commands::Base
         include ClientBuilder
 
+        required_scopes :timesheet
+
         def setup_
           @name = "week"
           @summary = @description = "Show time worked for a week"

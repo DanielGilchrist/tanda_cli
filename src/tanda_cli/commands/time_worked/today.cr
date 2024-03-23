@@ -7,6 +7,8 @@ module TandaCLI
       class Today < Commands::Base
         include ClientBuilder
 
+        required_scopes :timesheet
+
         def setup_
           @name = "today"
           @summary = @description = "Show time worked for today"

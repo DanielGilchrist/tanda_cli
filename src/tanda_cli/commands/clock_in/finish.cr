@@ -6,6 +6,8 @@ module TandaCLI
       class Finish < Commands::Base
         include ClientBuilder
 
+        required_scopes :device
+
         def setup_
           @name = "finish"
           @summary = @description = "Clock out"
