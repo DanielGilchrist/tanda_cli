@@ -14,7 +14,7 @@ dependencies:
     # version: ~> 3
     branch: main
   term-prompt:
-    github: crystal-term/prompt
+    github: crystal-term/prompt # https://github.com/crystal-term/prompt
 
 development_dependencies:
   ameba:
