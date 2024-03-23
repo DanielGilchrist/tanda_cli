@@ -20,8 +20,25 @@ module TandaCLI
         return if missing_scopes.empty?
 
         Utils::Display.error!("Missing scopes!") do |sub_errors|
-          friendly_scopes = missing_scopes.map { |scope| "\"#{Scopes.to_api_name(scope)}\"" }.join(", ")
-          sub_errors << "Need #{friendly_scopes} scopes for this command"
+          sub_errors << build_missing_scopes_error_message(missing_scopes)
+        end
+      end
+
+      def build_missing_scopes_error_message(scopes : Array(Scopes::OptionalScope)) : String
+        scope_strings = scopes.map { |scope| "\"#{Scopes.to_api_name(scope)}\"" }
+        scope_message = scope_message(scope_strings)
+
+        "Need #{scope_message} for this command"
+      end
+
+      def scope_message(scope_strings : Array(String)) : String
+        case scope_strings.size
+        when 1
+          "#{scope_strings.first} scope"
+        when 2
+          "#{scope_strings.join(" and ")} scopes"
+        else
+          "#{scope_strings[0..-2].join(", ") + " and " + scope_strings[-1]} scopes"
         end
       end
     end
