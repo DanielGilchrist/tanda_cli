@@ -1,7 +1,6 @@
 # shards
 require "http"
 require "json"
-require "term-prompt"
 
 # internal
 require "../types/access_token"
@@ -44,7 +43,7 @@ module TandaCLI
         config.overwrite!(site_prefix, email, access_token)
       end
 
-      private def fetch_access_token!(site_prefix : String, email : String, password : String, scopes : Array(Scope)?) : API::Result(Types::AccessToken)
+      private def fetch_access_token!(site_prefix : String, email : String, password : String, scopes : Array(Scopes::Scope)) : API::Result(Types::AccessToken)
         response = begin
           HTTP::Client.post(
             build_endpoint(site_prefix),
@@ -52,7 +51,7 @@ module TandaCLI
             body: {
               username:   email,
               password:   password,
-              scope:      build_scopes(scopes),
+              scope:      Scopes.join_to_api_string(scopes),
               grant_type: "password",
             }.to_json
           )
@@ -76,24 +75,8 @@ module TandaCLI
         }
       end
 
-      private def build_scopes(scopes : Array(Scope)?) : String
-        scopes = Scope.values if scopes.nil?
-        scopes.map(&.to_api_name).join(" ")
-      end
-
-      private def request_user_information! : Tuple(String, String, String, Array(Scope)?)
-        prompt = Term::Prompt.new
-        scopes = ["All"] + Scope.names
-        choices = prompt.multi_select("Which scopes do you want to allow?", scopes, min: 1)
-        selected_scopes = begin
-          if choices.includes?("All")
-            nil
-          else
-            choices.compact.compact_map(&->Scope.parse?(String))
-          end
-        end
-        puts selected_scopes
-        puts
+      private def request_user_information! : Tuple(String, String, String, Array(Scopes::Scope))
+        selected_scopes = Scopes.prompt.multi_select("Which scopes do you want to allow? (Select with [SPACE])")
 
         valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
         site_prefix = request_site_prefix(message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):")

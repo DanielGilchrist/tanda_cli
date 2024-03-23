@@ -1,10 +1,10 @@
 module TandaCLI
   module Commands
     module RequiredScopes
-      @@required_scopes = Array(API::Scope).new
+      @@required_scopes = Array(Scopes::Scope).new
 
       macro included
-        def self.required_scopes(*args : API::Scope)
+        def self.required_scopes(*args : Scopes::Scope)
           @@required_scopes.concat(args)
         end
       end

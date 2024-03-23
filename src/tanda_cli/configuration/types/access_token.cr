@@ -12,11 +12,11 @@ module TandaCLI
       ); end
 
       module ScopeConverter
-        def self.from_json(value : JSON::PullParser) : Array(API::Scope)
+        def self.from_json(value : JSON::PullParser) : Array(Scopes::Scope)
           scopes_string = value.read_string_or_null
-          return API::Scope.values if scopes_string.nil?
+          return Scopes::Scope.values if scopes_string.nil?
 
-          scopes_string.split(" ").compact_map(&->API::Scope.parse?(String))
+          scopes_string.split(" ").compact_map(&->Scopes::Scope.parse?(String))
         end
 
         def self.to_json(value, json_builder : JSON::Builder)
@@ -29,7 +29,7 @@ module TandaCLI
       property token_type : String?
 
       @[JSON::Field(converter: TandaCLI::Configuration::AccessToken::ScopeConverter)]
-      property scope : Array(API::Scope)?
+      property scope : Array(Scopes::Scope)?
 
       property created_at : Int32?
     end
