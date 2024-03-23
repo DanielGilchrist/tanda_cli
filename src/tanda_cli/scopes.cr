@@ -5,13 +5,13 @@ module TandaCLI
     extend self
 
     enum Scope
-      Me
-      Roster
-      Timesheet
-      Leave
       Device
+      Leave
+      Me
       Organisation
       Personal
+      Roster
+      Timesheet
 
       def to_api_name : String
         to_s.downcase
