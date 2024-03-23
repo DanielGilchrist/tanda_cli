@@ -15,7 +15,7 @@ module TandaCLI
 
       def fetch_new_token!
         config = Current.config
-        site_prefix, email, password = request_user_information!
+        site_prefix, email, password, scopes = request_user_information!
 
         auth_site_prefix = begin
           if config.staging?
@@ -30,7 +30,7 @@ module TandaCLI
           end
         end || site_prefix
 
-        access_token = fetch_access_token!(auth_site_prefix, email, password).or do |error|
+        access_token = fetch_access_token!(auth_site_prefix, email, password, scopes).or do |error|
           Utils::Display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
             sub_errors << "Error Type: #{error.error}\n"
 
@@ -43,7 +43,7 @@ module TandaCLI
         config.overwrite!(site_prefix, email, access_token)
       end
 
-      private def fetch_access_token!(site_prefix : String, email : String, password : String) : API::Result(Types::AccessToken)
+      private def fetch_access_token!(site_prefix : String, email : String, password : String, scopes : Array(Scopes::Scope)) : API::Result(Types::AccessToken)
         response = begin
           HTTP::Client.post(
             build_endpoint(site_prefix),
@@ -51,7 +51,7 @@ module TandaCLI
             body: {
               username:   email,
               password:   password,
-              scope:      build_scopes,
+              scope:      Scopes.join_to_api_string(scopes),
               grant_type: "password",
             }.to_json
           )
@@ -75,30 +75,9 @@ module TandaCLI
         }
       end
 
-      private def build_scopes : String
-        {
-          "me",
-          "roster",
-          "timesheet",
-          "department",
-          "user",
-          "cost",
-          "leave",
-          "unavailability",
-          "datastream",
-          "device",
-          "qualifications",
-          "settings",
-          "organisation",
-          "sms",
-          "personal",
-          "financial",
-          "platform",
-        }
-          .join(" ")
-      end
+      private def request_user_information! : Tuple(String, String, String, Array(Scopes::Scope))
+        selected_scopes = Scopes.prompt.multi_select("Which scopes do you want to allow? (Select none for all)")
 
-      private def request_user_information! : Tuple(String, String, String)
         valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
         site_prefix = request_site_prefix(message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):")
 
@@ -121,7 +100,7 @@ module TandaCLI
         end
         puts
 
-        {site_prefix, email, password}
+        {site_prefix, email, password, selected_scopes}
       end
 
       private def request_site_prefix(message : String) : String
