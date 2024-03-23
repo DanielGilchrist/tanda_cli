@@ -17,8 +17,7 @@ module TandaCLI
           Utils::Display.error!("Must pass an argument to custom") if url.blank?
 
           uri = Utils::URL.validate(url)
-
-          Utils::Display.error!(uri.message, url) if uri.is_a?(Utils::URL::Error)
+          Utils::Display.error!(uri) if uri.is_a?(Error::InvalidURL)
 
           uri_string = uri.to_s
           config = Current.config
