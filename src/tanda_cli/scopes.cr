@@ -47,25 +47,19 @@ module TandaCLI
     end
 
     private class Prompt
-      ALL = "All"
-
       def initialize
         @prompt = Term::Prompt.new
       end
 
       def multi_select(text : String) : Array(Scope)
-        choices = @prompt.multi_select(text, scope_strings, min: 1).compact
-        return Scopes.all_scopes if choices.empty? || choices.includes?(ALL)
+        choices = @prompt.multi_select(text, OptionalScope.names).compact
+        return Scopes.all_scopes if choices.empty?
 
         with_required_scopes(Scopes.parse_strings_to_optional_scopes(choices))
       end
 
       private def with_required_scopes(scopes : Array(OptionalScope)) : Array(Scope)
         RequiredScope.values + scopes
-      end
-
-      private def scope_strings : Array(String)
-        [ALL] + OptionalScope.names
       end
     end
   end

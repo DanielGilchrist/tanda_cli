@@ -76,7 +76,7 @@ module TandaCLI
       end
 
       private def request_user_information! : Tuple(String, String, String, Array(Scopes::Scope))
-        selected_scopes = Scopes.prompt.multi_select("Which scopes do you want to allow?")
+        selected_scopes = Scopes.prompt.multi_select("Which scopes do you want to allow? (Select none for all)")
 
         valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
         site_prefix = request_site_prefix(message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):")
