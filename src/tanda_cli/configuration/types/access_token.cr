@@ -7,29 +7,16 @@ module TandaCLI
         @email : String? = nil,
         @token : String? = nil,
         @token_type : String? = nil,
-        @scope : String? = nil,
+        @scopes = Array(Scopes::Scope).new,
         @created_at : Int32? = nil
       ); end
-
-      module ScopeConverter
-        def self.from_json(value : JSON::PullParser) : Array(Scopes::Scope)
-          scopes_string = value.read_string_or_null
-          return Scopes::Scope.values if scopes_string.nil?
-
-          scopes_string.split(" ").compact_map(&->Scopes::Scope.parse?(String))
-        end
-
-        def self.to_json(value, json_builder : JSON::Builder)
-          json_builder.string(value.map(&.to_api_name).join(" "))
-        end
-      end
 
       property email : String?
       property token : String?
       property token_type : String?
 
-      @[JSON::Field(converter: TandaCLI::Configuration::AccessToken::ScopeConverter)]
-      property scope : Array(Scopes::Scope)?
+      @[JSON::Field(key: "scope", converter: TandaCLI::Types::Converters::ScopeConverter)]
+      property scopes : Array(Scopes::Scope)
 
       property created_at : Int32?
     end
