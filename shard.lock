@@ -8,7 +8,31 @@ shards:
     git: https://github.com/devnote-dev/cling.git
     version: 3.0.0+git.commit.279db9a67b3724821842d9b4870050a05269a347
 
+  cor:
+    git: https://github.com/watzon/cor.git
+    version: 0.1.0+git.commit.9c9e51ac6168f3bd4fdc51d679b65de09ef76cac
+
+  ioctl:
+    git: https://github.com/crystal-posix/ioctl.cr.git
+    version: 1.0.0
+
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
     version: 0.11.7
+
+  term-cursor:
+    git: https://github.com/crystal-term/cursor.git
+    version: 0.1.0+git.commit.8805d5f686d153db92cf2ce3333433f8ed3708d0
+
+  term-prompt:
+    git: https://github.com/crystal-term/prompt.git
+    version: 0.1.0+git.commit.b16ccb70a90cdbb6cca960bee199df44cc3820a9
+
+  term-reader:
+    git: https://github.com/crystal-term/reader.git
+    version: 0.1.0+git.commit.83adad4a77115dc08efad8057cda3e399d0f1a24
+
+  term-screen:
+    git: https://github.com/crystal-term/screen.git
+    version: 0.1.0+git.commit.ea51ee8d1f6c286573c41a7e784d31c80af7b9bb
 

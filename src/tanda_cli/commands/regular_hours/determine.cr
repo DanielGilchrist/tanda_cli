@@ -7,6 +7,8 @@ module TandaCLI
       class Determine < Base
         include ClientBuilder
 
+        required_scopes :roster
+
         def setup_
           @name = "determine"
           @summary = @description = "Determine the regular hours for a user"
