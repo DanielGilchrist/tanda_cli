@@ -6,9 +6,9 @@ module TandaCLI
       module ScopeConverter
         def self.from_json(value : JSON::PullParser) : Array(Scopes::Scope)
           scopes_string = value.read_string_or_null
-          return Scopes::Scope.values if scopes_string.nil?
+          return Scopes.all_scopes if scopes_string.nil?
 
-          scopes_string.split(" ").compact_map(&->Scopes::Scope.parse?(String))
+          Scopes.parse_strings_to_scopes(scopes_string.split(" "))
         end
 
         def self.to_json(value, json_builder : JSON::Builder)

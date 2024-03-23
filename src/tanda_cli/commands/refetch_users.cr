@@ -5,8 +5,6 @@ module TandaCLI
     class RefetchUsers < Base
       include ClientBuilder
 
-      required_scopes :me
-
       def setup_
         @name = "refetch_users"
         @summary = @description = "Refetch users from the API and save to config"

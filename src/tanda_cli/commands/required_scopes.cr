@@ -1,10 +1,10 @@
 module TandaCLI
   module Commands
     module RequiredScopes
-      @@required_scopes = Array(Scopes::Scope).new
+      @@required_scopes = Array(Scopes::OptionalScope).new
 
       macro included
-        def self.required_scopes(*args : Scopes::Scope)
+        def self.required_scopes(*args : Scopes::OptionalScope)
           @@required_scopes.concat(args)
         end
       end
@@ -20,7 +20,7 @@ module TandaCLI
         return if missing_scopes.empty?
 
         Utils::Display.error!("Missing scopes!") do |sub_errors|
-          friendly_scopes = missing_scopes.map { |scope| "\"#{scope.to_api_name}\"" }.join(", ")
+          friendly_scopes = missing_scopes.map { |scope| "\"#{Scopes.to_api_name(scope)}\"" }.join(", ")
           sub_errors << "Need #{friendly_scopes} scopes for this command"
         end
       end
