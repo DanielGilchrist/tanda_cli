@@ -13,7 +13,7 @@ module TandaCLI
         return if @@required_scopes.empty?
 
         config = Current.config
-        scopes = config.access_token.scope
+        scopes = config.access_token.scopes
         return if scopes.nil?
 
         if (missing_scopes = @@required_scopes - scopes).present?
