@@ -6,6 +6,8 @@ module TandaCLI
     class Balance < Base
       include ClientBuilder
 
+      required_scopes :leave
+
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
 
       def setup_

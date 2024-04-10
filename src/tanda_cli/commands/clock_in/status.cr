@@ -6,6 +6,8 @@ module TandaCLI
       class Status < Commands::Base
         include ClientBuilder
 
+        required_scopes :timesheet
+
         def setup_
           @name = "status"
           @summary = @description = "Check current clockin status"

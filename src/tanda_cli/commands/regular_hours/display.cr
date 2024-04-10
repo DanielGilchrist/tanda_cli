@@ -1,12 +1,9 @@
-require "../../client_builder"
 require "../base"
 
 module TandaCLI
   module Commands
     class RegularHours
       class Display < Base
-        include ClientBuilder
-
         def setup_
           @name = "display"
           @summary = @description = "Display the regular hours for a user"

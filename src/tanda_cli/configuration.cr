@@ -92,7 +92,7 @@ module TandaCLI
       self.access_token.email = email
       self.access_token.token = access_token.token
       self.access_token.token_type = access_token.token_type
-      self.access_token.scope = access_token.scope
+      self.access_token.scopes = access_token.scopes
       self.access_token.created_at = access_token.created_at
 
       save!
@@ -112,7 +112,7 @@ module TandaCLI
         "https://staging.#{prefix}tanda.co/api/v2"
       else
         validated_uri = Utils::URL.validate(mode)
-        Utils::Display.error!(validated_uri, mode) if validated_uri.is_a?(String)
+        Utils::Display.error!(validated_uri) if validated_uri.is_a?(Error::InvalidURL)
 
         "#{validated_uri}/api/v2"
       end

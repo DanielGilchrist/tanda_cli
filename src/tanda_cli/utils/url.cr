@@ -3,9 +3,7 @@ module TandaCLI
     module URL
       extend self
 
-      record Error, message : String
-
-      def validate(url : String) : URI | Error
+      def validate(url : String) : URI | Error::InvalidURL
         uri = URI.parse(url).normalize!
         Validator.new(uri).validate
       end
@@ -18,9 +16,9 @@ module TandaCLI
 
         def initialize(@uri : URI); end
 
-        def validate : URI | Error
+        def validate : URI | Error::InvalidURL
           error = determine_error?
-          return Error.new(error) if error
+          return Error::InvalidURL.new(error, @uri.to_s) if error
 
           @uri
         end
