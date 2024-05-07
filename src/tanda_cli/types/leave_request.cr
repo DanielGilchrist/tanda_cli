@@ -23,6 +23,7 @@ module TandaCLI
       getter id : Int32
       getter user_id : Int32
       getter leave_type : String
+      getter reason : String?
 
       @[JSON::Field(key: "status", converter: TandaCLI::Types::LeaveRequest::StatusConverter)]
       getter status : Status
