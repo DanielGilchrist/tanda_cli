@@ -21,6 +21,10 @@ Style/LargeNumbers:
 Style/PredicateName:
   Enabled: true
 
+Lint/UselessAssign:
+  Enabled: true
+  ExcludeTypeDeclarations: true
+
 ### DISABLED ###
 
 Documentation/DocumentationAdmonition:

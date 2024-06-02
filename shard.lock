@@ -2,11 +2,11 @@ version: 2.0
 shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.6.0
+    version: 1.6.1
 
   cling:
     git: https://github.com/devnote-dev/cling.git
-    version: 3.0.0+git.commit.279db9a67b3724821842d9b4870050a05269a347
+    version: 3.0.0+git.commit.feef890224a251694fc84181cae3f509faa86f08
 
   cor:
     git: https://github.com/watzon/cor.git
@@ -26,7 +26,7 @@ shards:
 
   term-prompt:
     git: https://github.com/crystal-term/prompt.git
-    version: 0.1.0+git.commit.b16ccb70a90cdbb6cca960bee199df44cc3820a9
+    version: 0.1.0+git.commit.b7f129c0bdbacc860aa5d7f60559cf8eda55bc26
 
   term-reader:
     git: https://github.com/crystal-term/reader.git
