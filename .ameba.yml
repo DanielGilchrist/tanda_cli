@@ -25,6 +25,11 @@ Lint/UselessAssign:
   Enabled: true
   ExcludeTypeDeclarations: true
 
+Lint/SpecFilename:
+  Enabled: true
+  Excluded:
+    - spec/core_ext/spec_mock_hack.cr
+
 ### DISABLED ###
 
 Documentation/DocumentationAdmonition:
