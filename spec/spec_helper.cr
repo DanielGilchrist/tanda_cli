@@ -1,4 +1,5 @@
 require "spectator"
+require "./spec_mock_hack"
 require "../src/tanda_cli"
 
 Spectator.configure do |config|
