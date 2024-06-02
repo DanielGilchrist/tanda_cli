@@ -22,6 +22,9 @@ module TandaCLI
 
         builder << "🚧 #{@leave_request.status}\n"
         builder << "🌴 #{@leave_request.leave_type}\n"
+
+        reason = @leave_request.reason
+        builder << "ℹ️  #{reason}" if reason
       end
     end
   end
