@@ -25,7 +25,7 @@ module TandaCLI
         add_command(help_command)
       end
 
-      def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
+      def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
         if options.has?("help")
           help_command.run(arguments, options)
 
