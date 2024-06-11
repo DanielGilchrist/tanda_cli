@@ -15,7 +15,7 @@ module TandaCLI
           end
 
           from ||= to.at_beginning_of_week(start_day)
-          shifts = @client.shifts(from, to, show_notes: display?).or(&.display!).select(&.visible?)
+          shifts = fetch_visible_shifts(from, to)
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?

@@ -12,7 +12,7 @@ module TandaCLI
             Utils::Display.info("Showing time worked offset #{offset} days")
           end
 
-          shifts = @client.shifts(date: now, show_notes: display?).or(&.display!)
+          shifts = fetch_visible_shifts(now)
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
