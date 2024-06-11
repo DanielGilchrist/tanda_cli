@@ -125,6 +125,10 @@ module TandaCLI
         (now - start_time) - total_unpaid_break_minutes
       end
 
+      def visible? : Bool
+        !!(start_time || finish_time)
+      end
+
       private def total_unpaid_break_minutes : Time::Span
         (Current.config.treat_paid_breaks_as_unpaid? ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
       end
