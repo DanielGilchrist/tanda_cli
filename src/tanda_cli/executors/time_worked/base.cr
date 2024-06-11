@@ -13,6 +13,11 @@ module TandaCLI
 
         private getter? display : Bool
 
+        private def fetch_visible_shifts(from : Time, to : Time? = nil) : Array(Types::Shift)
+          to ||= from
+          @client.shifts(from, to, show_notes: display?).or(&.display!).select(&.visible?)
+        end
+
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
           total_time_worked = Time::Span.zero
           total_leave_hours = Time::Span.zero
