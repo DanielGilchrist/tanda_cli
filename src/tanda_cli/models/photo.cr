@@ -12,6 +12,8 @@ module TandaCLI
 
       def initialize(@path : String); end
 
+      getter path : String
+
       def to_base64 : String | Error::Base
         @to_base64 ||= begin
           case photo_bytes = read_and_validate_file
@@ -30,6 +32,10 @@ module TandaCLI
         in Error::Base
           false
         end
+      end
+
+      def invalid? : Bool
+        !valid?
       end
 
       def path_includes?(name : String) : Bool
