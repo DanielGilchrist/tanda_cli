@@ -5,6 +5,8 @@ module TandaCLI
     class PhotoDirectory
       def initialize(@path : String); end
 
+      getter path : String
+
       def valid? : Bool
         Dir.exists?(@path) && !!sample_photo
       end
@@ -15,6 +17,10 @@ module TandaCLI
 
       def sample_photo : Photo?
         each_photo(shuffle: true).find(&.valid?)
+      end
+
+      def photos : Array(Models::Photo)
+        each_photo.to_a
       end
 
       private def each_photo(shuffle : Bool = false)
