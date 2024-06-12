@@ -3,7 +3,7 @@ module TandaCLI
     class ClockIn
       class Photo
         class List < Commands::Base
-          VALID_FILTER_COMMANDS = { "valid", "invalid" }
+          VALID_FILTER_COMMANDS = {"valid", "invalid"}
 
           def setup_
             @name = "list"
