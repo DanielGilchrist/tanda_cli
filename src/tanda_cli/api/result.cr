@@ -41,9 +41,6 @@ module TandaCLI
           (response.success? ? T : E).from_json(body)
         {% end %}
       end
-
-      # This class should only be initialized with the `from` class method
-      private def initialize(@value : T | E); end
     end
   end
 end
