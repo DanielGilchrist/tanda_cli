@@ -109,6 +109,10 @@ module TandaCLI
         valid_breaks.any?(&.ongoing?)
       end
 
+      def ongoing_without_break? : Bool
+        ongoing? && breaks.empty?
+      end
+
       def time_worked : Time::Span?
         start_time = self.start_time
         return if start_time.nil?

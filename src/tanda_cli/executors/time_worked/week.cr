@@ -46,7 +46,7 @@ module TandaCLI
 
           time_left = applicable_regular_hours_schedules.sum do |regular_hours_schedule|
             shifts = shifts_by_day_of_week[regular_hours_schedule.day_of_week]?
-            if shifts && shifts.any?(&->ongoing_without_break?(Types::Shift))
+            if shifts && shifts.any?(&.ongoing_without_break?)
               regular_hours_schedule.length
             else
               regular_hours_schedule.worked_length
@@ -62,10 +62,6 @@ module TandaCLI
           pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
           puts "#{clock_out_text}: #{pretty_time}"
           puts
-        end
-
-        private def ongoing_without_break?(shift : Types::Shift) : Bool
-          shift.ongoing? && shift.breaks.empty?
         end
       end
     end
