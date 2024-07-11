@@ -93,10 +93,8 @@ module TandaCLI
         end
         puts
 
-        password = STDIN.noecho do
-          Utils::Input.request_or(message: "What's your password?") do
-            Utils::Display.error!("Password cannot be blank")
-          end
+        password = Utils::Input.request_or(message: "What's your password?", sensitive: true) do
+          Utils::Display.error!("Password cannot be blank")
         end
         puts
 

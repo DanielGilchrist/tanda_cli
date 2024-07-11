@@ -3,7 +3,7 @@ module TandaCLI
     module Input
       extend self
 
-      def request(message : String, display_type : Utils::Display::Type? = nil) : String?
+      def request(message : String, display_type : Utils::Display::Type? = nil, sensitive : Bool = false) : String?
         case display_type
         in Nil
           puts message
@@ -21,15 +21,25 @@ module TandaCLI
           Utils::Display.fatal!(message)
         end
 
-        gets.try(&.chomp).presence
+        retrieve_input(sensitive) do
+          gets.try(&.chomp).presence
+        end
       end
 
-      def request_or(message : String, display_type : Utils::Display::Type? = nil, & : -> U) : String | U forall U
-        request(message, display_type) || yield
+      def request_or(message : String, display_type : Utils::Display::Type? = nil, sensitive : Bool = false, & : -> U) : String | U forall U
+        request(message, display_type, sensitive) || yield
       end
 
-      def request_and(message : String, display_type : Utils::Display::Type? = nil, & : String? -> U) : String | U forall U
-        yield(request(message, display_type))
+      def request_and(message : String, display_type : Utils::Display::Type? = nil, sensitive : Bool = false, & : String? -> U) : String | U forall U
+        yield(request(message, display_type, sensitive))
+      end
+
+      private def retrieve_input(sensitive : Bool, & : -> String?) : String?
+        return yield unless sensitive
+
+        STDIN.noecho do
+          yield
+        end
       end
     end
   end
