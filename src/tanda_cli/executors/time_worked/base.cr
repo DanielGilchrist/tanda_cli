@@ -50,33 +50,9 @@ module TandaCLI
             puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
             puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
-            maybe_print_time_left_or_overtime(shift, worked_so_far)
           end
 
           Representers::Shift.new(shift).display
-        end
-
-        private def maybe_print_time_left_or_overtime(shift : Types::Shift, worked_so_far : Time::Span)
-          organisation = Current.config.current_organisation!
-          regular_hours_schedule = organisation.regular_hours_schedules.try(&.find(&.day_of_week.==(shift.date.day_of_week)))
-          return unless regular_hours_schedule
-
-          break_length = begin
-            if regular_hours_schedule.breaks.any? { |regular_hours_break| break_past_current_time?(regular_hours_break) }
-              regular_hours_schedule.break_length
-            else
-              0.minutes
-            end
-          end
-
-          time_left = regular_hours_schedule.length - worked_so_far - break_length
-          header_text = time_left.positive? ? "Time left" : "Overtime"
-          time_left = time_left.abs if time_left.negative?
-          puts "#{"#{header_text}:".colorize.white.bold} #{time_left.hours} hours and #{time_left.minutes} minutes"
-        end
-
-        private def break_past_current_time?(regular_hours_break : RegularHoursScheduleBreak) : Bool
-          Utils::Time.now >= regular_hours_break.finish_time
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
