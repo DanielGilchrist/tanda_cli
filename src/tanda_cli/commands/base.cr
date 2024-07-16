@@ -26,19 +26,19 @@ module TandaCLI
       end
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        if options.has?("help")
-          help_command.run(arguments, options)
+        return if help?(arguments, options)
 
-          false
-        else
-          handle_required_scopes!
-          before_run(arguments, options)
-        end
+        handle_required_scopes!
+        before_run(arguments, options)
       end
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        maybe_display_staging_warning
-        run_(arguments, options)
+        if help?(arguments, options)
+          help_command.run(arguments, options)
+        else
+          maybe_display_staging_warning
+          run_(arguments, options)
+        end
       end
 
       # A hook method for when the command raises an exception during execution
@@ -104,6 +104,10 @@ module TandaCLI
         end
 
         Utils::Display.warning(message)
+      end
+
+      private def help?(arguments : Cling::Arguments, options : Cling::Options) : Bool
+        arguments.has?("help") || options.has?("help")
       end
 
       private def help_command : Cling::Command
