@@ -110,7 +110,7 @@ module TandaCLI
       end
 
       def ongoing_without_break? : Bool
-        ongoing? && breaks.empty?
+        ongoing? && valid_breaks.empty?
       end
 
       def time_worked : Time::Span?
