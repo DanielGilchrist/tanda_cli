@@ -19,9 +19,13 @@ module TandaCLI
         missing_scopes = @@required_scopes - scopes
         return if missing_scopes.empty?
 
-        Utils::Display.error!("Missing scopes!") do |sub_errors|
+        Utils::Display.error("Missing scopes!") do |sub_errors|
           sub_errors << build_missing_scopes_error_message(missing_scopes)
+          sub_errors << "\n"
         end
+
+        config = Utils::Auth.maybe_refetch_token?("Do you want to refetch your token with new scopes?")
+        Utils::Display.info!("Didn't refetch token") if config.nil?
       end
 
       def build_missing_scopes_error_message(scopes : Array(Scopes::OptionalScope)) : String

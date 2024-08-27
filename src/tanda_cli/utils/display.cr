@@ -33,6 +33,11 @@ module TandaCLI
         display_message(Type::Warning, message)
       end
 
+      def info!(message : String, value = nil) : NoReturn
+        info(message, value)
+        exit
+      end
+
       def fatal!(message : String) : NoReturn
         {% if flag?(:debug) || flag?(:test) %}
           raise message

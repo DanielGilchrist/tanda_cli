@@ -7,7 +7,7 @@ module TandaCLI
       class Week < Commands::Base
         include ClientBuilder
 
-        required_scopes :timesheet
+        required_scopes :timesheet, :leave
 
         def setup_
           @name = "week"
