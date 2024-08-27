@@ -94,13 +94,9 @@ module TandaCLI
       private def handle_invalid_token!(response : HTTP::Client::Response, & : HTTP::Headers -> HTTP::Client::Response) : HTTP::Client::Response?
         return if response.status_code != 401
 
-        message = "Your token is invalid, do you want to refetch a token and continue running the command? (y/n)"
-        Utils::Input.request_and(message, display_type: :warning) { |input| return if input != "y" }
-
-        config = Current.config
-        config.clear_access_token!
-
-        API::Auth.fetch_new_token!
+        message = "Your token is invalid, do you want to refetch a token and continue running the command?"
+        config = Utils::Auth.maybe_refetch_token?(message, display_type: :warning)
+        return if config.nil?
 
         token = config.access_token.token
         return if token.nil?

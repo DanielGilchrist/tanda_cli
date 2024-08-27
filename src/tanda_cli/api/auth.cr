@@ -13,7 +13,7 @@ module TandaCLI
 
       VALID_SITE_PREFIXES = {"my", "eu", "us"}
 
-      def fetch_new_token!
+      def fetch_new_token! : Configuration
         config = Current.config
         site_prefix, email, password, scopes = request_user_information!
 
@@ -41,6 +41,8 @@ module TandaCLI
 
         Utils::Display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
         config.overwrite!(site_prefix, email, access_token)
+
+        config
       end
 
       private def fetch_access_token!(site_prefix : String, email : String, password : String, scopes : Array(Scopes::Scope)) : API::Result(Types::AccessToken)

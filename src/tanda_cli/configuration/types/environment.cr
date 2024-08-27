@@ -17,10 +17,6 @@ module TandaCLI
       property organisations : Array(Organisation)
       property time_zone : String?
 
-      def clear_access_token!
-        @access_token = AccessToken.new
-      end
-
       def current_organisation! : Organisation | NoReturn
         current_organisation? || Utils::Display.error!("No current organisation set!")
       end
