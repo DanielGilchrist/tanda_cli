@@ -8,8 +8,7 @@ module TandaCLI
           return if input != "y"
         end
 
-        Current.config.tap do |config|
-          config.clear_access_token!
+        Current.config.tap do
           API::Auth.fetch_new_token!
         end
       end
