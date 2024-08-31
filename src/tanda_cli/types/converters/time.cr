@@ -4,7 +4,7 @@ module TandaCLI
   module Types
     module Converters::Time
       module FromUnix
-        def self.from_json(value : JSON::PullParser) : ::Time?
+        def self.from_json(value : JSON::PullParser) : ::Time
           timestamp = value.read_int
           ::Time.unix(timestamp.to_i32).in(Current.time_zone)
         end

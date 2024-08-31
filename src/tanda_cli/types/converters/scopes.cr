@@ -3,7 +3,7 @@ require "json"
 module TandaCLI
   module Types
     module Converters
-      module ScopeConverter
+      module ScopesConverter
         def self.from_json(value : JSON::PullParser) : Array(Scopes::Scope)
           scopes_string = value.read_string_or_null
           return Scopes.all_scopes if scopes_string.nil?

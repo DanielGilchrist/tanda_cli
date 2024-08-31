@@ -15,7 +15,7 @@ module TandaCLI
       property token : String?
       property token_type : String?
 
-      @[JSON::Field(key: "scope", converter: TandaCLI::Types::Converters::ScopeConverter)]
+      @[JSON::Field(key: "scope", converter: TandaCLI::Types::Converters::ScopesConverter)]
       property scopes : Array(Scopes::Scope)
 
       property created_at : Int32?
