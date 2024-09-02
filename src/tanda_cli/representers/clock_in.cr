@@ -6,7 +6,7 @@ module TandaCLI
     class ClockIn < Base(Types::ClockIn)
       private def build_display(builder : String::Builder)
         {% if flag?(:debug) %}
-          titled_with_padding("ID", @object.id, builder)
+          titled_with_padding(debug_str("ID"), @object.id, builder)
         {% end %}
 
         with_padding("🕔 #{@object.pretty_date_time}", builder)

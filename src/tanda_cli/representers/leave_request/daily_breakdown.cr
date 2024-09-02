@@ -10,8 +10,8 @@ module TandaCLI
 
       private def build_display(builder : String::Builder)
         {% if flag?(:debug) %}
-          builder << "Shift ID: #{@object.shift_id}\n"
-          builder << "User ID: #{@leave_request.user_id}\n"
+          builder << debug_str("Shift ID: #{@object.shift_id}\n")
+          builder << debug_str("User ID: #{@leave_request.user_id}\n")
         {% end %}
 
         builder << "📅 #{@object.pretty_date}\n"
@@ -24,7 +24,7 @@ module TandaCLI
         builder << "🌴 #{@leave_request.leave_type}\n"
 
         reason = @leave_request.reason
-        builder << "ℹ️  #{reason}" if reason
+        builder << "ℹ️  #{reason}" if reason && !reason.blank?
       end
     end
   end

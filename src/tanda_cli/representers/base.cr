@@ -29,6 +29,12 @@ module TandaCLI
       protected def titled_with_padding(title : String, value, builder : String::Builder)
         with_padding("#{title}: #{value}", builder)
       end
+
+      {% if flag?(:debug) %}
+        protected def debug_str(value : String) : String
+          "[DEBUG] #{value}"
+        end
+      {% end %}
     end
   end
 end

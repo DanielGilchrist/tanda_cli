@@ -7,8 +7,8 @@ module TandaCLI
       class Organisation < Base(Types::Me::Organisation)
         private def build_display(builder : String::Builder)
           {% if flag?(:debug) %}
-            titled_with_padding("ID", @object.id, builder)
-            titled_with_padding("User ID", @object.user_id, builder)
+            titled_with_padding(debug_str("ID"), @object.id, builder)
+            titled_with_padding(debug_str("User ID"), @object.user_id, builder)
           {% end %}
 
           with_padding("🏷  #{@object.name}", builder)

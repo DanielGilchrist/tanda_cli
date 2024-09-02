@@ -134,7 +134,11 @@ module TandaCLI
       end
 
       def visible? : Bool
-        !!(start_time || finish_time)
+        !!(start_time || finish_time) || leave?
+      end
+
+      private def leave? : Bool
+        !!leave_request_id
       end
 
       private def total_unpaid_break_minutes : Time::Span

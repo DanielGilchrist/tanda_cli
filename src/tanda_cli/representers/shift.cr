@@ -10,8 +10,8 @@ module TandaCLI
     class Shift < Base(Types::Shift)
       private def build_display(builder : String::Builder)
         {% if flag?(:debug) %}
-          builder << "ID: #{@object.id}\n"
-          builder << "User ID: #{@object.user_id}\n"
+          builder << debug_str("ID: #{@object.id}\n")
+          builder << debug_str("User ID: #{@object.user_id}\n")
         {% end %}
 
         builder << "📅 #{@object.pretty_date}\n"
