@@ -3,8 +3,6 @@ require "./base"
 module TandaCLI
   module Commands
     class Mode < Base
-      @disable_staging_warning = true
-
       def setup_
         @name = "mode"
         @summary = @description = "Set the mode to run commands in (production/staging/custom <url>)"

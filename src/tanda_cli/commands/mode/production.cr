@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class Mode
       class Production < Base
+        @disable_staging_warning = true
+
         def setup_
           @name = "production"
           @summary = @description = "Set the app to run commands in production mode"

@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class Mode
       class Staging < Base
+        @disable_staging_warning = true
+
         def setup_
           @name = "staging"
           @summary = @description = "Set the app to run commands in staging mode"

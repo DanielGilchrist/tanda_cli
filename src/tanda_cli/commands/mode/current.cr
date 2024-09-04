@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class Mode
       class Display < Base
+        @disable_staging_warning = true
+
         def setup_
           @name = "display"
           @summary = @description = "Display the currently set mode"

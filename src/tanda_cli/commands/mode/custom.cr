@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class Mode
       class Custom < Base
+        @disable_staging_warning = true
+
         def setup_
           @name = "custom"
           @summary = @description = "Set the app to run commands from a custom environment"
