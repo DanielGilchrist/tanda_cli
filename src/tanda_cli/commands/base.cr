@@ -28,6 +28,7 @@ module TandaCLI
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
         return if help?(arguments, options)
 
+        maybe_display_staging_warning
         handle_required_scopes!
         before_run(arguments, options)
       end
@@ -36,7 +37,6 @@ module TandaCLI
         if help?(arguments, options)
           help_command.run(arguments, options)
         else
-          maybe_display_staging_warning
           run_(arguments, options)
         end
       end
