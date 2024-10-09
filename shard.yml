@@ -24,6 +24,6 @@ development_dependencies:
     gitlab: arctic-fox/spectator # https://gitlab.com/arctic-fox/spectator
     version: ~> 0
 
-crystal: 1.13.3
+crystal: 1.14.0
 
 license: MIT
