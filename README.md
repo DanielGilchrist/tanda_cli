@@ -69,7 +69,7 @@ tanda_cli time_worked week --display # both options accept a flag to display the
 tanda_cli regular_hours determine
 
 # displays your regular hours for the week
-tanda_cli regular hours display
+tanda_cli regular_hours display
 
 # Set the mode to run commands in
 tanda_cli mode production # this is the default mode
