@@ -65,6 +65,12 @@ tanda_cli clockin photo set /users/me/Pictures/clockin_photos # as a directory
 tanda_cli time_worked today
 tanda_cli time_worked week --display # both options accept a flag to display the shifts
 
+# Goes through each week of your roster to find your working hours (makes `time_worked` much more accurate)
+tanda_cli regular_hours determine
+
+# displays your regular hours for the week
+tanda_cli regular hours display
+
 # Set the mode to run commands in
 tanda_cli mode production # this is the default mode
 tanda_cli mode staging
