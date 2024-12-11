@@ -83,6 +83,11 @@ https://my.tanda.co/api/v2
 
 ### Running your changes
 ```sh
+crystal run src/tanda_cli.cr -- <command/s>
+```
+
+#### Examples
+```sh
 # With debug logs enabled
 crystal run src/tanda_cli.cr -- me
 
