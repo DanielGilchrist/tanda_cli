@@ -68,7 +68,7 @@ tanda_cli time_worked week --display # both options accept a flag to display the
 # Goes through each week of your roster to find your working hours (makes `time_worked` much more accurate)
 tanda_cli regular_hours determine
 
-# displays your regular hours for the week
+# Displays your regular hours for the week
 tanda_cli regular_hours display
 
 # Set the mode to run commands in
