@@ -9,11 +9,10 @@ module TandaCLI
       getter email : String
       getter gender : String?
       getter tax_file_number : String?
+      getter residential_address : Address?
 
       @[JSON::Field(key: "emergency_contacts")]
-      getter _emergency_contacts : Array(EmergencyContact)
-
-      getter residential_address : Address?
+      private getter _emergency_contacts : Array(EmergencyContact)
 
       def emergency_contacts : Array(EmergencyContact)
         _emergency_contacts.uniq(&.key)
