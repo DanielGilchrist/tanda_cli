@@ -38,6 +38,7 @@ module TandaCLI
         add_commands(
           ClockIn::Start.new,
           ClockIn::Finish.new,
+          ClockIn::Manual.new,
           ClockIn::Break.new,
           ClockIn::Photo.new,
           ClockIn::Status.new,

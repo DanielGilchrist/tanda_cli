@@ -31,6 +31,22 @@ module TandaCLI
       def iso_date(date : String) : ::Time
         ::Time.parse(date, ISO_DATE, location: Current.time_zone)
       end
+
+      def parse?(time_string : String) ::Time?
+        time_zone = Current.time_zone
+        formats = {
+          "%l%P",       # "9am", "12pm"
+          "%l:%M%P"     # "1:30pm"
+        }
+
+        formats
+          .each
+          .map do |format|
+            ::Time.parse(time_string, format, time_zone)
+          rescue ::Time::Format::Error
+          end
+          .find { |t| !t.nil? }
+      end
     end
   end
 end
