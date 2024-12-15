@@ -13,7 +13,7 @@ module TandaCLI
             @object.state,
             @object.postcode,
             @object.country,
-          }.reject { |v| v.nil? || v.blank? }.join(", ")
+          }.compact_map(&.presence).join(", ")
 
           builder << address_string if address_string.presence
         end
