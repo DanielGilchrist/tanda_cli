@@ -32,11 +32,11 @@ module TandaCLI
         ::Time.parse(date, ISO_DATE, location: Current.time_zone)
       end
 
-      def parse?(time_string : String) ::Time?
+      def parse?(time_string : String) : ::Time?
         time_zone = Current.time_zone
         formats = {
-          "%l%P",       # "9am", "12pm"
-          "%l:%M%P"     # "1:30pm"
+          "%l%P",    # "9am", "12pm"
+          "%l:%M%P", # "1:30pm"
         }
 
         formats
