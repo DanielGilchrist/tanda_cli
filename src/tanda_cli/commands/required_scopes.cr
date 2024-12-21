@@ -23,6 +23,7 @@ module TandaCLI
           sub_errors << "\n"
         end
 
+        config = self.config
         config = Utils::Auth.maybe_refetch_token?(config, "Do you want to refetch your token with new scopes?")
         Utils::Display.info!("Didn't refetch token") if config.nil?
       end
