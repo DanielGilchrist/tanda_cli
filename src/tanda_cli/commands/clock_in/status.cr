@@ -10,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          todays_shifts = context.client.shifts(current.user.id, Utils::Time.now).or(&.display!).sort_by(&.id)
+          todays_shifts = client.shifts(current.user.id, Utils::Time.now).or(&.display!).sort_by(&.id)
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
           return handle_ongoing_shift(ongoing_shift) if ongoing_shift
 

@@ -34,9 +34,7 @@ module TandaCLI
             return determine_from_recent_roster(previous_week)
           end
 
-          config = context.config
           organisation = config.current_organisation!
-
           organisation.set_regular_hours!(schedules_with_day_of_week)
           config.save!
 

@@ -22,7 +22,6 @@ module TandaCLI
           Utils::Display.error!(uri) if uri.is_a?(Error::InvalidURL)
 
           uri_string = uri.to_s
-          config = context.config
           config.mode = uri_string
           config.save!
 

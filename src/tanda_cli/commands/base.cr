@@ -105,8 +105,6 @@ module TandaCLI
 
       private def maybe_display_staging_warning
         return if @disable_staging_warning
-
-        config = context.config
         return unless config.staging?
 
         message = begin

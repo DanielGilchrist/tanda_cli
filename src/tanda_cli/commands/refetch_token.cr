@@ -7,7 +7,6 @@ module TandaCLI
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        config = context.config
         config.reset_environment!
         API::Auth.fetch_new_token!(config)
 

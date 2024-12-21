@@ -12,7 +12,6 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config = context.config
           config.mode = "production"
           config.save!
 

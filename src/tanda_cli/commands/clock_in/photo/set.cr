@@ -17,7 +17,6 @@ module TandaCLI
               Utils::Display.error!("Invalid photo path")
             end
 
-            config = context.config
             config.clockin_photo_path = path
             config.save!
 

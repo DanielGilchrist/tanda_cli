@@ -12,7 +12,6 @@ module TandaCLI
       def handle_required_scopes!
         return if @@required_scopes.empty?
 
-        config = context.config
         scopes = config.access_token.scopes
         return if scopes.nil?
 
