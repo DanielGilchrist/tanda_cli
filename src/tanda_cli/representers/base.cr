@@ -7,8 +7,8 @@ module TandaCLI
         @object = object
       end
 
-      def display
-        puts build
+      def display(io)
+        io.puts build
       end
 
       def build : String

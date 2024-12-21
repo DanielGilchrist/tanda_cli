@@ -16,7 +16,7 @@ module TandaCLI
 
           io.puts "Clock ins for today"
           clockins.each do |clockin|
-            Representers::ClockIn.new(clockin).display
+            Representers::ClockIn.new(clockin).display(io)
           end
         end
       end

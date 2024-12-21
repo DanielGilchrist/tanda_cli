@@ -16,7 +16,7 @@ module TandaCLI
         leave_balance = client.leave_balances(current.user.id).or(&.display!).find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
         return Utils::Display.error!("No leave balances to display") if leave_balance.nil?
 
-        Representers::LeaveBalance.new(leave_balance).display
+        Representers::LeaveBalance.new(leave_balance).display(io)
       end
     end
   end

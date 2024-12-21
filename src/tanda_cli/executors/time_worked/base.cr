@@ -52,7 +52,7 @@ module TandaCLI
             puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
           end
 
-          Representers::Shift.new(shift).display
+          Representers::Shift.new(shift).display(@context.io)
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
@@ -63,7 +63,7 @@ module TandaCLI
 
           puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
-          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.io)
         end
       end
     end
