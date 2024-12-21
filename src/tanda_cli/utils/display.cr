@@ -47,16 +47,6 @@ module TandaCLI
         {% end %}
       end
 
-      def fatal!(exception : Exception, io = nil) : NoReturn
-        {% if flag?(:debug) || flag?(:test) %}
-          raise exception
-        {% else %}
-          message = exception.message || "An irrecoverable error occured"
-          display_message(Type::Fatal, message, io)
-          exit
-        {% end %}
-      end
-
       def error(message : String, value = nil, io = nil)
         display_message(Type::Error, message, value, io)
       end
