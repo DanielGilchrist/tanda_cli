@@ -29,8 +29,8 @@ module TandaCLI
         display_message(Type::Info, message, value, io)
       end
 
-      def warning(message : String)
-        display_message(Type::Warning, message, io = nil)
+      def warning(message : String, io = nil)
+        display_message(Type::Warning, message, io)
       end
 
       def info!(message : String, value = nil, io = nil) : NoReturn
