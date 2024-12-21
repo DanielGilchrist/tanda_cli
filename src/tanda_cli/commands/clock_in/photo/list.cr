@@ -28,7 +28,7 @@ module TandaCLI
             in Models::PhotoDirectory
               display_photos(photo_or_dir, filter)
             in Error::Base
-              photo_or_dir.display!
+              photo_or_dir.display!(io)
             end
           end
 

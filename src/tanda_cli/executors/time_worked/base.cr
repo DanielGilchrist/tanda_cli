@@ -15,7 +15,7 @@ module TandaCLI
 
         private def fetch_visible_shifts(from : Time, to : Time? = nil) : Array(Types::Shift)
           to ||= from
-          @context.client.shifts(@context.current.user.id, from, to, show_notes: display?).or(&.display!).select(&.visible?)
+          @context.client.shifts(@context.current.user.id, from, to, show_notes: display?).or(&.display!(@context.io)).select(&.visible?)
         end
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)

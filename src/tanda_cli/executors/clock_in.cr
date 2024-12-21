@@ -26,7 +26,7 @@ module TandaCLI
           end
         end
 
-        base64_photo.display! if base64_photo.is_a?(Error::Base)
+        base64_photo.display!(@context.io) if base64_photo.is_a?(Error::Base)
 
         @context.client.send_clock_in(
           @context.current.user.id,
@@ -34,7 +34,7 @@ module TandaCLI
           @clock_type.to_underscore,
           base64_photo,
           mobile_clockin: true
-        ).or(&.display!)
+        ).or(&.display!(@context.io))
 
         display_success_message
       end
@@ -80,7 +80,7 @@ module TandaCLI
 
       private struct ClockInValidator
         def self.validate!(context : Context, clock_type : ClockType, now : Time)
-          todays_shifts = context.client.shifts(context.current.user.id, Utils::Time.now).or(&.display!)
+          todays_shifts = context.client.shifts(context.current.user.id, Utils::Time.now).or(&.display!(context.io))
           new(todays_shifts, clock_type).validate!
         end
 

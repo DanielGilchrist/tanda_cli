@@ -9,7 +9,7 @@ module TandaCLI
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        personal_details = client.personal_details.or(&.display!)
+        personal_details = client.personal_details.or(&.display!(io))
         Representers::PersonalDetails.new(personal_details).display(io)
       end
     end

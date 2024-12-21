@@ -16,7 +16,7 @@ module TandaCLI
         end
 
         private def determine_from_recent_roster(date : Time = Utils::Time.now)
-          roster = client.roster_on_date(date).or(&.display!)
+          roster = client.roster_on_date(date).or(&.display!(io))
           current_user_id = current.user.id
           schedules_with_day_of_week = roster.daily_schedules.compact_map do |daily_schedule|
             schedule = daily_schedule.schedules.find(&.user_id.==(current_user_id))

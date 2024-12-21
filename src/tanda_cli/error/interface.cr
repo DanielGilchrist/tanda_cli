@@ -4,8 +4,8 @@ module TandaCLI
       getter error : String
       getter error_description : String?
 
-      def display! : NoReturn
-        Utils::Display.error!(self)
+      def display!(io) : NoReturn
+        Utils::Display.error!(self, io)
       end
     end
   end
