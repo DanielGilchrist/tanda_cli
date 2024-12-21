@@ -9,8 +9,21 @@ module TandaCLI
 
       @disable_staging_warning = false
 
+      def initialize(@context : Context)
+        super
+      end
+
+      getter context : Context
+
       abstract def setup_
       abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
+
+      # overrides Cling::Command#add_commands
+      def add_commands(*commands : Base.class)
+        commands.each do |klass|
+          add_command(klass.new(context))
+        end
+      end
 
       # override this to extend `pre_run` behaviour
       def before_run(arguments : Cling::Arguments, options : Cling::Options) : Bool

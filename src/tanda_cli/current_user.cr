@@ -5,25 +5,14 @@ module TandaCLI
   class CurrentUser
     @me : Types::Me?
 
-    def initialize(@client : API::Client); end
+    def initialize(@config : Configuration, @client : API::Client); end
 
-    def set!
-      user = user_from_config || user_from_api
-
-      {% if flag?(:debug) %}
-        Utils::Display.info("Current user is #{user.id} | #{user.organisation_name}")
-        Utils::Display.info("Time Zone is #{user.time_zone}")
-      {% end %}
-
-      Current.set_user!(user)
-    end
-
-    private def config : Configuration
-      Current.config
+    def fetch
+      user_from_config || user_from_api
     end
 
     private def user_from_config : Current::User?
-      organisation = config.current_organisation?
+      organisation = @config.current_organisation?
       return if organisation.nil?
 
       Current::User.new(organisation.user_id, organisation.name, time_zone)
@@ -39,7 +28,7 @@ module TandaCLI
     end
 
     private def time_zone : String
-      config.time_zone || me.time_zone
+      @config.time_zone || me.time_zone
     end
   end
 end

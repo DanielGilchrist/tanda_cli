@@ -7,7 +7,7 @@ module TandaCLI
         @name = "time_zone"
         @summary = @description = "See or set the current time zone"
 
-        add_commands(TimeZone::Display.new, TimeZone::Set.new)
+        add_commands(TimeZone::Display, TimeZone::Set)
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil

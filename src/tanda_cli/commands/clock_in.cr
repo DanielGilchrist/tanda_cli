@@ -36,12 +36,12 @@ module TandaCLI
         @summary = @description = "Clock in/out"
 
         add_commands(
-          ClockIn::Start.new,
-          ClockIn::Finish.new,
-          ClockIn::Break.new,
-          ClockIn::Photo.new,
-          ClockIn::Status.new,
-          ClockIn::Display.new
+          ClockIn::Start,
+          ClockIn::Finish,
+          ClockIn::Break,
+          ClockIn::Photo,
+          ClockIn::Status,
+          ClockIn::Display
         )
       end
 

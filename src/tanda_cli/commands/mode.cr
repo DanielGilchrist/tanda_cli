@@ -8,10 +8,10 @@ module TandaCLI
         @summary = @description = "Set the mode to run commands in (production/staging/custom <url>)"
 
         add_commands(
-          Mode::Production.new,
-          Mode::Staging.new,
-          Mode::Custom.new,
-          Mode::Display.new
+          Mode::Production,
+          Mode::Staging,
+          Mode::Custom,
+          Mode::Display
         )
       end
 

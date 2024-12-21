@@ -8,9 +8,9 @@ module TandaCLI
         @summary = @description = "View the current user, list available users or set the current user"
 
         add_commands(
-          CurrentUser::Display.new,
-          CurrentUser::List.new,
-          CurrentUser::Set.new
+          CurrentUser::Display,
+          CurrentUser::List,
+          CurrentUser::Set
         )
       end
 

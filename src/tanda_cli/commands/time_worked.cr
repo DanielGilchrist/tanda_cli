@@ -1,5 +1,3 @@
-require "../client_builder"
-
 module TandaCLI
   module Commands
     class TimeWorked < Base
@@ -9,7 +7,7 @@ module TandaCLI
         @name = "time_worked"
         @summary = @description = "See how many hours you've worked"
 
-        add_commands(Today.new, Week.new)
+        add_commands(Today, Week)
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
