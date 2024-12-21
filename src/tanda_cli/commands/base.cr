@@ -34,7 +34,7 @@ module TandaCLI
       def setup : Nil
         setup_
 
-        help_command = Help.new
+        help_command = Help.new(io)
         add_option 'h', help_command.name, description: help_command.description
         add_command(help_command)
       end
