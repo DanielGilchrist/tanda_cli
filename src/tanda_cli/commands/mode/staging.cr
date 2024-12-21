@@ -15,7 +15,7 @@ module TandaCLI
           config.mode = "staging"
           config.save!
 
-          Utils::Display.success("Successfully set mode to staging!")
+          Utils::Display.success("Successfully set mode to staging!", io: io)
         end
       end
     end

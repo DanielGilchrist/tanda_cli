@@ -12,7 +12,7 @@ module TandaCLI
             config.clockin_photo_path = nil
             config.save!
 
-            Utils::Display.success("Clock in photo cleared")
+            Utils::Display.success("Clock in photo cleared", io: io)
           end
         end
       end

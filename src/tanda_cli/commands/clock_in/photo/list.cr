@@ -20,11 +20,11 @@ module TandaCLI
             end
 
             clockin_photo_path = config.clockin_photo_path
-            return Utils::Display.info("No clock in photo set") if clockin_photo_path.nil?
+            return Utils::Display.info("No clock in photo set", io: io) if clockin_photo_path.nil?
 
             case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
             in Models::Photo
-              Utils::Display.warning("Directory not set for clock in photos ('#{photo_or_dir.path}')")
+              Utils::Display.warning("Directory not set for clock in photos ('#{photo_or_dir.path}', io: io)")
             in Models::PhotoDirectory
               display_photos(photo_or_dir, filter)
             in Error::Base
@@ -47,18 +47,18 @@ module TandaCLI
 
             if photos.empty?
               if filter
-                Utils::Display.info("No #{filter} photos in #{path_text} directory")
+                Utils::Display.info("No #{filter} photos in #{path_text} directory", io: io)
               else
-                Utils::Display.info("No photos in #{path_text} directory")
+                Utils::Display.info("No photos in #{path_text} directory", io: io)
               end
 
               return
             end
 
             if filter
-              Utils::Display.info("#{filter.titleize} photos for clock ins in #{path_text} directory:")
+              Utils::Display.info("#{filter.titleize} photos for clock ins in #{path_text} directory:", io: io)
             else
-              Utils::Display.info("Photos for clock ins in #{path_text} directory:")
+              Utils::Display.info("Photos for clock ins in #{path_text} directory:", io: io)
             end
 
             photos.sort_by(&.path).each do |photo|

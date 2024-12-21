@@ -15,7 +15,7 @@ module TandaCLI
           config.mode = "production"
           config.save!
 
-          Utils::Display.success("Successfully set mode to production!")
+          Utils::Display.success("Successfully set mode to production!", io: io)
         end
       end
     end

@@ -60,7 +60,7 @@ module TandaCLI
         {% if flag?(:debug) %}
           super
         {% else %}
-          Utils::Display.error(ex.message || "An error occurred")
+          Utils::Display.error(ex.message || "An error occurred", io: io)
           io.puts help_template
           exit
         {% end %}
@@ -83,7 +83,7 @@ module TandaCLI
       # A hook method for when the command receives an invalid option, for example, a value given to
       # an option that takes no arguments
       def on_invalid_option(message : String)
-        Utils::Display.error(message)
+        Utils::Display.error(message, io: io)
         io.puts help_template
         exit
       end
@@ -115,7 +115,7 @@ module TandaCLI
           end
         end
 
-        Utils::Display.warning(message)
+        Utils::Display.warning(message, io: io)
       end
 
       private def help?(arguments : Cling::Arguments, options : Cling::Options) : Bool

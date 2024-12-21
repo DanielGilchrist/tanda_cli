@@ -19,7 +19,7 @@ module TandaCLI
             parse_error.display!
           in Time::DayOfWeek
             config.save!
-            Utils::Display.success("Start of the week set to #{config.pretty_start_of_week}")
+            Utils::Display.success("Start of the week set to #{config.pretty_start_of_week}", io: io)
           end
         end
       end
