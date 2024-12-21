@@ -15,9 +15,9 @@ module TandaCLI
           mode = config.mode
 
           if {"production", "staging"}.includes?(mode)
-            puts "Mode is currently set to #{mode}"
+            io.puts "Mode is currently set to #{mode}"
           else
-            puts "Mode is set to a custom URL (#{mode})"
+            io.puts "Mode is set to a custom URL (#{mode})"
           end
         end
       end

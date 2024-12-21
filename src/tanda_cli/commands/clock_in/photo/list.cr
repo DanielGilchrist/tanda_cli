@@ -62,7 +62,7 @@ module TandaCLI
             end
 
             photos.sort_by(&.path).each do |photo|
-              puts photo.path
+              io.puts photo.path
             end
           end
 

@@ -15,26 +15,26 @@ module TandaCLI
           regular_hours_schedules = organisation.regular_hours_schedules
 
           if regular_hours_schedules.nil?
-            puts "No regular hours set for #{organisation.name}"
+            io.puts "No regular hours set for #{organisation.name}"
             exit
           end
 
-          puts "Regular hours for #{organisation.name}:"
+          io.puts "Regular hours for #{organisation.name}:"
           regular_hours_schedules.each do |schedule|
-            puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
+            io.puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
             if (schedule_breaks = schedule.breaks).present?
-              puts "  Breaks:"
+              io.puts "  Breaks:"
               schedule_breaks.each do |break_|
-                puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
-                puts "    #{break_.length.minutes} minutes"
+                io.puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
+                io.puts "    #{break_.length.minutes} minutes"
               end
             end
 
             if automatic_break_length = schedule.automatic_break_length
-              puts "    Automatic break length: #{automatic_break_length} minutes"
+              io.puts "    Automatic break length: #{automatic_break_length} minutes"
             end
 
-            puts
+            io.puts
           end
         end
       end
