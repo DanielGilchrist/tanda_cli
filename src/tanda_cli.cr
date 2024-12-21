@@ -10,6 +10,12 @@ module TandaCLI
     {% end %}
 
     io = IO::Memory.new
+
+    # Ensures output is printed to terminal if the program exits early
+    at_exit do
+      puts io
+    end
+
     config = Configuration.init
     client = build_client(config)
     current_user = user_from_config(config) || user_from_api(config)
