@@ -1,11 +1,7 @@
-require "../../client_builder"
-
 module TandaCLI
   module Commands
     class ClockIn
       class Status < Commands::Base
-        include ClientBuilder
-
         required_scopes :timesheet
 
         def setup_
@@ -14,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          todays_shifts = client.todays_shifts.or(&.display!).sort_by(&.id)
+          todays_shifts = context.client.shifts(current.user.id, Utils::Time.now).or(&.display!).sort_by(&.id)
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
           return handle_ongoing_shift(ongoing_shift) if ongoing_shift
 

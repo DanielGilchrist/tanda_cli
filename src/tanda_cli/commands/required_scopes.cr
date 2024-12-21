@@ -12,7 +12,7 @@ module TandaCLI
       def handle_required_scopes!
         return if @@required_scopes.empty?
 
-        config = Current.config
+        config = context.config
         scopes = config.access_token.scopes
         return if scopes.nil?
 
@@ -24,7 +24,7 @@ module TandaCLI
           sub_errors << "\n"
         end
 
-        config = Utils::Auth.maybe_refetch_token?("Do you want to refetch your token with new scopes?")
+        config = Utils::Auth.maybe_refetch_token?(config, "Do you want to refetch your token with new scopes?")
         Utils::Display.info!("Didn't refetch token") if config.nil?
       end
 

@@ -1,12 +1,9 @@
-require "../../client_builder"
 require "../base"
 
 module TandaCLI
   module Commands
     class RegularHours
       class Determine < Base
-        include ClientBuilder
-
         required_scopes :roster
 
         def setup_
@@ -20,7 +17,7 @@ module TandaCLI
 
         private def determine_from_recent_roster(date : Time = Utils::Time.now)
           roster = client.roster_on_date(date).or(&.display!)
-          current_user_id = Current.user.id
+          current_user_id = current.user.id
           schedules_with_day_of_week = roster.daily_schedules.compact_map do |daily_schedule|
             schedule = daily_schedule.schedules.find(&.user_id.==(current_user_id))
             {day_of_week: daily_schedule.date.day_of_week, schedule: schedule} if schedule
@@ -37,7 +34,7 @@ module TandaCLI
             return determine_from_recent_roster(previous_week)
           end
 
-          config = Current.config
+          config = context.config
           organisation = config.current_organisation!
 
           organisation.set_regular_hours!(schedules_with_day_of_week)

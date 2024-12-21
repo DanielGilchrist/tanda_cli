@@ -13,8 +13,7 @@ module TandaCLI
 
       VALID_SITE_PREFIXES = {"my", "eu", "us"}
 
-      def fetch_new_token! : Configuration
-        config = Current.config
+      def fetch_new_token!(config : Configuration) : Configuration
         site_prefix, email, password, scopes = request_user_information!
 
         auth_site_prefix = begin

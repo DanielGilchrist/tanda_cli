@@ -1,12 +1,9 @@
-require "../../client_builder"
 require "../../executors/time_worked/today"
 
 module TandaCLI
   module Commands
     class TimeWorked
       class Today < Commands::Base
-        include ClientBuilder
-
         required_scopes :timesheet, :leave
 
         def setup_
@@ -21,7 +18,7 @@ module TandaCLI
           display = options.has?("display")
           offset = options.get?("offset").try(&.as_s.to_i32?)
 
-          Executors::TimeWorked::Today.new(client, display, offset).execute
+          Executors::TimeWorked::Today.new(context, display, offset).execute
         end
       end
     end

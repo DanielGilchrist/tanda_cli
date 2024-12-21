@@ -1,10 +1,6 @@
-require "../client_builder"
-
 module TandaCLI
   module Commands
     class PersonalDetails < Base
-      include ClientBuilder
-
       required_scopes :personal
 
       def setup_

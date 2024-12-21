@@ -12,7 +12,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config = Current.config
+          config = context.config
           config.mode = "staging"
           config.save!
 

@@ -7,7 +7,7 @@ module TandaCLI
       abstract class Base
         alias RegularHoursScheduleBreak = Configuration::Organisation::RegularHoursSchedule::Break
 
-        def initialize(@client : API::Client, @display : Bool, @offset : Int32?); end
+        def initialize(@context : Context, @display : Bool, @offset : Int32?); end
 
         abstract def execute
 
@@ -15,7 +15,7 @@ module TandaCLI
 
         private def fetch_visible_shifts(from : Time, to : Time? = nil) : Array(Types::Shift)
           to ||= from
-          @client.shifts(from, to, show_notes: display?).or(&.display!).select(&.visible?)
+          @context.client.shifts(@context.current.user.id, from, to, show_notes: display?).or(&.display!).select(&.visible?)
         end
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)

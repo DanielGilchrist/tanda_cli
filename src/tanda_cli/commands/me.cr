@@ -1,10 +1,6 @@
-require "../client_builder"
-
 module TandaCLI
   module Commands
     class Me < Base
-      include ClientBuilder
-
       def setup_
         @name = "me"
         @summary = @description = "Get your own information"

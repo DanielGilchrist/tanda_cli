@@ -78,7 +78,7 @@ module TandaCLI
         module DayConverter
           def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
             day_string = value.read_string
-            Time::DayOfWeek.parse?(day_string) || Utils::Display.fatal!("Invalid day of week: #{day_string}")
+            Time::DayOfWeek.parse?(day_string) || raise("Invalid day of week: #{day_string}")
           end
 
           def self.to_json(value, json_builder : JSON::Builder)
@@ -93,11 +93,11 @@ module TandaCLI
           def initialize(@_start_time : String, @_finish_time : String); end
 
           def start_time : Time
-            Time.parse(@_start_time, TIME_STRING_FORMAT, Current.time_zone)
+            Time.parse(@_start_time, TIME_STRING_FORMAT, Utils::Time.location)
           end
 
           def finish_time : Time
-            Time.parse(@_finish_time, TIME_STRING_FORMAT, Current.time_zone)
+            Time.parse(@_finish_time, TIME_STRING_FORMAT, Utils::Time.location)
           end
 
           def length : Time::Span
@@ -141,11 +141,11 @@ module TandaCLI
         getter automatic_break_length : UInt16?
 
         def start_time : Time
-          Time.parse(@_start_time, TIME_STRING_FORMAT, Current.time_zone)
+          Time.parse(@_start_time, TIME_STRING_FORMAT, Utils::Time.location)
         end
 
         def finish_time : Time
-          Time.parse(@_finish_time, TIME_STRING_FORMAT, Current.time_zone)
+          Time.parse(@_finish_time, TIME_STRING_FORMAT, Utils::Time.location)
         end
 
         def length : Time::Span

@@ -141,8 +141,8 @@ module TandaCLI
         !!leave_request_id
       end
 
-      private def total_unpaid_break_minutes : Time::Span
-        (Current.config.treat_paid_breaks_as_unpaid? ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
+      private def total_unpaid_break_minutes(treat_paid_breaks_as_unpaid : Bool = false) : Time::Span
+        (treat_paid_breaks_as_unpaid ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
       end
     end
   end

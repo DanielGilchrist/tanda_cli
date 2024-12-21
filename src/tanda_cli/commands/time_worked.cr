@@ -1,8 +1,6 @@
 module TandaCLI
   module Commands
     class TimeWorked < Base
-      include ClientBuilder
-
       def setup_
         @name = "time_worked"
         @summary = @description = "See how many hours you've worked"

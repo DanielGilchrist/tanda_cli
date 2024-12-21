@@ -6,7 +6,7 @@ module TandaCLI
       class Week < Base
         def execute
           to = Utils::Time.now
-          start_day = Current.config.start_of_week
+          start_day = @context.config.start_of_week
 
           if offset = @offset
             from = (to + offset.weeks).at_beginning_of_week(start_day)
@@ -33,7 +33,7 @@ module TandaCLI
         end
 
         private def maybe_print_time_left_or_overtime(shifts : Array(Types::Shift), worked_so_far : Time::Span, leave_taken_so_far : Time::Span)
-          organisation = Current.config.current_organisation!
+          organisation = @context.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
           return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 

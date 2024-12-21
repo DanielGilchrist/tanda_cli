@@ -12,7 +12,7 @@ module TandaCLI
     io = IO::Memory.new
     config = Configuration.init
     client = build_client(config)
-    current_user = CurrentUser.new(config, client).fetch
+    current_user = user_from_config(config) || user_from_api(config)
     current = Current.new(current_user)
     context = Context.new(
       io,
@@ -26,17 +26,31 @@ module TandaCLI
     puts io
   end
 
-  def build_client(config : Configuration) : API::Client
+  private def build_client(config : Configuration, current_user : Current::User? = nil) : API::Client
     token = config.access_token.token
 
     # if a token can't be parsed from the config, get username and password from user and request a token
     if token.nil?
-      API::Auth.fetch_new_token!
-      return create_client_from_config
+      API::Auth.fetch_new_token!(config)
+      return build_client(config)
     end
 
     url = config.api_url
-    API::Client.new(url, token)
+    API::Client.new(url, token, current_user)
+  end
+
+  private def user_from_config(config : Configuration) : Current::User?
+    organisation = config.current_organisation?
+    return if organisation.nil?
+
+    Current::User.new(organisation.user_id, organisation.name)
+  end
+
+  private def user_from_api(config : Configuration) : Current::User
+    client = build_client(config)
+    organisation = Request.ask_which_organisation_and_save!(client, config)
+
+    Current::User.new(organisation.user_id, organisation.name)
   end
 end
 

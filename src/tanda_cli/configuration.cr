@@ -57,7 +57,6 @@ module TandaCLI
     getter? treat_paid_breaks_as_unpaid : Bool?
 
     # properties that are delegated based on the current environment
-    environment_property time_zone : String?
     environment_property organisations : Array(Organisation)
     environment_property site_prefix : String
     environment_property access_token : AccessToken

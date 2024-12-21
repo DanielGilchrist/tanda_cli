@@ -11,7 +11,7 @@ module TandaCLI
 
         # TODO: Make output pretty
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config = Current.config
+          config = context.config
           organisation = config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
 

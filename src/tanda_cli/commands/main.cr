@@ -13,7 +13,6 @@ module TandaCLI
           Balance,
           RegularHours,
           CurrentUser,
-          TimeZone,
           RefetchToken,
           RefetchUsers,
           Mode,

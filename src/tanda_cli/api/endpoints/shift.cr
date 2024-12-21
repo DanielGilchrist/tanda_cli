@@ -3,19 +3,15 @@ require "../client"
 module TandaCLI
   module API
     module Endpoints::Shift
-      def todays_shifts(show_notes : Bool = false) : API::Result(Array(Types::Shift))
-        shifts(Utils::Time.now)
+      def shifts(user_id : Int32, date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+        request_shifts(user_id, date, date, show_notes: show_notes)
       end
 
-      def shifts(date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
-        request_shifts(date, date, show_notes: show_notes)
+      def shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+        request_shifts(user_id, start_date, finish_date, show_notes: show_notes)
       end
 
-      def shifts(start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
-        request_shifts(start_date, finish_date, show_notes: show_notes)
-      end
-
-      private def request_shifts(start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+      private def request_shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
         start_string, finish_string = {
           start_date,
           finish_date,
@@ -23,7 +19,7 @@ module TandaCLI
           .map(&.to_s("%Y-%m-%d"))
 
         response = get("/shifts", query: {
-          "user_ids"   => Current.user.id.to_s,
+          "user_ids"   => user_id.to_s,
           "from"       => start_string,
           "to"         => finish_string,
           "show_notes" => show_notes.to_s,

@@ -12,7 +12,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          mode = Current.config.mode
+          mode = context.config.mode
 
           if {"production", "staging"}.includes?(mode)
             puts "Mode is currently set to #{mode}"

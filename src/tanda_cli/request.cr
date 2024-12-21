@@ -18,7 +18,7 @@ module TandaCLI
       Utils::Display.success("Selected organisation \"#{organisation.name}\"")
 
       organisation.tap do
-        save_config!(config, organisations, organisation, me.time_zone)
+        save_config!(config, organisations, organisation)
       end
     end
 
@@ -26,11 +26,9 @@ module TandaCLI
       config : Configuration,
       organisations : Array(Configuration::Organisation),
       organisation : Configuration::Organisation,
-      time_zone : String
     )
       organisation.current = true
       config.organisations = organisations
-      config.time_zone = time_zone
       config.save!
 
       Utils::Display.success("Organisations saved to config")

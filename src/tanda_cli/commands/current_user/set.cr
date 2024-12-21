@@ -15,7 +15,7 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           id_or_name = arguments.get("id_or_name").as_s
-          config = Current.config
+          config = context.config
 
           organisation = begin
             if user_id = id_or_name.to_i?

@@ -6,7 +6,7 @@ module TandaCLI
       alias ClockType = Commands::ClockIn::ClockType
       alias Options = Commands::ClockIn::Options
 
-      def initialize(@client : API::Client, @clock_type : ClockType, @options : Options); end
+      def initialize(@context : Context, @clock_type : ClockType, @options : Options); end
 
       def execute
         now = Utils::Time.now
@@ -14,7 +14,7 @@ module TandaCLI
         if @options.skip_validations?
           Utils::Display.warning("Skipping clock in validations")
         else
-          ClockInValidator.validate!(@client, @clock_type, now)
+          ClockInValidator.validate!(@context, @clock_type, now)
         end
 
         clockin_photo = @options.clockin_photo
@@ -28,12 +28,19 @@ module TandaCLI
 
         base64_photo.display! if base64_photo.is_a?(Error::Base)
 
-        @client.send_clock_in(now, @clock_type.to_underscore, base64_photo, mobile_clockin: true).or(&.display!)
+        @context.client.send_clock_in(
+          @context.current.user.id,
+          now,
+          @clock_type.to_underscore,
+          base64_photo,
+          mobile_clockin: true
+        ).or(&.display!)
+
         display_success_message
       end
 
       private def base64_photo_from_clockin_photo_path(clockin_photo : String?) : String? | Error::Base
-        clockin_photo_path = Current.config.clockin_photo_path
+        clockin_photo_path = @context.config.clockin_photo_path
         return if clockin_photo_path.nil?
 
         case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
@@ -67,13 +74,13 @@ module TandaCLI
             "Your break has ended!"
           end
 
-        current_user = Current.user
+        current_user = @context.current.user
         Utils::Display.success("#{success_message} (#{current_user.id} | #{current_user.organisation_name})")
       end
 
       private struct ClockInValidator
-        def self.validate!(client : API::Client, clock_type : ClockType, now : Time)
-          todays_shifts = client.todays_shifts.or(&.display!)
+        def self.validate!(context : Context, clock_type : ClockType, now : Time)
+          todays_shifts = context.client.shifts(context.current.user.id, Utils::Time.now).or(&.display!)
           new(todays_shifts, clock_type).validate!
         end
 

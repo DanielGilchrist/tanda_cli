@@ -19,7 +19,7 @@ module TandaCLI
               on_invalid_option("Invalid 'filter' option '#{filter}'")
             end
 
-            clockin_photo_path = Current.config.clockin_photo_path
+            clockin_photo_path = context.config.clockin_photo_path
             return Utils::Display.info("No clock in photo set") if clockin_photo_path.nil?
 
             case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse

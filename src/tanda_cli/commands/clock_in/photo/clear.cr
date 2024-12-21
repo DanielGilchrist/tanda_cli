@@ -9,7 +9,7 @@ module TandaCLI
           end
 
           def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            config = Current.config
+            config = context.config
             config.clockin_photo_path = nil
             config.save!
 

@@ -10,10 +10,11 @@ module TandaCLI
       @disable_staging_warning = false
 
       def initialize(@context : Context)
-        super
+        super()
       end
 
       getter context : Context
+      delegate client, config, current, to: context
 
       abstract def setup_
       abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
@@ -105,7 +106,7 @@ module TandaCLI
       private def maybe_display_staging_warning
         return if @disable_staging_warning
 
-        config = Current.config
+        config = context.config
         return unless config.staging?
 
         message = begin
