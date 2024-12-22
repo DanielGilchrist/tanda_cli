@@ -30,6 +30,11 @@ Lint/SpecFilename:
   Excluded:
     - spec/core_ext/spec_mock_hack.cr
 
+Lint/NotNil:
+  Enabled: true
+  Excluded:
+    - spec/**/*
+
 ### DISABLED ###
 
 Documentation/DocumentationAdmonition:
