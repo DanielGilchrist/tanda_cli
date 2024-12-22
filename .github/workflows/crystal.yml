@@ -37,9 +37,10 @@ jobs:
           path: |
             ~/.cache/shards
             lib
-          key: ${{ runner.os }}-shards-${{ hashFiles('**/shard.lock') }}
+            bin
+          key: ${{ runner.os }}-shards-v2-${{ hashFiles('**/shard.lock') }}
           restore-keys: |
-            ${{ runner.os }}-shards-
+            ${{ runner.os }}-shards-v2-
 
       - name: Install shards
         run: shards install --frozen
