@@ -11,6 +11,7 @@ on:
         description: "Crystal version"
         required: false
         default: "1.14.0"
+
 jobs:
   test:
     strategy:
@@ -18,7 +19,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         crystal: ["${{ inputs.crystal_version }}"]
+
     runs-on: ${{ matrix.os }}
+
     steps:
       - name: Download source
         uses: actions/checkout@v3
