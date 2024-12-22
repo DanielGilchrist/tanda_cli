@@ -1,20 +1,14 @@
-require "spectator"
+require "spec"
 require "colorize"
 require "webmock"
 
-require "./core_ext/spec_mock_hack"
 require "./support/config_fixture_store"
 require "../src/tanda_cli"
 
 # Makes asserting on output much easier
 Colorize.enabled = false
 
-Spectator.configure do |config|
-  config.randomize = true
-  config.before_each do
-    WebMock.reset
-  end
-end
+Spec.before_each &->WebMock.reset
 
 BASE_URI = "https://fakeurlthisisfakenotrealahhhh.com/api/v2"
 

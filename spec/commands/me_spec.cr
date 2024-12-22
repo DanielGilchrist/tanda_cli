@@ -1,7 +1,7 @@
 require "json"
 require "../spec_helper"
 
-Spectator.describe TandaCLI::Current do
+describe TandaCLI::Current do
   it "outputs correctly on success" do
     WebMock
       .stub(:get, endpoint("/users/me"))
@@ -42,7 +42,7 @@ Spectator.describe TandaCLI::Current do
 
     OUTPUT
 
-    expect(output).to eq(expected)
+    output.should eq(expected)
   end
 
   it "outputs correctly on failure" do
@@ -64,6 +64,6 @@ Spectator.describe TandaCLI::Current do
 
     OUTPUT
 
-    expect(output).to eq(expected)
+    output.should eq(expected)
   end
 end
