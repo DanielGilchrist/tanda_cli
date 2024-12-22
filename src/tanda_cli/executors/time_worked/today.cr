@@ -9,7 +9,7 @@ module TandaCLI
 
           if offset = @offset
             now = now + offset.days
-            Utils::Display.info("Showing time worked offset #{offset} days", @context.io)
+            Utils::Display.info("Showing time worked offset #{offset} days", io: @context.io)
           end
 
           shifts = fetch_visible_shifts(now)
