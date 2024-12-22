@@ -37,7 +37,7 @@ jobs:
           path: |
             ~/.cache/shards
             lib
-            bin
+            bin/ameba
           key: ${{ runner.os }}-shards-v2-${{ hashFiles('**/shard.lock') }}
           restore-keys: |
             ${{ runner.os }}-shards-v2-
