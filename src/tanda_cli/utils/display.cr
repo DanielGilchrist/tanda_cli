@@ -93,7 +93,7 @@ module TandaCLI
         exit
       end
 
-      private def sub_error(message : String,  io = STDOUT)
+      private def sub_error(message : String, io = STDOUT)
         print("#{" " * raw_size(ERROR_STRING)} #{message}", io)
       end
 
