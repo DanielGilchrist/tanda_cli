@@ -45,7 +45,7 @@ jobs:
         run: crystal tool unreachable src/tanda_cli.cr --check
 
       - name: Check formatting
-        run: crystal tool format; git diff --exit-code
+        run: crystal tool format --check
 
       - name: Lint
         run: ./bin/ameba
