@@ -57,8 +57,6 @@ module TandaCLI
 
       # A hook method for when the command raises an exception during execution
       def on_error(ex : Exception)
-        return if ex.is_a?(TandaCLI::Exit)
-
         {% if flag?(:debug) %}
           super
         {% else %}
