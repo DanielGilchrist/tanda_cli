@@ -28,8 +28,8 @@ describe TandaCLI::Commands::Mode do
 
   describe TandaCLI::Commands::Mode::Production do
     it "Sets mode to production" do
-      context = Command.run(["mode", "production"]) do |context|
-        config = context.config
+      context = Command.run(["mode", "production"]) do |ctx|
+        config = ctx.config
         config.mode = "staging"
         config.save!
       end
