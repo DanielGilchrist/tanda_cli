@@ -30,11 +30,9 @@ module TandaCLI
         with_padding("#{title}: #{value}", builder)
       end
 
-      {% if flag?(:debug) %}
+      {% if flag?(:debug) && !flag?(:test) %}
         protected def debug_str(value : String) : String
-          {% unless flag?(:test) %}
-            "[DEBUG] #{value}"
-          {% end %}
+          "[DEBUG] #{value}"
         end
       {% end %}
     end

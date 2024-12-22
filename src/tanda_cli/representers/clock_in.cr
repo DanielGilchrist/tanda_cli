@@ -5,7 +5,7 @@ module TandaCLI
   module Representers
     class ClockIn < Base(Types::ClockIn)
       private def build_display(builder : String::Builder)
-        {% if flag?(:debug) %}
+        {% if flag?(:debug) && !flag?(:test) %}
           titled_with_padding(debug_str("ID"), @object.id, builder)
         {% end %}
 
