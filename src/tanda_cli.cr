@@ -11,7 +11,7 @@ module TandaCLI
   end
 
   def main(args = ARGV, output_io = STDOUT)
-    {% if flag?(:debug) %}
+    {% if flag?(:debug) && !flag?(:test) %}
       TandaCLI::Debug.setup
     {% end %}
 
