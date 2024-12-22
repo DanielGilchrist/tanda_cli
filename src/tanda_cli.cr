@@ -4,8 +4,6 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  class Exit < Exception; end
-
   def exit! : NoReturn
     raise(Cling::ExitProgram.new(0))
   end
