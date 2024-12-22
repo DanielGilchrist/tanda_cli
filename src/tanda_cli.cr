@@ -4,19 +4,21 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  def main(args = ARGV)
+  def main(args = ARGV, output_io = STDOUT)
     {% if flag?(:debug) %}
       TandaCLI::Debug.setup
     {% end %}
 
     io = IO::Memory.new
+    store = Configuration::FileStore.new
 
     # Ensures output is printed to terminal if the program exits early
     at_exit do
+      store.close
       puts io
     end
 
-    config = Configuration.init
+    config = Configuration.init(store)
     client = build_client(config)
     current_user = user_from_config(config) || user_from_api(config)
     current = Current.new(current_user)
@@ -28,8 +30,9 @@ module TandaCLI
     )
 
     Commands::Main.new(context).execute(args)
-
-    puts io
+  ensure
+    store.try(&.close)
+    output_io.puts io if io && !io.empty?
   end
 
   private def build_client(config : Configuration, current_user : Current::User? = nil) : API::Client

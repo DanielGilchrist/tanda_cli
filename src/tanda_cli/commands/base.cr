@@ -10,7 +10,7 @@ module TandaCLI
       @disable_staging_warning = false
 
       def initialize(@context : Context)
-        super()
+        super(stdout: @context.io)
       end
 
       getter context : Context
@@ -57,6 +57,12 @@ module TandaCLI
 
       # A hook method for when the command raises an exception during execution
       def on_error(ex : Exception)
+        {% if flag?(:test) %}
+          if ex.is_a?(Spectator::SystemExit)
+            raise(Cling::ExitProgram.new(0))
+          end
+        {% end %}
+
         {% if flag?(:debug) %}
           super
         {% else %}

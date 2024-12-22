@@ -34,7 +34,7 @@ module TandaCLI
           Utils::Display.success("The current user has been set to", display(organisation), io)
         end
 
-        private def display(organisation : Configuration::Organisation)
+        private def display(organisation : Configuration::Serialisable::Organisation)
           "#{organisation.user_id} in #{organisation.name}"
         end
       end

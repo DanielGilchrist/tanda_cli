@@ -1,11 +1,11 @@
 require "colorize"
-require "../../configuration/types/organisation"
+require "../../configuration/serialisable/organisation"
 
 module TandaCLI
   module Executors
     module TimeWorked
       abstract class Base
-        alias RegularHoursScheduleBreak = Configuration::Organisation::RegularHoursSchedule::Break
+        alias RegularHoursScheduleBreak = Configuration::Serialisable::Organisation::RegularHoursSchedule::Break
 
         def initialize(@context : Context, @display : Bool, @offset : Int32?); end
 

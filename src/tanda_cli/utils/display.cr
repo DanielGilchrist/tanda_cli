@@ -7,12 +7,6 @@ module TandaCLI
     module Display
       extend self
 
-      SUCCESS_STRING = "Success:".colorize.green
-      INFO_STRING    = "Info:".colorize.light_green
-      WARNING_STRING = "Warning:".colorize.yellow
-      ERROR_STRING   = "Error:".colorize.light_red
-      FATAL_STRING   = "Fatal:".colorize.red
-
       enum Type
         Success
         Info
@@ -94,7 +88,7 @@ module TandaCLI
       end
 
       private def sub_error(message : String, io = STDOUT)
-        print("#{" " * raw_size(ERROR_STRING)} #{message}", io)
+        print("#{" " * raw_size(error_string)} #{message}", io)
       end
 
       private def display_message(type, message : String, value : String? = nil, io = STDOUT)
@@ -104,15 +98,15 @@ module TandaCLI
       private def prefix(type : Type) : Colorize::Object(String)
         case type
         in .success?
-          SUCCESS_STRING
+          success_string
         in .info?
-          INFO_STRING
+          info_string
         in .warning?
-          WARNING_STRING
+          warning_string
         in .error?
-          ERROR_STRING
+          error_string
         in .fatal?
-          FATAL_STRING
+          fatal_string
         end
       end
 
@@ -125,6 +119,26 @@ module TandaCLI
 
       def print(output : String, io : IO)
         io.puts output
+      end
+
+      private def success_string : Colorize::Object(String)
+        "Success:".colorize.green
+      end
+
+      private def info_string : Colorize::Object(String)
+        "Info:".colorize.light_green
+      end
+
+      private def warning_string : Colorize::Object(String)
+        "Warning:".colorize.yellow
+      end
+
+      private def error_string : Colorize::Object(String)
+        "Error:".colorize.light_red
+      end
+
+      private def fatal_string : Colorize::Object(String)
+        "Fatal:".colorize.red
       end
     end
   end

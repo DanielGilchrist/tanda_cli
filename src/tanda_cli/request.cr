@@ -2,9 +2,9 @@ module TandaCLI
   module Request
     extend self
 
-    def ask_which_organisation_and_save!(client : API::Client, config : Configuration) : Configuration::Organisation
+    def ask_which_organisation_and_save!(client : API::Client, config : Configuration) : Configuration::Serialisable::Organisation
       me = client.me.unwrap!
-      organisations = Configuration::Organisation.from(me)
+      organisations = Configuration::Serialisable::Organisation.from(me)
 
       if organisations.empty?
         Utils::Display.error!("You don't have access to any organisations")
@@ -24,8 +24,8 @@ module TandaCLI
 
     private def save_config!(
       config : Configuration,
-      organisations : Array(Configuration::Organisation),
-      organisation : Configuration::Organisation,
+      organisations : Array(Configuration::Serialisable::Organisation),
+      organisation : Configuration::Serialisable::Organisation,
     )
       organisation.current = true
       config.organisations = organisations
@@ -34,7 +34,7 @@ module TandaCLI
       Utils::Display.success("Organisations saved to config")
     end
 
-    private def ask_for_organisation(organisations : Array(Configuration::Organisation)) : Configuration::Organisation?
+    private def ask_for_organisation(organisations : Array(Configuration::Serialisable::Organisation)) : Configuration::Serialisable::Organisation?
       puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
         puts "#{index}: #{org.name}"

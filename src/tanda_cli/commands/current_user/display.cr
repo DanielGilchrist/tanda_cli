@@ -17,7 +17,7 @@ module TandaCLI
           end
         end
 
-        private def display(organisation : Configuration::Organisation)
+        private def display(organisation : Configuration::Serialisable::Organisation)
           "#{organisation.user_id} in #{organisation.name}"
         end
       end
