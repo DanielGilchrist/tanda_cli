@@ -21,24 +21,24 @@ module TandaCLI
         Fatal
       end
 
-      def success(message : String, value = nil, io = nil)
+      def success(message : String, value = nil,  io = STDOUT)
         display_message(Type::Success, message, value, io)
       end
 
-      def info(message : String, value = nil, io = nil)
+      def info(message : String, value = nil,  io = STDOUT)
         display_message(Type::Info, message, value, io)
       end
 
-      def warning(message : String, io = nil)
+      def warning(message : String,  io = STDOUT)
         display_message(Type::Warning, message, io)
       end
 
-      def info!(message : String, value = nil, io = nil) : NoReturn
+      def info!(message : String, value = nil,  io = STDOUT) : NoReturn
         info(message, value, io)
         exit
       end
 
-      def fatal!(message : String, io = nil) : NoReturn
+      def fatal!(message : String,  io = STDOUT) : NoReturn
         {% if flag?(:debug) || flag?(:test) %}
           raise message
         {% else %}
@@ -47,11 +47,11 @@ module TandaCLI
         {% end %}
       end
 
-      def error(message : String, value = nil, io = nil)
+      def error(message : String, value = nil,  io = STDOUT)
         display_message(Type::Error, message, value, io)
       end
 
-      def error(message : String, value = nil, io = nil, & : String::Builder ->)
+      def error(message : String, value = nil,  io = STDOUT, & : String::Builder ->)
         error(message, value)
 
         string = String.build do |builder|
@@ -62,24 +62,24 @@ module TandaCLI
         string.split("\n").each { |error_string| sub_error(error_string, io) }
       end
 
-      def error(error_object : Error::Interface, io = nil)
+      def error(error_object : Error::Interface,  io = STDOUT)
         error(error_object.error, io)
 
         error_description = error_object.error_description
         sub_error(error_description, io) if error_description
       end
 
-      def error!(message : String, value = nil, io = nil) : NoReturn
+      def error!(message : String, value = nil,  io = STDOUT) : NoReturn
         error(message, value, io)
         exit
       end
 
-      def error!(message : String, value = nil, io = nil, &block : String::Builder ->) : NoReturn
+      def error!(message : String, value = nil,  io = STDOUT, &block : String::Builder ->) : NoReturn
         error(message, value, io, &block)
         exit
       end
 
-      def error!(error_object : Error::Base, io = nil) : NoReturn
+      def error!(error_object : Error::Base,  io = STDOUT) : NoReturn
         {% if flag?(:debug) || flag?(:test) %}
           raise error_object
         {% else %}
@@ -88,16 +88,16 @@ module TandaCLI
         {% end %}
       end
 
-      def error!(error_object : Error::Interface, io = nil) : NoReturn
+      def error!(error_object : Error::Interface,  io = STDOUT) : NoReturn
         error(error_object, io)
         exit
       end
 
-      private def sub_error(message : String, io = nil)
+      private def sub_error(message : String,  io = STDOUT)
         print("#{" " * raw_size(ERROR_STRING)} #{message}", io)
       end
 
-      private def display_message(type, message : String, value = nil, io = nil)
+      private def display_message(type, message : String, value = nil,  io = STDOUT)
         print("#{prefix(type)} #{message}#{value && " \"#{value}\""}", io)
       end
 
@@ -123,12 +123,8 @@ module TandaCLI
         colorized_string.default.to_s.size.to_u8
       end
 
-      def print(output : String, io)
-        if io
-          io.puts output
-        else
-          puts output
-        end
+      def print(output : String, io : IO)
+        io.puts output
       end
     end
   end
