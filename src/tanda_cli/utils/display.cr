@@ -42,7 +42,7 @@ module TandaCLI
         {% if flag?(:debug) || flag?(:test) %}
           raise message
         {% else %}
-          display_message(io, Type::Fatal, message)
+          display_message(Type::Fatal, message, io)
           exit
         {% end %}
       end
