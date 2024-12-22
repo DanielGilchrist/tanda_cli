@@ -32,7 +32,9 @@ module TandaCLI
 
       {% if flag?(:debug) %}
         protected def debug_str(value : String) : String
-          "[DEBUG] #{value}"
+          {% unless flag?(:test) %}
+            "[DEBUG] #{value}"
+          {% end %}
         end
       {% end %}
     end
