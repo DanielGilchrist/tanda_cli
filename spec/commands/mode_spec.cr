@@ -47,5 +47,4 @@ describe TandaCLI::Commands::Mode do
       context.io.to_s.should eq("Success: Successfully set mode to staging!\n")
     end
   end
-
 end

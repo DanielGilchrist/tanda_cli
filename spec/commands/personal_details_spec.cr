@@ -7,31 +7,31 @@ describe TandaCLI::Commands::PersonalDetails do
       .to_return(
         status: 200,
         body: {
-          email: "harrypotter@hogwarts.com",
-          gender: nil,
+          email:              "harrypotter@hogwarts.com",
+          gender:             nil,
           emergency_contacts: [
             {
-              id: 1,
-              name: "Ronald Weasley",
-              phone: "+440000000000",
-              relationship: "Friend"
+              id:           1,
+              name:         "Ronald Weasley",
+              phone:        "+440000000000",
+              relationship: "Friend",
             },
             {
-              id: 2,
-              name: "Ronald Weasley",
-              phone: "+440000000000",
-              relationship: "Friend"
-            }
+              id:           2,
+              name:         "Ronald Weasley",
+              phone:        "+440000000000",
+              relationship: "Friend",
+            },
           ],
           residential_address: {
             street_line_one: "4 Privet Drive",
             street_line_two: "Little Whinging",
-            city: "Surrey",
-            state: "England",
-            country: "United Kingdom",
-            postcode: "GU4 8HS"
+            city:            "Surrey",
+            state:           "England",
+            country:         "United Kingdom",
+            postcode:        "GU4 8HS",
           },
-          updated_at: 1734525270
+          updated_at: 1734525270,
         }.to_json
       )
 

@@ -31,4 +31,3 @@ describe TandaCLI::Commands::StartOfWeek do
     end
   end
 end
-
