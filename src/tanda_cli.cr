@@ -4,6 +4,12 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
+  class Exit < Exception; end
+
+  def exit! : NoReturn
+    raise(Cling::ExitProgram.new(0))
+  end
+
   def main(args = ARGV, output_io = STDOUT)
     {% if flag?(:debug) %}
       TandaCLI::Debug.setup
@@ -11,12 +17,6 @@ module TandaCLI
 
     io = IO::Memory.new
     store = Configuration::FileStore.new
-
-    # Ensures output is printed to terminal if the program exits early
-    at_exit do
-      store.close
-      puts io
-    end
 
     config = Configuration.init(store)
     client = build_client(config)

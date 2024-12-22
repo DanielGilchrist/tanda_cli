@@ -16,7 +16,7 @@ module TandaCLI
 
           if regular_hours_schedules.nil?
             io.puts "No regular hours set for #{organisation.name}"
-            exit
+            TandaCLI.exit!
           end
 
           io.puts "Regular hours for #{organisation.name}:"

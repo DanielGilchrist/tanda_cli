@@ -57,12 +57,14 @@ module TandaCLI
 
       # A hook method for when the command raises an exception during execution
       def on_error(ex : Exception)
+        return if ex.is_a?(TandaCLI::Exit)
+
         {% if flag?(:debug) %}
           super
         {% else %}
           Utils::Display.error(ex.message || "An error occurred", io: io)
           io.puts help_template
-          exit
+          TandaCLI.exit!
         {% end %}
       end
 
@@ -70,14 +72,14 @@ module TandaCLI
       def on_missing_arguments(arguments : Array(String))
         Utils::Display.error("Missing required argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}", io: io)
         io.puts help_template
-        exit
+        TandaCLI.exit!
       end
 
       # A hook method for when the command receives unknown arguments during execution
       def on_unknown_arguments(arguments : Array(String))
         Utils::Display.error("Unknown argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}", io: io)
         io.puts help_template
-        exit
+        TandaCLI.exit!
       end
 
       # A hook method for when the command receives an invalid option, for example, a value given to
@@ -85,7 +87,7 @@ module TandaCLI
       def on_invalid_option(message : String)
         Utils::Display.error(message, io: io)
         io.puts help_template
-        exit
+        TandaCLI.exit!
       end
 
       # A hook method for when the command receives missing options that are required during
@@ -93,14 +95,14 @@ module TandaCLI
       def on_missing_options(options : Array(String))
         Utils::Display.error("Missing required option#{"s" if options.size > 1}: #{options.join(", ")}", io: io)
         io.puts help_template
-        exit
+        TandaCLI.exit!
       end
 
       # A hook method for when the command receives unknown options during execution
       def on_unknown_options(options : Array(String))
         Utils::Display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}", io: io)
         io.puts help_template
-        exit
+        TandaCLI.exit!
       end
 
       private def maybe_display_staging_warning
