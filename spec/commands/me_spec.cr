@@ -1,7 +1,6 @@
-require "json"
 require "../spec_helper"
 
-describe TandaCLI::Current do
+describe TandaCLI::Commands::Me do
   it "outputs correctly on success" do
     WebMock
       .stub(:get, endpoint("/users/me"))
@@ -26,7 +25,7 @@ describe TandaCLI::Current do
         }.to_json
       )
 
-    output = run_command(["me"])
+    io, _context = run_command(["me"])
 
     expected = <<-OUTPUT
     👤 Harry Potter
@@ -42,7 +41,7 @@ describe TandaCLI::Current do
 
     OUTPUT
 
-    output.should eq(expected)
+    io.to_s.should eq(expected)
   end
 
   it "outputs correctly on failure" do
@@ -56,7 +55,7 @@ describe TandaCLI::Current do
         }.to_json
       )
 
-    output = run_command(["me"])
+    io, _context = run_command(["me"])
 
     expected = <<-OUTPUT
     Error: Bad Request
@@ -64,6 +63,6 @@ describe TandaCLI::Current do
 
     OUTPUT
 
-    output.should eq(expected)
+    io.to_s.should eq(expected)
   end
 end

@@ -8,7 +8,9 @@ require "../src/tanda_cli"
 # Makes asserting on output much easier
 Colorize.enabled = false
 
-Spec.before_each &->WebMock.reset
+Spec.before_each do
+  WebMock.reset
+end
 
 BASE_URI = "https://fakeurlthisisfakenotrealahhhh.com/api/v2"
 
@@ -16,7 +18,7 @@ def endpoint(path)
   "#{BASE_URI}#{path}"
 end
 
-def run_command(args : Array(String))
+def run_command(args : Array(String)) : Tuple(IO, TandaCLI::Context)
   io = IO::Memory.new
 
   config = ConfigFixtureStore.load_fixture("default")
@@ -36,5 +38,5 @@ def run_command(args : Array(String))
 
   TandaCLI::Commands::Main.new(context).execute(args)
 
-  io.to_s
+  { io, context }
 end
