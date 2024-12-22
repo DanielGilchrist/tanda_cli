@@ -25,7 +25,7 @@ describe TandaCLI::Commands::Me do
         }.to_json
       )
 
-    io, _context = run_command(["me"])
+    context = Command.run(["me"])
 
     expected = <<-OUTPUT
     👤 Harry Potter
@@ -41,7 +41,7 @@ describe TandaCLI::Commands::Me do
 
     OUTPUT
 
-    io.to_s.should eq(expected)
+    context.io.to_s.should eq(expected)
   end
 
   it "outputs correctly on failure" do
@@ -55,7 +55,7 @@ describe TandaCLI::Commands::Me do
         }.to_json
       )
 
-    io, _context = run_command(["me"])
+    context = Command.run(["me"])
 
     expected = <<-OUTPUT
     Error: Bad Request
@@ -63,6 +63,6 @@ describe TandaCLI::Commands::Me do
 
     OUTPUT
 
-    io.to_s.should eq(expected)
+    context.io.to_s.should eq(expected)
   end
 end
