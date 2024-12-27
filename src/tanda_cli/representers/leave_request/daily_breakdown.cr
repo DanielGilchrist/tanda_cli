@@ -9,11 +9,6 @@ module TandaCLI
       end
 
       private def build_display(builder : String::Builder)
-        {% if flag?(:debug) && !flag?(:test) %}
-          builder << debug_str("Shift ID: #{@object.shift_id}\n")
-          builder << debug_str("User ID: #{@leave_request.user_id}\n")
-        {% end %}
-
         builder << "📅 #{@object.pretty_date}\n"
 
         start = @object.start_time

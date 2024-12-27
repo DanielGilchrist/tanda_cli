@@ -39,6 +39,6 @@ describe TandaCLI::Commands::Balance do
 
     OUTPUT
 
-    context.io.to_s.should eq(expected)
+    context.stdout.to_s.should eq(expected)
   end
 end

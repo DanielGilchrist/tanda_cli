@@ -15,7 +15,12 @@ module TandaCLI
 
         private def fetch_visible_shifts(from : Time, to : Time? = nil) : Array(Types::Shift)
           to ||= from
-          @context.client.shifts(@context.current.user.id, from, to, show_notes: display?).or(&.display!(@context.io)).select(&.visible?)
+
+          @context
+            .client
+            .shifts(@context.current.user.id, from, to, show_notes: display?)
+            .or { |error| @context.display.error!(error) }
+            .select(&.visible?)
         end
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
@@ -47,12 +52,12 @@ module TandaCLI
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
           if time_worked
-            @context.io.puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+            @context.stdout.puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
-            @context.io.puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+            @context.stdout.puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
           end
 
-          Representers::Shift.new(shift).display(@context.io)
+          Representers::Shift.new(shift).display(@context.stdout)
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
@@ -61,9 +66,9 @@ module TandaCLI
           # Don't bother showing days where there are no hours for leave
           return if length.zero?
 
-          @context.io.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
+          @context.stdout.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
-          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.io)
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.stdout)
         end
       end
     end

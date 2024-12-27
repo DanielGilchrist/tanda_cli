@@ -22,7 +22,7 @@ module TandaCLI
       module StatusConverter
         def self.from_json(value : JSON::PullParser) : Status
           status_string = value.read_string
-          Status.parse?(status_string) || Utils::Display.fatal!("Unknown status: #{status_string}")
+          Status.parse?(status_string) || raise("Unknown status: #{status_string}")
         end
       end
 
@@ -88,8 +88,8 @@ module TandaCLI
       end
 
       def set_leave_request!(leave_request : Types::LeaveRequest)
-        Utils::Display.fatal!("Leave request already set!") if @leave_request_set
-        Utils::Display.fatal!("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
+        raise("Leave request already set!") if @leave_request_set
+        raise("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
 
         @leave_request_set = true
         @leave_request = leave_request

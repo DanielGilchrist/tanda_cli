@@ -2,8 +2,8 @@ require "spec"
 require "colorize"
 require "webmock"
 
-require "./support/config_fixture_store"
 require "../src/tanda_cli"
+require "./support/configuration/fixture_file"
 require "./support/command"
 
 # Makes asserting on output much easier

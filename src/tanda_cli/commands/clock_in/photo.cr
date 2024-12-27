@@ -15,7 +15,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          io.puts help_template
+          stdout.puts help_template
         end
       end
     end

@@ -25,16 +25,16 @@ module TandaCLI
             end
           end
 
-          Utils::Display.error!("Invalid argument", id_or_name, io) if organisation.nil?
+          display.error!("Invalid argument", id_or_name) if organisation.nil?
 
           config.organisations.each(&.current = false)
           organisation.current = true
           config.save!
 
-          Utils::Display.success("The current user has been set to", display(organisation), io)
+          display.success("The current user has been set to", format_organisation(organisation))
         end
 
-        private def display(organisation : Configuration::Serialisable::Organisation)
+        private def format_organisation(organisation : Configuration::Serialisable::Organisation)
           "#{organisation.user_id} in #{organisation.name}"
         end
       end

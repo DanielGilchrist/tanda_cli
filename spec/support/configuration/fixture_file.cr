@@ -1,15 +1,12 @@
-require "../../src/tanda_cli/configuration/store"
-
-class ConfigFixtureStore < TandaCLI::Configuration::Store
+class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   FIXTURE_PATH = "spec/fixtures/configuration"
 
-  def self.load_fixture(fixture_name) : TandaCLI::Configuration
-    io = IO::Memory.new
+  def self.load_fixture(fixture_name : String, display : TandaCLI::Display) : TandaCLI::Configuration
+    file_io = IO::Memory.new
     fixture_bytes = File.read("#{FIXTURE_PATH}/#{fixture_name}.json").to_slice
-    io.write(fixture_bytes)
+    file_io.write(fixture_bytes)
 
-    store = new(io)
-    TandaCLI::Configuration.init(store)
+    TandaCLI::Configuration.init(new(file_io), display)
   end
 
   def initialize(@io = IO::Memory.new); end

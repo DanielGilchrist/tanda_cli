@@ -10,11 +10,11 @@ module TandaCLI
       @disable_staging_warning = false
 
       def initialize(@context : Context)
-        super(stdout: @context.io)
+        super(stdout: @context.stdout)
       end
 
       getter context : Context
-      delegate client, config, current, io, to: context
+      delegate client, config, current, stdout, display, input, to: context
 
       abstract def setup_
       abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
@@ -34,7 +34,7 @@ module TandaCLI
       def setup : Nil
         setup_
 
-        help_command = Help.new(io)
+        help_command = Help.new(stdout)
         add_option 'h', help_command.name, description: help_command.description
         add_command(help_command)
       end
@@ -60,46 +60,46 @@ module TandaCLI
         {% if flag?(:debug) %}
           super
         {% else %}
-          Utils::Display.error(ex.message || "An error occurred", io: io)
-          io.puts help_template
+          display.error(ex.message || "An error occurred")
+          stdout.puts help_template
           TandaCLI.exit!
         {% end %}
       end
 
       # A hook method for when the command receives missing arguments during execution
       def on_missing_arguments(arguments : Array(String))
-        Utils::Display.error("Missing required argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}", io: io)
-        io.puts help_template
+        display.error("Missing required argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
+        stdout.puts help_template
         TandaCLI.exit!
       end
 
       # A hook method for when the command receives unknown arguments during execution
       def on_unknown_arguments(arguments : Array(String))
-        Utils::Display.error("Unknown argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}", io: io)
-        io.puts help_template
+        display.error("Unknown argument#{"s" if arguments.size > 1}: #{arguments.join(", ")}")
+        stdout.puts help_template
         TandaCLI.exit!
       end
 
       # A hook method for when the command receives an invalid option, for example, a value given to
       # an option that takes no arguments
       def on_invalid_option(message : String)
-        Utils::Display.error(message, io: io)
-        io.puts help_template
+        display.error(message)
+        stdout.puts help_template
         TandaCLI.exit!
       end
 
       # A hook method for when the command receives missing options that are required during
       # execution
       def on_missing_options(options : Array(String))
-        Utils::Display.error("Missing required option#{"s" if options.size > 1}: #{options.join(", ")}", io: io)
-        io.puts help_template
+        display.error("Missing required option#{"s" if options.size > 1}: #{options.join(", ")}")
+        stdout.puts help_template
         TandaCLI.exit!
       end
 
       # A hook method for when the command receives unknown options during execution
       def on_unknown_options(options : Array(String))
-        Utils::Display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}", io: io)
-        io.puts help_template
+        display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}")
+        stdout.puts help_template
         TandaCLI.exit!
       end
 
@@ -115,7 +115,7 @@ module TandaCLI
           end
         end
 
-        Utils::Display.warning(message, io: io)
+        display.warning(message)
       end
 
       private def help?(arguments : Cling::Arguments, options : Cling::Options) : Bool

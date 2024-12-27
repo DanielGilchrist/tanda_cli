@@ -11,9 +11,9 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           if organisation = config.current_organisation?
-            io.puts "The current user is #{display(organisation)}"
+            stdout.puts "The current user is #{display(organisation)}"
           else
-            io.puts "A current user hasn't been set!"
+            stdout.puts "A current user hasn't been set!"
           end
         end
 

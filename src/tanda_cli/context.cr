@@ -1,10 +1,12 @@
 module TandaCLI
   class Context
-    def initialize(@io = IO::Memory, @config = Config, @client = API::Client, @current = Current); end
+    def initialize(@stdout : IO, @config : Configuration, @client : API::Client, @current : Current, @display : Display, @input : Input); end
 
-    getter io : IO::Memory
+    getter stdout : IO
     getter config : Configuration
     getter client : API::Client
     getter current : Current
+    getter display : Display
+    getter input : Input
   end
 end

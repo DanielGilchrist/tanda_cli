@@ -11,7 +11,7 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config.organisations.each do |organisation|
-            io.puts "Name: #{organisation.name}\nUser ID: #{organisation.user_id}\n\n"
+            stdout.puts "Name: #{organisation.name}\nUser ID: #{organisation.user_id}\n\n"
           end
         end
       end

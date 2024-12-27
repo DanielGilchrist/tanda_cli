@@ -11,12 +11,12 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           now = Utils::Time.now
-          clockins = client.clockins(current.user.id, now).or(&.display!(io)).sort_by(&.time)
-          return io.puts "You aren't currently clocked in" if clockins.empty?
+          clockins = client.clockins(current.user.id, now).or { |error| display.error!(error) }.sort_by(&.time)
+          return stdout.puts "You aren't currently clocked in" if clockins.empty?
 
-          io.puts "Clock ins for today"
+          stdout.puts "Clock ins for today"
           clockins.each do |clockin|
-            Representers::ClockIn.new(clockin).display(io)
+            Representers::ClockIn.new(clockin).display(stdout)
           end
         end
       end

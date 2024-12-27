@@ -11,28 +11,29 @@ module TandaCLI
     PRODUCTION = "production"
     STAGING    = "staging"
 
-    def self.init(store : Configuration::Store) : Configuration
-      config_contents = store.read
-      return new(store) unless config_contents
+    def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
+      config_contents = file.read
+      return new(file) unless config_contents
 
       begin
-        new(store, Serialisable.from_json(config_contents))
+        new(file, Serialisable.from_json(config_contents))
       rescue ex
         {% if flag?(:debug) %}
           raise(ex)
         {% else %}
           reason = ex.message.try(&.split("\n").first) if ex.is_a?(JSON::SerializableError) || ex.is_a?(JSON::ParseException)
-          Utils::Display.error("Invalid Config!", reason) do |sub_errors|
+          # TODO: Better handle this potential once-off case
+          display.error("Invalid Config!", reason) do |sub_errors|
             sub_errors << "If you want to try and fix the config manually press Ctrl+C to quit\n"
             sub_errors << "Press enter if you want to proceed with a default config (this will override the existing config)"
           end
           gets # don't proceed unless user wants us to
           nil
         {% end %}
-      end || new(store)
+      end || new(file)
     end
 
-    def initialize(@store : Configuration::Store, @serialisable = Serialisable.new); end
+    def initialize(@file : Configuration::AbstractFile, @serialisable = Serialisable.new); end
 
     delegate :current_organisation?, :current_organisation!, to: current_environment
     delegate :start_of_week,
@@ -65,10 +66,10 @@ module TandaCLI
     end
 
     def save!
-      @store.write(@serialisable.to_json)
+      @file.write(@serialisable.to_json)
     end
 
-    def api_url : String
+    def api_url : String | Error::InvalidURL
       case mode
       when PRODUCTION
         "https://#{site_prefix}.tanda.co/api/v2"
@@ -77,7 +78,7 @@ module TandaCLI
         "https://staging.#{prefix}tanda.co/api/v2"
       else
         validated_uri = Utils::URL.validate(mode)
-        Utils::Display.error!(validated_uri) if validated_uri.is_a?(Error::InvalidURL)
+        return validated_uri if validated_uri.is_a?(Error::InvalidURL)
 
         "#{validated_uri}/api/v2"
       end

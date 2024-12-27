@@ -17,7 +17,7 @@ module TandaCLI
         property organisations : Array(Organisation)
 
         def current_organisation! : Organisation | NoReturn
-          current_organisation? || Utils::Display.error!("No current organisation set!")
+          current_organisation? || raise("No current organisation set!")
         end
 
         def current_organisation? : Organisation?

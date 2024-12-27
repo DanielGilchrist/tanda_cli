@@ -17,7 +17,7 @@ module TandaCLI
       alias TQuery = Hash(String, String)
       alias TBody = Hash(String, String)
 
-      def initialize(@base_uri : String, @token : String, @current_user : Current::User? = nil); end
+      def initialize(@base_uri : String, @token : String, @display : Display, @current_user : Current::User? = nil); end
 
       def get(endpoint : String, query : TQuery? = nil) : HTTP::Client::Response
         exec(GET, endpoint, query: query)
@@ -77,16 +77,16 @@ module TandaCLI
       private def with_no_internet_handler!(&)
         yield
       rescue Socket::Addrinfo::Error
-        Utils::Display.fatal!("There appears to be a problem with your internet connection")
+        @display.fatal!("There appears to be a problem with your internet connection")
       end
 
       private def handle_fatal_error!(response : HTTP::Client::Response)
         case response.status
         when .service_unavailable?
-          Utils::Display.fatal!("API is offline")
+          @display.fatal!("API is offline")
         when .internal_server_error?
           if response.body.includes?(INTERNAL_SERVER_ERROR_STRING)
-            Utils::Display.fatal!("An internal server error occured")
+            @display.fatal!("An internal server error occured")
           end
         end
       end

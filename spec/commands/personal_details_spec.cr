@@ -52,7 +52,7 @@ describe TandaCLI::Commands::PersonalDetails do
 
     OUTPUT
 
-    context.io.to_s.should eq(expected)
+    context.stdout.to_s.should eq(expected)
   end
 
   it "outputs correctly on failure" do
@@ -74,6 +74,6 @@ describe TandaCLI::Commands::PersonalDetails do
 
     OUTPUT
 
-    context.io.to_s.should eq(expected)
+    context.stdout.to_s.should eq(expected)
   end
 end

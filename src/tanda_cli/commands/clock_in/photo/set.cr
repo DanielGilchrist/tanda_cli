@@ -14,13 +14,13 @@ module TandaCLI
             path = arguments.get("path").as_s
 
             if !Models::PhotoPathParser.valid?(path)
-              Utils::Display.error!("Invalid photo path", io: io)
+              display.error!("Invalid photo path")
             end
 
             config.clockin_photo_path = path
             config.save!
 
-            Utils::Display.success("Clock in photo set to \"#{path}\"", io: io)
+            display.success("Clock in photo set to \"#{path}\"")
           end
         end
       end
