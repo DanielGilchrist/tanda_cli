@@ -6,7 +6,7 @@ module TandaCLI
       module FromUnix
         def self.from_json(value : JSON::PullParser) : ::Time
           timestamp = value.read_int
-          ::Time.unix(timestamp.to_i32).in(Current.time_zone)
+          ::Time.unix(timestamp.to_i32).in(Utils::Time.location)
         end
       end
 
@@ -15,7 +15,7 @@ module TandaCLI
           timestamp = value.read_int_or_null
           return unless timestamp
 
-          ::Time.unix(timestamp.to_i32).in(Current.time_zone)
+          ::Time.unix(timestamp.to_i32).in(Utils::Time.location)
         end
       end
 
@@ -24,7 +24,7 @@ module TandaCLI
 
         def self.from_json(value : JSON::PullParser) : ::Time
           date = value.read_string
-          ::Time.parse(date, FORMAT, Current.time_zone)
+          ::Time.parse(date, FORMAT, Utils::Time.location)
         end
       end
     end

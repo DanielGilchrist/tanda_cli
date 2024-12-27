@@ -11,31 +11,30 @@ module TandaCLI
 
         # TODO: Make output pretty
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config = Current.config
           organisation = config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
 
           if regular_hours_schedules.nil?
-            puts "No regular hours set for #{organisation.name}"
-            exit
+            stdout.puts "No regular hours set for #{organisation.name}"
+            TandaCLI.exit!
           end
 
-          puts "Regular hours for #{organisation.name}:"
+          stdout.puts "Regular hours for #{organisation.name}:"
           regular_hours_schedules.each do |schedule|
-            puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
+            stdout.puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
             if (schedule_breaks = schedule.breaks).present?
-              puts "  Breaks:"
+              stdout.puts "  Breaks:"
               schedule_breaks.each do |break_|
-                puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
-                puts "    #{break_.length.minutes} minutes"
+                stdout.puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
+                stdout.puts "    #{break_.length.minutes} minutes"
               end
             end
 
             if automatic_break_length = schedule.automatic_break_length
-              puts "    Automatic break length: #{automatic_break_length} minutes"
+              stdout.puts "    Automatic break length: #{automatic_break_length} minutes"
             end
 
-            puts
+            stdout.puts
           end
         end
       end

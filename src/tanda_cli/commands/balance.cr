@@ -1,11 +1,8 @@
-require "../client_builder"
 require "./base"
 
 module TandaCLI
   module Commands
     class Balance < Base
-      include ClientBuilder
-
       required_scopes :leave
 
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
@@ -16,10 +13,14 @@ module TandaCLI
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        leave_balance = client.leave_balances.or(&.display!).find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
-        return Utils::Display.error!("No leave balances to display") if leave_balance.nil?
+        leave_balance = client
+          .leave_balances(current.user.id)
+          .or { |error| display.error!(error) }
+          .find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
 
-        Representers::LeaveBalance.new(leave_balance).display
+        return display.error!("No leave balances to display") if leave_balance.nil?
+
+        Representers::LeaveBalance.new(leave_balance).display(stdout)
       end
     end
   end

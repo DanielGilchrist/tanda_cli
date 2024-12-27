@@ -17,6 +17,8 @@ Style/GuardClause:
 Style/LargeNumbers:
   Enabled: true
   IntMinDigits: 5 # i.e. integers higher than 9999
+  Excluded:
+    - spec/**/*
 
 Style/PredicateName:
   Enabled: true
@@ -27,8 +29,11 @@ Lint/UselessAssign:
 
 Lint/SpecFilename:
   Enabled: true
+
+Lint/NotNil:
+  Enabled: true
   Excluded:
-    - spec/core_ext/spec_mock_hack.cr
+    - spec/**/*
 
 ### DISABLED ###
 

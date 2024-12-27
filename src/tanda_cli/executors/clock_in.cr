@@ -6,15 +6,15 @@ module TandaCLI
       alias ClockType = Commands::ClockIn::ClockType
       alias Options = Commands::ClockIn::Options
 
-      def initialize(@client : API::Client, @clock_type : ClockType, @options : Options); end
+      def initialize(@context : Context, @clock_type : ClockType, @options : Options); end
 
       def execute
         now = Utils::Time.now
 
         if @options.skip_validations?
-          Utils::Display.warning("Skipping clock in validations")
+          @context.display.warning("Skipping clock in validations")
         else
-          ClockInValidator.validate!(@client, @clock_type, now)
+          ClockInValidator.validate!(@context, @clock_type, now)
         end
 
         clockin_photo = @options.clockin_photo
@@ -26,14 +26,21 @@ module TandaCLI
           end
         end
 
-        base64_photo.display! if base64_photo.is_a?(Error::Base)
+        @context.display.error!(base64_photo) if base64_photo.is_a?(Error::Base)
 
-        @client.send_clock_in(now, @clock_type.to_underscore, base64_photo, mobile_clockin: true).or(&.display!)
+        @context.client.send_clock_in(
+          @context.current.user.id,
+          now,
+          @clock_type.to_underscore,
+          base64_photo,
+          mobile_clockin: true
+        ).or { |error| @context.display.error!(error) }
+
         display_success_message
       end
 
       private def base64_photo_from_clockin_photo_path(clockin_photo : String?) : String? | Error::Base
-        clockin_photo_path = Current.config.clockin_photo_path
+        clockin_photo_path = @context.config.clockin_photo_path
         return if clockin_photo_path.nil?
 
         case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
@@ -42,11 +49,11 @@ module TandaCLI
         when Models::PhotoDirectory
           if clockin_photo
             photo_or_dir.find_photo(clockin_photo).tap do |maybe_photo|
-              Utils::Display.warning("No valid photo in #{clockin_photo_path} matching #{clockin_photo}") if maybe_photo.nil?
+              @context.display.warning("No valid photo in #{clockin_photo_path} matching #{clockin_photo}") if maybe_photo.nil?
             end
           else
             photo_or_dir.sample_photo.tap do |maybe_photo|
-              Utils::Display.warning("No valid photos found in #{clockin_photo_path}") if maybe_photo.nil?
+              @context.display.warning("No valid photos found in #{clockin_photo_path}") if maybe_photo.nil?
             end
           end.try(&.to_base64)
         else
@@ -67,14 +74,14 @@ module TandaCLI
             "Your break has ended!"
           end
 
-        current_user = Current.user
-        Utils::Display.success("#{success_message} (#{current_user.id} | #{current_user.organisation_name})")
+        current_user = @context.current.user
+        @context.display.success("#{success_message} (#{current_user.id} | #{current_user.organisation_name})")
       end
 
       private struct ClockInValidator
-        def self.validate!(client : API::Client, clock_type : ClockType, now : Time)
-          todays_shifts = client.todays_shifts.or(&.display!)
-          new(todays_shifts, clock_type).validate!
+        def self.validate!(context : Context, clock_type : ClockType, now : Time)
+          todays_shifts = context.client.shifts(context.current.user.id, Utils::Time.now).or { |error| context.display.error!(error) }
+          new(context, todays_shifts, clock_type).validate!
         end
 
         def validate!
@@ -91,7 +98,7 @@ module TandaCLI
         end
 
         # this struct should only be initialized from the `validate!` class method
-        private def initialize(@shifts : Array(Types::Shift), @clock_type : ClockType); end
+        private def initialize(@context : Context, @shifts : Array(Types::Shift), @clock_type : ClockType); end
 
         private enum ClockInStatus
           ClockedIn
@@ -120,11 +127,11 @@ module TandaCLI
         private def validate_clockin_start!
           case determine_status
           in .clocked_in?
-            Utils::Display.error!("You are already clocked in!")
+            @context.display.error!("You are already clocked in!")
           in .clocked_out?
             return
           in .break_started?
-            Utils::Display.error!("You can't clock in when a break has started!")
+            @context.display.error!("You can't clock in when a break has started!")
           end
         end
 
@@ -133,9 +140,9 @@ module TandaCLI
           in .clocked_in?
             return
           in .clocked_out?
-            Utils::Display.error!("You haven't clocked in yet!")
+            @context.display.error!("You haven't clocked in yet!")
           in .break_started?
-            Utils::Display.error!("You need to finish your break before clocking out!")
+            @context.display.error!("You need to finish your break before clocking out!")
           end
         end
 
@@ -144,18 +151,18 @@ module TandaCLI
           in .clocked_in?
             return
           in .clocked_out?
-            Utils::Display.error!("You need to clock in to start a break!")
+            @context.display.error!("You need to clock in to start a break!")
           in .break_started?
-            Utils::Display.error!("You have already started a break!")
+            @context.display.error!("You have already started a break!")
           end
         end
 
         private def validate_clockin_break_finish!
           case determine_status
           in .clocked_in?
-            Utils::Display.error!("You must start a break to finish a break!")
+            @context.display.error!("You must start a break to finish a break!")
           in .clocked_out?
-            Utils::Display.error!("You aren't clocked in!")
+            @context.display.error!("You aren't clocked in!")
           in .break_started?
             return
           end

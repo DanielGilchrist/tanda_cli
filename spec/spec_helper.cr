@@ -1,10 +1,32 @@
-require "spectator"
-require "./core_ext/spec_mock_hack"
-require "../src/tanda_cli"
+require "spec"
+require "colorize"
+require "webmock"
 
-Spectator.configure do |config|
-  config.randomize = true
-  config.before_each do
-    TandaCLI::Current.reset!
-  end
+require "../src/tanda_cli"
+require "./support/travel_to_hack"
+require "./support/configuration/fixture_file"
+require "./support/command"
+
+# Makes asserting on output much easier
+Colorize.enabled = false
+
+Spec.before_each do
+  WebMock.reset
+end
+
+Spec.after_each do
+  TandaCLI::Utils::Time.reset!
+end
+
+DEFAULT_BASE_URI = "https://eu.tanda.co/api/v2"
+
+def endpoint(path : String, query = nil)
+  uri = URI.parse("#{DEFAULT_BASE_URI}#{path}")
+  uri.query = URI::Params.encode(query) if query
+
+  uri.to_s
+end
+
+def endpoint(regex : Regex)
+  Regex.new("#{DEFAULT_BASE_URI}#{regex}")
 end

@@ -7,8 +7,8 @@ module TandaCLI
         @object = object
       end
 
-      def display
-        puts build
+      def display(stdout : IO)
+        stdout.puts build
       end
 
       def build : String
@@ -25,16 +25,6 @@ module TandaCLI
       protected def with_padding(value : String, builder : String::Builder)
         builder << "    #{value}\n"
       end
-
-      protected def titled_with_padding(title : String, value, builder : String::Builder)
-        with_padding("#{title}: #{value}", builder)
-      end
-
-      {% if flag?(:debug) %}
-        protected def debug_str(value : String) : String
-          "[DEBUG] #{value}"
-        end
-      {% end %}
     end
   end
 end

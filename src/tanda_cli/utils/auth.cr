@@ -3,13 +3,13 @@ module TandaCLI
     module Auth
       extend self
 
-      def maybe_refetch_token?(message : String, display_type : Utils::Display::Type? = nil) : Configuration?
-        Utils::Input.request_and("#{message} (y/n)", display_type) do |input|
-          return if input != "y"
+      def maybe_refetch_token?(config : Configuration, display : Display, input : Input, message : String, display_type : Display::Type? = nil) : Configuration?
+        input.request_and("#{message} (y/n)", display_type) do |user_input|
+          return if user_input != "y"
         end
 
-        Current.config.tap do
-          API::Auth.fetch_new_token!
+        config.tap do
+          API::Auth.fetch_new_token!(config, display, input)
         end
       end
     end

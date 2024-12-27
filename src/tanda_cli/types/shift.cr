@@ -22,7 +22,7 @@ module TandaCLI
       module StatusConverter
         def self.from_json(value : JSON::PullParser) : Status
           status_string = value.read_string
-          Status.parse?(status_string) || Utils::Display.fatal!("Unknown status: #{status_string}")
+          Status.parse?(status_string) || raise("Unknown status: #{status_string}")
         end
       end
 
@@ -88,8 +88,8 @@ module TandaCLI
       end
 
       def set_leave_request!(leave_request : Types::LeaveRequest)
-        Utils::Display.fatal!("Leave request already set!") if @leave_request_set
-        Utils::Display.fatal!("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
+        raise("Leave request already set!") if @leave_request_set
+        raise("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
 
         @leave_request_set = true
         @leave_request = leave_request
@@ -113,24 +113,24 @@ module TandaCLI
         ongoing? && valid_breaks.empty?
       end
 
-      def time_worked : Time::Span?
+      def time_worked(treat_paid_breaks_as_unpaid : Bool) : Time::Span?
         start_time = self.start_time
         return if start_time.nil?
 
         finish_time = self.finish_time
         return if finish_time.nil?
 
-        (finish_time - start_time) - total_unpaid_break_minutes
+        (finish_time - start_time) - total_unpaid_break_minutes(treat_paid_breaks_as_unpaid)
       end
 
-      def worked_so_far : Time::Span?
+      def worked_so_far(treat_paid_breaks_as_unpaid : Bool) : Time::Span?
         start_time = self.start_time
         return if start_time.nil?
 
         now = Utils::Time.now
         return if now.date != start_time.date
 
-        (now - start_time) - total_unpaid_break_minutes
+        (now - start_time) - total_unpaid_break_minutes(treat_paid_breaks_as_unpaid)
       end
 
       def visible? : Bool
@@ -141,8 +141,8 @@ module TandaCLI
         !!leave_request_id
       end
 
-      private def total_unpaid_break_minutes : Time::Span
-        (Current.config.treat_paid_breaks_as_unpaid? ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
+      private def total_unpaid_break_minutes(treat_paid_breaks_as_unpaid : Bool) : Time::Span
+        (treat_paid_breaks_as_unpaid ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
       end
     end
   end

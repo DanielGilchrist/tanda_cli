@@ -9,7 +9,7 @@ module TandaCLI
       ISO_DATE                 = "%Y-%m-%d"
 
       def now : ::Time
-        ::Time.local(location: Current.time_zone)
+        ::Time.local
       end
 
       def pretty_date(date : ::Time) : String
@@ -29,7 +29,11 @@ module TandaCLI
       end
 
       def iso_date(date : String) : ::Time
-        ::Time.parse(date, ISO_DATE, location: Current.time_zone)
+        ::Time.parse(date, ISO_DATE, location)
+      end
+
+      def location : ::Time::Location
+        ::Time::Location.local
       end
     end
   end

@@ -9,12 +9,10 @@ module TandaCLI
           end
 
           def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            config = Current.config
-
             if path = config.clockin_photo_path
-              puts "Clock in photo: #{path}"
+              stdout.puts "Clock in photo: #{path}"
             else
-              puts "No clock in photo set"
+              stdout.puts "No clock in photo set"
             end
           end
         end

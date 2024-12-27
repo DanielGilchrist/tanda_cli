@@ -7,11 +7,11 @@ module TandaCLI
         @name = "regular_hours"
         @summary = @description = "View or set your regular hours"
 
-        add_commands(RegularHours::Determine.new, RegularHours::Display.new)
+        add_commands(RegularHours::Determine, RegularHours::Display)
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        puts help_template
+        stdout.puts help_template
       end
     end
   end

@@ -1,8 +1,12 @@
-require "cling"
+require "./base"
 
 module TandaCLI
   module Commands
     class Help < Cling::Command
+      def initialize(@stdout : IO)
+        super()
+      end
+
       def setup : Nil
         @name = "help"
         @summary = @description = "Shows help information"
@@ -10,7 +14,7 @@ module TandaCLI
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
         parent = self.parent
-        puts parent.help_template if parent
+        @stdout.puts parent.help_template if parent
       end
     end
   end

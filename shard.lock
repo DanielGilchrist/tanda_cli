@@ -16,9 +16,13 @@ shards:
     git: https://github.com/crystal-posix/ioctl.cr.git
     version: 1.0.0
 
-  spectator:
-    git: https://gitlab.com/arctic-fox/spectator.git
-    version: 0.12.1
+  mocks:
+    git: https://github.com/waterlink/mocks.cr.git
+    version: 0.9.6
+
+  singleton:
+    git: https://github.com/waterlink/singleton.cr.git
+    version: 1.0.0
 
   term-cursor:
     git: https://github.com/crystal-term/cursor.git
@@ -35,4 +39,8 @@ shards:
   term-screen:
     git: https://github.com/crystal-term/screen.git
     version: 0.1.0+git.commit.ea51ee8d1f6c286573c41a7e784d31c80af7b9bb
+
+  webmock:
+    git: https://github.com/manastech/webmock.cr.git
+    version: 0.14.0+git.commit.42b347cdd64e13193e46167a03593944ae2b3d20
 

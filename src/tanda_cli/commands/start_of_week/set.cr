@@ -13,14 +13,13 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           day = arguments.get("day").as_s
-          config = Current.config
 
           case parse_error = (config.start_of_week = day)
           in Error::InvalidStartOfWeek
-            parse_error.display!
+            display.error!(parse_error)
           in Time::DayOfWeek
             config.save!
-            Utils::Display.success("Start of the week set to #{config.pretty_start_of_week}")
+            display.success("Start of the week set to #{config.pretty_start_of_week}")
           end
         end
       end

@@ -2,66 +2,60 @@ module TandaCLI
   module Request
     extend self
 
-    def ask_which_organisation_and_save!(client : API::Client, config : Configuration) : Configuration::Organisation
-      me = client.me.or(&.display!)
-      organisations = Configuration::Organisation.from(me)
+    def ask_which_organisation_and_save!(client : API::Client, config : Configuration, display : Display, input : Input) : Configuration::Serialisable::Organisation
+      me = client.me.unwrap!
+      organisations = Configuration::Serialisable::Organisation.from(me)
 
       if organisations.empty?
-        Utils::Display.error!("You don't have access to any organisations")
+        display.error!("You don't have access to any organisations")
       end
 
       organisation = organisations.first if organisations.one?
       while organisation.nil?
-        organisation = ask_for_organisation(organisations)
+        organisation = ask_for_organisation(organisations, display, input)
       end
 
-      Utils::Display.success("Selected organisation \"#{organisation.name}\"")
+      display.success("Selected organisation \"#{organisation.name}\"")
 
       organisation.tap do
-        save_config!(config, organisations, organisation, me.time_zone)
+        organisation.current = true
+        config.organisations = organisations
+        config.save!
+
+        display.success("Organisations saved to config")
       end
     end
 
-    private def save_config!(
-      config : Configuration,
-      organisations : Array(Configuration::Organisation),
-      organisation : Configuration::Organisation,
-      time_zone : String
-    )
-      organisation.current = true
-      config.organisations = organisations
-      config.time_zone = time_zone
-      config.save!
-
-      Utils::Display.success("Organisations saved to config")
-    end
-
-    private def ask_for_organisation(organisations : Array(Configuration::Organisation)) : Configuration::Organisation?
-      puts "Which organisation would you like to use?"
+    private def ask_for_organisation(
+      organisations : Array(Configuration::Serialisable::Organisation),
+      display : Display,
+      input : Input
+    ) : Configuration::Serialisable::Organisation?
+      display.puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
-        puts "#{index}: #{org.name}"
+        display.puts "#{index}: #{org.name}"
       end
 
-      Utils::Input.request_and(message: "\nEnter a number: ") do |input|
-        number = input.try(&.to_i32?)
+      input.request_and(message: "\nEnter a number: ") do |user_input|
+        number = user_input.try(&.to_i32?)
 
         if number
           index = number - 1
-          organisations[index]? || handle_invalid_selection(organisations.size, input)
+          organisations[index]? || handle_invalid_selection(display, organisations.size, user_input)
         else
-          handle_invalid_selection
+          handle_invalid_selection(display)
         end
       end
     end
 
-    private def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil) : Nil
-      puts "\n"
+    private def handle_invalid_selection(display : Display, length : Int32? = nil, user_input : String? = nil) : Nil
+      display.puts "\n"
       if user_input
-        Utils::Display.error("Invalid selection", user_input) do |sub_errors|
+        display.error("Invalid selection", user_input) do |sub_errors|
           sub_errors << "Please select a number between 1 and #{length}" if length
         end
       else
-        Utils::Display.error("You must enter a number")
+        display.error("You must enter a number")
       end
     end
   end

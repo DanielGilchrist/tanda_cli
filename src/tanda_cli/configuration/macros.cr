@@ -6,16 +6,16 @@ module TandaCLI
       #
       # Example:
       # ```
-      # environment_property time_zone : String?
+      # environment_property site_prefix : String?
       #
       # # expands to
       #
-      # def time_zone : String | ::Nil
-      #   current_environment.time_zone
+      # def site_prefix : String | ::Nil
+      #   current_environment.site_prefix
       # end
       #
-      # def time_zone=(value : String | ::Nil)
-      #   current_environment.time_zone = value
+      # def site_prefix=(value : String | ::Nil)
+      #   current_environment.site_prefix = value
       # end
       # ```
       #

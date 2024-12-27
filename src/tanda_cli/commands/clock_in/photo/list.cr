@@ -19,16 +19,16 @@ module TandaCLI
               on_invalid_option("Invalid 'filter' option '#{filter}'")
             end
 
-            clockin_photo_path = Current.config.clockin_photo_path
-            return Utils::Display.info("No clock in photo set") if clockin_photo_path.nil?
+            clockin_photo_path = config.clockin_photo_path
+            return display.info("No clock in photo set") if clockin_photo_path.nil?
 
             case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
             in Models::Photo
-              Utils::Display.warning("Directory not set for clock in photos ('#{photo_or_dir.path}')")
+              display.warning("Directory not set for clock in photos ('#{photo_or_dir.path}')")
             in Models::PhotoDirectory
               display_photos(photo_or_dir, filter)
             in Error::Base
-              photo_or_dir.display!
+              display.error!(photo_or_dir)
             end
           end
 
@@ -47,22 +47,22 @@ module TandaCLI
 
             if photos.empty?
               if filter
-                Utils::Display.info("No #{filter} photos in #{path_text} directory")
+                display.info("No #{filter} photos in #{path_text} directory")
               else
-                Utils::Display.info("No photos in #{path_text} directory")
+                display.info("No photos in #{path_text} directory")
               end
 
               return
             end
 
             if filter
-              Utils::Display.info("#{filter.titleize} photos for clock ins in #{path_text} directory:")
+              display.info("#{filter.titleize} photos for clock ins in #{path_text} directory:")
             else
-              Utils::Display.info("Photos for clock ins in #{path_text} directory:")
+              display.info("Photos for clock ins in #{path_text} directory:")
             end
 
             photos.sort_by(&.path).each do |photo|
-              puts photo.path
+              stdout.puts photo.path
             end
           end
 

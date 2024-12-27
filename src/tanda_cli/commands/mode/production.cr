@@ -12,11 +12,10 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config = Current.config
           config.mode = "production"
           config.save!
 
-          Utils::Display.success("Successfully set mode to production!")
+          display.success("Successfully set mode to production!")
         end
       end
     end

@@ -41,7 +41,6 @@ Commands:
 	balance             Check your leave balances
 	regular_hours       View or set your regular hours
 	current_user        View the current user, list available users or set the current user
-	time_zone           See or set the current time zone
 	refetch_token       Refetch token for the current environment
 	refetch_users       Refetch users from the API and save to config
 	mode                Set the mode to run commands in (production/staging/custom <url>)
