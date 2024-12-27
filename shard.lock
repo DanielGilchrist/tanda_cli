@@ -16,14 +16,6 @@ shards:
     git: https://github.com/crystal-posix/ioctl.cr.git
     version: 1.0.0
 
-  mocks:
-    git: https://github.com/waterlink/mocks.cr.git
-    version: 0.9.6
-
-  singleton:
-    git: https://github.com/waterlink/singleton.cr.git
-    version: 1.0.0
-
   term-cursor:
     git: https://github.com/crystal-term/cursor.git
     version: 0.1.0+git.commit.8805d5f686d153db92cf2ce3333433f8ed3708d0
