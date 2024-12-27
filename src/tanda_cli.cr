@@ -4,23 +4,26 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  def main(args = ARGV, stdin = STDIN, stdout = STDOUT)
+  def main(args = ARGV, stdin = STDIN, stdout = STDOUT, config_file = Configuration::File.new)
     {% if flag?(:debug) && !flag?(:test) %}
       TandaCLI::Debug.setup
     {% end %}
 
-    config_file = Configuration::File.new
-    run(args, config_file, stdin, stdout)
+    context = build_context(stdin, stdout, config_file)
+    Commands::Main.new(context).execute(args)
+  ensure
+    config_file.close
   end
 
-  def run(args : Array(String), config_file : Configuration::AbstractFile, stdin : IO, stdout : IO)
+  def build_context(stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
     display = Display.new(stdout)
     input = Input.new(stdin, display)
     config = Configuration.init(config_file, display)
     client = build_client(config, display, input)
     current_user = user_from_config(config) || user_from_api(config, display, input)
     current = Current.new(current_user)
-    context = Context.new(
+
+    Context.new(
       stdout,
       config,
       client,
@@ -28,10 +31,6 @@ module TandaCLI
       display,
       input
     )
-
-    Commands::Main.new(context).execute(args)
-  ensure
-    config_file.close
   end
 
   def exit! : NoReturn
@@ -67,7 +66,6 @@ module TandaCLI
   end
 end
 
-# Tests should call `run`
 {% unless flag?(:test) %}
   TandaCLI.main
 {% end %}

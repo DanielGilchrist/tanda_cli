@@ -13,7 +13,7 @@ module TandaCLI
 
     def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
       config_contents = file.read
-      return new(file) unless config_contents
+      return new(file) unless config_contents.presence
 
       begin
         new(file, Serialisable.from_json(config_contents))

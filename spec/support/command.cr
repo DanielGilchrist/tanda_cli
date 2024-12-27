@@ -22,25 +22,8 @@ module Command
 
   private def build_context(stdin : IO) : TandaCLI::Context
     stdout = IO::Memory.new
-    display = TandaCLI::Display.new(stdout)
-    input = TandaCLI::Input.new(stdin, display)
-    config = Configuration::FixtureFile.load_fixture("default", display)
-    current_user = TandaCLI::Current::User.new(1, "Test")
-    current = TandaCLI::Current.new(current_user)
-    client = TandaCLI::API::Client.new(
-      base_uri: BASE_URI,
-      token: config.access_token.token.not_nil!,
-      display: display,
-      current_user: current_user
-    )
+    config_file = Configuration::FixtureFile.load("default")
 
-    TandaCLI::Context.new(
-      stdout,
-      config,
-      client,
-      current,
-      display,
-      input
-    )
+    TandaCLI.build_context(stdin, stdout, config_file)
   end
 end
