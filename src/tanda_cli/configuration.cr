@@ -12,8 +12,8 @@ module TandaCLI
     STAGING    = "staging"
 
     def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
-      config_contents = file.read
-      return new(file) unless config_contents.presence
+      config_contents = file.read.presence
+      return new(file) unless config_contents
 
       begin
         new(file, Serialisable.from_json(config_contents))
