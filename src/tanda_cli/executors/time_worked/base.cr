@@ -38,8 +38,9 @@ module TandaCLI
               next
             end
 
-            time_worked = shift.time_worked
-            worked_so_far = shift.worked_so_far
+            treat_paid_breaks_as_unpaid = @context.config.treat_paid_breaks_as_unpaid? || false
+            time_worked = shift.time_worked(treat_paid_breaks_as_unpaid)
+            worked_so_far = shift.worked_so_far(treat_paid_breaks_as_unpaid)
 
             print_shift(shift, time_worked, worked_so_far) if display?
 

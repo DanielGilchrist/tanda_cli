@@ -113,24 +113,24 @@ module TandaCLI
         ongoing? && valid_breaks.empty?
       end
 
-      def time_worked : Time::Span?
+      def time_worked(treat_paid_breaks_as_unpaid : Bool) : Time::Span?
         start_time = self.start_time
         return if start_time.nil?
 
         finish_time = self.finish_time
         return if finish_time.nil?
 
-        (finish_time - start_time) - total_unpaid_break_minutes
+        (finish_time - start_time) - total_unpaid_break_minutes(treat_paid_breaks_as_unpaid)
       end
 
-      def worked_so_far : Time::Span?
+      def worked_so_far(treat_paid_breaks_as_unpaid : Bool) : Time::Span?
         start_time = self.start_time
         return if start_time.nil?
 
         now = Utils::Time.now
         return if now.date != start_time.date
 
-        (now - start_time) - total_unpaid_break_minutes
+        (now - start_time) - total_unpaid_break_minutes(treat_paid_breaks_as_unpaid)
       end
 
       def visible? : Bool
@@ -141,7 +141,7 @@ module TandaCLI
         !!leave_request_id
       end
 
-      private def total_unpaid_break_minutes(treat_paid_breaks_as_unpaid : Bool = false) : Time::Span
+      private def total_unpaid_break_minutes(treat_paid_breaks_as_unpaid : Bool) : Time::Span
         (treat_paid_breaks_as_unpaid ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
       end
     end
