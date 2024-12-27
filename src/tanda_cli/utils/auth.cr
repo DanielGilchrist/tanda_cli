@@ -4,8 +4,8 @@ module TandaCLI
       extend self
 
       def maybe_refetch_token?(config : Configuration, display : Display, input : Input, message : String, display_type : Display::Type? = nil) : Configuration?
-        input.request_and("#{message} (y/n)", display_type) do |input|
-          return if input != "y"
+        input.request_and("#{message} (y/n)", display_type) do |user_input|
+          return if user_input != "y"
         end
 
         config.tap do

@@ -26,18 +26,22 @@ module TandaCLI
       end
     end
 
-    private def ask_for_organisation(organisations : Array(Configuration::Serialisable::Organisation), display : Display, input : Input) : Configuration::Serialisable::Organisation?
+    private def ask_for_organisation(
+      organisations : Array(Configuration::Serialisable::Organisation),
+      display : Display,
+      input : Input
+    ) : Configuration::Serialisable::Organisation?
       display.puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
         display.puts "#{index}: #{org.name}"
       end
 
-      input.request_and(message: "\nEnter a number: ") do |input|
-        number = input.try(&.to_i32?)
+      input.request_and(message: "\nEnter a number: ") do |user_input|
+        number = user_input.try(&.to_i32?)
 
         if number
           index = number - 1
-          organisations[index]? || handle_invalid_selection(display, organisations.size, input)
+          organisations[index]? || handle_invalid_selection(display, organisations.size, user_input)
         else
           handle_invalid_selection(display)
         end

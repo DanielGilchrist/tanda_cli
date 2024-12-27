@@ -28,5 +28,5 @@ def endpoint(path : String, query = nil)
 end
 
 def endpoint(regex : Regex)
-  Regex.new("#{DEFAULT_BASE_URI}#{regex.to_s}")
+  Regex.new("#{DEFAULT_BASE_URI}#{regex}")
 end
