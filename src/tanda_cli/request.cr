@@ -27,9 +27,9 @@ module TandaCLI
     end
 
     private def ask_for_organisation(organisations : Array(Configuration::Serialisable::Organisation), display : Display, input : Input) : Configuration::Serialisable::Organisation?
-      puts "Which organisation would you like to use?"
+      display.puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|
-        puts "#{index}: #{org.name}"
+        display.puts "#{index}: #{org.name}"
       end
 
       input.request_and(message: "\nEnter a number: ") do |input|
@@ -45,7 +45,7 @@ module TandaCLI
     end
 
     private def handle_invalid_selection(display : Display, length : Int32? = nil, user_input : String? = nil) : Nil
-      puts "\n"
+      display.puts "\n"
       if user_input
         display.error("Invalid selection", user_input) do |sub_errors|
           sub_errors << "Please select a number between 1 and #{length}" if length

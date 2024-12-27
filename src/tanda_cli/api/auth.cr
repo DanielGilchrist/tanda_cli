@@ -87,17 +87,17 @@ module TandaCLI
             sub_errors << "Site prefix must be one of #{valid_site_prefixes}"
           end
         end
-        puts
+        display.puts
 
         email = input.request_or(message: "Whats your email?") do
           display.error!("Email cannot be blank")
         end
-        puts
+        display.puts
 
         password = input.request_or(message: "What's your password?", sensitive: true) do
           display.error!("Password cannot be blank")
         end
-        puts
+        display.puts
 
         {site_prefix, email, password, selected_scopes}
       end

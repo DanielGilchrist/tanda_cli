@@ -86,7 +86,7 @@ module TandaCLI
       TandaCLI.exit!
     end
 
-    def puts(message : String)
+    def puts(message : String? = nil)
       @stdout.puts message
     end
 
