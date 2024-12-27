@@ -19,8 +19,8 @@ module TandaCLI
     display = Display.new(stdout)
     input = Input.new(stdin, display)
     config = Configuration.init(config_file, display)
-    client = build_client(config, display, input)
     current_user = user_from_config(config) || user_from_api(config, display, input)
+    client = build_client(config, display, input, current_user)
     current = Current.new(current_user)
 
     Context.new(
