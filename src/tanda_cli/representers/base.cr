@@ -25,10 +25,6 @@ module TandaCLI
       protected def with_padding(value : String, builder : String::Builder)
         builder << "    #{value}\n"
       end
-
-      protected def titled_with_padding(title : String, value, builder : String::Builder)
-        with_padding("#{title}: #{value}", builder)
-      end
     end
   end
 end
