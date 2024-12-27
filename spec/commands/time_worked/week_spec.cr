@@ -20,7 +20,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
             finish: Time.local(2024, 12, 24, 17),
             break_start: Time.local(2024, 12, 24, 12),
             break_finish: Time.local(2024, 12, 24, 12, 30)
-          )
+          ),
         ].to_json,
       )
 
@@ -50,7 +50,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
             finish: nil,
             break_start: Time.local(2024, 12, 24, 12),
             break_finish: Time.local(2024, 12, 24, 12, 30)
-          )
+          ),
         ].to_json,
       )
 
@@ -92,40 +92,39 @@ end
 
 private def build_shift(id, start, finish, break_start, break_finish)
   {
-    id: id,
+    id:           id,
     timesheet_id: 1,
-    user_id: 1,
-    date: TandaCLI::Utils::Time.iso_date(start),
-    start: start.try(&.to_unix),
-    break_start: break_start.try(&.to_unix),
+    user_id:      1,
+    date:         TandaCLI::Utils::Time.iso_date(start),
+    start:        start.try(&.to_unix),
+    break_start:  break_start.try(&.to_unix),
     break_finish: break_finish.try(&.to_unix),
     break_length: 30,
-    breaks: [
+    breaks:       [
       {
-        id: 1,
+        id:                               1,
         selected_automatic_break_rule_id: nil,
-        shift_id: id,
-        start: break_start.try(&.to_unix),
-        finish: break_finish.try(&.to_unix),
-        length: 30,
-        paid: false,
-        updated_at: 1735259689
-      }
+        shift_id:                         id,
+        start:                            break_start.try(&.to_unix),
+        finish:                           break_finish.try(&.to_unix),
+        length:                           30,
+        paid:                             false,
+        updated_at:                       1735259689,
+      },
     ],
-    finish: finish.try(&.to_unix),
-    department_id: 1,
-    sub_cost_centre: nil,
-    tag: nil,
-    tag_id: nil,
-    status: "PENDING",
-    metadata: nil,
+    finish:           finish.try(&.to_unix),
+    department_id:    1,
+    sub_cost_centre:  nil,
+    tag:              nil,
+    tag_id:           nil,
+    status:           "PENDING",
+    metadata:         nil,
     leave_request_id: nil,
-    allowances: [] of Hash(String, String),
-    approved_by: nil,
-    approved_at: nil,
-    notes: [] of Hash(String, String),
-    updated_at: 1735259689,
-    record_id: 1
+    allowances:       [] of Hash(String, String),
+    approved_by:      nil,
+    approved_at:      nil,
+    notes:            [] of Hash(String, String),
+    updated_at:       1735259689,
+    record_id:        1,
   }
 end
-
