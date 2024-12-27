@@ -16,17 +16,16 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           url = arguments.get("url").as_s
 
-          Utils::Display.error!("Must pass an argument to custom") if url.blank?
+          display.error!("Must pass an argument to custom") if url.blank?
 
           uri = Utils::URL.validate(url)
-          Utils::Display.error!(uri) if uri.is_a?(Error::InvalidURL)
+          display.error!(uri) if uri.is_a?(Error::InvalidURL)
 
           uri_string = uri.to_s
-          config = Current.config
           config.mode = uri_string
           config.save!
 
-          Utils::Display.success("Successfully set custom url", uri_string)
+          display.success("Successfully set custom url", uri_string)
         end
       end
     end

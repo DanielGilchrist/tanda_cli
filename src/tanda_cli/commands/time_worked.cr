@@ -1,19 +1,15 @@
-require "../client_builder"
-
 module TandaCLI
   module Commands
     class TimeWorked < Base
-      include ClientBuilder
-
       def setup_
         @name = "time_worked"
         @summary = @description = "See how many hours you've worked"
 
-        add_commands(Today.new, Week.new)
+        add_commands(Today, Week)
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        puts help_template
+        stdout.puts help_template
       end
     end
   end

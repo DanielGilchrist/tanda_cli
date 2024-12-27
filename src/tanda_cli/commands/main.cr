@@ -6,23 +6,22 @@ module TandaCLI
         @description = "A CLI application for people using Tanda/Workforce.com"
 
         add_commands(
-          Me.new,
-          PersonalDetails.new,
-          ClockIn.new,
-          TimeWorked.new,
-          Balance.new,
-          RegularHours.new,
-          CurrentUser.new,
-          TimeZone.new,
-          RefetchToken.new,
-          RefetchUsers.new,
-          Mode.new,
-          StartOfWeek.new
+          Me,
+          PersonalDetails,
+          ClockIn,
+          TimeWorked,
+          Balance,
+          RegularHours,
+          CurrentUser,
+          RefetchToken,
+          RefetchUsers,
+          Mode,
+          StartOfWeek
         )
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        puts help_template
+        stdout.puts help_template
       end
     end
   end

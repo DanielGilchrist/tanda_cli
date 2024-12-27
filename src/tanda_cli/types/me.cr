@@ -9,7 +9,6 @@ module TandaCLI
       getter name : String
       getter email : String
       getter country : String
-      getter time_zone : String
       getter user_ids : Array(Int32)
       getter permissions : Array(String)
       getter organisations : Array(Me::Organisation)

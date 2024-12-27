@@ -36,18 +36,18 @@ module TandaCLI
         @summary = @description = "Clock in/out"
 
         add_commands(
-          ClockIn::Start.new,
-          ClockIn::Finish.new,
-          ClockIn::Manual.new,
-          ClockIn::Break.new,
-          ClockIn::Photo.new,
-          ClockIn::Status.new,
-          ClockIn::Display.new
+          ClockIn::Start,
+          ClockIn::Finish,
+          ClockIn::Manual,
+          ClockIn::Break,
+          ClockIn::Photo,
+          ClockIn::Status,
+          ClockIn::Display
         )
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        puts help_template
+        stdout.puts help_template
       end
     end
   end

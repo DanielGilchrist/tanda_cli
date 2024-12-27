@@ -1,13 +1,13 @@
 require "colorize"
-require "../../configuration/types/organisation"
+require "../../configuration/serialisable/organisation"
 
 module TandaCLI
   module Executors
     module TimeWorked
       abstract class Base
-        alias RegularHoursScheduleBreak = Configuration::Organisation::RegularHoursSchedule::Break
+        alias RegularHoursScheduleBreak = Configuration::Serialisable::Organisation::RegularHoursSchedule::Break
 
-        def initialize(@client : API::Client, @display : Bool, @offset : Int32?); end
+        def initialize(@context : Context, @display : Bool, @offset : Int32?); end
 
         abstract def execute
 
@@ -15,7 +15,12 @@ module TandaCLI
 
         private def fetch_visible_shifts(from : Time, to : Time? = nil) : Array(Types::Shift)
           to ||= from
-          @client.shifts(from, to, show_notes: display?).or(&.display!).select(&.visible?)
+
+          @context
+            .client
+            .shifts(@context.current.user.id, from, to, show_notes: display?)
+            .or { |error| @context.display.error!(error) }
+            .select(&.visible?)
         end
 
         private def calculate_time_worked(shifts : Array(Types::Shift)) : Tuple(Time::Span, Time::Span)
@@ -33,8 +38,9 @@ module TandaCLI
               next
             end
 
-            time_worked = shift.time_worked
-            worked_so_far = shift.worked_so_far
+            treat_paid_breaks_as_unpaid = @context.config.treat_paid_breaks_as_unpaid? || false
+            time_worked = shift.time_worked(treat_paid_breaks_as_unpaid)
+            worked_so_far = shift.worked_so_far(treat_paid_breaks_as_unpaid)
 
             print_shift(shift, time_worked, worked_so_far) if display?
 
@@ -47,12 +53,12 @@ module TandaCLI
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
           if time_worked
-            puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+            @context.stdout.puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
-            puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+            @context.stdout.puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
           end
 
-          Representers::Shift.new(shift).display
+          Representers::Shift.new(shift).display(@context.stdout)
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
@@ -61,9 +67,9 @@ module TandaCLI
           # Don't bother showing days where there are no hours for leave
           return if length.zero?
 
-          puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
+          @context.stdout.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
-          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.stdout)
         end
       end
     end

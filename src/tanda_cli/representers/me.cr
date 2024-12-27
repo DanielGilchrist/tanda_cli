@@ -11,7 +11,6 @@ module TandaCLI
 
         builder << "📧 #{@object.email}\n"
         builder << "🌍 #{@object.country}\n"
-        builder << "⏰ #{@object.time_zone}\n"
         builder << "🔑 #{@object.permissions.map(&.gsub("_", " ").titleize).join(", ")}\n"
 
         build_organisations(builder)

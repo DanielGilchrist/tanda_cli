@@ -31,6 +31,17 @@ jobs:
         with:
           crystal: ${{ matrix.crystal }}
 
+      - name: Cache shards
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/shards
+            lib
+            bin/ameba
+          key: ${{ runner.os }}-shards-v2-${{ hashFiles('**/shard.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-shards-v2-
+
       - name: Install shards
         run: shards install --frozen
 
@@ -38,7 +49,7 @@ jobs:
         run: crystal tool unreachable src/tanda_cli.cr --check
 
       - name: Check formatting
-        run: crystal tool format; git diff --exit-code
+        run: crystal tool format --check
 
       - name: Lint
         run: ./bin/ameba
@@ -48,4 +59,3 @@ jobs:
 
       - name: Run tests
         run: ./scripts/run-spec.sh
-

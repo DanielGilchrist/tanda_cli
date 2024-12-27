@@ -9,11 +9,10 @@ module TandaCLI
           end
 
           def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            config = Current.config
             config.clockin_photo_path = nil
             config.save!
 
-            Utils::Display.success("Clock in photo cleared")
+            display.success("Clock in photo cleared")
           end
         end
       end

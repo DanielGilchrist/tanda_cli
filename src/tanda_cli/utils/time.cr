@@ -9,7 +9,7 @@ module TandaCLI
       ISO_DATE                 = "%Y-%m-%d"
 
       def now : ::Time
-        ::Time.local(location: Current.time_zone)
+        ::Time.local
       end
 
       def pretty_date(date : ::Time) : String
@@ -29,11 +29,14 @@ module TandaCLI
       end
 
       def iso_date(date : String) : ::Time
-        ::Time.parse(date, ISO_DATE, location: Current.time_zone)
+        ::Time.parse(date, ISO_DATE, location)
+      end
+
+      def location : ::Time::Location
+        ::Time::Location.local
       end
 
       def parse?(time_string : String) : ::Time?
-        time_zone = Current.time_zone
         formats = {
           "%l%P",    # "9am", "12pm"
           "%l:%M%P", # "1:30pm"
@@ -42,7 +45,7 @@ module TandaCLI
         formats
           .each
           .map do |format|
-            ::Time.parse(time_string, format, time_zone)
+            ::Time.parse(time_string, format, location)
           rescue ::Time::Format::Error
           end
           .find { |t| !t.nil? }

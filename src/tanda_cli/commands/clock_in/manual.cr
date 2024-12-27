@@ -1,12 +1,9 @@
-require "../../client_builder"
 require "../../models/clock_in_status"
 
 module TandaCLI
   module Commands
     class ClockIn
       class Manual < Commands::Base
-        include ClientBuilder
-
         required_scopes :timesheet
 
         def setup_
@@ -15,7 +12,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          shifts = client.todays_shifts.or(&.display!)
+          shifts = client.shifts(current.user.id, Utils::Time.now).or { |error| display.error!(error) }
           status = Models::ClockInStatus.new(shifts).determine_status
 
           case status
@@ -33,19 +30,19 @@ module TandaCLI
           time = ask_for_and_parse_time!(message)
 
           # TODO: Actually create shift and set time
-          Utils::Display.success("Set clock in time to #{time}")
+          display.success("Set clock in time to #{time}")
         end
 
         private def ask_for_and_parse_time!(message) : Time
-          time_string = Utils::Input.request(message)
-          Utils::Display.error!("Input can't be blank!") if time_string.nil?
+          time_string = input.request(message)
+          display.error!("Input can't be blank!") if time_string.nil?
 
           time = Utils::Time.parse?(time_string).try(&->time_to_day_time(Time))
-          Utils::Display.error!("#{time_string} is not a valid time!") if time.nil?
+          display.error!("#{time_string} is not a valid time!") if time.nil?
 
           puts time
-          Utils::Input.request_and(message: "Is this correct?") do |input|
-            Utils::Display.error!("Command aborted. Please try again.") if input != "y"
+          input.request_and(message: "Is this correct?") do |user_input|
+            display.error!("Command aborted. Please try again.") if user_input != "y"
           end
 
           time

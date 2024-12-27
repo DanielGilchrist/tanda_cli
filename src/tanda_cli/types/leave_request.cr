@@ -16,7 +16,7 @@ module TandaCLI
       module StatusConverter
         def self.from_json(value : JSON::PullParser) : Status
           status_string = value.read_string
-          Status.parse?(status_string) || Utils::Display.fatal!("Unknown status: #{status_string}")
+          Status.parse?(status_string) || raise("Unknown status: #{status_string}")
         end
       end
 

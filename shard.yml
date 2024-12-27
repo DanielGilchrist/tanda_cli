@@ -20,9 +20,9 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba # https://github.com/crystal-ameba/ameba
     version: ~> 1
-  spectator:
-    gitlab: arctic-fox/spectator # https://gitlab.com/arctic-fox/spectator
-    version: ~> 0
+  webmock:
+    github: manastech/webmock.cr # https://github.com/manastech/webmock.cr
+    branch: master
 
 crystal: 1.14.0
 
