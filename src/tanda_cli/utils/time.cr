@@ -48,7 +48,7 @@ module TandaCLI
             ::Time.parse(time_string, format, location)
           rescue ::Time::Format::Error
           end
-          .find { |t| !t.nil? }
+          .find(&.itself)
       end
     end
   end
