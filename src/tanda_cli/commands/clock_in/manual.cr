@@ -38,9 +38,8 @@ module TandaCLI
           display.error!("Input can't be blank!") if time_string.nil?
 
           time = Utils::Time.parse?(time_string).try(&->time_to_day_time(Time))
-          display.error!("#{time_string} is not a valid time!") if time.nil?
+          display.error!("\"#{time_string}\" is not a valid time!") if time.nil?
 
-          puts time
           input.request_and(message: "Is this correct?") do |user_input|
             display.error!("Command aborted. Please try again.") if user_input != "y"
           end
