@@ -21,7 +21,7 @@ describe TandaCLI::Commands::ClockIn::Manual do
   it "Handles blank time input" do
     stub_shifts
 
-    stdin = build_stdin("")
+    stdin = build_stdin("  ")
     context = run(stdin)
 
     output = context.stdout.to_s
