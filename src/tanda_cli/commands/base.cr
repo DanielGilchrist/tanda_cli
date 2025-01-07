@@ -35,11 +35,14 @@ module TandaCLI
         setup_
 
         help_command = Help.new(stdout)
+        add_option long: "no-colour", description: "Disable ANSI colours"
         add_option 'h', help_command.name, description: help_command.description
         add_command(help_command)
       end
 
       def pre_run(arguments : Cling::Arguments, options : Cling::Options) : Nil
+        handle_maybe_no_colour(options)
+
         return if help?(arguments, options)
 
         maybe_display_staging_warning
@@ -116,6 +119,12 @@ module TandaCLI
         end
 
         display.warning(message)
+      end
+
+      private def handle_maybe_no_colour(options : Cling::Options)
+        return unless options.has?("no-colour")
+
+        Colorize.enabled = false
       end
 
       private def help?(arguments : Cling::Arguments, options : Cling::Options) : Bool
