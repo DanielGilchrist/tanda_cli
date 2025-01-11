@@ -35,6 +35,21 @@ module TandaCLI
       def location : ::Time::Location
         ::Time::Location.local
       end
+
+      def parse?(time_string : String) : ::Time?
+        formats = {
+          "%l%P",    # "9am", "12pm"
+          "%l:%M%P", # "1:30pm"
+        }
+
+        formats
+          .each
+          .map do |format|
+            ::Time.parse(time_string, format, location)
+          rescue ::Time::Format::Error
+          end
+          .find(&.itself)
+      end
     end
   end
 end
