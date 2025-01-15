@@ -24,10 +24,14 @@ module TandaCLI
           "to"         => finish_string,
           "show_notes" => show_notes.to_s,
           # This is an arbitrarily named query param to get past issue where shift data would be stale from server-side cache
-          "cache_key" => Random.rand(1000).to_s,
+          "cache_key" => cache_key,
         })
 
         Types::Shift.from_array(response, self)
+      end
+
+      private def cache_key : String
+        Time::Format.new("%Y-%m-%d-%H-%M").format(Time.local)
       end
     end
   end
