@@ -25,7 +25,7 @@ module TandaCLI
           @name : String,
           @user_id : Int32,
           @current : Bool = false,
-          @regular_hours_schedules : Array(RegularHoursSchedule)? = nil
+          @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
         ); end
 
         getter id : Int32
@@ -111,7 +111,7 @@ module TandaCLI
             start_time : (String | Time),
             finish_time : (String | Time),
             @breaks : Array(Break) = Array(Break).new,
-            @automatic_break_length : UInt16 = 0
+            @automatic_break_length : UInt16 = 0,
           )
             # TODO: I don't believe we should have to `.as(String)` here
             @_start_time = begin

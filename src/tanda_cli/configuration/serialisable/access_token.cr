@@ -9,7 +9,7 @@ module TandaCLI
           @token : String? = nil,
           @token_type : String? = nil,
           @scopes = Array(Scopes::Scope).new,
-          @created_at : Int32? = nil
+          @created_at : Int32? = nil,
         ); end
 
         property email : String?
