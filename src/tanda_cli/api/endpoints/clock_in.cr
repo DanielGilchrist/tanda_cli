@@ -20,7 +20,7 @@ module TandaCLI
         time : Time,
         type : String,
         photo : String? = nil,
-        mobile_clockin : Bool = false
+        mobile_clockin : Bool = false,
       ) : API::Result(Nil)
         response = post("/clockins", body: {
           "time"           => time.to_unix.to_s,

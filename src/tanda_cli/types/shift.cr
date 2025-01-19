@@ -35,7 +35,7 @@ module TandaCLI
 
       private def self.fetch_and_attach_leave_requests(
         shifts : Array(Types::Shift),
-        client : API::Client
+        client : API::Client,
       ) : Array(Types::Shift) | Types::Error
         leave_request_ids = shifts.compact_map(&.leave_request_id)
         return shifts if leave_request_ids.empty?

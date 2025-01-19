@@ -29,7 +29,7 @@ module TandaCLI
     private def ask_for_organisation(
       organisations : Array(Configuration::Serialisable::Organisation),
       display : Display,
-      input : Input
+      input : Input,
     ) : Configuration::Serialisable::Organisation?
       display.puts "Which organisation would you like to use?"
       organisations.each_with_index(1) do |org, index|

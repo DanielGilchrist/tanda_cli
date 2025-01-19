@@ -10,7 +10,7 @@ on:
       crystal_version:
         description: "Crystal version"
         required: false
-        default: "1.14.0"
+        default: "1.15.0"
 
 jobs:
   test:
@@ -24,7 +24,12 @@ jobs:
 
     steps:
       - name: Download source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      # TODO Why is this necessary now?
+      - name: Install dependencies (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libreadline-dev
 
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
