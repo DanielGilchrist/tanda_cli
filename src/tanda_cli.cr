@@ -4,18 +4,19 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  def main(args = ARGV, stdin = STDIN, stdout = STDOUT, config_file = Configuration::File.new)
-    {% if flag?(:debug) && !flag?(:test) %}
-      TandaCLI::Debug.setup
-    {% end %}
-
-    context = build_context(stdin, stdout, config_file)
-    Commands::Main.new(context).execute(args)
+  def main(args : Array(String), stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
+    build_context(stdin, stdout, config_file).tap do |context|
+      Commands::Main.new(context).execute(args)
+    end
   ensure
     config_file.close
   end
 
-  def build_context(stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
+  def exit! : NoReturn
+    raise(Cling::ExitProgram.new(0))
+  end
+
+  private def build_context(stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
     display = Display.new(stdout)
     input = Input.new(stdin, display)
     config = Configuration.init(config_file, display)
@@ -31,10 +32,6 @@ module TandaCLI
       display,
       input
     )
-  end
-
-  def exit! : NoReturn
-    raise(Cling::ExitProgram.new(0))
   end
 
   private def build_client(config : Configuration, display : Display, input : Input, current_user : Current::User? = nil) : API::Client
@@ -67,5 +64,14 @@ module TandaCLI
 end
 
 {% unless flag?(:test) %}
-  TandaCLI.main
+  {% if flag?(:debug) %}
+    TandaCLI::Debug.setup
+  {% end %}
+
+  TandaCLI.main(
+    args: ARGV,
+    stdout: STDOUT,
+    stdin: STDIN,
+    config_file: TandaCLI::Configuration::File.new
+  )
 {% end %}

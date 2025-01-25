@@ -26,7 +26,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     travel_to(Time.local(2024, 12, 24))
 
-    context = Command.run(["time_worked", "week"])
+    context = run(["time_worked", "week"])
 
     context.stdout.to_s.should eq("You've worked 16 hours and 0 minutes this week\n")
   end
@@ -56,7 +56,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     travel_to(Time.local(2024, 12, 24, 14))
 
-    context = Command.run(["time_worked", "week", "--display"])
+    context = run(["time_worked", "week", "--display"])
 
     expected = <<-OUTPUT.gsub("<space>", " ")
     Time worked: 8 hours and 0 minutes

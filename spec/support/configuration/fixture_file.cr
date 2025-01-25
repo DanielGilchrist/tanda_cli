@@ -1,10 +1,21 @@
 class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   FIXTURE_PATH = "spec/fixtures/configuration"
 
-  def self.load(fixture_name : String) : Configuration::FixtureFile
+  enum Fixture
+    Default
+    DefaultStaging
+
+    def read : Bytes
+      file_name = to_s.underscore
+      path = "#{FIXTURE_PATH}/#{file_name}.json"
+
+      File.read(path).to_slice
+    end
+  end
+
+  def self.load(fixture : Fixture) : Configuration::FixtureFile
     file_io = IO::Memory.new
-    fixture_bytes = File.read("#{FIXTURE_PATH}/#{fixture_name}.json").to_slice
-    file_io.write(fixture_bytes)
+    file_io.write(fixture.read)
 
     new(file_io)
   end

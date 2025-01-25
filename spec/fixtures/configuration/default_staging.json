@@ -1,0 +1,60 @@
+{
+  "mode": "staging",
+  "treat_paid_breaks_as_unpaid": true,
+  "staging": {
+    "site_prefix": "eu",
+    "access_token": {
+      "email": "test@testmailfakenotrealthisisntarealdomainaaaa.com",
+      "token": "testtoken",
+      "token_type": "Bearer",
+      "scope": "me device leave personal roster timesheet",
+      "created_at": 1715957320
+    },
+    "organisations": [
+      {
+        "id": 1,
+        "name": "Test Organisation",
+        "user_id": 1,
+        "current": true,
+        "regular_hours": [
+          {
+            "day_of_week": "Monday",
+            "breaks": [],
+            "automatic_break_length": 30,
+            "_start_time": "08:30",
+            "_finish_time": "17:00"
+          },
+          {
+            "day_of_week": "Tuesday",
+            "breaks": [],
+            "automatic_break_length": 30,
+            "_start_time": "08:30",
+            "_finish_time": "17:00"
+          },
+          {
+            "day_of_week": "Wednesday",
+            "breaks": [],
+            "automatic_break_length": 30,
+            "_start_time": "08:30",
+            "_finish_time": "17:00"
+          },
+          {
+            "day_of_week": "Thursday",
+            "breaks": [],
+            "automatic_break_length": 30,
+            "_start_time": "08:30",
+            "_finish_time": "17:00"
+          },
+          {
+            "day_of_week": "Friday",
+            "breaks": [],
+            "automatic_break_length": 30,
+            "_start_time": "08:30",
+            "_finish_time": "17:00"
+          }
+        ]
+      }
+    ]
+  },
+  "start_of_week": "saturday"
+}

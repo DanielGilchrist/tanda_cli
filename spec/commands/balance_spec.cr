@@ -29,7 +29,7 @@ describe TandaCLI::Commands::Balance do
           .to_json,
       )
 
-    context = Command.run(["balance"])
+    context = run(["balance"])
 
     expected = <<-OUTPUT
     Leave Balance
