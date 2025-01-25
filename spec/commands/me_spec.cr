@@ -25,7 +25,7 @@ describe TandaCLI::Commands::Me do
         }.to_json
       )
 
-    context = Command.run(["me"])
+    context = run(["me"])
 
     expected = <<-OUTPUT
     👤 Harry Potter
@@ -55,7 +55,7 @@ describe TandaCLI::Commands::Me do
         }.to_json
       )
 
-    context = Command.run(["me"])
+    context = run(["me"])
 
     expected = <<-OUTPUT
     Error: Bad Request

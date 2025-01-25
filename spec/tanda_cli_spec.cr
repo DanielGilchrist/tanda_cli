@@ -2,12 +2,14 @@ require "./spec_helper"
 
 describe TandaCLI do
   context "Main" do
-    it "Running main with no arguments passes" do
-      # TODO: Make running main testable
-      # io = IO::Memory.new
-      # TandaCLI.main([] of String, io)
-      #
-      # io.to_s.should contain("A CLI application for people using Tanda/Workforce.com")
+    it "Running main with no arguments and working config shows help" do
+      context = run(Array(String).new)
+      context.stdout.to_s.should contain("A CLI application for people using Tanda/Workforce.com")
+    end
+
+    it "Shows staging warning when in staging mode" do
+      context = run(["current_user", "display"], config_fixture: :default_staging)
+      context.stdout.to_s.should contain("Warning: Command running in staging mode")
     end
   end
 end

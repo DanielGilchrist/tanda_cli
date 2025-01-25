@@ -35,7 +35,7 @@ describe TandaCLI::Commands::PersonalDetails do
         }.to_json
       )
 
-    context = Command.run(["personal_details"])
+    context = run(["personal_details"])
 
     expected = <<-OUTPUT
     📖 Personal Details
@@ -66,7 +66,7 @@ describe TandaCLI::Commands::PersonalDetails do
         }.to_json
       )
 
-    context = Command.run(["personal_details"])
+    context = run(["personal_details"])
 
     expected = <<-OUTPUT
     Error: Bad Request
