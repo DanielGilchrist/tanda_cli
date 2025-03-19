@@ -8,8 +8,6 @@ module TandaCLI
         @display.puts(message)
       in .success?
         @display.success(message)
-      in .warning?
-        @display.warning(message)
       in .info?
         @display.info(message)
       in .warning?
