@@ -19,7 +19,7 @@ module TandaCLI
       end
 
       retrieve_input(sensitive) do
-        gets.try(&.chomp).presence
+        @stdin.gets(chomp: true).presence
       end
     end
 
@@ -34,7 +34,10 @@ module TandaCLI
     private def retrieve_input(sensitive : Bool, & : -> String?) : String?
       return yield unless sensitive
 
-      STDIN.noecho do
+      stdin = @stdin
+      return yield unless stdin.is_a?(IO::FileDescriptor)
+
+      stdin.noecho do
         yield
       end
     end

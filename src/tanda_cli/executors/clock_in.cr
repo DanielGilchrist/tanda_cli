@@ -1,3 +1,4 @@
+require "../models/clock_in_status"
 require "../models/photo_path_parser"
 
 module TandaCLI
@@ -106,22 +107,8 @@ module TandaCLI
           BreakStarted
         end
 
-        private def determine_status : ClockInStatus
-          if break_started?
-            ClockInStatus::BreakStarted
-          elsif clocked_in?
-            ClockInStatus::ClockedIn
-          else
-            ClockInStatus::ClockedOut
-          end
-        end
-
-        private def break_started? : Bool
-          @shifts.any?(&.ongoing_break?)
-        end
-
-        private def clocked_in? : Bool
-          @shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }
+        private def determine_status : Models::ClockInStatus::Status
+          Models::ClockInStatus.new(@shifts).determine_status
         end
 
         private def validate_clockin_start!
