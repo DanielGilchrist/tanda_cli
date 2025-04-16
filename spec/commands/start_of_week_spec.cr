@@ -23,7 +23,7 @@ describe TandaCLI::Commands::StartOfWeek do
 
       expected = <<-OUTPUT
       Error: Invalid start of week!
-             "invalid" is not a valid day of the week.
+             "#{start_of_week}" is not a valid day of the week.
 
       OUTPUT
 

@@ -10,7 +10,7 @@ on:
       crystal_version:
         description: "Crystal version"
         required: false
-        default: "1.15.1"
+        default: "1.16.1"
 
 jobs:
   test:
