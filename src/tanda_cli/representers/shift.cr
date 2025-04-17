@@ -22,7 +22,7 @@ module TandaCLI
       end
 
       private def build_shift_breaks(builder : String::Builder)
-        builder << "\n☕️ Breaks:\n".colorize.white.bold
+        builder << "☕️ Breaks:\n".colorize.white.bold
         @object.valid_breaks.sort_by(&.id).each do |shift_break|
           builder << ShiftBreak.new(shift_break).build
         end
