@@ -63,7 +63,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
     📅 Monday, 23 Dec 2024
     🕓 8:30 am - 5:00 pm
     🚧 Pending
-
     ☕️ Breaks:
         🕓 12:00 pm - 12:30 pm
         ⏸️  30 minutes
@@ -73,7 +72,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
     📅 Tuesday, 24 Dec 2024
     🕓 8:30 am -<space>
     🚧 Pending
-
     ☕️ Breaks:
         🕓 12:00 pm - 12:30 pm
         ⏸️  30 minutes
