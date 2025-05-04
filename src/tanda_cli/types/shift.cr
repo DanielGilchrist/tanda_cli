@@ -77,14 +77,14 @@ module TandaCLI
       getter leave_request : Types::LeaveRequest?
 
       @[JSON::Field(key: "notes")]
-      getter nilable_notes : Array(Types::Note)?
+      getter _nilable_notes : Array(Types::Note)?
 
       def day_of_week : Time::DayOfWeek
         date.day_of_week
       end
 
       def notes : Array(Types::Note)
-        nilable_notes || Array(Types::Note).new
+        _nilable_notes || Array(Types::Note).new
       end
 
       def set_leave_request!(leave_request : Types::LeaveRequest)
