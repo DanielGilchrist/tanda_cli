@@ -38,3 +38,13 @@ end
 def endpoint(regex : Regex)
   Regex.new("#{DEFAULT_BASE_URI}#{regex}")
 end
+
+def build_stdin(*lines : String) : IO
+  IO::Memory.new.tap do |stdin|
+    lines.each do |line|
+      stdin.puts line
+    end
+
+    stdin.rewind
+  end
+end
