@@ -34,7 +34,11 @@ module TandaCLI
         property? current : Bool
 
         @[JSON::Field(key: "regular_hours")]
-        getter regular_hours_schedules : Array(RegularHoursSchedule)?
+        private getter _regular_hours_schedules : Array(RegularHoursSchedule)?
+
+        def regular_hours_schedules : Array(RegularHoursSchedule)
+          _regular_hours_schedules || Array(RegularHoursSchedule).new
+        end
 
         def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
           @regular_hours_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
