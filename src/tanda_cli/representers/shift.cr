@@ -8,11 +8,14 @@ require "../types/shift_break"
 module TandaCLI
   module Representers
     struct Shift < Base(Types::Shift)
+      def initialize(@object : Types::Shift, @expected_finish_time : String? = nil)
+      end
+
       private def build_display(builder : Builder)
         builder << "📅 #{@object.pretty_date}\n"
 
         pretty_start = @object.pretty_start_time
-        pretty_finish = @object.pretty_finish_time
+        pretty_finish = @object.pretty_finish_time || @expected_finish_time
         builder << "🕓 #{pretty_start} - #{pretty_finish}\n" if pretty_start || pretty_finish
 
         builder << "🚧 #{@object.status}\n"
