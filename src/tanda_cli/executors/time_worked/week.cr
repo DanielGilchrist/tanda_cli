@@ -17,7 +17,9 @@ module TandaCLI
           from ||= to.at_beginning_of_week(start_day)
           shifts = fetch_visible_shifts(from, to)
 
-          total_time_worked, total_leave_hours = calculate_time_worked(shifts)
+          organisation = @context.config.current_organisation!
+          regular_hours_schedules = organisation.regular_hours_schedules
+          total_time_worked, total_leave_hours = calculate_time_worked(shifts, regular_hours_schedules)
           if total_time_worked.zero? && total_leave_hours.zero?
             @context.display.puts "You haven't clocked in this week"
           else
