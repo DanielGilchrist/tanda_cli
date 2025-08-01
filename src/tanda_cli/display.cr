@@ -15,15 +15,15 @@ module TandaCLI
     def initialize(@stdout : IO); end
 
     def success(message : String, value : String? = nil)
-      display_message(Type::Success, message, value)
+      display_message(:success, message, value)
     end
 
     def info(message : String, value : String? = nil)
-      display_message(Type::Info, message, value)
+      display_message(:info, message, value)
     end
 
     def warning(message : String)
-      display_message(Type::Warning, message)
+      display_message(:warning, message)
     end
 
     def info!(message : String, value : String? = nil) : NoReturn
@@ -35,13 +35,13 @@ module TandaCLI
       {% if flag?(:debug) && !flag?(:test) %}
         raise message
       {% else %}
-        display_message(Type::Fatal, message)
+        display_message(:fatal, message)
         TandaCLI.exit!
       {% end %}
     end
 
     def error(message : String, value : String? = nil)
-      display_message(Type::Error, message, value)
+      display_message(:error, message, value)
     end
 
     def error(message : String, value : String? = nil, & : String::Builder ->)
@@ -94,7 +94,7 @@ module TandaCLI
       puts "#{" " * raw_size(error_string)} #{message}"
     end
 
-    private def display_message(type, message : String, value : String? = nil)
+    private def display_message(type : Type, message : String, value : String? = nil)
       puts "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
     end
 
