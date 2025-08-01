@@ -32,14 +32,10 @@ module TandaCLI
     end
 
     private def retrieve_input(sensitive : Bool, & : -> String?) : String?
-      return yield unless sensitive
+      stdin = @stdin
+      return yield unless sensitive && stdin.is_a?(IO::FileDescriptor)
 
-      case stdin = @stdin
-      when IO::FileDescriptor
-        stdin.noecho { yield }
-      else
-        yield
-      end
+      stdin.noecho { yield }
     end
   end
 end
