@@ -93,9 +93,7 @@ module TandaCLI
           return unless schedule
           return if shift.date.date == Utils::Time.now.date
 
-          if display?
-            @context.stdout.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing finish time for #{shift.date.to_s("%A")}, assuming regular hours finish time"
-          end
+          @context.stdout.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing finish time for #{shift.date.to_s("%A")}, assuming regular hours finish time"
 
           expected_finish = Time.local(
             shift.date.year,
