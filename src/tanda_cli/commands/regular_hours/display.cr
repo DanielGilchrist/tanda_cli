@@ -9,7 +9,6 @@ module TandaCLI
           @summary = @description = "Display the regular hours for a user"
         end
 
-        # TODO: Make output pretty
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           organisation = config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
@@ -19,22 +18,26 @@ module TandaCLI
             TandaCLI.exit!
           end
 
-          stdout.puts "Regular hours for #{organisation.name}:"
-          regular_hours_schedules.each do |schedule|
-            stdout.puts "  #{schedule.day_of_week}: #{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
+          stdout.puts "Regular hours for #{organisation.name}".colorize.white.bold
+          stdout.puts
+
+          regular_hours_schedules.each_with_index do |schedule, index|
+            hours = "#{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
+
+            if (automatic_break_length = schedule.automatic_break_length) && automatic_break_length > 0
+              break_info = " • #{automatic_break_length}min break"
+            end
+
+            stdout.puts "📆 #{schedule.day_of_week}".colorize.white.bold
+            stdout.puts "  🕐 #{hours}#{break_info}"
+
             if (schedule_breaks = schedule.breaks).present?
-              stdout.puts "  Breaks:"
               schedule_breaks.each do |break_|
-                stdout.puts "    #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
-                stdout.puts "    #{break_.length.minutes} minutes"
+                stdout.puts "  ☕ #{break_.pretty_start_time} - #{break_.pretty_finish_time}"
               end
             end
 
-            if automatic_break_length = schedule.automatic_break_length
-              stdout.puts "    Automatic break length: #{automatic_break_length} minutes"
-            end
-
-            stdout.puts
+            stdout.puts if index < regular_hours_schedules.size - 1
           end
         end
       end

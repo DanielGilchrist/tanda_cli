@@ -4,6 +4,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   enum Fixture
     Default
     DefaultStaging
+    NoRegularHours
 
     def read : Bytes
       file_name = to_s.underscore

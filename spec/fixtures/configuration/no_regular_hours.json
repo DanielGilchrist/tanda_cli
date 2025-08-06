@@ -1,0 +1,23 @@
+{
+  "mode": "production",
+  "treat_paid_breaks_as_unpaid": true,
+  "production": {
+    "site_prefix": "eu",
+    "access_token": {
+      "email": "test@testmailfakenotrealthisisntarealdomainaaaa.com",
+      "token": "testtoken",
+      "token_type": "Bearer",
+      "scope": "me device leave personal roster timesheet",
+      "created_at": 1715957320
+    },
+    "organisations": [
+      {
+        "id": 1,
+        "name": "Test Organisation",
+        "user_id": 1,
+        "current": true
+      }
+    ]
+  },
+  "start_of_week": "saturday"
+}
