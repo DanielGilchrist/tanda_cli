@@ -13,7 +13,7 @@ module TandaCLI
           organisation = config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
 
-          if regular_hours_schedules.nil?
+          if regular_hours_schedules.empty?
             stdout.puts "No regular hours set for #{organisation.name}"
             TandaCLI.exit!
           end

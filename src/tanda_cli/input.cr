@@ -19,7 +19,7 @@ module TandaCLI
       end
 
       retrieve_input(sensitive) do
-        gets.try(&.chomp).presence
+        @stdin.gets(chomp: true).presence
       end
     end
 

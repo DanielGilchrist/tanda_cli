@@ -25,7 +25,7 @@ module TandaCLI
           @name : String,
           @user_id : Int32,
           @current : Bool = false,
-          @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
+          @_regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
         ); end
 
         getter id : Int32
@@ -34,10 +34,14 @@ module TandaCLI
         property? current : Bool
 
         @[JSON::Field(key: "regular_hours")]
-        getter regular_hours_schedules : Array(RegularHoursSchedule)?
+        private getter _regular_hours_schedules : Array(RegularHoursSchedule)?
+
+        def regular_hours_schedules : Array(RegularHoursSchedule)
+          @_regular_hours_schedules || Array(RegularHoursSchedule).new
+        end
 
         def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
-          @regular_hours_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
+          @_regular_hours_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
             schedule = schedule_with_day_of_week[:schedule]
             day_of_week = schedule_with_day_of_week[:day_of_week]
 

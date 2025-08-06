@@ -24,9 +24,10 @@ module TandaCLI
           end
 
           if schedules_with_day_of_week.empty?
-            display.warning("Unable to find roster with schedules for #{date}")
+            pretty_date = date.to_s("%Y-%m-%d")
+            display.warning("Unable to find roster with schedules for #{pretty_date}")
 
-            input.request_and(message: "Would you like to check the week before #{date}? (y/n)") do |input|
+            input.request_and(message: "Would you like to check the week before #{pretty_date}? (y/n)") do |input|
               display.error!("Unable to set regular hours from previous roster") if input != "y"
             end
 

@@ -28,6 +28,16 @@ def run(args : Array(String), stdin : IO = IO::Memory.new, config_fixture : Conf
   )
 end
 
+def build_stdin(*lines : String) : IO
+  IO::Memory.new.tap do |stdin|
+    lines.each do |line|
+      stdin.puts line
+    end
+
+    stdin.rewind
+  end
+end
+
 def endpoint(path : String, query = nil)
   uri = URI.parse("#{DEFAULT_BASE_URI}#{path}")
   uri.query = URI::Params.encode(query) if query

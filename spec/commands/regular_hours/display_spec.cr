@@ -32,4 +32,3 @@ describe TandaCLI::Commands::RegularHours::Display do
     context.stdout.to_s.should eq(expected)
   end
 end
-
