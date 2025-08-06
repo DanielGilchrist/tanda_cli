@@ -16,6 +16,7 @@ module TandaCLI
 
         pretty_start = @object.pretty_start_time
         pretty_finish = @object.pretty_finish_time || @expected_finish_time
+        pretty_finish = pretty_finish.colorize.yellow if pretty_finish && @expected_finish_time
         builder << "🕓 #{pretty_start} - #{pretty_finish}\n" if pretty_start || pretty_finish
 
         builder << "🚧 #{@object.status}\n"
