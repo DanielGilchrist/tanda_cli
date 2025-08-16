@@ -1,4 +1,4 @@
-require "../../executors/time_worked/week"
+require "../../models/time_worked/week_period"
 
 module TandaCLI
   module Commands
@@ -18,7 +18,7 @@ module TandaCLI
           display = options.has?("display")
           offset = options.get?("offset").try(&.as_s.to_i32?)
 
-          Executors::TimeWorked::Week.new(context, display, offset).execute
+          Models::TimeWorked::WeekPeriod.new(context, offset).calculate_and_display(display)
         end
       end
     end

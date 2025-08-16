@@ -1,10 +1,12 @@
-require "./base"
+require "./period"
+require "./calculator"
+require "./summary"
 
 module TandaCLI
-  module Executors
+  module Models
     module TimeWorked
-      class Week < Base
-        def execute
+      class WeekPeriod < Period
+        def fetch_shifts : Array(Types::Shift)
           to = Utils::Time.now
           start_day = @context.config.start_of_week
 
@@ -15,28 +17,38 @@ module TandaCLI
           end
 
           from ||= to.at_beginning_of_week(start_day)
-          shifts = fetch_visible_shifts(from, to)
-
-          organisation = @context.config.current_organisation!
-          regular_hours_schedules = organisation.regular_hours_schedules
-          total_time_worked, total_leave_hours = calculate_time_worked(shifts, regular_hours_schedules)
-          if total_time_worked.zero? && total_leave_hours.zero?
-            @context.stdout.puts "You haven't clocked in this week"
-          else
-            if shifts.any?(&.ongoing?)
-              maybe_print_time_left_or_overtime(shifts, total_time_worked, total_leave_hours)
-            end
-
-            @context.stdout.puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes this week")
-            if !total_leave_hours.zero?
-              @context.stdout.puts("You've taken #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave this week")
-            end
-          end
+          fetch_visible_shifts(from, to)
         end
 
-        private def maybe_print_time_left_or_overtime(shifts : Array(Types::Shift), worked_so_far : Time::Span, leave_taken_so_far : Time::Span)
+        def calculate_and_display(display_details : Bool = false)
+          shifts = fetch_shifts
           organisation = @context.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
+
+          treat_paid_breaks_as_unpaid = @context.config.treat_paid_breaks_as_unpaid? || false
+          calculator = Calculator.new(@context, treat_paid_breaks_as_unpaid)
+          summary = calculator.calculate(shifts, regular_hours_schedules)
+
+          if !summary.has_work_or_leave?
+            @context.stdout.puts "You haven't clocked in this week"
+            return
+          end
+
+          if display_details
+            display_shift_details(shifts, calculator, regular_hours_schedules)
+          end
+
+          if shifts.any?(&.ongoing?)
+            display_time_left_or_overtime(shifts, summary, regular_hours_schedules)
+          end
+
+          @context.stdout.puts("You've worked #{summary.total_hours_worked_text} this week")
+          return if summary.total_leave_hours.zero?
+
+          @context.stdout.puts("You've taken #{summary.total_leave_hours_text} of leave this week")
+        end
+
+        private def display_time_left_or_overtime(shifts : Array(Types::Shift), summary : Summary, regular_hours_schedules : Array(RegularHoursSchedule)?)
           return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 
           shifts_by_day_of_week = shifts.group_by(&.day_of_week)
@@ -53,7 +65,7 @@ module TandaCLI
             else
               regular_hours_schedule.worked_length
             end
-          end - worked_so_far - leave_taken_so_far
+          end - summary.total_time_worked - summary.total_leave_hours
 
           header_text = time_left.positive? ? "Time left today" : "Overtime this week"
           absolute_time_left = time_left.abs
