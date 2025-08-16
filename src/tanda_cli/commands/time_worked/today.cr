@@ -1,4 +1,4 @@
-require "../../executors/time_worked/today"
+require "../../models/time_worked/day_period"
 
 module TandaCLI
   module Commands
@@ -18,7 +18,7 @@ module TandaCLI
           display = options.has?("display")
           offset = options.get?("offset").try(&.as_s.to_i32?)
 
-          Executors::TimeWorked::Today.new(context, display, offset).execute
+          Models::TimeWorked::DayPeriod.new(context, offset).calculate_and_display(display)
         end
       end
     end
