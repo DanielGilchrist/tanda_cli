@@ -143,6 +143,63 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     context.stdout.to_s.should eq(expected)
   end
+
+  it "Shows overtime if previous day filled and past expected finish" do
+    WebMock
+      .stub(:get, endpoint(Regex.new("/shifts")))
+      .to_return(
+        status: 200,
+        body: [
+          build_shift(
+            id: 1,
+            start: Time.local(2024, 12, 23, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 23, 12),
+            break_finish: Time.local(2024, 12, 23, 12, 30)
+          ),
+          build_shift(
+            id: 2,
+            start: Time.local(2024, 12, 24, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 24, 12),
+            break_finish: Time.local(2024, 12, 24, 12, 30)
+          ),
+        ].to_json,
+      )
+
+    travel_to(Time.local(2024, 12, 24, 19))
+
+    context = run(["time_worked", "week", "--display"])
+
+    expected = <<-OUTPUT.gsub("<space>", " ")
+    ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+    Time worked: 8 hours and 0 minutes
+    📅 Monday, 23 Dec 2024
+    🕓 8:30 am - 5:00 pm
+    🚧 Pending
+    ☕️ Breaks:
+        🕓 12:00 pm - 12:30 pm
+        ⏸️  30 minutes
+        💰 false
+
+    Worked so far: 10 hours and 0 minutes
+    📅 Tuesday, 24 Dec 2024
+    🕓 8:30 am -<space>
+    🚧 Pending
+    ☕️ Breaks:
+        🕓 12:00 pm - 12:30 pm
+        ⏸️  30 minutes
+        💰 false
+
+    Overtime this week: 2 hours and 0 minutes
+    Overtime since: 5:00 pm
+
+    You've worked 18 hours and 0 minutes this week
+
+    OUTPUT
+
+    context.stdout.to_s.should eq(expected)
+  end
 end
 
 private def build_shift(id, start, finish, break_start, break_finish)
