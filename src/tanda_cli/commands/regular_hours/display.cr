@@ -6,7 +6,7 @@ module TandaCLI
       class Display < Base
         def setup_
           @name = "display"
-          @summary = @description = "Display the regular hours for a user"
+          @summary = @description = "Display the regular hours for the current user"
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
