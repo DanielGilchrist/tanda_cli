@@ -40,6 +40,10 @@ module TandaCLI
           @_regular_hours_schedules || Array(RegularHoursSchedule).new
         end
 
+        def clear_regular_hours_schedules!
+          @_regular_hours_schedules = nil
+        end
+
         def set_regular_hours!(schedules_with_day_of_week : Array({day_of_week: Time::DayOfWeek, schedule: Types::Schedule}))
           @_regular_hours_schedules = schedules_with_day_of_week.compact_map do |schedule_with_day_of_week|
             schedule = schedule_with_day_of_week[:schedule]
