@@ -8,7 +8,7 @@ require "../types/shift_break"
 module TandaCLI
   module Representers
     class Shift < Base(Types::Shift)
-      def initialize(@object : Types::Shift, @expected_finish_time : String? = nil)
+      def initialize(@object : Types::Shift, @expected_finish_time : String? = nil, @expected_break_length : Time::Span? = nil)
       end
 
       private def build_display(builder : String::Builder)
@@ -21,14 +21,20 @@ module TandaCLI
 
         builder << "🚧 #{@object.status}\n"
 
-        build_shift_breaks(builder) if @object.valid_breaks.present?
+        build_shift_breaks(builder) if @object.valid_breaks.present? || @expected_break_length
         build_notes(builder) if @object.notes.present?
       end
 
       private def build_shift_breaks(builder : String::Builder)
-        builder << "☕️ Breaks:\n".colorize.white.bold
-        @object.valid_breaks.sort_by(&.id).each do |shift_break|
-          builder << ShiftBreak.new(shift_break).build
+        expected_break_length = @expected_break_length
+
+        if (breaks = @object.valid_breaks).present?
+          builder << "☕️ Breaks:\n".colorize.white.bold
+          breaks.sort_by(&.id).each do |shift_break|
+            builder << ShiftBreak.new(shift_break).build
+          end
+        elsif expected_break_length && !expected_break_length.zero?
+          builder << "☕️ #{expected_break_length.total_minutes.to_i} minutes".colorize.yellow
         end
       end
 
