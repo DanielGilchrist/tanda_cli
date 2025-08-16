@@ -36,7 +36,7 @@ module TandaCLI
         display.puts "#{index}: #{org.name}"
       end
 
-      input.request_and(message: "\nEnter a number: ") do |user_input|
+      input.request_and(message: "\nEnter a number:") do |user_input|
         number = user_input.try(&.to_i32?)
 
         if number

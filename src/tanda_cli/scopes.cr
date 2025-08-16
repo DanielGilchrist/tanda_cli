@@ -42,13 +42,23 @@ module TandaCLI
       scope_strings.compact_map(&->OptionalScope.parse?(String))
     end
 
-    def prompt : Prompt
-      Prompt.new
+    def prompt(stdin : IO, stdout : IO) : Prompt
+      Prompt.new(stdin, stdout)
     end
 
     private class Prompt
-      def initialize
-        @prompt = Term::Prompt.new
+      {% if flag?(:test) %}
+        @prompt : TestPrompt
+      {% else %}
+        @prompt : Term::Prompt
+      {% end %}
+
+      def initialize(stdin : IO, stdout : IO)
+        @prompt = {% if flag?(:test) %}
+          TestPrompt.new(stdin.as(IO::Memory), stdout.as(IO::Memory))
+        {% else %}
+          Term::Prompt.new(input: stdin.as(IO::FileDescriptor), output: stdout.as(IO::FileDescriptor))
+        {% end %}
       end
 
       def multi_select(text : String) : Array(Scope)
@@ -61,6 +71,34 @@ module TandaCLI
       private def with_required_scopes(scopes : Array(OptionalScope)) : Array(Scope)
         RequiredScope.values + scopes
       end
+
+      {% if flag?(:test) %}
+        private class TestPrompt
+          def initialize(@stdin : IO::Memory, @stdout : IO::Memory)
+          end
+
+          def multi_select(text : String, choices : Array(String)) : Array(String)
+            selected_choices = Array(String).new
+
+            while line = @stdin.gets
+              break if line == "_prompt_end_"
+
+              line = line.strip
+              next if line.empty?
+
+              if line.to_i?.try { |i| i >= 0 && i < choices.size }
+                # Line is a valid index
+                selected_choices << choices[line.to_i]
+              elsif choices.includes?(line)
+                # Line is a valid choice name
+                selected_choices << line
+              end
+            end
+
+            selected_choices
+          end
+        end
+      {% end %}
     end
   end
 end

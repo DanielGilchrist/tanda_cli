@@ -77,7 +77,9 @@ module TandaCLI
       end
 
       private def request_user_information!(display : Display, input : Input) : Tuple(String, String, String, Array(Scopes::Scope))
-        selected_scopes = Scopes.prompt.multi_select("Which scopes do you want to allow? (Select none for all)")
+        selected_scopes = Scopes
+          .prompt(input.@stdin, display.@stdout)
+          .multi_select("Which scopes do you want to allow? (Select none for all)")
 
         valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
         site_prefix = request_site_prefix(display, input, message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):")
@@ -89,7 +91,7 @@ module TandaCLI
         end
         display.puts
 
-        email = input.request_or(message: "Whats your email?") do
+        email = input.request_or(message: "What's your email?") do
           display.error!("Email cannot be blank")
         end
         display.puts
