@@ -8,7 +8,7 @@ module TandaCLI
 
         def setup_
           @name = "determine"
-          @summary = @description = "Determine the regular hours for a user"
+          @summary = @description = "Determine the regular hours for the current user"
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
