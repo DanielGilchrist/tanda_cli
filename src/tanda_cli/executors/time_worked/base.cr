@@ -64,14 +64,16 @@ module TandaCLI
           end
 
           expected_finish_time = nil
+          expected_break_length = nil
           if shift.finish_time.nil? && regular_hours_schedules
             schedule = regular_hours_schedules.find(&.day_of_week.==(shift.day_of_week))
             if schedule && shift.date.date != Utils::Time.now.date
               expected_finish_time = Utils::Time.pretty_time(schedule.finish_time)
+              expected_break_length = schedule.break_length
             end
           end
 
-          Representers::Shift.new(shift, expected_finish_time).display(@context.display)
+          Representers::Shift.new(shift, expected_finish_time, expected_break_length).display(@context.display)
           @context.display.puts
         end
 
@@ -108,8 +110,10 @@ module TandaCLI
             location: Utils::Time.location
           )
 
-          unpaid_break_time = (treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
-          (expected_finish - start_time) - unpaid_break_time
+          actual_break_time = (treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
+          expected_break_time = schedule.break_length
+          total_break_time = actual_break_time + expected_break_time
+          (expected_finish - start_time) - total_break_time
         end
       end
     end
