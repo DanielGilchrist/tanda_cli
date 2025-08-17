@@ -22,7 +22,7 @@ describe TandaCLI::Commands::Mode do
       context = run(["mode", "custom", url])
 
       context.config.mode.should eq("production")
-      context.stdout.to_s.should contain("Error: Host must contain")
+      context.stderr.to_s.should contain("Error: Host must contain")
     end
   end
 

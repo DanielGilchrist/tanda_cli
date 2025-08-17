@@ -4,8 +4,8 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  def main(args : Array(String), stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
-    build_context(stdin, stdout, config_file).tap do |context|
+  def main(args : Array(String), stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context
+    build_context(stdin, stdout, stderr, config_file).tap do |context|
       Commands::Main.new(context).execute(args)
     end
   ensure
@@ -16,8 +16,8 @@ module TandaCLI
     raise(Cling::ExitProgram.new(0))
   end
 
-  private def build_context(stdin : IO, stdout : IO, config_file : Configuration::AbstractFile) : Context
-    display = Display.new(stdout)
+  private def build_context(stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context
+    display = Display.new(stdout, stderr)
     input = Input.new(stdin, display)
     config = Configuration.init(config_file, display)
     current_user = user_from_config(config) || user_from_api(config, display, input)
@@ -25,7 +25,6 @@ module TandaCLI
     current = Current.new(current_user)
 
     Context.new(
-      stdout,
       config,
       client,
       current,
@@ -72,6 +71,7 @@ end
     args: ARGV,
     stdout: STDOUT,
     stdin: STDIN,
+    stderr: STDERR,
     config_file: TandaCLI::Configuration::File.new
   )
 {% end %}

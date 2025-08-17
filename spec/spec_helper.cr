@@ -23,6 +23,7 @@ def run(args : Array(String), stdin : IO = IO::Memory.new, config_fixture : Conf
   TandaCLI.main(
     args,
     stdout: IO::Memory.new,
+    stderr: IO::Memory.new,
     stdin: stdin,
     config_file: Configuration::FixtureFile.load(config_fixture)
   )

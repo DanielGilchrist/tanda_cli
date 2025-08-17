@@ -57,6 +57,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
     context = run(["regular_hours", "determine"], config_fixture: :no_regular_hours)
 
     context.stdout.to_s.should contain("Regular hours set from roster on 2025-08-05")
+    context.stderr.to_s.should be_empty
 
     organisation = context.config.current_organisation!
     organisation.regular_hours_schedules.size.should eq(2)
@@ -94,13 +95,13 @@ describe TandaCLI::Commands::RegularHours::Determine do
 
     context = run(["regular_hours", "determine"], stdin: stdin)
 
-    expected = <<-OUTPUT
+    expected_stdout = <<-OUTPUT
     Warning: Unable to find roster with schedules for 2025-08-04
     Would you like to check the week before 2025-08-04? (y/n)
-    Error: Unable to set regular hours from previous roster
 
     OUTPUT
 
-    context.stdout.to_s.should eq(expected)
+    context.stdout.to_s.should eq(expected_stdout)
+    context.stderr.to_s.should eq("Error: Unable to set regular hours from previous roster\n")
   end
 end
