@@ -10,9 +10,9 @@ describe TandaCLI::Commands::RefetchToken do
         status: 200,
         body: {
           access_token: "faketoken",
-          token_type: "test",
-          scope: scope,
-          created_at: TandaCLI::Utils::Time.now.to_unix
+          token_type:   "test",
+          scope:        scope,
+          created_at:   TandaCLI::Utils::Time.now.to_unix,
         }.to_json
       )
 

@@ -55,10 +55,10 @@ module TandaCLI
 
       def initialize(stdin : IO, stdout : IO)
         @prompt = {% if flag?(:test) %}
-          TestPrompt.new(stdin.as(IO::Memory), stdout.as(IO::Memory))
-        {% else %}
-          Term::Prompt.new(input: stdin.as(IO::FileDescriptor), output: stdout.as(IO::FileDescriptor))
-        {% end %}
+                    TestPrompt.new(stdin.as(IO::Memory), stdout.as(IO::Memory))
+                  {% else %}
+                    Term::Prompt.new(input: stdin.as(IO::FileDescriptor), output: stdout.as(IO::FileDescriptor))
+                  {% end %}
       end
 
       def multi_select(text : String) : Array(Scope)
