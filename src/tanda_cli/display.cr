@@ -86,11 +86,11 @@ module TandaCLI
       TandaCLI.exit!
     end
 
-    def puts(message : String? = nil)
+    def puts(message = nil)
       @stdout.puts message
     end
 
-    def puts_error(message : String? = nil)
+    def puts_error(message = nil)
       @stderr.puts message
     end
 

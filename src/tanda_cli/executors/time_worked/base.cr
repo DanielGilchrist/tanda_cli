@@ -53,12 +53,12 @@ module TandaCLI
 
         private def print_shift(shift : Types::Shift, time_worked : Time::Span?, worked_so_far : Time::Span?)
           if time_worked
-            @context.stdout.puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
+            @context.display.puts "#{"Time worked:".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
           elsif worked_so_far
-            @context.stdout.puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
+            @context.display.puts "#{"Worked so far:".colorize.white.bold} #{worked_so_far.hours} hours and #{worked_so_far.minutes} minutes"
           end
 
-          Representers::Shift.new(shift).display(@context.stdout)
+          Representers::Shift.new(shift).display(@context.display)
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)
@@ -67,9 +67,9 @@ module TandaCLI
           # Don't bother showing days where there are no hours for leave
           return if length.zero?
 
-          @context.stdout.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
+          @context.display.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
-          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.stdout)
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.display)
         end
       end
     end

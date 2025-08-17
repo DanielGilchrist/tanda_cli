@@ -19,15 +19,15 @@ module TandaCLI
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
-            @context.stdout.puts "You haven't clocked in this week"
+            @context.display.puts "You haven't clocked in this week"
           else
             if shifts.any?(&.ongoing?)
               maybe_print_time_left_or_overtime(shifts, total_time_worked, total_leave_hours)
             end
 
-            @context.stdout.puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes this week")
+            @context.display.puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes this week")
             if !total_leave_hours.zero?
-              @context.stdout.puts("You've taken #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave this week")
+              @context.display.puts("You've taken #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave this week")
             end
           end
         end
@@ -55,13 +55,13 @@ module TandaCLI
 
           header_text = time_left.positive? ? "Time left today" : "Overtime this week"
           absolute_time_left = time_left.abs
-          @context.stdout.puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
+          @context.display.puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
 
           clock_out_text = time_left.positive? ? "You can clock out at" : "Overtime since"
 
           pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
-          @context.stdout.puts "#{clock_out_text}: #{pretty_time}"
-          @context.stdout.puts
+          @context.display.puts "#{clock_out_text}: #{pretty_time}"
+          @context.display.puts
         end
       end
     end
