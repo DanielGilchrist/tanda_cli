@@ -111,7 +111,7 @@ module TandaCLI
           )
 
           actual_break_time = (treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
-          expected_break_time = schedule.break_length
+          expected_break_time = actual_break_time == 0.minutes ? schedule.break_length : 0.minutes
           total_break_time = actual_break_time + expected_break_time
           (expected_finish - start_time) - total_break_time
         end
