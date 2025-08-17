@@ -20,7 +20,7 @@ module TandaCLI
 
         return display.error!("No leave balances to display") if leave_balance.nil?
 
-        Representers::LeaveBalance.new(leave_balance).display(stdout)
+        Representers::LeaveBalance.new(leave_balance).display(display)
       end
     end
   end

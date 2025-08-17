@@ -74,6 +74,6 @@ describe TandaCLI::Commands::PersonalDetails do
 
     OUTPUT
 
-    context.stdout.to_s.should eq(expected)
+    context.stderr.to_s.should eq(expected)
   end
 end

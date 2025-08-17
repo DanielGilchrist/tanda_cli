@@ -16,16 +16,16 @@ module TandaCLI
 
           total_time_worked, total_leave_hours = calculate_time_worked(shifts)
           if total_time_worked.zero? && total_leave_hours.zero?
-            @context.stdout.puts "You haven't clocked in today"
+            @context.display.puts "You haven't clocked in today"
           end
 
           unless total_time_worked.zero?
-            @context.stdout.puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes today")
+            @context.display.puts("You've worked #{total_time_worked.total_hours.to_i} hours and #{total_time_worked.minutes} minutes today")
           end
 
           return if total_leave_hours.zero?
 
-          @context.stdout.puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave today")
+          puts("You took #{total_leave_hours.hours} hours and #{total_leave_hours.minutes} minutes of leave today")
         end
       end
     end

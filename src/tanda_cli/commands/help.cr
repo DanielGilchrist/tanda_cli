@@ -3,7 +3,7 @@ require "./base"
 module TandaCLI
   module Commands
     class Help < Cling::Command
-      def initialize(@stdout : IO)
+      def initialize(@display : Display)
         super()
       end
 
@@ -14,7 +14,7 @@ module TandaCLI
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
         parent = self.parent
-        @stdout.puts parent.help_template if parent
+        @display.puts parent.help_template if parent
       end
     end
   end

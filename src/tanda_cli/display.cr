@@ -12,7 +12,7 @@ module TandaCLI
       Fatal
     end
 
-    def initialize(@stdout : IO); end
+    def initialize(@stdout : IO, @stderr : IO); end
 
     def success(message : String, value : String? = nil)
       display_message(:success, message, value)
@@ -86,16 +86,27 @@ module TandaCLI
       TandaCLI.exit!
     end
 
-    def puts(message : String? = nil)
+    def puts(message = nil)
       @stdout.puts message
     end
 
+    def puts_error(message = nil)
+      @stderr.puts message
+    end
+
     private def sub_error(message : String)
-      puts "#{" " * raw_size(error_string)} #{message}"
+      puts_error "#{" " * raw_size(error_string)} #{message}"
     end
 
     private def display_message(type : Type, message : String, value : String? = nil)
-      puts "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
+      message = "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
+
+      case type
+      when .error?, .fatal?
+        puts_error message
+      else
+        puts message
+      end
     end
 
     private def prefix(type : Type) : Colorize::Object(String)
