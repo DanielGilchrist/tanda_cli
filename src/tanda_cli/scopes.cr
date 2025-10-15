@@ -1,4 +1,5 @@
 require "term-prompt"
+require "../ext/term_reader"
 
 module TandaCLI
   module Scopes
