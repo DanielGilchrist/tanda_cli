@@ -2,37 +2,33 @@ version: 2.0
 shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.6.3
+    version: 1.6.4
 
   cling:
     git: https://github.com/devnote-dev/cling.git
-    version: 3.0.0+git.commit.87d2184e0223cd647de86b6f4247bb42795bfaf2
+    version: 3.1.0+git.commit.e23db4aa04ce4727a1e3f699088c114a1930c3e7
 
-  cor:
-    git: https://github.com/watzon/cor.git
-    version: 0.1.0+git.commit.9c9e51ac6168f3bd4fdc51d679b65de09ef76cac
-
-  ioctl:
-    git: https://github.com/crystal-posix/ioctl.cr.git
-    version: 1.0.0
+  term-color:
+    git: https://github.com/crystal-term/color.git
+    version: 0.4.1
 
   term-cursor:
     git: https://github.com/crystal-term/cursor.git
-    version: 0.1.0+git.commit.8805d5f686d153db92cf2ce3333433f8ed3708d0
+    version: 0.3.1
 
   term-prompt:
     git: https://github.com/crystal-term/prompt.git
-    version: 0.1.0+git.commit.b7f129c0bdbacc860aa5d7f60559cf8eda55bc26
+    version: 0.3.2+git.commit.4f536764bc091940f2a6f7e9b9aeca94921ab13e
 
   term-reader:
     git: https://github.com/crystal-term/reader.git
-    version: 0.1.0+git.commit.83adad4a77115dc08efad8057cda3e399d0f1a24
+    version: 0.3.2
 
   term-screen:
     git: https://github.com/crystal-term/screen.git
-    version: 0.1.0+git.commit.ea51ee8d1f6c286573c41a7e784d31c80af7b9bb
+    version: 0.3.1
 
   webmock:
     git: https://github.com/manastech/webmock.cr.git
-    version: 0.14.0+git.commit.42b347cdd64e13193e46167a03593944ae2b3d20
+    version: 0.14.0+git.commit.fde6b20d5b80401a967e044b1a3e80ee391bed60
 
