@@ -56,11 +56,7 @@ module TandaCLI
 
     def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)
       self.site_prefix = site_prefix
-      self.access_token.email = email
-      self.access_token.token = access_token.token
-      self.access_token.token_type = access_token.token_type
-      self.access_token.scopes = access_token.scopes
-      self.access_token.created_at = access_token.created_at
+      self.access_token.overwrite!(email, access_token)
 
       save!
     end
@@ -77,10 +73,10 @@ module TandaCLI
         prefix = "#{site_prefix}." if site_prefix != "my"
         "https://staging.#{prefix}tanda.co/api/v2"
       else
-        validated_uri = Utils::URL.validate(mode)
-        return validated_uri if validated_uri.is_a?(Error::InvalidURL)
+        validated_url = Utils::URL.validate(mode)
+        return validated_url if validated_url.is_a?(Error::InvalidURL)
 
-        "#{validated_uri}/api/v2"
+        "#{validated_url}/api/v2"
       end
     end
   end

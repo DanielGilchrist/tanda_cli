@@ -1,17 +1,16 @@
 module TandaCLI
   module Utils
     module Time
+      @@mutex = Mutex.new
       @@now : ::Time? = nil
 
-      def travel_to(time : ::Time)
-        now = @@now
-        raise("travel_to has already been called with '#{now}'") if now
-
-        @@now = time
-      end
-
-      def reset!
-        @@now = nil
+      def travel_to(time : ::Time, &)
+        @@mutex.synchronize do
+          @@now = time
+          yield
+        ensure
+          @@now = nil
+        end
       end
 
       def now : ::Time
@@ -21,6 +20,6 @@ module TandaCLI
   end
 end
 
-def travel_to(time : Time)
-  TandaCLI::Utils::Time.travel_to(time)
+def travel_to(time : Time, &block)
+  TandaCLI::Utils::Time.travel_to(time, &block)
 end

@@ -20,6 +20,14 @@ module TandaCLI
         property scopes : Array(Scopes::Scope)
 
         property created_at : Int32?
+
+        def overwrite!(email : String, access_token : Types::AccessToken)
+          self.email = email
+          self.token = access_token.token
+          self.token_type = access_token.token_type
+          self.scopes = access_token.scopes
+          self.created_at = access_token.created_at
+        end
       end
     end
   end

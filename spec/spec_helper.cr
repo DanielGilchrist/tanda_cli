@@ -2,24 +2,24 @@ require "spec"
 require "colorize"
 require "webmock"
 
+# Makes asserting on output much easier
+Colorize.enabled = false
+
 require "../src/tanda_cli"
 require "./support/travel_to_hack"
 require "./support/configuration/fixture_file"
-
-# Makes asserting on output much easier
-Colorize.enabled = false
 
 Spec.before_each do
   WebMock.reset
 end
 
-Spec.after_each do
-  TandaCLI::Utils::Time.reset!
-end
-
 DEFAULT_BASE_URI = "https://eu.tanda.co/api/v2"
 
-def run(args : Array(String), stdin : IO = IO::Memory.new, config_fixture : Configuration::FixtureFile::Fixture = :default) : TandaCLI::Context
+def run(
+  args : Array(String),
+  stdin : IO = IO::Memory.new,
+  config_fixture : Configuration::FixtureFile::Fixture = :default,
+) : TandaCLI::Context
   TandaCLI.main(
     args,
     stdout: IO::Memory.new,

@@ -24,11 +24,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
         ].to_json,
       )
 
-    travel_to(Time.local(2024, 12, 24))
-
-    context = run(["time_worked", "week"])
-
-    context.stdout.to_s.should eq("You've worked 16 hours and 0 minutes this week\n")
+    travel_to(Time.local(2024, 12, 24)) do
+      context = run(["time_worked", "week"])
+      context.stdout.to_s.should eq("You've worked 16 hours and 0 minutes this week\n")
+    end
   end
 
   it "Displays time worked for week displaying shifts when --display flag is passed" do
@@ -54,37 +53,37 @@ describe TandaCLI::Commands::TimeWorked::Week do
         ].to_json,
       )
 
-    travel_to(Time.local(2024, 12, 24, 14))
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
 
-    context = run(["time_worked", "week", "--display"])
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    expected = <<-OUTPUT.gsub("<space>", " ")
-    Time worked: 8 hours and 0 minutes
-    📅 Monday, 23 Dec 2024
-    🕓 8:30 am - 5:00 pm
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Worked so far: 5 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    Worked so far: 5 hours and 0 minutes
-    📅 Tuesday, 24 Dec 2024
-    🕓 8:30 am -<space>
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Time left today: 3 hours and 0 minutes
+      You can clock out at: 5:00 pm
 
-    Time left today: 3 hours and 0 minutes
-    You can clock out at: 5:00 pm
+      You've worked 13 hours and 0 minutes this week
 
-    You've worked 13 hours and 0 minutes this week
+      OUTPUT
 
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+      context.stdout.to_s.should eq(expected)
+    end
   end
 end
 
