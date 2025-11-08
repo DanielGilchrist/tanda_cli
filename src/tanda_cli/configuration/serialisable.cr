@@ -2,7 +2,6 @@ module TandaCLI
   class Configuration
     class Serialisable
       include JSON::Serializable
-      include Configuration::Macros
 
       PRODUCTION = Configuration::PRODUCTION
 
@@ -24,10 +23,7 @@ module TandaCLI
       @[JSON::Field(emit_null: true)]
       property? treat_paid_breaks_as_unpaid : Bool?
 
-      # properties that are delegated based on the current environment
-      environment_property organisations : Array(Organisation)
-      environment_property site_prefix : String
-      environment_property access_token : AccessToken
+      delegate :organisations, :organisations=, :site_prefix, :site_prefix=, :access_token, to: current_environment
 
       def start_of_week=(value : String) : Time::DayOfWeek | Error::InvalidStartOfWeek
         start_of_week = Time::DayOfWeek.parse?(value)
