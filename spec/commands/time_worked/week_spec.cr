@@ -276,38 +276,38 @@ describe TandaCLI::Commands::TimeWorked::Week do
         ].to_json,
       )
 
-    travel_to(Time.local(2024, 12, 24, 14))
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
 
-    context = run(["time_worked", "week", "--display"])
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    expected = <<-OUTPUT.gsub("<space>", " ")
-    ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-    Time worked: 8 hours and 0 minutes
-    📅 Monday, 23 Dec 2024
-    🕓 8:30 am - 5:00 pm
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Worked so far: 5 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    Worked so far: 5 hours and 0 minutes
-    📅 Tuesday, 24 Dec 2024
-    🕓 8:30 am -<space>
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Time left today: 3 hours and 0 minutes
+      You can clock out at: 5:00 pm
 
-    Time left today: 3 hours and 0 minutes
-    You can clock out at: 5:00 pm
+      You've worked 13 hours and 0 minutes this week
 
-    You've worked 13 hours and 0 minutes this week
+      OUTPUT
 
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+      context.stdout.to_s.should eq(expected)
+    end
   end
 
   it "Shows overtime if previous day filled and past expected finish" do
@@ -333,38 +333,38 @@ describe TandaCLI::Commands::TimeWorked::Week do
         ].to_json,
       )
 
-    travel_to(Time.local(2024, 12, 24, 19))
+    travel_to(Time.local(2024, 12, 24, 19)) do
+      context = run(["time_worked", "week", "--display"])
 
-    context = run(["time_worked", "week", "--display"])
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    expected = <<-OUTPUT.gsub("<space>", " ")
-    ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-    Time worked: 8 hours and 0 minutes
-    📅 Monday, 23 Dec 2024
-    🕓 8:30 am - 5:00 pm
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Worked so far: 10 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
 
-    Worked so far: 10 hours and 0 minutes
-    📅 Tuesday, 24 Dec 2024
-    🕓 8:30 am -<space>
-    🚧 Pending
-    ☕️ Breaks:
-        🕓 12:00 pm - 12:30 pm
-        ⏸️  30 minutes
-        💰 false
+      Overtime this week: 2 hours and 0 minutes
+      Overtime since: 5:00 pm
 
-    Overtime this week: 2 hours and 0 minutes
-    Overtime since: 5:00 pm
+      You've worked 18 hours and 0 minutes this week
 
-    You've worked 18 hours and 0 minutes this week
+      OUTPUT
 
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+      context.stdout.to_s.should eq(expected)
+    end
   end
 
   it "Doesn't show time left or overtime if next day with assumed regular hours without breaks" do
@@ -390,30 +390,30 @@ describe TandaCLI::Commands::TimeWorked::Week do
         ].to_json,
       )
 
-    travel_to(Time.local(2024, 12, 25, 1))
+    travel_to(Time.local(2024, 12, 25, 1)) do
+      context = run(["time_worked", "week", "--display"])
 
-    context = run(["time_worked", "week", "--display"])
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ 30 minutes
 
-    expected = <<-OUTPUT.gsub("<space>", " ")
-    ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-    Time worked: 8 hours and 0 minutes
-    📅 Monday, 23 Dec 2024
-    🕓 8:30 am - 5:00 pm
-    🚧 Pending
-    ☕️ 30 minutes
+      ⚠️ Warning: Missing finish time for Tuesday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ 30 minutes
 
-    ⚠️ Warning: Missing finish time for Tuesday, assuming regular hours finish time
-    Time worked: 8 hours and 0 minutes
-    📅 Tuesday, 24 Dec 2024
-    🕓 8:30 am - 5:00 pm
-    🚧 Pending
-    ☕️ 30 minutes
+      You've worked 16 hours and 0 minutes this week
 
-    You've worked 16 hours and 0 minutes this week
+      OUTPUT
 
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+      context.stdout.to_s.should eq(expected)
+    end
   end
 end
 
