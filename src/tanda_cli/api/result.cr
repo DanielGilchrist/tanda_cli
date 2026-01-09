@@ -1,9 +1,9 @@
-require "../result"
+require "../abstract_result"
 require "../types/error"
 
 module TandaCLI
   module API
-    class Result(T) < TandaCLI::Result(T, Types::Error)
+    struct Result(T) < TandaCLI::AbstractResult(T, Types::Error)
       def self.from(response : HTTP::Client::Response) : self
         new(parse(response))
       end

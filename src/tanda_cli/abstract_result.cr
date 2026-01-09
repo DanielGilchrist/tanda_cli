@@ -1,5 +1,5 @@
 module TandaCLI
-  class Result(T, E)
+  abstract struct AbstractResult(T, E)
     def initialize(@value : T | E); end
 
     def or(& : E -> U) : T | U forall U
