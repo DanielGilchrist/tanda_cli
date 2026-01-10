@@ -1,6 +1,3 @@
-require "json"
-require "./converters/span.cr"
-
 module TandaCLI
   module Types
     class LeaveBalance

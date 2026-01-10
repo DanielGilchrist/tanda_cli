@@ -1,6 +1,3 @@
-require "./base"
-require "../types/leave_balance"
-
 module TandaCLI
   module Representers
     class LeaveBalance < Base(Types::LeaveBalance)

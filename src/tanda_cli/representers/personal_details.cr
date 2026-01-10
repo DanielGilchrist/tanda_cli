@@ -1,8 +1,3 @@
-require "colorize"
-
-require "./base"
-require "../types/personal_details/**"
-
 module TandaCLI
   module Representers
     class PersonalDetails < Base(Types::PersonalDetails)

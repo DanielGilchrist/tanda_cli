@@ -1,11 +1,3 @@
-require "json"
-require "file_utils"
-
-require "./configuration/**"
-require "./error/invalid_start_of_week"
-require "./types/access_token"
-require "./utils/url"
-
 module TandaCLI
   class Configuration
     PRODUCTION = "production"

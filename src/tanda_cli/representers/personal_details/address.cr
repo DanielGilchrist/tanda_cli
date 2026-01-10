@@ -1,6 +1,3 @@
-require "../base"
-require "../../types/personal_details/address"
-
 module TandaCLI
   module Representers
     class PersonalDetails

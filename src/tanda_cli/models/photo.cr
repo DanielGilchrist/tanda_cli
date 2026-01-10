@@ -1,8 +1,3 @@
-require "../error/base"
-require "../error/photo_cant_be_found"
-require "../error/photo_too_large"
-require "../error/unsupported_photo_format"
-
 module TandaCLI
   module Models
     class Photo

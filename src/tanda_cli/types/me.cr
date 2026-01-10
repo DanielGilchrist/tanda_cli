@@ -1,6 +1,3 @@
-require "json"
-require "./me/organisation"
-
 module TandaCLI
   module Types
     class Me

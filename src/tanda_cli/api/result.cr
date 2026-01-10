@@ -1,6 +1,3 @@
-require "../abstract_result"
-require "../types/error"
-
 module TandaCLI
   module API
     struct Result(T) < TandaCLI::AbstractResult(T, Types::Error)

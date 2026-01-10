@@ -1,6 +1,3 @@
-require "./base"
-require "../types/note"
-
 module TandaCLI
   module Representers
     class Note < Base(Types::Note)

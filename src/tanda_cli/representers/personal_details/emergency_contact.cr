@@ -1,6 +1,3 @@
-require "../base"
-require "../../types/personal_details/emergency_contact"
-
 module TandaCLI
   module Representers
     class PersonalDetails

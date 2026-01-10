@@ -1,5 +1,3 @@
-require "../../executors/time_worked/week"
-
 module TandaCLI
   module Commands
     class TimeWorked

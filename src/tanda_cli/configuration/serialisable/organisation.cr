@@ -1,5 +1,3 @@
-require "../../utils/mixins/pretty_times"
-
 module TandaCLI
   class Configuration
     class Serialisable

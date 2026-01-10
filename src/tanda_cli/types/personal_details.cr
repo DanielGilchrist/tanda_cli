@@ -1,6 +1,3 @@
-require "json"
-require "./personal_details/**"
-
 module TandaCLI
   module Types
     class PersonalDetails

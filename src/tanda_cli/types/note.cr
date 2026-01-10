@@ -1,5 +1,3 @@
-require "json"
-
 module TandaCLI
   module Types
     class Note

@@ -1,6 +1,3 @@
-require "colorize"
-require "../../configuration/serialisable/organisation"
-
 module TandaCLI
   module Executors
     module TimeWorked
@@ -18,7 +15,8 @@ module TandaCLI
 
           @context
             .client
-            .shifts(@context.current.user.id, from, to, show_notes: display?)
+            .shifts
+            .list(@context.current.user.id, from, to, show_notes: display?)
             .or { |error| @context.display.error!(error) }
             .select(&.visible?)
         end

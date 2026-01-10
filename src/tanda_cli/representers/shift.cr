@@ -1,10 +1,3 @@
-require "colorize"
-
-require "./base"
-require "./shift_break"
-require "../types/shift"
-require "../types/shift_break"
-
 module TandaCLI
   module Representers
     class Shift < Base(Types::Shift)

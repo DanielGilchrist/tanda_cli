@@ -1,7 +1,3 @@
-require "../error/invalid_path"
-require "./photo"
-require "./photo_directory"
-
 module TandaCLI
   module Models
     class PhotoPathParser

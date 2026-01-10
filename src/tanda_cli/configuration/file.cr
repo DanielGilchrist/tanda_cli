@@ -1,5 +1,3 @@
-require "./abstract_file"
-
 module TandaCLI
   class Configuration
     class File < Configuration::AbstractFile
