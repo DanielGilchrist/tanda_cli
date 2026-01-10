@@ -1,11 +1,3 @@
-# shards
-require "http"
-require "json"
-
-# internal
-require "../types/access_token"
-require "../types/error"
-
 module TandaCLI
   module API
     module Auth

@@ -1,5 +1,3 @@
-require "../../executors/time_worked/today"
-
 module TandaCLI
   module Commands
     class TimeWorked

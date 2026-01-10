@@ -1,6 +1,3 @@
-require "json"
-require "../schedule"
-
 module TandaCLI
   module Types
     class Roster

@@ -1,6 +1,3 @@
-require "./base"
-require "../types/clock_in"
-
 module TandaCLI
   module Representers
     class ClockIn < Base(Types::ClockIn)

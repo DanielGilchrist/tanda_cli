@@ -1,5 +1,3 @@
-require "./base"
-
 module TandaCLI
   module Error
     class InvalidStartOfWeek < Error::Base

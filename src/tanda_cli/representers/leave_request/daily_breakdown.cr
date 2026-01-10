@@ -1,6 +1,3 @@
-require "../base"
-require "../../types/leave_request/daily_breakdown"
-
 module TandaCLI
   module Representers
     class LeaveRequest::DailyBreakdown < Base(Types::LeaveRequest::DailyBreakdown)

@@ -1,6 +1,3 @@
-require "colorize"
-require "log"
-
 module TandaCLI
   module Debug
     def self.setup

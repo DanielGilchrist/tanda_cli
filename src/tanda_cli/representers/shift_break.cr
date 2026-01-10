@@ -1,7 +1,3 @@
-require "./base"
-require "../types/shift"
-require "../types/shift_break"
-
 module TandaCLI
   module Representers
     class ShiftBreak < Base(Types::ShiftBreak)

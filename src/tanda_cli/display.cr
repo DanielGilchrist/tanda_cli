@@ -1,7 +1,3 @@
-require "colorize"
-
-require "./error/base"
-
 module TandaCLI
   class Display
     enum Type

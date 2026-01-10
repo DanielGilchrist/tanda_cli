@@ -1,5 +1,3 @@
-require "./interface"
-
 module TandaCLI
   module Error
     abstract class Base < Exception

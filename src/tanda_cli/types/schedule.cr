@@ -1,6 +1,3 @@
-require "json"
-require "./converters/time"
-
 module TandaCLI
   module Types
     class Schedule

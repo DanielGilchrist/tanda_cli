@@ -3,7 +3,7 @@ module TandaCLI
     extend self
 
     def ask_which_organisation_and_save!(client : API::Client, config : Configuration, display : Display, input : Input) : Configuration::Serialisable::Organisation
-      me = client.me.unwrap!
+      me = client.me.get.unwrap!
       organisations = Configuration::Serialisable::Organisation.from(me)
 
       if organisations.empty?

@@ -1,8 +1,3 @@
-require "colorize"
-
-require "./base"
-require "../types/me/**"
-
 module TandaCLI
   module Representers
     class Me < Base(Types::Me)

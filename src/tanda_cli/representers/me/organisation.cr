@@ -1,6 +1,3 @@
-require "../base"
-require "../../types/me/organisation"
-
 module TandaCLI
   module Representers
     class Me

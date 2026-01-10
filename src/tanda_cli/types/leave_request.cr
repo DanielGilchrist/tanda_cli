@@ -1,7 +1,3 @@
-require "json"
-require "./converters/span"
-require "./converters/time"
-
 module TandaCLI
   module Types
     class LeaveRequest

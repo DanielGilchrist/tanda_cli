@@ -1,5 +1,3 @@
-require "./photo"
-
 module TandaCLI
   module Models
     class PhotoDirectory

@@ -7,7 +7,7 @@ module TandaCLI
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        me = client.me.or { |error| display.error!(error) }
+        me = client.me.get.or { |error| display.error!(error) }
         Representers::Me.new(me).display(display)
       end
     end

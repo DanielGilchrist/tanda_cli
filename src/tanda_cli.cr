@@ -1,4 +1,26 @@
-# internal
+# stdlib
+require "colorize"
+require "file_utils"
+require "http"
+require "json"
+require "log"
+require "uri"
+
+# shards
+require "cling"
+require "term-prompt"
+
+require "./ext/**"
+
+# Load dependencies first to establish proper load order
+require "./tanda_cli/error/interface"
+require "./tanda_cli/abstract_result"
+require "./tanda_cli/utils/mixins/pretty_times"
+require "./tanda_cli/types/**"
+require "./tanda_cli/commands/required_scopes"
+require "./tanda_cli/commands/help"
+require "./tanda_cli/commands/base"
+
 require "./tanda_cli/**"
 
 module TandaCLI

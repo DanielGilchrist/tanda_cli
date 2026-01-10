@@ -1,5 +1,3 @@
-require "./base"
-
 module TandaCLI
   module Commands
     class Mode < Base

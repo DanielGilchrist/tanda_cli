@@ -1,5 +1,3 @@
-require "../models/photo_path_parser"
-
 module TandaCLI
   module Executors
     class ClockIn
@@ -28,7 +26,7 @@ module TandaCLI
 
         @context.display.error!(base64_photo) if base64_photo.is_a?(Error::Base)
 
-        @context.client.send_clock_in(
+        @context.client.clock_ins.create(
           @context.current.user.id,
           now,
           @clock_type.to_underscore,
@@ -80,7 +78,7 @@ module TandaCLI
 
       private struct ClockInValidator
         def self.validate!(context : Context, clock_type : ClockType, now : Time)
-          todays_shifts = context.client.shifts(context.current.user.id, Utils::Time.now).or { |error| context.display.error!(error) }
+          todays_shifts = context.client.shifts.list(context.current.user.id, Utils::Time.now).or { |error| context.display.error!(error) }
           new(context, todays_shifts, clock_type).validate!
         end
 
