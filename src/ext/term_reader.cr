@@ -21,23 +21,25 @@ module Term
       end
     end
 
-    # Fixes issues in raw/cooked mode on Linux where prompt wasn't interactive.
-    class Mode
-      def raw(is_on : Bool = true, & : ->)
-        if !is_on || !@input.tty?
-          yield
-        else
-          @input.raw { yield }
+    {% if flag?(:linux) %}
+      # Fixes issues in raw/cooked mode on Linux where prompt wasn't interactive.
+      class Mode
+        def raw(is_on : Bool = true, & : ->)
+          if !is_on || !@input.tty?
+            yield
+          else
+            @input.raw { yield }
+          end
         end
-      end
 
-      def cooked(is_on : Bool = true, & : ->)
-        if !is_on || !@input.tty?
-          yield
-        else
-          @input.cooked { yield }
+        def cooked(is_on : Bool = true, & : ->)
+          if !is_on || !@input.tty?
+            yield
+          else
+            @input.cooked { yield }
+          end
         end
       end
-    end
+    {% end %}
   end
 end
