@@ -3,8 +3,8 @@ require "../../types/personal_details/address"
 
 module TandaCLI
   module Representers
-    class PersonalDetails
-      class Address < Base(Types::PersonalDetails::Address)
+    struct PersonalDetails
+      struct Address < Base(Types::PersonalDetails::Address)
         private def build_display(builder : String::Builder)
           address_string = {
             @object.street_line_one,

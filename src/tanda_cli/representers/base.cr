@@ -1,23 +1,22 @@
 module TandaCLI
   module Representers
-    abstract class Base(T)
+    abstract struct Base(T)
       NEWLINE_BYTE = 10_u8
 
-      def initialize(object : T)
-        @object = object
+      def initialize(@object : T)
       end
 
       def display(display : Display)
-        display.puts build
+        display.puts build.to_s
       end
 
-      def build : String
-        String.build do |builder|
-          build_display(builder)
-          builder.chomp!(NEWLINE_BYTE)
-          builder.chomp!(NEWLINE_BYTE)
-          builder << "\n\n"
-        end
+      def build(builder : String::Builder = String::Builder.new) : String::Builder
+        build_display(builder)
+        builder.chomp!(NEWLINE_BYTE)
+        builder.chomp!(NEWLINE_BYTE)
+        builder << "\n\n"
+
+        builder
       end
 
       private abstract def build_display(builder : String::Builder)

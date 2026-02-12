@@ -5,7 +5,7 @@ require "../types/me/**"
 
 module TandaCLI
   module Representers
-    class Me < Base(Types::Me)
+    struct Me < Base(Types::Me)
       private def build_display(builder : String::Builder)
         builder << "👤 #{@object.name}\n".colorize.white.bold
 
@@ -19,7 +19,7 @@ module TandaCLI
       private def build_organisations(builder : String::Builder)
         builder << "\n🏢 Organisations:\n".colorize.white.bold
         @object.organisations.each do |organisation|
-          builder << Organisation.new(organisation).build
+          Organisation.new(organisation).build(builder)
         end
       end
     end

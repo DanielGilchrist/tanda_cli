@@ -3,7 +3,7 @@ require "../types/leave_balance"
 
 module TandaCLI
   module Representers
-    class LeaveBalance < Base(Types::LeaveBalance)
+    struct LeaveBalance < Base(Types::LeaveBalance)
       private def build_display(builder : String::Builder)
         builder << "Leave Balance\n"
         with_padding("⏳ #{@object.pretty_hours}", builder)

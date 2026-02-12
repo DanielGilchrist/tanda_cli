@@ -3,7 +3,7 @@ require "../types/note"
 
 module TandaCLI
   module Representers
-    class Note < Base(Types::Note)
+    struct Note < Base(Types::Note)
       private def build_display(builder : String::Builder)
         with_padding("✍️  #{@object.author}", builder)
         with_padding("💬 #{@object.body}", builder)

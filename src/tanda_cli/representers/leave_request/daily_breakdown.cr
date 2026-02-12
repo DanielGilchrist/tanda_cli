@@ -3,7 +3,7 @@ require "../../types/leave_request/daily_breakdown"
 
 module TandaCLI
   module Representers
-    class LeaveRequest::DailyBreakdown < Base(Types::LeaveRequest::DailyBreakdown)
+    struct LeaveRequest::DailyBreakdown < Base(Types::LeaveRequest::DailyBreakdown)
       def initialize(object : T, @leave_request : Types::LeaveRequest)
         super(object)
       end

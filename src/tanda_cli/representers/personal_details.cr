@@ -5,7 +5,7 @@ require "../types/personal_details/**"
 
 module TandaCLI
   module Representers
-    class PersonalDetails < Base(Types::PersonalDetails)
+    struct PersonalDetails < Base(Types::PersonalDetails)
       private def build_display(builder : String::Builder)
         builder << "📖 Personal Details\n".colorize.white
 
@@ -27,7 +27,7 @@ module TandaCLI
         builder << "\n🚑 Emergency Contacts\n".colorize.white.bold
 
         @object.emergency_contacts.each do |contact|
-          builder << EmergencyContact.new(contact).build
+          EmergencyContact.new(contact).build(builder)
         end
       end
 
@@ -36,7 +36,7 @@ module TandaCLI
         return if address.nil?
 
         builder << "🏠 Address\n".colorize.white.bold
-        builder << Address.new(address).build
+        Address.new(address).build(builder)
       end
     end
   end

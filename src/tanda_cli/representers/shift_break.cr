@@ -4,7 +4,7 @@ require "../types/shift_break"
 
 module TandaCLI
   module Representers
-    class ShiftBreak < Base(Types::ShiftBreak)
+    struct ShiftBreak < Base(Types::ShiftBreak)
       private def build_display(builder : String::Builder)
         pretty_start = @object.pretty_start_time
         pretty_finish = @object.pretty_finish_time
