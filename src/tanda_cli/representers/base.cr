@@ -11,12 +11,7 @@ module TandaCLI
       end
 
       def build(builder : String::Builder = String::Builder.new) : String::Builder
-        build_display(builder)
-        builder.chomp!(NEWLINE_BYTE)
-        builder.chomp!(NEWLINE_BYTE)
-        builder << "\n\n"
-
-        builder
+        builder.tap(&->build_display(String::Builder))
       end
 
       private abstract def build_display(builder : String::Builder)

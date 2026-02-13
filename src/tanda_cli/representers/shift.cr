@@ -25,6 +25,7 @@ module TandaCLI
         builder << "☕️ Breaks:\n".colorize.white.bold
         @object.valid_breaks.sort_by(&.id).each do |shift_break|
           ShiftBreak.new(shift_break).build(builder)
+          builder << '\n'
         end
       end
 

@@ -35,7 +35,7 @@ module TandaCLI
         address = @object.residential_address
         return if address.nil?
 
-        builder << "🏠 Address\n".colorize.white.bold
+        builder << "\n🏠 Address\n".colorize.white.bold
         Address.new(address).build(builder)
       end
     end

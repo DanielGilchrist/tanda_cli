@@ -36,7 +36,6 @@ describe TandaCLI::Commands::Balance do
         ⏳ 128.0 hours
         🌴 Holiday Leave
 
-
     OUTPUT
 
     context.stdout.to_s.should eq(expected)

@@ -38,7 +38,6 @@ describe TandaCLI::Commands::Me do
         🌏 United Kingdom
         📍 en-GB
 
-
     OUTPUT
 
     context.stdout.to_s.should eq(expected)

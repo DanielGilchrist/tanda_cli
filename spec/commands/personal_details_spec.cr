@@ -49,7 +49,6 @@ describe TandaCLI::Commands::PersonalDetails do
     🏠 Address
     4 Privet Drive, Little Whinging, Surrey, England, GU4 8HS, United Kingdom
 
-
     OUTPUT
 
     context.stdout.to_s.should eq(expected)
