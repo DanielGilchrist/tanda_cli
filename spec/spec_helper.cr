@@ -20,13 +20,36 @@ def run(
   stdin : IO = IO::Memory.new,
   config_fixture : Configuration::FixtureFile::Fixture = :default,
 ) : TandaCLI::Context
-  TandaCLI.main(
+  context = TandaCLI.main(
     args,
     stdout: IO::Memory.new,
     stderr: IO::Memory.new,
     stdin: stdin,
     config_file: Configuration::FixtureFile.load(config_fixture)
   )
+
+  {% if flag?(:print_output) %}
+    print_output(context)
+  {% end %}
+
+  context
+end
+
+def print_output(context : TandaCLI::Context)
+  stdout = context.stdout.to_s
+  stderr = context.stderr.to_s
+
+  unless stdout.empty?
+    STDERR.puts "\n--- STDOUT ---"
+    STDERR.puts stdout
+    STDERR.puts "--- END STDOUT ---"
+  end
+
+  unless stderr.empty?
+    STDERR.puts "\n--- STDERR ---"
+    STDERR.puts stderr
+    STDERR.puts "--- END STDERR ---"
+  end
 end
 
 def build_stdin(*lines : String) : IO
