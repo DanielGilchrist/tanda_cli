@@ -101,8 +101,9 @@ module TandaCLI
 
       def ongoing? : Bool
         return false unless start_time
+        return false unless finish_time.nil?
 
-        finish_time.nil?
+        date.date == Utils::Time.now.date
       end
 
       def ongoing_break? : Bool
