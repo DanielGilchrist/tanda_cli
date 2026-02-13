@@ -37,7 +37,7 @@ module TandaCLI
             builder << '\n' if index != last_break_index
           end
         elsif expected_break_length && !expected_break_length.zero?
-          builder << "☕️ #{expected_break_length.total_minutes.to_i} minutes".colorize.yellow
+          builder << "☕️ #{expected_break_length.total_minutes.to_i} minutes\n".colorize.yellow
         end
       end
 
