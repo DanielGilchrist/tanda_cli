@@ -30,12 +30,13 @@ module TandaCLI
 
         if (breaks = @object.valid_breaks).present?
           builder << "☕️ Breaks:\n".colorize.white.bold
-          breaks.sort_by(&.id).each do |shift_break|
+          last_break_index = breaks.size - 1
+          breaks.sort_by(&.id).each_with_index do |shift_break, index|
             ShiftBreak.new(shift_break).build(builder)
-            builder << '\n'
+            builder << '\n' if index != last_break_index
           end
         elsif expected_break_length && !expected_break_length.zero?
-          builder << "☕️ #{expected_break_length.total_minutes.to_i} minutes".colorize.yellow
+          builder << "☕️ #{expected_break_length.total_minutes.to_i} minutes\n".colorize.yellow
         end
       end
 
