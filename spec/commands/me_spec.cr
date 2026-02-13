@@ -21,6 +21,13 @@ describe TandaCLI::Commands::Me do
               country: "United Kingdom",
               user_id: 1,
             },
+            {
+              id:      2,
+              name:    "Hogwarts 2: Electric Boogaloo",
+              locale:  "en-GB",
+              country: "United Kingdom",
+              user_id: 2,
+            }
           ],
         }.to_json
       )
@@ -35,6 +42,10 @@ describe TandaCLI::Commands::Me do
 
     🏢 Organisations:
         🏷 Hogwarts
+        🌏 United Kingdom
+        📍 en-GB
+
+        🏷 Hogwarts 2: Electric Boogaloo
         🌏 United Kingdom
         📍 en-GB
 

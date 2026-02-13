@@ -18,8 +18,10 @@ module TandaCLI
 
       private def build_organisations(builder : Builder)
         builder << "\n🏢 Organisations:\n".colorize.white.bold
-        @object.organisations.each do |organisation|
+        last_organisation_index = @object.organisations.size - 1
+        @object.organisations.each_with_index do |organisation, index|
           Organisation.new(organisation).build(builder)
+          builder << '\n' if index != last_organisation_index
         end
       end
     end
