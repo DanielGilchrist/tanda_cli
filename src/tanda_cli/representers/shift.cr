@@ -8,7 +8,7 @@ require "../types/shift_break"
 module TandaCLI
   module Representers
     struct Shift < Base(Types::Shift)
-      private def build_display(builder : String::Builder)
+      private def build_display(builder : Builder)
         builder << "📅 #{@object.pretty_date}\n"
 
         pretty_start = @object.pretty_start_time
@@ -21,7 +21,7 @@ module TandaCLI
         build_notes(builder) if @object.notes.present?
       end
 
-      private def build_shift_breaks(builder : String::Builder)
+      private def build_shift_breaks(builder : Builder)
         builder << "☕️ Breaks:\n".colorize.white.bold
         @object.valid_breaks.sort_by(&.id).each do |shift_break|
           ShiftBreak.new(shift_break).build(builder)
@@ -29,7 +29,7 @@ module TandaCLI
         end
       end
 
-      private def build_notes(builder : String::Builder)
+      private def build_notes(builder : Builder)
         builder << "📝 Notes:\n".colorize.white.bold
         @object.notes.each do |note|
           Note.new(note).build(builder)

@@ -8,7 +8,7 @@ module TandaCLI
         super(object)
       end
 
-      private def build_display(builder : String::Builder)
+      private def build_display(builder : Builder)
         builder << "📅 #{@object.pretty_date}\n"
 
         start = @object.start_time

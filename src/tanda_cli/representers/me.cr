@@ -6,7 +6,7 @@ require "../types/me/**"
 module TandaCLI
   module Representers
     struct Me < Base(Types::Me)
-      private def build_display(builder : String::Builder)
+      private def build_display(builder : Builder)
         builder << "👤 #{@object.name}\n".colorize.white.bold
 
         builder << "📧 #{@object.email}\n"
@@ -16,7 +16,7 @@ module TandaCLI
         build_organisations(builder)
       end
 
-      private def build_organisations(builder : String::Builder)
+      private def build_organisations(builder : Builder)
         builder << "\n🏢 Organisations:\n".colorize.white.bold
         @object.organisations.each do |organisation|
           Organisation.new(organisation).build(builder)

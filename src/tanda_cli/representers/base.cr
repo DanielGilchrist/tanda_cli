@@ -1,3 +1,5 @@
+require "./builder"
+
 module TandaCLI
   module Representers
     abstract struct Base(T)
@@ -7,16 +9,16 @@ module TandaCLI
       end
 
       def display(display : Display)
-        display.puts build.to_s
+        display.print build
       end
 
-      def build(builder : String::Builder = String::Builder.new) : String::Builder
-        builder.tap(&->build_display(String::Builder))
+      def build(builder : Builder = Builder.new) : Builder
+        builder.tap(&->build_display(Builder))
       end
 
-      private abstract def build_display(builder : String::Builder)
+      private abstract def build_display(builder : Builder)
 
-      protected def with_padding(value : String, builder : String::Builder)
+      protected def with_padding(value : String, builder : Builder)
         builder << "    #{value}\n"
       end
     end

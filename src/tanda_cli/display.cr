@@ -90,6 +90,10 @@ module TandaCLI
       @stdout.puts message
     end
 
+    def print(message)
+      @stdout.print message
+    end
+
     def puts_error(message = nil)
       @stderr.puts message
     end
