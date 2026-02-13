@@ -20,6 +20,7 @@ module TandaCLI
 
         reason = @leave_request.reason
         builder << "ℹ️  #{reason}" if reason && !reason.blank?
+        builder << '\n'
       end
     end
   end

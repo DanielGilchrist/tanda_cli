@@ -70,6 +70,7 @@ module TandaCLI
           @context.display.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
           Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request).display(@context.display)
+          @context.display.puts
         end
       end
     end
