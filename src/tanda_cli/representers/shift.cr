@@ -23,9 +23,12 @@ module TandaCLI
 
       private def build_shift_breaks(builder : Builder)
         builder << "☕️ Breaks:\n".colorize.white.bold
-        @object.valid_breaks.sort_by(&.id).each do |shift_break|
+        valid_breaks = @object.valid_breaks
+        last_break_index = valid_breaks.size - 1
+
+        valid_breaks.sort_by(&.id).each_with_index do |shift_break, index|
           ShiftBreak.new(shift_break).build(builder)
-          builder << '\n'
+          builder << '\n' if index != last_break_index
         end
       end
 

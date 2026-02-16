@@ -32,6 +32,25 @@ module TandaCLI
           end
         end
 
+        private def breaks_already_taken?(
+          regular_hours_schedule : Configuration::Serialisable::Organisation::RegularHoursSchedule,
+          shifts : Array(Types::Shift),
+        ) : Bool
+          expected_break_count =
+            if regular_hours_schedule.breaks.present?
+              regular_hours_schedule.breaks.size
+            elsif (automatic_break_length = regular_hours_schedule.automatic_break_length) && automatic_break_length > 0
+              1
+            else
+              0
+            end
+
+          return false if expected_break_count.zero?
+
+          taken_break_count = shifts.sum(&.valid_breaks.size)
+          taken_break_count >= expected_break_count
+        end
+
         private def maybe_print_time_left_or_overtime(shifts : Array(Types::Shift), worked_so_far : Time::Span, leave_taken_so_far : Time::Span)
           organisation = @context.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
@@ -46,7 +65,7 @@ module TandaCLI
 
           time_left = applicable_regular_hours_schedules.sum do |regular_hours_schedule|
             shifts = shifts_by_day_of_week[regular_hours_schedule.day_of_week]?
-            if shifts && shifts.any?(&.ongoing_without_break?)
+            if shifts && shifts.any?(&.ongoing_without_break?) && !breaks_already_taken?(regular_hours_schedule, shifts)
               regular_hours_schedule.length
             else
               regular_hours_schedule.worked_length

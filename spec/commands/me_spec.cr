@@ -27,7 +27,7 @@ describe TandaCLI::Commands::Me do
               locale:  "en-GB",
               country: "United Kingdom",
               user_id: 2,
-            }
+            },
           ],
         }.to_json
       )
