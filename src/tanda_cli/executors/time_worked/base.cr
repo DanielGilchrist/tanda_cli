@@ -59,6 +59,7 @@ module TandaCLI
           end
 
           Representers::Shift.new(shift).display(@context.display)
+          @context.display.puts
         end
 
         private def print_leave(leave_request : Types::LeaveRequest, breakdown : Types::LeaveRequest::DailyBreakdown)

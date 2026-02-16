@@ -86,6 +86,56 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
+  it "Does not assume a scheduled break for a second shift on the same day when breaks have already been taken" do
+    WebMock
+      .stub(:get, endpoint(Regex.new("/shifts")))
+      .to_return(
+        status: 200,
+        body: [
+          build_shift(
+            id: 1,
+            start: Time.local(2024, 12, 23, 8, 41),
+            finish: Time.local(2024, 12, 23, 15, 1),
+            break_start: Time.local(2024, 12, 23, 12, 4),
+            break_finish: Time.local(2024, 12, 23, 12, 51)
+          ),
+          build_shift_without_breaks(
+            id: 2,
+            start: Time.local(2024, 12, 23, 16, 27),
+            finish: nil
+          ),
+        ].to_json,
+      )
+
+    travel_to(Time.local(2024, 12, 23, 17, 20)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      Time worked: 5 hours and 50 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:41 am - 3:01 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:04 pm - 12:51 pm
+          ⏸️  30 minutes
+          💰 false
+
+      Worked so far: 0 hours and 53 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 4:27 pm -<space>
+      🚧 Pending
+
+      Time left today: 1 hours and 17 minutes
+      You can clock out at: 6:37 pm
+
+      You've worked 6 hours and 43 minutes this week
+
+      OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
   it "Displays leave taken for the week" do
     leave_request_id = 100
 
@@ -226,6 +276,34 @@ private def build_shift(id, start, finish, break_start, break_finish)
         updated_at:                       1735259689,
       },
     ],
+    finish:           finish.try(&.to_unix),
+    department_id:    1,
+    sub_cost_centre:  nil,
+    tag:              nil,
+    tag_id:           nil,
+    status:           "PENDING",
+    metadata:         nil,
+    leave_request_id: nil,
+    allowances:       [] of Hash(String, String),
+    approved_by:      nil,
+    approved_at:      nil,
+    notes:            [] of Hash(String, String),
+    updated_at:       1735259689,
+    record_id:        1,
+  }
+end
+
+private def build_shift_without_breaks(id, start, finish)
+  {
+    id:               id,
+    timesheet_id:     1,
+    user_id:          1,
+    date:             TandaCLI::Utils::Time.iso_date(start),
+    start:            start.try(&.to_unix),
+    break_start:      nil,
+    break_finish:     nil,
+    break_length:     nil,
+    breaks:           [] of Hash(String, String),
     finish:           finish.try(&.to_unix),
     department_id:    1,
     sub_cost_centre:  nil,
