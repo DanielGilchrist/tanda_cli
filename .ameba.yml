@@ -12,7 +12,7 @@ Lint/ComparisonToBoolean:
   Enabled: true
 
 Style/GuardClause:
-  Enabled: true
+  Enabled: false
 
 Style/LargeNumbers:
   Enabled: true
