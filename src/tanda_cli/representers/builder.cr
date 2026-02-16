@@ -8,6 +8,7 @@ module TandaCLI
       end
 
       delegate :<<, to: @builder
+      delegate :puts, to: @builder
 
       def to_s(io)
         io << @builder.to_s
