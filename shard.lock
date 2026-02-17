@@ -8,26 +8,6 @@ shards:
     git: https://github.com/devnote-dev/cling.git
     version: 3.1.0+git.commit.e23db4aa04ce4727a1e3f699088c114a1930c3e7
 
-  term-color:
-    git: https://github.com/crystal-term/color.git
-    version: 0.4.1
-
-  term-cursor:
-    git: https://github.com/crystal-term/cursor.git
-    version: 0.3.1
-
-  term-prompt:
-    git: https://github.com/crystal-term/prompt.git
-    version: 0.3.2+git.commit.4f536764bc091940f2a6f7e9b9aeca94921ab13e
-
-  term-reader:
-    git: https://github.com/crystal-term/reader.git
-    version: 0.3.2
-
-  term-screen:
-    git: https://github.com/crystal-term/screen.git
-    version: 0.3.1
-
   webmock:
     git: https://github.com/manastech/webmock.cr.git
     version: 0.14.0+git.commit.fde6b20d5b80401a967e044b1a3e80ee391bed60

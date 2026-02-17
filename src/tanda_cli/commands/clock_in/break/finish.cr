@@ -3,8 +3,6 @@ module TandaCLI
     class ClockIn
       class Break
         class Finish < Commands::Base
-          required_scopes :device
-
           def setup_
             @name = "finish"
             @summary = @description = "Finish break"

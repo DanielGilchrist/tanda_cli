@@ -2,8 +2,6 @@ module TandaCLI
   module Commands
     class TimeWorked
       class Today < Commands::Base
-        required_scopes :timesheet, :leave
-
         def setup_
           @name = "today"
           @summary = @description = "Show time worked for today"

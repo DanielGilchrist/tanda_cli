@@ -2,8 +2,6 @@ module TandaCLI
   module Commands
     class ClockIn
       class Start < Commands::Base
-        required_scopes :device
-
         def setup_
           @name = "start"
           @summary = @description = "Clock in"

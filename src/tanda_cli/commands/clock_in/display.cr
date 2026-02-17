@@ -2,8 +2,6 @@ module TandaCLI
   module Commands
     class ClockIn
       class Display < Commands::Base
-        required_scopes :device
-
         def setup_
           @name = "display"
           @summary = @description = "Display current clockins"

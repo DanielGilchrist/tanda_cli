@@ -3,8 +3,6 @@ require "./base"
 module TandaCLI
   module Commands
     class Balance < Base
-      required_scopes :leave
-
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
 
       def setup_

@@ -1,12 +1,9 @@
 require "cling"
 require "./help"
-require "./required_scopes"
 
 module TandaCLI
   module Commands
     abstract class Base < Cling::Command
-      include RequiredScopes
-
       @disable_staging_warning = false
 
       def initialize(@context : Context)
@@ -47,7 +44,6 @@ module TandaCLI
         return if help?(arguments, options)
 
         maybe_display_staging_warning
-        handle_required_scopes!
         before_run(arguments, options)
       end
 

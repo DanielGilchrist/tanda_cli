@@ -47,8 +47,6 @@ describe TandaCLI::Commands::RefetchToken do
       )
 
     stdin = build_stdin(
-      scope,
-      "_prompt_end_",
       "eu",
       "test@example.com",
       "dummypassword",

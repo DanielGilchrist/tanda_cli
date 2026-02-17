@@ -1,8 +1,6 @@
 module TandaCLI
   module Commands
     class PersonalDetails < Base
-      required_scopes :personal
-
       def setup_
         @name = "personal_details"
         @summary = @description = "Get your personal details"
