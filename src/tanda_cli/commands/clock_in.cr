@@ -8,17 +8,6 @@ module TandaCLI
         getter? skip_validations
       end
 
-      enum ClockType
-        Start
-        Finish
-        BreakStart
-        BreakFinish
-
-        def to_underscore : String
-          to_s.underscore
-        end
-      end
-
       def self.add_options(command : Cling::Command)
         command.add_option('p', "photo", type: :single, description: "Specify a clockin photo (file path or specify photo name if directory has been set)")
         command.add_option('s', "skip-validations", description: "Skip clock in validations")

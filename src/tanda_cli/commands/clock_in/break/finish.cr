@@ -1,8 +1,12 @@
+require "../../helpers/clock_in"
+
 module TandaCLI
   module Commands
     class ClockIn
       class Break
         class Finish < Commands::Base
+          include Helpers::ClockIn
+
           def setup_
             @name = "finish"
             @summary = @description = "Finish break"
@@ -12,7 +16,7 @@ module TandaCLI
 
           def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
             parsed_options = ClockIn.parse_options(options)
-            Executors::ClockIn.new(context, ClockIn::ClockType::BreakFinish, parsed_options).execute
+            execute_clock_in(:break_finish, parsed_options)
           end
         end
       end
