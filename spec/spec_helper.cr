@@ -8,6 +8,7 @@ Colorize.enabled = false
 require "../src/tanda_cli"
 require "./support/travel_to_hack"
 require "./support/configuration/fixture_file"
+require "./support/shift_builder"
 
 Spec.before_each do
   WebMock.reset
