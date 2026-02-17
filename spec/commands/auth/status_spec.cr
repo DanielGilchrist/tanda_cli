@@ -8,7 +8,7 @@ describe TandaCLI::Commands::Auth::Status do
     output.should contain("Authenticated (production)")
     output.should contain("test@testmailfakenotrealthisisntarealdomainaaaa.com")
     output.should contain("Test Organisation (user 1)")
-    output.should contain("eu")
+    output.should contain("EU (eu.tanda.co)")
   end
 
   it "displays authenticated status in staging" do

@@ -4,15 +4,13 @@ module TandaCLI
       class Environment
         include JSON::Serializable
 
-        DEFAULT_SITE_PREFIX = "eu"
-
         def initialize(
-          @site_prefix : String = DEFAULT_SITE_PREFIX,
+          @region : Region = Region::APAC,
           @access_token : AccessToken = AccessToken.new,
           @organisations : Array(Organisation) = Array(Organisation).new,
         ); end
 
-        property site_prefix : String
+        property region : Region = Region::APAC
         property access_token : AccessToken
         property organisations : Array(Organisation)
 

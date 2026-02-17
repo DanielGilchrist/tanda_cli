@@ -62,11 +62,6 @@ module TandaCLI
       TandaCLI.exit!
     end
 
-    def error!(message : String, value : String? = nil, &block : String::Builder ->) : NoReturn
-      error(message, value, &block)
-      TandaCLI.exit!
-    end
-
     def error!(error_object : Error::Base) : NoReturn
       {% if flag?(:debug) && !flag?(:test) %}
         raise error_object

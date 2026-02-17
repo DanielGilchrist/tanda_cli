@@ -1,20 +1,44 @@
 require "../../spec_helper"
 
-describe TandaCLI::Commands::Auth::Login do
-  it "logs in and prompts for organisation selection when multiple organisations" do
-    scope = "me"
+AUTH_TOKEN_BODY = {
+  access_token: "faketoken",
+  token_type:   "test",
+  scope:        "me",
+  created_at:   TandaCLI::Utils::Time.now.to_unix,
+}.to_json
 
-    WebMock
-      .stub(:post, "https://eu.tanda.co/api/oauth/token")
-      .to_return(
-        status: 200,
-        body: {
-          access_token: "faketoken",
-          token_type:   "test",
-          scope:        scope,
-          created_at:   TandaCLI::Utils::Time.now.to_unix,
-        }.to_json
-      )
+AUTH_FAILED_BODY = {
+  error:             "invalid_grant",
+  error_description: "The provided authorization grant is invalid",
+}.to_json
+
+private def stub_failed_auth(host : String)
+  WebMock
+    .stub(:post, "https://#{host}/api/oauth/token")
+    .to_return(status: 401, body: AUTH_FAILED_BODY)
+end
+
+private def stub_successful_auth(host : String)
+  WebMock
+    .stub(:post, "https://#{host}/api/oauth/token")
+    .to_return(status: 200, body: AUTH_TOKEN_BODY)
+end
+
+private def stub_all_regions_failed
+  stub_failed_auth("my.workforce.com")
+  stub_failed_auth("my.tanda.co")
+  stub_failed_auth("eu.tanda.co")
+end
+
+private def stub_eu_auth_success
+  stub_failed_auth("my.workforce.com")
+  stub_failed_auth("my.tanda.co")
+  stub_successful_auth("eu.tanda.co")
+end
+
+describe TandaCLI::Commands::Auth::Login do
+  it "auto-detects region and prompts for organisation selection when multiple organisations" do
+    stub_eu_auth_success
 
     WebMock
       .stub(:get, endpoint("/users/me"))
@@ -47,7 +71,6 @@ describe TandaCLI::Commands::Auth::Login do
       )
 
     stdin = build_stdin(
-      "eu",
       "test@example.com",
       "dummypassword",
       "2"
@@ -55,39 +78,21 @@ describe TandaCLI::Commands::Auth::Login do
 
     context = run(["auth", "login"], stdin: stdin)
 
-    expected = <<-OUTPUT
-    Site prefix (my, eu, us - Default is "my"):
-
-    What's your email?
-
-    What's your password?
-
-    Success: Retrieved token!
-    Which organisation would you like to use?
-    1: Test Organisation 1
-    2: Test Organisation 2
-
-    Enter a number:
-    Success: Selected organisation "Test Organisation 2"
-    Success: Organisations saved to config
-
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+    output = context.stdout.to_s
+    output.should contain("Tanda CLI Login")
+    output.should contain("Email:")
+    output.should contain("Password:")
+    output.should contain("Authenticating...")
+    output.should contain("Authenticated!")
+    output.should contain("Select an organisation:")
+    output.should contain("Test Organisation 1")
+    output.should contain("Test Organisation 2")
+    output.should contain("Selected organisation \"Test Organisation 2\"")
+    output.should contain("Organisations saved to config")
   end
 
   it "auto-selects organisation when only one is available" do
-    WebMock
-      .stub(:post, "https://eu.tanda.co/api/oauth/token")
-      .to_return(
-        status: 200,
-        body: {
-          access_token: "faketoken",
-          token_type:   "test",
-          scope:        "me",
-          created_at:   TandaCLI::Utils::Time.now.to_unix,
-        }.to_json
-      )
+    stub_eu_auth_success
 
     WebMock
       .stub(:get, endpoint("/users/me"))
@@ -113,42 +118,22 @@ describe TandaCLI::Commands::Auth::Login do
       )
 
     stdin = build_stdin(
-      "eu",
       "test@example.com",
       "dummypassword",
     )
 
     context = run(["auth", "login"], stdin: stdin)
 
-    expected = <<-OUTPUT
-    Site prefix (my, eu, us - Default is "my"):
-
-    What's your email?
-
-    What's your password?
-
-    Success: Retrieved token!
-    Success: Selected organisation "Test Organisation"
-    Success: Organisations saved to config
-
-    OUTPUT
-
-    context.stdout.to_s.should eq(expected)
+    output = context.stdout.to_s
+    output.should contain("Authenticated!")
+    output.should contain("Selected organisation \"Test Organisation\"")
+    output.should contain("Organisations saved to config")
   end
 
-  it "errors with invalid credentials" do
-    WebMock
-      .stub(:post, "https://eu.tanda.co/api/oauth/token")
-      .to_return(
-        status: 401,
-        body: {
-          error:             "invalid_grant",
-          error_description: "The provided authorization grant is invalid",
-        }.to_json
-      )
+  it "errors when all regions fail authentication" do
+    stub_all_regions_failed
 
     stdin = build_stdin(
-      "eu",
       "bad@example.com",
       "wrongpassword",
     )
@@ -156,5 +141,42 @@ describe TandaCLI::Commands::Auth::Login do
     context = run(["auth", "login"], stdin: stdin)
 
     context.stderr.to_s.should contain("Unable to authenticate")
+  end
+
+  it "stops at the first successful region" do
+    stub_successful_auth("my.workforce.com")
+
+    WebMock
+      .stub(:get, "https://my.workforce.com/api/v2/users/me")
+      .to_return(
+        status: 200,
+        body: {
+          name:          "Test",
+          email:         "test@example.com",
+          country:       "Australia",
+          time_zone:     "Australia/Sydney",
+          user_ids:      [1],
+          permissions:   ["test"],
+          organisations: [
+            {
+              id:      1,
+              name:    "Test Organisation",
+              locale:  "en-AU",
+              country: "Australia",
+              user_id: 1,
+            },
+          ],
+        }.to_json
+      )
+
+    stdin = build_stdin(
+      "test@example.com",
+      "dummypassword",
+    )
+
+    context = run(["auth", "login"], stdin: stdin)
+
+    output = context.stdout.to_s
+    output.should contain("Authenticated!")
   end
 end

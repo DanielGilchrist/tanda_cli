@@ -22,7 +22,7 @@ module TandaCLI
           display.puts "🔓 #{"Authenticated (#{environment})".colorize.green}"
           display.puts "📧 #{email}" if email
           display.puts "🏢 #{organisation.name} (user #{organisation.user_id})" if organisation
-          display.puts "🌐 #{config.site_prefix}"
+          display.puts "🌐 #{config.region.display_name} (#{config.host})"
         end
       end
     end

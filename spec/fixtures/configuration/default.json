@@ -2,7 +2,7 @@
   "mode": "production",
   "treat_paid_breaks_as_unpaid": true,
   "production": {
-    "site_prefix": "eu",
+    "region": "eu",
     "access_token": {
       "email": "test@testmailfakenotrealthisisntarealdomainaaaa.com",
       "token": "testtoken",

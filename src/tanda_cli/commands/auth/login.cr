@@ -2,8 +2,7 @@ module TandaCLI
   module Commands
     class Auth
       class Login < Base
-        VALID_SITE_PREFIXES = {"my", "eu", "us"}
-        SCOPES              = "device leave personal roster timesheet me"
+        SCOPES = "device leave personal roster timesheet me"
 
         def setup_
           @name = "login"
@@ -13,13 +12,13 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config.reset_environment!
 
-          site_prefix, email, password = prompt_for_credentials
-          config.site_prefix = site_prefix
+          display.puts "🔐 #{"Tanda CLI Login".colorize.white.bold}"
+          display.puts
 
-          access_token = fetch_access_token(email, password)
+          email, password = prompt_for_credentials
+          region, access_token = detect_region_and_authenticate(email, password)
 
-          config.overwrite!(site_prefix, email, access_token)
-          display.success("Retrieved token!#{config.staging? ? " (staging)" : ""}\n")
+          config.overwrite!(region, email, access_token)
 
           url = config.api_url
           display.error!(url) unless url.is_a?(String)
@@ -28,64 +27,67 @@ module TandaCLI
           select_and_save_organisation(client)
         end
 
-        private def prompt_for_credentials : Tuple(String, String, String)
-          valid_site_prefixes = VALID_SITE_PREFIXES.join(", ")
-          site_prefix = input.request_or(message: "Site prefix (#{valid_site_prefixes} - Default is \"my\"):") do
-            "my".tap { |default| display.warning("Defaulting to \"#{default}\"") }
-          end
-
-          unless VALID_SITE_PREFIXES.includes?(site_prefix)
-            display.error!("Invalid site prefix") do |sub_errors|
-              sub_errors << "Site prefix must be one of #{valid_site_prefixes}"
-            end
-          end
-          display.puts
-
-          email = input.request_or(message: "What's your email?") do
+        private def prompt_for_credentials : Tuple(String, String)
+          email = input.request_or(message: "📧 #{"Email:".colorize.cyan}") do
             display.error!("Email cannot be blank")
           end
           display.puts
 
-          password = input.request_or(message: "What's your password?", sensitive: true) do
+          password = input.request_or(message: "🔑 #{"Password:".colorize.cyan}", sensitive: true) do
             display.error!("Password cannot be blank")
           end
           display.puts
 
-          {site_prefix, email, password}
+          {email, password}
         end
 
-        private def fetch_access_token(email : String, password : String) : Types::AccessToken
-          url = config.oauth_url(:token)
-          display.error!(url) unless url.is_a?(String)
+        private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, Types::AccessToken)
+          staging = config.staging?
 
-          response = begin
-            HTTP::Client.post(
-              url,
-              headers: HTTP::Headers{
-                "Cache-Control" => "no-cache",
-                "Content-Type"  => "application/json",
-              },
-              body: {
-                username:   email,
-                password:   password,
-                scope:      SCOPES,
-                grant_type: "password",
-              }.to_json
-            )
-          rescue Socket::Addrinfo::Error
-            display.fatal!("There appears to be a problem with your internet connection")
-          end
+          display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          Log.debug(&.emit("Response", body: response.body))
+          Region.values.each do |region|
+            Log.debug(&.emit("Trying #{region.display_name} (#{region.host(staging)})"))
 
-          API::Result(Types::AccessToken).from(response).or do |error|
-            display.error!("Unable to authenticate (likely incorrect login details)") do |sub_errors|
-              sub_errors << "Error Type: #{error.error}\n"
-
-              description = error.error_description
-              sub_errors << "Message: #{description}" if description
+            access_token = try_authenticate(region, email, password, staging)
+            if access_token
+              Log.debug(&.emit("Authenticated via #{region.display_name}"))
+              display.success("Authenticated!")
+              return {region, access_token}
             end
           end
+
+          display.error!("Unable to authenticate (incorrect email or password)")
+        end
+
+        private def try_authenticate(region : Region, email : String, password : String, staging : Bool) : Types::AccessToken?
+          url = region.oauth_url(:token, staging)
+
+          response = HTTP::Client.post(
+            url,
+            headers: HTTP::Headers{
+              "Cache-Control" => "no-cache",
+              "Content-Type"  => "application/json",
+            },
+            body: {
+              username:   email,
+              password:   password,
+              scope:      SCOPES,
+              grant_type: "password",
+            }.to_json
+          )
+
+          Log.debug(&.emit("Response from #{region.display_name}", body: response.body))
+
+          return nil unless response.success?
+
+          Types::AccessToken.from_json(response.body)
+        rescue Socket::Addrinfo::Error
+          Log.debug(&.emit("Network error for #{region.display_name}"))
+          nil
+        rescue JSON::SerializableError | JSON::ParseException
+          Log.debug(&.emit("Failed to parse response from #{region.display_name}"))
+          nil
         end
 
         private def select_and_save_organisation(client : API::Client)
@@ -95,14 +97,19 @@ module TandaCLI
           display.error!("You don't have access to any organisations") if organisations.empty?
 
           organisation = organisations.first if organisations.one?
-          while organisation.nil?
-            organisation = prompt_for_organisation(organisations)
+          unless organisation
+            display.puts
+            display.puts "🏢 #{"Select an organisation:".colorize.white.bold}"
+            while organisation.nil?
+              organisation = prompt_for_organisation(organisations)
+            end
           end
 
           organisation.current = true
           config.organisations = organisations
           config.save!
 
+          display.puts
           display.success("Selected organisation \"#{organisation.name}\"")
           display.success("Organisations saved to config")
         end
@@ -110,12 +117,11 @@ module TandaCLI
         private def prompt_for_organisation(
           organisations : Array(Configuration::Serialisable::Organisation),
         ) : Configuration::Serialisable::Organisation?
-          display.puts "Which organisation would you like to use?"
           organisations.each_with_index(1) do |org, index|
-            display.puts "#{index}: #{org.name}"
+            display.puts "  #{index.to_s.colorize.cyan}: #{org.name}"
           end
 
-          input.request_and(message: "\nEnter a number:") do |user_input|
+          input.request_and(message: "\n#{"Enter a number:".colorize.cyan}") do |user_input|
             number = user_input.try(&.to_i32?)
 
             if number
