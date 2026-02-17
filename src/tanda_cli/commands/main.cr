@@ -6,6 +6,7 @@ module TandaCLI
         @description = "A CLI application for people using Tanda/Workforce.com"
 
         add_commands(
+          Auth,
           Me,
           PersonalDetails,
           ClockIn,
@@ -13,8 +14,6 @@ module TandaCLI
           Balance,
           RegularHours,
           CurrentUser,
-          RefetchToken,
-          RefetchUsers,
           Mode,
           StartOfWeek
         )

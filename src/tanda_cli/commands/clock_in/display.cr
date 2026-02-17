@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class ClockIn
       class Display < Commands::Base
+        requires_auth!
+
         def setup_
           @name = "display"
           @summary = @description = "Display current clockins"

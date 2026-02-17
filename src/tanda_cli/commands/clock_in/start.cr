@@ -5,6 +5,7 @@ module TandaCLI
     class ClockIn
       class Start < Commands::Base
         include Helpers::ClockIn
+        requires_auth!
 
         def setup_
           @name = "start"

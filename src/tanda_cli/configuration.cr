@@ -11,6 +11,11 @@ module TandaCLI
     PRODUCTION = "production"
     STAGING    = "staging"
 
+    enum OAuthEndpoint
+      Token
+      Revoke
+    end
+
     def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
       config_contents = file.read.presence
       return new(file) unless config_contents
@@ -66,17 +71,31 @@ module TandaCLI
     end
 
     def api_url : String | Error::InvalidURL
+      base = base_url
+      return base if base.is_a?(Error::InvalidURL)
+
+      "#{base}/api/v2"
+    end
+
+    def oauth_url(endpoint : OAuthEndpoint) : String | Error::InvalidURL
+      base = base_url
+      return base if base.is_a?(Error::InvalidURL)
+
+      "#{base}/api/oauth/#{endpoint.to_s.downcase}"
+    end
+
+    private def base_url : String | Error::InvalidURL
       case mode
       when PRODUCTION
-        "https://#{site_prefix}.tanda.co/api/v2"
+        "https://#{site_prefix}.tanda.co"
       when STAGING
         prefix = "#{site_prefix}." if site_prefix != "my"
-        "https://staging.#{prefix}tanda.co/api/v2"
+        "https://staging.#{prefix}tanda.co"
       else
         validated_url = Utils::URL.validate(mode)
         return validated_url if validated_url.is_a?(Error::InvalidURL)
 
-        "#{validated_url}/api/v2"
+        validated_url.to_s
       end
     end
   end
