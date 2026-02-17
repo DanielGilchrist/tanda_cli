@@ -10,8 +10,8 @@ module TandaCLI
 
       getter token_type : String
 
-      @[JSON::Field(key: "scope", converter: TandaCLI::Types::Converters::ScopesConverter)]
-      property scopes : Array(Scopes::Scope)
+      @[JSON::Field(key: "scope")]
+      property scopes : String
 
       getter created_at : Int32
     end

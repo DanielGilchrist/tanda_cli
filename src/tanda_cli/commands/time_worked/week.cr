@@ -2,8 +2,6 @@ module TandaCLI
   module Commands
     class TimeWorked
       class Week < Commands::Base
-        required_scopes :timesheet, :leave
-
         def setup_
           @name = "week"
           @summary = @description = "Show time worked for a week"

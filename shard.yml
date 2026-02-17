@@ -13,9 +13,6 @@ dependencies:
     github: devnote-dev/cling # https://github.com/devnote-dev/cling
     # version: ~> 3
     branch: main
-  term-prompt:
-    github: crystal-term/prompt # https://github.com/crystal-term/prompt
-    branch: master
 
 development_dependencies:
   ameba:
