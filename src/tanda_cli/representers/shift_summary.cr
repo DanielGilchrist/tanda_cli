@@ -30,6 +30,11 @@ module TandaCLI
       end
 
       private def build_worked_shift(builder : Builder, worked_shift : Models::ShiftSummary::WorkedShift)
+        if worked_shift.assumed_finish?
+          day_name = worked_shift.date.to_s("%A")
+          builder.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing finish time for #{day_name}, assuming regular hours finish time"
+        end
+
         time_worked = worked_shift.time_worked
 
         if time_worked
@@ -37,7 +42,7 @@ module TandaCLI
           builder.puts "#{"#{label}".colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
         end
 
-        Shift.new(worked_shift.shift).build(builder)
+        worked_shift.shift_representer.build(builder)
       end
     end
   end

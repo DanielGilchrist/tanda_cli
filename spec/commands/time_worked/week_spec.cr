@@ -252,6 +252,169 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context.stdout.to_s.should eq(expected)
     end
   end
+
+  it "Assumes expected finish time for clock out if forgotten on a previous day" do
+    WebMock
+      .stub(:get, endpoint(Regex.new("/shifts")))
+      .to_return(
+        status: 200,
+        body: [
+          build_shift(
+            id: 1,
+            start: Time.local(2024, 12, 23, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 23, 12),
+            break_finish: Time.local(2024, 12, 23, 12, 30)
+          ),
+          build_shift(
+            id: 2,
+            start: Time.local(2024, 12, 24, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 24, 12),
+            break_finish: Time.local(2024, 12, 24, 12, 30)
+          ),
+        ].to_json,
+      )
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
+
+      Worked so far: 5 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
+
+      Time left today: 3 hours and 0 minutes
+      You can clock out at: 5:00 pm
+
+      You've worked 13 hours and 0 minutes this week
+
+      OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Shows overtime if previous day filled and past expected finish" do
+    WebMock
+      .stub(:get, endpoint(Regex.new("/shifts")))
+      .to_return(
+        status: 200,
+        body: [
+          build_shift(
+            id: 1,
+            start: Time.local(2024, 12, 23, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 23, 12),
+            break_finish: Time.local(2024, 12, 23, 12, 30)
+          ),
+          build_shift(
+            id: 2,
+            start: Time.local(2024, 12, 24, 8, 30),
+            finish: nil,
+            break_start: Time.local(2024, 12, 24, 12),
+            break_finish: Time.local(2024, 12, 24, 12, 30)
+          ),
+        ].to_json,
+      )
+
+    travel_to(Time.local(2024, 12, 24, 19)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
+
+      Worked so far: 10 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:00 pm - 12:30 pm
+          ⏸️  30 minutes
+          💰 false
+
+      Overtime this week: 2 hours and 0 minutes
+      Overtime since: 5:00 pm
+
+      You've worked 18 hours and 0 minutes this week
+
+      OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Assumes regular hours for next day with no breaks" do
+    WebMock
+      .stub(:get, endpoint(Regex.new("/shifts")))
+      .to_return(
+        status: 200,
+        body: [
+          build_shift(
+            id: 1,
+            start: Time.local(2024, 12, 23, 8, 30),
+            finish: nil,
+            break_start: nil,
+            break_finish: nil
+          ),
+          build_shift(
+            id: 2,
+            start: Time.local(2024, 12, 24, 8, 30),
+            finish: nil,
+            break_start: nil,
+            break_finish: nil
+          ),
+        ].to_json,
+      )
+
+    travel_to(Time.local(2024, 12, 25, 1)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ 30 minutes
+
+      ⚠️ Warning: Missing finish time for Tuesday, assuming regular hours finish time
+      Time worked: 8 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am - 5:00 pm
+      🚧 Pending
+      ☕️ 30 minutes
+
+      You've worked 16 hours and 0 minutes this week
+
+      OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
 end
 
 private def build_shift(id, start, finish, break_start, break_finish)
@@ -265,17 +428,19 @@ private def build_shift(id, start, finish, break_start, break_finish)
     break_finish: break_finish.try(&.to_unix),
     break_length: 30,
     breaks:       [
-      {
-        id:                               1,
-        selected_automatic_break_rule_id: nil,
-        shift_id:                         id,
-        start:                            break_start.try(&.to_unix),
-        finish:                           break_finish.try(&.to_unix),
-        length:                           30,
-        paid:                             false,
-        updated_at:                       1735259689,
-      },
-    ],
+      if break_start || break_finish
+        {
+          id:                               1,
+          selected_automatic_break_rule_id: nil,
+          shift_id:                         id,
+          start:                            break_start.try(&.to_unix),
+          finish:                           break_finish.try(&.to_unix),
+          length:                           30,
+          paid:                             false,
+          updated_at:                       1735259689,
+        }
+      end,
+    ].compact,
     finish:           finish.try(&.to_unix),
     department_id:    1,
     sub_cost_centre:  nil,

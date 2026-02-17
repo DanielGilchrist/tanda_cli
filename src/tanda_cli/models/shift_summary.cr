@@ -74,7 +74,7 @@ module TandaCLI
       private def classify(shifts : Array(Types::Shift), treat_paid_breaks_as_unpaid : Bool) : Array(ClassifiedShift)
         shifts.map do |shift|
           LeaveShift.from?(shift) ||
-            WorkedShift.from(shift, treat_paid_breaks_as_unpaid)
+            WorkedShift.from(shift, treat_paid_breaks_as_unpaid, @regular_hours_schedules)
         end
       end
 
