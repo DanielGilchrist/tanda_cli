@@ -23,7 +23,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     travel_to(Time.local(2024, 12, 24)) do
       context = run(["time_worked", "week"])
-      context.stdout.to_s.should eq("You've worked 16 hours and 0 minutes this week\n")
+      context.stdout.to_s.should eq("⏱️  Worked: 16 hours and 0 minutes\n")
     end
   end
 
@@ -69,10 +69,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
           ⏸️  30 minutes
           💰 false
 
-      Time left today: 3 hours and 0 minutes
-      You can clock out at: 5:00 pm
+      ⏳ Time left: 3 hours and 0 minutes
+      🏁 Clock out at: 5:00 pm
 
-      You've worked 13 hours and 0 minutes this week
+      ⏱️  Worked: 13 hours and 0 minutes
 
       OUTPUT
 
@@ -115,10 +115,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
       🕓 4:27 pm -<space>
       🚧 Pending
 
-      Time left today: 1 hours and 17 minutes
-      You can clock out at: 6:37 pm
+      ⏳ Time left: 1 hours and 17 minutes
+      🏁 Clock out at: 6:37 pm
 
-      You've worked 6 hours and 43 minutes this week
+      ⏱️  Worked: 6 hours and 43 minutes
 
       OUTPUT
 
@@ -157,8 +157,8 @@ describe TandaCLI::Commands::TimeWorked::Week do
     travel_to(Time.local(2024, 12, 25)) do
       context = run(["time_worked", "week"])
       expected = <<-OUTPUT
-      You've worked 8 hours and 0 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+      ⏱️  Worked: 8 hours and 0 minutes
+      🌴 Leave: 8 hours and 0 minutes
 
       OUTPUT
 
@@ -216,8 +216,8 @@ describe TandaCLI::Commands::TimeWorked::Week do
       🌴 Holiday Leave
       ℹ️  Christmas Day
 
-      You've worked 8 hours and 0 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+      ⏱️  Worked: 8 hours and 0 minutes
+      🌴 Leave: 8 hours and 0 minutes
 
       OUTPUT
 
@@ -268,10 +268,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
           ⏸️  30 minutes
           💰 false
 
-      Time left today: 3 hours and 0 minutes
-      You can clock out at: 5:00 pm
+      ⏳ Time left: 3 hours and 0 minutes
+      🏁 Clock out at: 5:00 pm
 
-      You've worked 13 hours and 0 minutes this week
+      ⏱️  Worked: 13 hours and 0 minutes
 
       OUTPUT
 
@@ -322,10 +322,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
           ⏸️  30 minutes
           💰 false
 
-      Overtime this week: 2 hours and 0 minutes
-      Overtime since: 5:00 pm
+      🔥 Overtime: 2 hours and 0 minutes
+      ⏰ Since: 5:00 pm
 
-      You've worked 18 hours and 0 minutes this week
+      ⏱️  Worked: 18 hours and 0 minutes
 
       OUTPUT
 
@@ -365,7 +365,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
       🚧 Pending
       ☕️ 30 minutes
 
-      You've worked 16 hours and 0 minutes this week
+      ⏱️  Worked: 16 hours and 0 minutes
 
       OUTPUT
 

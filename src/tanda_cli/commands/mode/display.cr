@@ -14,15 +14,14 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           mode = config.mode
 
-          message = begin
-            if {"production", "staging"}.includes?(mode)
-              "Mode is currently set to #{mode}"
-            else
-              "Mode is set to a custom URL (#{mode})"
-            end
+          case mode
+          when "production"
+            display.puts "#{"Production".colorize.green}"
+          when "staging"
+            display.puts "#{"Staging".colorize.yellow}"
+          else
+            display.puts "#{"Custom".colorize.cyan} (#{mode})"
           end
-
-          display.puts message
         end
       end
     end

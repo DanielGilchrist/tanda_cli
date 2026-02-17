@@ -49,12 +49,12 @@ module TandaCLI
           leave_time = summary.leave_time
 
           unless worked_time.zero?
-            display.puts("You've worked #{worked_time.total_hours.to_i} hours and #{worked_time.minutes} minutes today")
+            display.puts "⏱️  #{"Worked:".colorize.white.bold} #{worked_time.total_hours.to_i} hours and #{worked_time.minutes} minutes"
           end
 
           return if leave_time.zero?
 
-          display.puts("You took #{leave_time.hours} hours and #{leave_time.minutes} minutes of leave today")
+          display.puts "🌴 #{"Leave:".colorize.white.bold} #{leave_time.hours} hours and #{leave_time.minutes} minutes"
         end
       end
     end

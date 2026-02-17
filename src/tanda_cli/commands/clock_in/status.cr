@@ -24,23 +24,23 @@ module TandaCLI
           if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
-              display.puts "You are on break"
-              display.puts "You started a break at #{ongoing_break.pretty_start_time}"
+              display.puts "☕ #{"On break".colorize.yellow}"
+              display.puts "🕐 Started at #{ongoing_break.pretty_start_time}"
             else
               finished_break = finished_breaks.last
 
-              display.puts "You are clocked in"
-              display.puts "You finished a break at #{finished_break.pretty_finish_time}"
+              display.puts "✅ #{"Clocked in".colorize.green}"
+              display.puts "☕ Finished break at #{finished_break.pretty_finish_time}"
             end
           else
-            display.puts "You are clocked in"
-            display.puts "You clocked in at #{shift.pretty_start_time}"
+            display.puts "✅ #{"Clocked in".colorize.green}"
+            display.puts "🕐 Since #{shift.pretty_start_time}"
           end
         end
 
         private def handle_clocked_out(last_shift : Types::Shift)
-          display.puts "You are clocked out"
-          display.puts "You clocked out at #{last_shift.pretty_finish_time}"
+          display.puts "🔴 #{"Clocked out".colorize.red}"
+          display.puts "🕐 At #{last_shift.pretty_finish_time}"
         end
       end
     end

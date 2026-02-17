@@ -4,7 +4,7 @@ describe TandaCLI::Commands::Mode do
   describe TandaCLI::Commands::Mode::Display do
     it "Shows the currently configured mode" do
       context = run(["mode", "display"])
-      context.stdout.to_s.should eq("Mode is currently set to #{context.config.mode}\n")
+      context.stdout.to_s.should eq("Production\n")
     end
   end
 

@@ -4,7 +4,7 @@ describe TandaCLI::Commands::StartOfWeek do
   describe TandaCLI::Commands::StartOfWeek::Display do
     it "Displays currently set start_of_week" do
       context = run(["start_of_week", "display"])
-      context.stdout.to_s.should eq("Start of the week is set to Saturday\n")
+      context.stdout.to_s.should eq("Saturday\n")
     end
   end
 

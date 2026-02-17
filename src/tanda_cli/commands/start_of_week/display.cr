@@ -10,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display.puts "Start of the week is set to #{config.pretty_start_of_week}"
+          display.puts "#{config.pretty_start_of_week.colorize.white.bold}"
         end
       end
     end
