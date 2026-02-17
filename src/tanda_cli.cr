@@ -20,43 +20,26 @@ module TandaCLI
     display = Display.new(stdout, stderr)
     input = Input.new(stdin, display)
     config = Configuration.init(config_file, display)
-    current_user = user_from_config(config) || user_from_api(config, display, input)
-    client = build_client(config, display, input, current_user)
-    current = Current.new(current_user)
+    current_user = user_from_config(config)
+    client = build_client(config, current_user)
+    current = Current.new(current_user) if current_user
 
-    Context.new(
-      config,
-      client,
-      current,
-      display,
-      input
-    )
+    Context.new(config, client, current, display, input)
   end
 
-  private def build_client(config : Configuration, display : Display, input : Input, current_user : Current::User? = nil) : API::Client
+  private def build_client(config : Configuration, current_user : Current::User? = nil) : API::Client?
     token = config.access_token.token
-
-    # if a token can't be parsed from the config, get username and password from user and request a token
-    if token.nil?
-      API::Auth.fetch_new_token!(config, display, input)
-      return build_client(config, display, input)
-    end
+    return unless token
 
     url = config.api_url
-    display.error!(url) unless url.is_a?(String)
-    API::Client.new(url, token, display, current_user)
+    return unless url.is_a?(String)
+
+    API::Client.new(url, token, current_user)
   end
 
   private def user_from_config(config : Configuration) : Current::User?
     organisation = config.current_organisation?
     return if organisation.nil?
-
-    Current::User.new(organisation.user_id, organisation.name)
-  end
-
-  private def user_from_api(config : Configuration, display : Display, input : Input) : Current::User
-    client = build_client(config, display, input)
-    organisation = Request.ask_which_organisation_and_save!(client, config, display, input)
 
     Current::User.new(organisation.user_id, organisation.name)
   end

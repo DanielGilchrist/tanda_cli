@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class ClockIn
       class Status < Commands::Base
+        requires_auth!
+
         def setup_
           @name = "status"
           @summary = @description = "Check current clockin status"

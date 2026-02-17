@@ -12,7 +12,17 @@ module TandaCLI
       end
 
       getter context : Context
-      delegate client, config, current, display, input, to: context
+      delegate client, current, config, display, input, to: context
+
+      macro requires_auth!
+        def requires_auth? : Bool
+          true
+        end
+      end
+
+      def requires_auth? : Bool
+        false
+      end
 
       abstract def setup_
       abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
@@ -43,6 +53,7 @@ module TandaCLI
 
         return if help?(arguments, options)
 
+        check_auth! if requires_auth?
         maybe_display_staging_warning
         before_run(arguments, options)
       end
@@ -101,6 +112,12 @@ module TandaCLI
         display.error("Unknown option#{"s" if options.size > 1}: #{options.join(", ")}")
         display.puts help_template
         TandaCLI.exit!
+      end
+
+      private def check_auth!
+        return if context.authenticated?
+
+        display.error!("Not authenticated. Run `tanda_cli auth login` to authenticate.")
       end
 
       private def maybe_display_staging_warning

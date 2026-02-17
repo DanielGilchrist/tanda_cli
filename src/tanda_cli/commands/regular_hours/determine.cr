@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class RegularHours
       class Determine < Base
+        requires_auth!
+
         def setup_
           @name = "determine"
           @summary = @description = "Determine the regular hours for the current user"

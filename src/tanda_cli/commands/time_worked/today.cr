@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class TimeWorked
       class Today < Commands::Base
+        requires_auth!
+
         def setup_
           @name = "today"
           @summary = @description = "Show time worked for today"

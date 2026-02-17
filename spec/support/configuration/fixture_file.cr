@@ -5,6 +5,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
     Default
     DefaultStaging
     NoRegularHours
+    Unauthenticated
 
     def read : Bytes
       file_name = to_s.underscore

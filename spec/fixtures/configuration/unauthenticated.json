@@ -1,0 +1,9 @@
+{
+  "mode": "production",
+  "production": {
+    "site_prefix": "eu",
+    "access_token": {},
+    "organisations": []
+  },
+  "start_of_week": "saturday"
+}

@@ -1,6 +1,8 @@
 module TandaCLI
   module Commands
     class Me < Base
+      requires_auth!
+
       def setup_
         @name = "me"
         @summary = @description = "Get your own information"

@@ -3,6 +3,8 @@ require "./base"
 module TandaCLI
   module Commands
     class Balance < Base
+      requires_auth!
+
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
 
       def setup_
