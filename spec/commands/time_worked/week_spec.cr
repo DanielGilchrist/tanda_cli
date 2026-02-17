@@ -166,9 +166,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
-  it "Displays leave taken with --display flag" do
-    leave_request_id = 100
-
+  it "Displays a week of shifts and leave with --display flag" do
     TimeWorkedSpecHelper.stub_shifts([
       ShiftBuilder.build_shift(
         id: 1,
@@ -179,15 +177,34 @@ describe TandaCLI::Commands::TimeWorked::Week do
         break_length: 30,
       ),
       ShiftBuilder.build_shift(
+        id: 2,
+        date: Time.local(2024, 12, 24),
+        leave_request_id: 100,
+      ),
+      ShiftBuilder.build_shift(
         id: 3,
         date: Time.local(2024, 12, 25),
-        leave_request_id: leave_request_id,
+        leave_request_id: 101,
+      ),
+      ShiftBuilder.build_shift(
+        id: 4,
+        start: Time.local(2024, 12, 26, 9, 0),
+        finish: Time.local(2024, 12, 26, 17, 30),
+        break_start: Time.local(2024, 12, 26, 12, 30),
+        break_finish: Time.local(2024, 12, 26, 13, 0),
+        break_length: 30,
       ),
     ].to_json)
 
     TimeWorkedSpecHelper.stub_leave_requests([
       ShiftBuilder.build_leave_request(
-        id: leave_request_id,
+        id: 100,
+        shift_id: 2,
+        date: "2024-12-24",
+        hours: 8.0,
+      ),
+      ShiftBuilder.build_leave_request(
+        id: 101,
         shift_id: 3,
         date: "2024-12-25",
         hours: 8.0,
@@ -197,7 +214,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
       ),
     ].to_json)
 
-    travel_to(Time.local(2024, 12, 25)) do
+    travel_to(Time.local(2024, 12, 26)) do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT
@@ -211,13 +228,27 @@ describe TandaCLI::Commands::TimeWorked::Week do
           💰 false
 
       Leave taken: 8 hours and 0 minutes
+      📅 Tuesday, 24 Dec 2024
+      🚧 Approved
+      🌴 Annual Leave
+
+      Leave taken: 8 hours and 0 minutes
       📅 Wednesday, 25 Dec 2024
       🚧 Approved
       🌴 Holiday Leave
       ℹ️  Christmas Day
 
-      You've worked 8 hours and 0 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+      Time worked: 8 hours and 0 minutes
+      📅 Thursday, 26 Dec 2024
+      🕓 9:00 am - 5:30 pm
+      🚧 Pending
+      ☕️ Breaks:
+          🕓 12:30 pm - 1:00 pm
+          ⏸️  30 minutes
+          💰 false
+
+      You've worked 16 hours and 0 minutes this week
+      You've taken 16 hours and 0 minutes of leave this week
 
       OUTPUT
 
