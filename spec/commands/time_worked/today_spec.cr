@@ -15,7 +15,7 @@ describe TandaCLI::Commands::TimeWorked::Today do
 
     travel_to(Time.local(2024, 12, 24)) do
       context = run(["time_worked", "today"])
-      context.stdout.to_s.should eq("⏱️  Worked: 8 hours and 0 minutes\n")
+      context.stdout.to_s.should eq("You've worked 8 hours and 0 minutes today\n")
     end
   end
 
@@ -44,7 +44,7 @@ describe TandaCLI::Commands::TimeWorked::Today do
           ⏸️  30 minutes
           💰 false
 
-      ⏱️  Worked: 8 hours and 0 minutes
+      You've worked 8 hours and 0 minutes today
 
       OUTPUT
 

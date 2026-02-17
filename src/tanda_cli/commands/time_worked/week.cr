@@ -57,10 +57,10 @@ module TandaCLI
           worked_time = summary.worked_time
           leave_time = summary.leave_time
 
-          display.puts "⏱️  #{"Worked:".colorize.white.bold} #{worked_time.total_hours.to_i} hours and #{worked_time.minutes} minutes"
+          display.puts("You've worked #{worked_time.total_hours.to_i} hours and #{worked_time.minutes} minutes this week")
 
           if !leave_time.zero?
-            display.puts "🌴 #{"Leave:".colorize.white.bold} #{leave_time.hours} hours and #{leave_time.minutes} minutes"
+            display.puts("You've taken #{leave_time.hours} hours and #{leave_time.minutes} minutes of leave this week")
           end
         end
 
@@ -70,15 +70,13 @@ module TandaCLI
 
           absolute_time_left = time_left.abs
 
-          if time_left.positive?
-            display.puts "⏳ #{"Time left:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
-            pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
-            display.puts "🏁 #{"Clock out at:".colorize.white.bold} #{pretty_time}"
-          else
-            display.puts "🔥 #{"Overtime:".colorize.yellow.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
-            pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
-            display.puts "⏰ #{"Since:".colorize.white.bold} #{pretty_time}"
-          end
+          header_text = time_left.positive? ? "Time left today" : "Overtime this week"
+          display.puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
+
+          clock_out_text = time_left.positive? ? "You can clock out at" : "Overtime since"
+
+          pretty_time = Time::Format.new("%l:%M %p").format(Utils::Time.now + time_left).strip
+          display.puts "#{clock_out_text}: #{pretty_time}"
           display.puts
         end
       end
