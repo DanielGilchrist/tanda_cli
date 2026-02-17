@@ -51,16 +51,16 @@ module TandaCLI
       :treat_paid_breaks_as_unpaid?,
       :organisations,
       :organisations=,
-      :site_prefix,
-      :site_prefix=,
+      :region,
+      :region=,
       :access_token,
       :current_environment,
       :reset_environment!,
       :staging?,
       to: @serialisable
 
-    def overwrite!(site_prefix : String, email : String, access_token : Types::AccessToken)
-      self.site_prefix = site_prefix
+    def overwrite!(region : Region, email : String, access_token : Types::AccessToken)
+      self.region = region
       self.access_token.overwrite!(email, access_token)
 
       save!
@@ -84,13 +84,14 @@ module TandaCLI
       "#{base}/api/oauth/#{endpoint.to_s.downcase}"
     end
 
+    def host : String
+      region.host(staging: staging?)
+    end
+
     private def base_url : String | Error::InvalidURL
       case mode
-      when PRODUCTION
-        "https://#{site_prefix}.tanda.co"
-      when STAGING
-        prefix = "#{site_prefix}." if site_prefix != "my"
-        "https://staging.#{prefix}tanda.co"
+      when PRODUCTION, STAGING
+        "https://#{host}"
       else
         validated_url = Utils::URL.validate(mode)
         return validated_url if validated_url.is_a?(Error::InvalidURL)

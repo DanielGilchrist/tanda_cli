@@ -2,7 +2,7 @@
   "mode": "staging",
   "treat_paid_breaks_as_unpaid": true,
   "staging": {
-    "site_prefix": "eu",
+    "region": "eu",
     "access_token": {
       "email": "test@testmailfakenotrealthisisntarealdomainaaaa.com",
       "token": "testtoken",

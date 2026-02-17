@@ -1,7 +1,7 @@
 {
   "mode": "production",
   "production": {
-    "site_prefix": "eu",
+    "region": "eu",
     "access_token": {},
     "organisations": []
   },

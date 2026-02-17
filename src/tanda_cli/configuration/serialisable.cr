@@ -23,7 +23,7 @@ module TandaCLI
       @[JSON::Field(emit_null: true)]
       property? treat_paid_breaks_as_unpaid : Bool?
 
-      delegate :organisations, :organisations=, :site_prefix, :site_prefix=, :access_token, to: current_environment
+      delegate :organisations, :organisations=, :region, :region=, :access_token, to: current_environment
 
       def start_of_week=(value : String) : Time::DayOfWeek | Error::InvalidStartOfWeek
         start_of_week = Time::DayOfWeek.parse?(value)
