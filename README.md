@@ -1,5 +1,5 @@
 # tanda_cli
-<img width="454" alt="image" src="https://user-images.githubusercontent.com/13454550/231261971-a5fb9c80-2710-44e5-b6f4-b65673caa264.png">
+<img width="454" alt="image" src="https://github.com/user-attachments/assets/ede1ec52-c672-41fa-a521-27b71c106263">
 
 ## Installation
 
@@ -26,29 +26,29 @@ Upon running any command for the first time, you will be taken through an authen
 The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure is subject to change at the moment)
 
 See `--help` for a list of commands (each subcommand also accepts a `--help` flag)
-```sh
-❯ tanda_cli --help
+```fish
+╰─❮ tanda_cli help
 A CLI application for people using Tanda/Workforce.com
 
 Usage:
-	tanda_cli [options]
+        tanda_cli <command> [options]
 
 Commands:
-	me                  Get your own information
-	personal_details    Get your personal details
-	clockin             Clock in/out
-	time_worked         See how many hours you‎’ve worked
-	balance             Check your leave balances
-	regular_hours       View or set your regular hours
-	current_user        View the current user, list available users or set the current user
-	refetch_token       Refetch token for the current environment
-	refetch_users       Refetch users from the API and save to config
-	mode                Set the mode to run commands in (production/staging/custom <url>)
-	start_of_week       Set the start of the week (e.g. monday/sunday)
-	help                Shows help information
+        auth                Manage authentication
+        me                  Get your own information
+        personal_details    Get your personal details
+        clockin             Clock in/out
+        time_worked         See how many hours you’ve worked
+        balance             Check your leave balances
+        regular_hours       View or set your regular hours
+        current_user        View the current user, list available users or set the current user
+        mode                Set the mode to run commands in (production/staging/custom <url>)
+        start_of_week       Set the start of the week (e.g. monday/sunday)
+        help                Shows help information
 
 Options:
-	-h, --help    Shows help information
+        --no-colour      Disable ANSI colours
+        -h, --help       Shows help information
 ```
 
 #### Examples
