@@ -24,6 +24,10 @@ module TandaCLI
         def leave_taken : Time::Span
           breakdown.hours
         end
+
+        def daily_breakdown_representer : Representers::LeaveRequest::DailyBreakdown
+          Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request)
+        end
       end
     end
   end
