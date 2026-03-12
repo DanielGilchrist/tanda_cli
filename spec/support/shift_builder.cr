@@ -68,6 +68,8 @@ module ShiftBuilder
     }
   end
 
+  record DailyBreakdown, shift_id : Int32, date : String, hours : Float64
+
   def build_leave_request(
     id : Int32,
     shift_id : Int32,
@@ -77,21 +79,47 @@ module ShiftBuilder
     status : String = "approved",
     reason : String? = nil,
   )
-    {
+    build_leave_request(
+      id: id,
+      daily_breakdowns: [DailyBreakdown.new(shift_id: shift_id, date: date, hours: hours)],
+      leave_type: leave_type,
+      status: status,
+      reason: reason,
+    )
+  end
+
+  def build_leave_request(
+    id : Int32,
+    daily_breakdowns : Array(DailyBreakdown),
+    leave_type : String = "Annual Leave",
+    status : String = "approved",
+    reason : String? = nil,
+  )
+    shifts = daily_breakdowns.map do |breakdown|
+      build_shift(
+        id: breakdown.shift_id,
+        date: TandaCLI::Utils::Time.iso_date(breakdown.date),
+        leave_request_id: id,
+      )
+    end
+
+    leave_request = {
       id:              id,
       user_id:         1,
       leave_type:      leave_type,
       status:          status,
       reason:          reason,
-      daily_breakdown: [
+      daily_breakdown: daily_breakdowns.map do |breakdown|
         {
-          id:          shift_id.to_s,
-          date:        date,
+          id:          breakdown.shift_id.to_s,
+          date:        breakdown.date,
           start_time:  nil,
           finish_time: nil,
-          hours:       hours,
-        },
-      ],
+          hours:       breakdown.hours,
+        }
+      end,
     }
+
+    {shifts: shifts, leave_request: leave_request}
   end
 end
