@@ -3,6 +3,7 @@ require "./shift_summary/*"
 module TandaCLI
   module Models
     struct ShiftSummary
+      alias ClassifiedShift = LeaveShift | WorkedShift
       alias RegularHoursSchedule = Configuration::Serialisable::Organisation::RegularHoursSchedule
 
       include Enumerable(ClassifiedShift)
