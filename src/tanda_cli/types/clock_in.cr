@@ -3,7 +3,7 @@ require "./converters/time"
 
 module TandaCLI
   module Types
-    class ClockIn
+    struct ClockIn
       include JSON::Serializable
       include Utils::Mixins::PrettyTimes
 

@@ -2,7 +2,7 @@ require "json"
 
 module TandaCLI
   module Types
-    class Note
+    struct Note
       include JSON::Serializable
       include Utils::Mixins::PrettyTimes
 

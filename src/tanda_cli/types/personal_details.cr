@@ -3,7 +3,7 @@ require "./personal_details/**"
 
 module TandaCLI
   module Types
-    class PersonalDetails
+    struct PersonalDetails
       include JSON::Serializable
 
       getter email : String

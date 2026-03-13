@@ -2,8 +2,8 @@ require "json"
 
 module TandaCLI
   module Types
-    class Me
-      class Organisation
+    struct Me
+      struct Organisation
         include JSON::Serializable
 
         getter id : Int32

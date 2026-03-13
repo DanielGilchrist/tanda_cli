@@ -3,10 +3,10 @@ require "./converters/time"
 
 module TandaCLI
   module Types
-    class Schedule
+    struct Schedule
       include JSON::Serializable
 
-      class Break
+      struct Break
         include JSON::Serializable
 
         @[JSON::Field(key: "start", converter: TandaCLI::Types::Converters::Time::FromMaybeUnix)]

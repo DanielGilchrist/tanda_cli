@@ -1,7 +1,7 @@
 module TandaCLI
   module Types
-    class PersonalDetails
-      class Address
+    struct PersonalDetails
+      struct Address
         include JSON::Serializable
 
         getter street_line_one : String?

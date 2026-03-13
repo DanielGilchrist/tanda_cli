@@ -3,7 +3,7 @@ require "./converters/time"
 
 module TandaCLI
   module Types
-    class ShiftBreak
+    struct ShiftBreak
       include JSON::Serializable
       include Utils::Mixins::PrettyTimes
 

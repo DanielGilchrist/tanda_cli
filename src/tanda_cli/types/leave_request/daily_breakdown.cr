@@ -4,8 +4,8 @@ require "../converters/time"
 
 module TandaCLI
   module Types
-    class LeaveRequest
-      class DailyBreakdown
+    struct LeaveRequest
+      struct DailyBreakdown
         include JSON::Serializable
         include Utils::Mixins::PrettyTimes
 

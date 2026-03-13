@@ -1,7 +1,7 @@
 module TandaCLI
   module Types
-    class PersonalDetails
-      class EmergencyContact
+    struct PersonalDetails
+      struct EmergencyContact
         include JSON::Serializable
 
         getter name : String

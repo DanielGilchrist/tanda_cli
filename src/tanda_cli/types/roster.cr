@@ -3,7 +3,7 @@ require "./roster/daily_schedule"
 
 module TandaCLI
   module Types
-    class Roster
+    struct Roster
       include JSON::Serializable
 
       @daily_schedules : Array(Roster::DailySchedule) = Array(Roster::DailySchedule).new

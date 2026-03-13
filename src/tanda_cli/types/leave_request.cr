@@ -4,7 +4,7 @@ require "./converters/time"
 
 module TandaCLI
   module Types
-    class LeaveRequest
+    struct LeaveRequest
       include JSON::Serializable
 
       enum Status

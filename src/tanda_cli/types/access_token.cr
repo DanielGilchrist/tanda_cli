@@ -2,7 +2,7 @@ require "json"
 
 module TandaCLI
   module Types
-    class AccessToken
+    struct AccessToken
       include JSON::Serializable
 
       @[JSON::Field(key: "access_token")]
@@ -11,7 +11,7 @@ module TandaCLI
       getter token_type : String
 
       @[JSON::Field(key: "scope")]
-      property scopes : String
+      getter scopes : String
 
       getter created_at : Int32
     end

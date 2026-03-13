@@ -2,7 +2,7 @@ require "json"
 
 module TandaCLI
   module Types
-    class Error
+    struct Error
       include TandaCLI::Error::Interface
       include JSON::Serializable
     end

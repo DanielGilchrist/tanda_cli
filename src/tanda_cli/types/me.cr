@@ -3,7 +3,7 @@ require "./me/organisation"
 
 module TandaCLI
   module Types
-    class Me
+    struct Me
       include JSON::Serializable
 
       getter name : String

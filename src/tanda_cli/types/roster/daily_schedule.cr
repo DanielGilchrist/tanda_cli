@@ -3,8 +3,8 @@ require "../schedule"
 
 module TandaCLI
   module Types
-    class Roster
-      class DailySchedule
+    struct Roster
+      struct DailySchedule
         include JSON::Serializable
 
         module DateConverter

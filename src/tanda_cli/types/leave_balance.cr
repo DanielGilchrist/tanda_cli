@@ -3,7 +3,7 @@ require "./converters/span.cr"
 
 module TandaCLI
   module Types
-    class LeaveBalance
+    struct LeaveBalance
       include JSON::Serializable
 
       getter hours : Float32
