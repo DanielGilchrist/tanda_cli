@@ -4,13 +4,10 @@ require "./converters/time"
 
 module TandaCLI
   module Types
-    class Shift
+    struct Shift
       include JSON::Serializable
       include Utils::Mixins::PrettyTimes
 
-      # defaults
-      @leave_request : Types::LeaveRequest? = nil
-      @leave_request_set : Bool = false
       @valid_breaks : Array(ShiftBreak)? = nil
 
       enum Status
@@ -24,37 +21,6 @@ module TandaCLI
           status_string = value.read_string
           Status.parse?(status_string) || raise("Unknown status: #{status_string}")
         end
-      end
-
-      # Parse shifts and any associated leave requests
-      def self.from_array(response : HTTP::Client::Response, client : API::Client) : API::Result(Array(self))
-        API::Result(Array(self)).from(response) do |shifts|
-          fetch_and_attach_leave_requests(shifts, client)
-        end
-      end
-
-      private def self.fetch_and_attach_leave_requests(
-        shifts : Array(Types::Shift),
-        client : API::Client,
-      ) : Array(Types::Shift) | Types::Error
-        leave_request_ids = shifts.compact_map(&.leave_request_id)
-        return shifts if leave_request_ids.empty?
-
-        leave_requests_by_id = client.leave_requests(ids: leave_request_ids).or { |error| return error }.index_by(&.id)
-
-        if leave_requests_by_id.present?
-          shifts.each do |shift|
-            leave_request_id = shift.leave_request_id
-            next if leave_request_id.nil?
-
-            leave_request = leave_requests_by_id[leave_request_id]?
-            next if leave_request.nil?
-
-            shift.set_leave_request!(leave_request)
-          end
-        end
-
-        shifts
       end
 
       getter id : Int32
@@ -74,8 +40,6 @@ module TandaCLI
       @[JSON::Field(key: "status", converter: TandaCLI::Types::Shift::StatusConverter)]
       getter status : Status
 
-      getter leave_request : Types::LeaveRequest?
-
       @[JSON::Field(key: "notes")]
       getter _nilable_notes : Array(Types::Note)?
 
@@ -85,14 +49,6 @@ module TandaCLI
 
       def notes : Array(Types::Note)
         _nilable_notes || Array(Types::Note).new
-      end
-
-      def set_leave_request!(leave_request : Types::LeaveRequest)
-        raise("Leave request already set!") if @leave_request_set
-        raise("Leave request doesn't belong to shift!") if leave_request.id != leave_request_id
-
-        @leave_request_set = true
-        @leave_request = leave_request
       end
 
       def valid_breaks : Array(ShiftBreak)
@@ -138,7 +94,7 @@ module TandaCLI
         !!(start_time || finish_time) || leave?
       end
 
-      private def leave? : Bool
+      def leave? : Bool
         !!leave_request_id
       end
 

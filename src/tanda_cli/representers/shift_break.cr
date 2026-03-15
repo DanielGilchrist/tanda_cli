@@ -1,5 +1,4 @@
 require "./base"
-require "../types/shift"
 require "../types/shift_break"
 
 module TandaCLI

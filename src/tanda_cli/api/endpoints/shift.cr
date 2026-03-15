@@ -23,11 +23,10 @@ module TandaCLI
           "from"       => start_string,
           "to"         => finish_string,
           "show_notes" => show_notes.to_s,
-          # This is an arbitrarily named query param to get past issue where shift data would be stale from server-side cache
-          "cache_key" => cache_key,
+          "cache_key"  => cache_key,
         })
 
-        Types::Shift.from_array(response, self)
+        API::Result(Array(Types::Shift)).from(response)
       end
 
       private def cache_key : String

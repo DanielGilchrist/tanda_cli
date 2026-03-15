@@ -10,9 +10,9 @@ module TandaCLI
 
         @object.each_with_index do |classified_shift, index|
           case classified_shift
-          in Models::ShiftSummary::LeaveShift
+          in Models::LeaveShift
             build_leave_shift(builder, classified_shift)
-          in Models::ShiftSummary::WorkedShift
+          in Models::WorkedShift
             build_worked_shift(builder, classified_shift)
           end.tap do |rendered|
             builder.puts if rendered && index != last_index
@@ -20,7 +20,7 @@ module TandaCLI
         end
       end
 
-      private def build_leave_shift(builder : Builder, leave_shift : Models::ShiftSummary::LeaveShift) : Bool
+      private def build_leave_shift(builder : Builder, leave_shift : Models::LeaveShift) : Bool
         length = leave_shift.breakdown.hours
         return false if length.zero?
 
@@ -30,7 +30,7 @@ module TandaCLI
         true
       end
 
-      private def build_worked_shift(builder : Builder, worked_shift : Models::ShiftSummary::WorkedShift) : Bool
+      private def build_worked_shift(builder : Builder, worked_shift : Models::WorkedShift) : Bool
         if worked_shift.assumed_finish?
           day_name = worked_shift.date.to_s("%A")
           builder.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing finish time for #{day_name}, assuming regular hours finish time"

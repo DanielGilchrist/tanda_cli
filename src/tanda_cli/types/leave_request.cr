@@ -6,6 +6,7 @@ module TandaCLI
   module Types
     struct LeaveRequest
       include JSON::Serializable
+      include Enumerable(DailyBreakdown)
 
       enum Status
         Pending
@@ -24,15 +25,13 @@ module TandaCLI
       getter user_id : Int32
       getter leave_type : String
       getter reason : String?
+      getter daily_breakdown : Array(DailyBreakdown)
 
       @[JSON::Field(key: "status", converter: TandaCLI::Types::LeaveRequest::StatusConverter)]
       getter status : Status
 
-      @[JSON::Field(key: "daily_breakdown")]
-      getter daily_breakdown : Array(Types::LeaveRequest::DailyBreakdown)
-
-      def breakdown_for(shift : Types::Shift) : Types::LeaveRequest::DailyBreakdown?
-        daily_breakdown.find(&.shift_id.==(shift.id))
+      def each(& : DailyBreakdown ->) : Nil
+        daily_breakdown.each { |breakdown| yield breakdown }
       end
     end
   end

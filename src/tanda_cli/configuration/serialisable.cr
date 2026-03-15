@@ -11,7 +11,7 @@ module TandaCLI
         @staging : Environment = Environment.new,
         @mode : String = PRODUCTION,
         @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
-        @treat_paid_breaks_as_unpaid : Bool? = false,
+        @treat_paid_breaks_as_unpaid : Bool = false,
       ); end
 
       getter start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
@@ -21,7 +21,7 @@ module TandaCLI
       property mode : String = "production"
 
       @[JSON::Field(emit_null: true)]
-      property? treat_paid_breaks_as_unpaid : Bool?
+      property? treat_paid_breaks_as_unpaid : Bool = false
 
       delegate :organisations, :organisations=, :region, :region=, :access_token, to: current_environment
 

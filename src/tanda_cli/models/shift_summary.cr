@@ -1,4 +1,5 @@
-require "./shift_summary/*"
+require "./worked_shift"
+require "./leave_shift"
 
 module TandaCLI
   module Models
@@ -12,10 +13,11 @@ module TandaCLI
 
       def initialize(
         shifts : Array(Types::Shift),
+        leave_requests : Array(Types::LeaveRequest) = Array(Types::LeaveRequest).new,
         treat_paid_breaks_as_unpaid : Bool = false,
         @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
       )
-        @classified_shifts = classify(shifts, treat_paid_breaks_as_unpaid)
+        @classified_shifts = classify(shifts, leave_requests, treat_paid_breaks_as_unpaid)
       end
 
       def each(& : ClassifiedShift ->) : Nil
@@ -54,7 +56,7 @@ module TandaCLI
         regular_hours_schedules = @regular_hours_schedules
         return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 
-        shifts = @classified_shifts.map(&.shift)
+        shifts = worked_shifts.map(&.shift)
         shifts_by_day_of_week = shifts.group_by(&.day_of_week)
 
         applicable_regular_hours_schedules = regular_hours_schedules.select do |schedule|
@@ -72,10 +74,21 @@ module TandaCLI
         end - worked_time - leave_time
       end
 
-      private def classify(shifts : Array(Types::Shift), treat_paid_breaks_as_unpaid : Bool) : Array(ClassifiedShift)
-        shifts.map do |shift|
-          LeaveShift.from?(shift) ||
+      private def classify(
+        shifts : Array(Types::Shift),
+        leave_requests : Array(Types::LeaveRequest),
+        treat_paid_breaks_as_unpaid : Bool,
+      ) : Array(ClassifiedShift)
+        leave_requests_by_id = leave_requests.index_by(&.id)
+
+        shifts.compact_map do |shift|
+          leave_request_id = shift.leave_request_id
+
+          if leave_request_id && (leave_request = leave_requests_by_id[leave_request_id]?)
+            LeaveShift.from?(shift, leave_request)
+          else
             WorkedShift.from(shift, treat_paid_breaks_as_unpaid, @regular_hours_schedules)
+          end
         end
       end
 

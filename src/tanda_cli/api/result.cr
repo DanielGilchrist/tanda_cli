@@ -8,16 +8,6 @@ module TandaCLI
         new(parse(response))
       end
 
-      # allows additional processing on a successful response
-      def self.from(response : HTTP::Client::Response, & : T -> T | E) : self
-        case result = parse(response)
-        in E
-          new(result)
-        in T
-          new(yield(result))
-        end
-      end
-
       private def self.parse(response : HTTP::Client::Response) : T | E
         {% if T == Nil %}
           # Nil is a special case we use if we don't care about the value for a successful response

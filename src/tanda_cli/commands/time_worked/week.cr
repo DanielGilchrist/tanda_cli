@@ -1,8 +1,11 @@
+require "../helpers/time_worked"
+
 module TandaCLI
   module Commands
     class TimeWorked
       class Week < Commands::Base
         requires_auth!
+        include Helpers::TimeWorked
 
         def setup_
           @name = "week"
@@ -35,11 +38,13 @@ module TandaCLI
             .or { |error| display.error!(error) }
             .select(&.visible?)
 
+          leave_requests = leave_requests_for(shifts)
+
           organisation = config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
-          treat_paid_breaks_as_unpaid = config.treat_paid_breaks_as_unpaid? || false
+          treat_paid_breaks_as_unpaid = config.treat_paid_breaks_as_unpaid?
 
-          summary = Models::ShiftSummary.new(shifts, treat_paid_breaks_as_unpaid, regular_hours_schedules)
+          summary = Models::ShiftSummary.new(shifts, leave_requests, treat_paid_breaks_as_unpaid, regular_hours_schedules)
 
           if summary.empty?
             return display.puts "You haven't clocked in this week"
