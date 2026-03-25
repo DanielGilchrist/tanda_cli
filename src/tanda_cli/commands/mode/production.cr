@@ -4,7 +4,7 @@ module TandaCLI
   module Commands
     class Mode
       class Production < Base
-        @disable_staging_warning = true
+        disable_staging_warning!
 
         def setup_
           @name = "production"

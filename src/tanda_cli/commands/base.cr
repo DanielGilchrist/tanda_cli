@@ -5,6 +5,15 @@ module TandaCLI
   module Commands
     abstract class Base < Cling::Command
       @disable_staging_warning = false
+      @requires_auth = false
+
+      macro disable_staging_warning!
+        @disable_staging_warning = true
+      end
+
+      macro requires_auth!
+        @requires_auth = true
+      end
 
       def initialize(@context : Context)
         display = @context.@display
@@ -14,16 +23,6 @@ module TandaCLI
       getter context : Context
       delegate client, current, config, display, input, to: context
 
-      macro requires_auth!
-        def requires_auth? : Bool
-          true
-        end
-      end
-
-      def requires_auth? : Bool
-        false
-      end
-
       abstract def setup_
       abstract def run_(arguments : Cling::Arguments, options : Cling::Options)
 
@@ -32,11 +31,6 @@ module TandaCLI
         commands.each do |klass|
           add_command(klass.new(context))
         end
-      end
-
-      # override this to extend `pre_run` behaviour
-      def before_run(arguments : Cling::Arguments, options : Cling::Options) : Bool
-        true
       end
 
       def setup : Nil
@@ -53,9 +47,8 @@ module TandaCLI
 
         return if help?(arguments, options)
 
-        check_auth! if requires_auth?
+        check_auth! if @requires_auth
         maybe_display_staging_warning
-        before_run(arguments, options)
       end
 
       def run(arguments : Cling::Arguments, options : Cling::Options) : Nil
