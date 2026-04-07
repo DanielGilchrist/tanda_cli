@@ -56,11 +56,13 @@ module TandaCLI
         regular_hours_schedules = @regular_hours_schedules
         return if regular_hours_schedules.nil? || regular_hours_schedules.empty?
 
+        days_with_shifts = (worked_shifts + leave_shifts).to_set(&.shift.day_of_week)
+
         shifts = worked_shifts.map(&.shift)
         shifts_by_day_of_week = shifts.group_by(&.day_of_week)
 
         applicable_regular_hours_schedules = regular_hours_schedules.select do |schedule|
-          shifts_by_day_of_week.has_key?(schedule.day_of_week)
+          days_with_shifts.includes?(schedule.day_of_week)
         end
         return if applicable_regular_hours_schedules.empty?
 

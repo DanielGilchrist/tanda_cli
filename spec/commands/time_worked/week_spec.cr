@@ -389,6 +389,55 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
+  it "Does not incorrectly show overtime when leave is taken on a non-worked day" do
+    worked_shifts = [
+      ShiftBuilder.build_shift(
+        id: 2,
+        start: Time.local(2024, 12, 24, 8, 30),
+        finish: nil,
+      ),
+    ]
+
+    TimeWorkedSpecHelper.stub_leave_requests(
+      ShiftBuilder.build_leave_request(
+        id: 100,
+        shift_id: 1,
+        date: "2024-12-23",
+        hours: 8.0,
+        leave_type: "Holiday Leave",
+        status: "approved",
+        reason: "Christmas Eve (auto applied)",
+      ),
+      worked_shifts: worked_shifts,
+    )
+
+    travel_to(Time.local(2024, 12, 24, 12, 0)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+      Leave taken: 8 hours and 0 minutes
+      📅 Monday, 23 Dec 2024
+      🚧 Approved
+      🌴 Holiday Leave
+      ℹ️  Christmas Eve (auto applied)
+
+      Worked so far: 3 hours and 30 minutes
+      📅 Tuesday, 24 Dec 2024
+      🕓 8:30 am -<space>
+      🚧 Pending
+
+      Time left today: 5 hours and 0 minutes
+      You can clock out at: 5:00 pm
+
+      You've worked 3 hours and 30 minutes this week
+      You've taken 8 hours and 0 minutes of leave this week
+
+      OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
   it "Does not show blank lines for zero-hour leave days when leave spans over a weekend" do
     TimeWorkedSpecHelper.stub_leave_requests(
       ShiftBuilder.build_leave_request(
