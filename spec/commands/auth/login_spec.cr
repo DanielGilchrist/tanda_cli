@@ -28,6 +28,8 @@ private def stub_all_regions_failed
   stub_failed_auth("my.workforce.com")
   stub_failed_auth("my.tanda.co")
   stub_failed_auth("eu.tanda.co")
+  stub_failed_auth("internal.workforce.com")
+  stub_failed_auth("internal.tanda.co")
 end
 
 private def stub_eu_auth_success
@@ -178,5 +180,63 @@ describe TandaCLI::Commands::Auth::Login do
 
     output = context.stdout.to_s
     output.should contain("Authenticated!")
+  end
+
+  it "authenticates against internal regions in production mode" do
+    stub_failed_auth("my.workforce.com")
+    stub_failed_auth("my.tanda.co")
+    stub_failed_auth("eu.tanda.co")
+    stub_failed_auth("internal.workforce.com")
+    stub_successful_auth("internal.tanda.co")
+
+    WebMock
+      .stub(:get, "https://internal.tanda.co/api/v2/users/me")
+      .to_return(
+        status: 200,
+        body: {
+          name:          "Test",
+          email:         "test@example.com",
+          country:       "Australia",
+          time_zone:     "Australia/Sydney",
+          user_ids:      [1],
+          permissions:   ["test"],
+          organisations: [
+            {
+              id:      1,
+              name:    "Test Organisation",
+              locale:  "en-AU",
+              country: "Australia",
+              user_id: 1,
+            },
+          ],
+        }.to_json
+      )
+
+    stdin = build_stdin(
+      "test@example.com",
+      "dummypassword",
+    )
+
+    context = run(["auth", "login"], stdin: stdin)
+
+    output = context.stdout.to_s
+    output.should contain("Authenticated!")
+    context.config.region.should eq(TandaCLI::Region::InternalAPAC)
+  end
+
+  it "does not try internal regions in staging mode" do
+    stub_failed_auth("staging.workforce.com")
+    stub_failed_auth("staging.tanda.co")
+    stub_failed_auth("staging.eu.tanda.co")
+
+    # Deliberately do not stub the internal hosts — login must not call them.
+    stdin = build_stdin(
+      "bad@example.com",
+      "wrongpassword",
+    )
+
+    context = run(["auth", "login"], stdin: stdin, config_fixture: :default_staging)
+
+    context.stderr.to_s.should contain("Unable to authenticate")
   end
 end

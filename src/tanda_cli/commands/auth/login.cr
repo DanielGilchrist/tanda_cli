@@ -47,6 +47,8 @@ module TandaCLI
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
           Region.values.each do |region|
+            next if staging && region.internal?
+
             Log.debug(&.emit("Trying #{region.display_name} (#{region.host(staging)})"))
 
             access_token = try_authenticate(region, email, password, staging)
