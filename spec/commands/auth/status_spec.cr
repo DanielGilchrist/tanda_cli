@@ -5,7 +5,7 @@ describe TandaCLI::Commands::Auth::Status do
     context = run(["auth", "status"])
 
     output = context.stdout.to_s
-    output.should contain("Authenticated (production)")
+    output.should contain("Authenticated (Production)")
     output.should contain("test@testmailfakenotrealthisisntarealdomainaaaa.com")
     output.should contain("Test Organisation (user 1)")
     output.should contain("EU (eu.tanda.co)")
@@ -15,14 +15,14 @@ describe TandaCLI::Commands::Auth::Status do
     context = run(["auth", "status"], config_fixture: :default_staging)
 
     output = context.stdout.to_s
-    output.should contain("Authenticated (staging)")
+    output.should contain("Authenticated (Staging)")
   end
 
   it "displays not authenticated when no token" do
     context = run(["auth", "status"], config_fixture: :unauthenticated)
 
     output = context.stdout.to_s
-    output.should contain("Not authenticated (production)")
+    output.should contain("Not authenticated (Production)")
     output.should contain("Run `tanda_cli auth login` to authenticate")
   end
 end

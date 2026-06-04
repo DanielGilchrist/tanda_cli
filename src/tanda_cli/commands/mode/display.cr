@@ -12,15 +12,13 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          mode = config.mode
-
-          case mode
-          when "production"
-            display.puts "#{"Production".colorize.green}"
-          when "staging"
-            display.puts "#{"Staging".colorize.yellow}"
-          else
-            display.puts "#{"Custom".colorize.cyan} (#{mode})"
+          case mode = config.mode
+          in Configuration::Mode::Production
+            display.puts mode.display_label.colorize.green
+          in Configuration::Mode::Staging
+            display.puts mode.display_label.colorize.yellow
+          in Configuration::Mode::Custom
+            display.puts mode.display_label.colorize.cyan
           end
         end
       end

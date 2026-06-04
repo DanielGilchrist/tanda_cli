@@ -4,13 +4,9 @@ require "file_utils"
 require "./configuration/**"
 require "./error/invalid_start_of_week"
 require "./api/types/access_token"
-require "./utils/url"
 
 module TandaCLI
   class Configuration
-    PRODUCTION = "production"
-    STAGING    = "staging"
-
     enum OAuthEndpoint
       Token
       Revoke
@@ -70,33 +66,22 @@ module TandaCLI
       @file.write(@serialisable.to_json)
     end
 
-    def api_url : String | Error::InvalidURL
-      base = base_url
-      return base if base.is_a?(Error::InvalidURL)
-
-      "#{base}/api/v2"
+    def api_url : String
+      build_url("api/v2")
     end
 
-    def oauth_url(endpoint : OAuthEndpoint) : String | Error::InvalidURL
-      base = base_url
-      return base if base.is_a?(Error::InvalidURL)
-
-      "#{base}/api/oauth/#{endpoint.to_s.downcase}"
+    def oauth_url(endpoint : OAuthEndpoint) : String
+      build_url("api/oauth/#{endpoint.to_s.downcase}")
     end
 
-    def host : String
-      region.host(staging: staging?)
-    end
-
-    private def base_url : String | Error::InvalidURL
-      case mode
-      when PRODUCTION, STAGING
-        "https://#{host}"
-      else
-        validated_url = Utils::URL.validate(mode)
-        return validated_url if validated_url.is_a?(Error::InvalidURL)
-
-        validated_url.to_s
+    private def build_url(path_suffix : String) : String
+      case current_mode = mode
+      in Mode::Production
+        "https://#{region.host(staging: false)}/#{path_suffix}"
+      in Mode::Staging
+        "https://#{region.host(staging: true)}/#{path_suffix}"
+      in Mode::Custom
+        "#{current_mode.url}/#{path_suffix}"
       end
     end
   end

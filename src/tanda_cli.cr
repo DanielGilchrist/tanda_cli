@@ -31,10 +31,7 @@ module TandaCLI
     token = config.access_token.token
     return unless token
 
-    url = config.api_url
-    return unless url.is_a?(String)
-
-    API::Client.new(url, token, current_user)
+    API::Client.new(config.api_url, token, current_user)
   end
 
   private def user_from_config(config : Configuration) : Current::User?

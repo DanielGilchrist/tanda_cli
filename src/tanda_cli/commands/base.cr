@@ -115,17 +115,15 @@ module TandaCLI
 
       private def maybe_display_staging_warning
         return if @disable_staging_warning
-        return unless config.staging?
 
-        message = begin
-          if (mode = config.mode) != "staging"
-            "Command running on #{mode}"
-          else
-            "Command running in staging mode"
-          end
+        case mode = config.mode
+        in Configuration::Mode::Production
+          # no warning needed
+        in Configuration::Mode::Staging
+          display.warning("Command running in staging mode")
+        in Configuration::Mode::Custom
+          display.warning("Command running on #{mode.url}")
         end
-
-        display.warning(message)
       end
 
       private def handle_maybe_no_colour(options : Cling::Options)
