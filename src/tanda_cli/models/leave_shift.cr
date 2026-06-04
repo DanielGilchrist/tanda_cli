@@ -7,26 +7,29 @@ module TandaCLI
         end
       end
 
-      def self.from?(shift : API::Types::Shift, leave_request : API::Types::LeaveRequest?) : LeaveShift?
-        raise(ArgumentError.new("#{shift.inspect} is not a leave shift!")) unless shift.leave?
-        raise(MismatchedLeaveShift.new(shift, leave_request)) if shift.leave_request_id != leave_request.id
+      def self.from?(api_shift : API::Types::Shift, leave_request : API::Types::LeaveRequest) : LeaveShift?
+        leave_request_id = api_shift.leave_request_id
+        return if leave_request_id.nil?
+        raise(MismatchedLeaveShift.new(api_shift, leave_request)) if leave_request_id != leave_request.id
 
-        breakdown = leave_request.find(&.shift_id.==(shift.id))
+        breakdown = leave_request.find(&.shift_id.==(api_shift.id))
         return unless breakdown
 
-        new(shift, breakdown, leave_request)
+        new(api_shift, breakdown, leave_request)
       end
 
       def initialize(
-        @shift : API::Types::Shift,
+        @api_shift : API::Types::Shift,
         @breakdown : API::Types::LeaveRequest::DailyBreakdown,
         @leave_request : API::Types::LeaveRequest,
-      )
-      end
+      ); end
 
-      getter shift : API::Types::Shift
       getter breakdown : API::Types::LeaveRequest::DailyBreakdown
       getter leave_request : API::Types::LeaveRequest
+
+      def day_of_week : Time::DayOfWeek
+        @api_shift.date.day_of_week
+      end
 
       def leave_taken : Time::Span
         breakdown.hours

@@ -5,7 +5,7 @@ module TandaCLI
       ClockedOut
       OnBreak
 
-      def self.from_shifts(shifts : Array(API::Types::Shift)) : self
+      def self.from_shifts(shifts : Array(WorkedShift)) : self
         if shifts.any?(&.ongoing_break?)
           OnBreak
         elsif shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }

@@ -30,7 +30,8 @@ module TandaCLI
         end
 
         private def check_status!(clock_type : ClockType, now : Time)
-          shifts = client.shifts(current.user.id, now).or { |error| display.error!(error) }
+          api_shifts = client.shifts(current.user.id, now).or { |error| display.error!(error) }
+          shifts = api_shifts.compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
           status = Models::ClockInStatus.from_shifts(shifts)
           error = status.error_for(clock_type)
           display.error!(error) if error

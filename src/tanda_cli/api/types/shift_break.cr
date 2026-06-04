@@ -1,6 +1,4 @@
 require "json"
-require "../../utils/mixins/pretty_times"
-
 require "./converters/time"
 
 module TandaCLI
@@ -8,7 +6,6 @@ module TandaCLI
     module Types
       struct ShiftBreak
         include JSON::Serializable
-        include Utils::Mixins::PrettyTimes
 
         getter id : Int32
         getter shift_id : Int32
@@ -20,28 +17,6 @@ module TandaCLI
 
         @[JSON::Field(key: "finish", converter: TandaCLI::API::Types::Converters::Time::FromMaybeUnix)]
         getter finish_time : Time?
-
-        def valid? : Bool
-          !!start_time || length > 0
-        end
-
-        def ongoing_length : UInt16
-          start_time = self.start_time
-          finish_time = self.finish_time
-          return length if finish_time || start_time.nil?
-
-          (Utils::Time.now - start_time).minutes.to_u16
-        end
-
-        def ongoing? : Bool
-          return false unless start_time
-
-          finish_time.nil?
-        end
-
-        def pretty_ongoing_length : String
-          "#{ongoing_length} minutes"
-        end
       end
     end
   end

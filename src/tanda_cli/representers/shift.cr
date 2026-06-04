@@ -2,13 +2,12 @@ require "colorize"
 
 require "./base"
 require "./shift_break"
-require "../api/types/shift"
-require "../api/types/shift_break"
+require "../models/worked_shift"
 
 module TandaCLI
   module Representers
-    struct Shift < Base(API::Types::Shift)
-      def initialize(@object : API::Types::Shift, @expected_finish_time : Time? = nil, @expected_break_length : Time::Span? = nil)
+    struct Shift < Base(Models::WorkedShift)
+      def initialize(@object : Models::WorkedShift, @expected_finish_time : Time? = nil, @expected_break_length : Time::Span? = nil)
       end
 
       private def build_display(builder : Builder)

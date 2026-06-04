@@ -30,15 +30,14 @@ module TandaCLI
             display.info("Showing time worked offset #{offset} days")
           end
 
-          shifts = client
+          api_shifts = client
             .shifts(current.user.id, now, now, show_notes: print_shifts)
             .or { |error| display.error!(error) }
-            .select(&.visible?)
 
-          leave_requests = leave_requests_for(shifts)
+          leave_requests = leave_requests_for(api_shifts)
           treat_paid_breaks_as_unpaid = config.treat_paid_breaks_as_unpaid?
 
-          summary = Models::ShiftSummary.new(shifts, leave_requests, treat_paid_breaks_as_unpaid)
+          summary = Models::ShiftSummary.from_api(api_shifts, leave_requests, treat_paid_breaks_as_unpaid)
 
           if summary.empty?
             return display.puts "You haven't clocked in today"

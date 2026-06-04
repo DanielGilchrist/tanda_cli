@@ -10,7 +10,11 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          todays_shifts = client.shifts(current.user.id, Utils::Time.now).or { |error| display.error!(error) }.sort_by(&.id)
+          api_shifts = client.shifts(current.user.id, Utils::Time.now).or { |error| display.error!(error) }
+          todays_shifts = api_shifts
+            .compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
+            .sort_by!(&.id)
+
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
           return handle_ongoing_shift(ongoing_shift) if ongoing_shift
 
@@ -20,7 +24,7 @@ module TandaCLI
           handle_clocked_out(last_shift)
         end
 
-        private def handle_ongoing_shift(shift : API::Types::Shift)
+        private def handle_ongoing_shift(shift : Models::WorkedShift)
           if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
@@ -38,7 +42,7 @@ module TandaCLI
           end
         end
 
-        private def handle_clocked_out(last_shift : API::Types::Shift)
+        private def handle_clocked_out(last_shift : Models::WorkedShift)
           display.puts "🔴 #{"Clocked out".colorize.red}"
           display.puts "🕐 At #{last_shift.pretty_finish_time}"
         end
