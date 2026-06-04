@@ -2,7 +2,7 @@ module TandaCLI
   module Models
     struct RegularHoursPattern
       def self.from_rosters(rosters : Array(API::Types::Roster), user_id : Int32) : self
-        candidates_by_day = Hash(Time::DayOfWeek, Array(Candidate)).new { |hash, key| hash[key] = Array(Candidate).new }
+        schedules_by_day = Hash(Time::DayOfWeek, Array(Schedule)).new { |hash, key| hash[key] = Array(Schedule).new }
         seen_dates = Set(Time).new
         weeks_with_data = 0
 
@@ -11,27 +11,27 @@ module TandaCLI
           roster.daily_schedules.each do |daily|
             next if seen_dates.includes?(daily.date)
 
-            candidate = Candidate.from?(daily, user_id)
-            next if candidate.nil?
+            schedule = Schedule.from?(daily, user_id)
+            next if schedule.nil?
 
             seen_dates << daily.date
-            candidates_by_day[candidate.day_of_week] << candidate
+            schedules_by_day[schedule.day_of_week] << schedule
             week_has_data = true
           end
 
           weeks_with_data += 1 if week_has_data
         end
 
-        entries = candidates_by_day.map do |day_of_week, candidates|
-          most_recent = candidates.max_by(&.source_date)
+        entries = schedules_by_day.map do |day_of_week, schedules|
+          most_recent = schedules.max_by(&.date)
           Entry.new(
             day_of_week: day_of_week,
             start_time: most_recent.start_time,
             finish_time: most_recent.finish_time,
             automatic_break_length: most_recent.automatic_break_length,
             breaks: most_recent.breaks,
-            source_date: most_recent.source_date,
-            weeks_seen: candidates.size,
+            source_date: most_recent.date,
+            weeks_seen: schedules.size,
           )
         end.sort_by!(&.day_of_week.to_i)
 
