@@ -6,16 +6,18 @@ module TandaCLI
       include Error::Interface
 
       def initialize(@error : String, @error_description : String? = nil)
-        message = begin
+        message =
           if @error_description
-            "#{error}: #{error_description}"
+            "#{@error}: #{@error_description}"
           else
             @error
           end
-        end
 
         super(message)
       end
+
+      getter error : String
+      getter error_description : String?
     end
   end
 end

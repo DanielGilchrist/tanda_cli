@@ -1,8 +1,8 @@
 module TandaCLI
   module Error
     module Interface
-      getter error : String
-      getter error_description : String?
+      abstract def error : String
+      abstract def error_description : String?
     end
   end
 end
