@@ -3,15 +3,15 @@ require "../client"
 module TandaCLI
   module API
     module Endpoints::Shift
-      def shifts(user_id : Int32, date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+      def shifts(user_id : Int32, date : Time, show_notes : Bool = false) : API::Result(Array(API::Types::Shift))
         request_shifts(user_id, date, date, show_notes: show_notes)
       end
 
-      def shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+      def shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(API::Types::Shift))
         request_shifts(user_id, start_date, finish_date, show_notes: show_notes)
       end
 
-      private def request_shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(Types::Shift))
+      private def request_shifts(user_id : Int32, start_date : Time, finish_date : Time, show_notes : Bool = false) : API::Result(Array(API::Types::Shift))
         start_string, finish_string = {
           start_date,
           finish_date,
@@ -26,7 +26,7 @@ module TandaCLI
           "cache_key"  => cache_key,
         })
 
-        API::Result(Array(Types::Shift)).from(response)
+        API::Result(Array(API::Types::Shift)).from(response)
       end
 
       private def cache_key : String

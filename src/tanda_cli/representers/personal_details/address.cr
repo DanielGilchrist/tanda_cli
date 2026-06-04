@@ -1,10 +1,10 @@
 require "../base"
-require "../../types/personal_details/address"
+require "../../api/types/personal_details/address"
 
 module TandaCLI
   module Representers
     struct PersonalDetails
-      struct Address < Base(Types::PersonalDetails::Address)
+      struct Address < Base(API::Types::PersonalDetails::Address)
         private def build_display(builder : Builder)
           address_string = {
             @object.street_line_one,

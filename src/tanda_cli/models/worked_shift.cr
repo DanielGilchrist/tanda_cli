@@ -1,35 +1,61 @@
+require "../utils/mixins/pretty_times"
+require "./shift_break"
+
 module TandaCLI
   module Models
     struct WorkedShift
-      alias RegularHoursSchedule = Configuration::Serialisable::Organisation::RegularHoursSchedule
+      include Utils::Mixins::PrettyTimes
 
-      def self.from(
-        shift : Types::Shift,
+      def self.from?(
+        api_shift : API::Types::Shift,
         treat_paid_breaks_as_unpaid : Bool = false,
         regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
-      ) : WorkedShift
-        raise(ArgumentError.new("#{shift.inspect} is not a worked shift!")) if shift.leave?
-        new(shift, treat_paid_breaks_as_unpaid, regular_hours_schedules)
+      ) : WorkedShift?
+        return if api_shift.leave_request_id
+        return if api_shift.start_time.nil? && api_shift.finish_time.nil?
+
+        new(api_shift, treat_paid_breaks_as_unpaid, regular_hours_schedules)
       end
 
+      @valid_breaks : Array(ShiftBreak)? = nil
+
       def initialize(
-        @shift : Types::Shift,
+        @api_shift : API::Types::Shift,
         @treat_paid_breaks_as_unpaid : Bool = false,
         @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
       )
+        @breaks = @api_shift.breaks.map { |api_break| ShiftBreak.new(api_break) }
       end
 
-      getter shift : Types::Shift
+      delegate :id, :user_id, :date, :status, :start_time, :finish_time, :notes, to: @api_shift
 
-      delegate :date, to: shift
+      getter breaks : Array(ShiftBreak)
 
-      def time_worked : Time::Span
-        resolved_time_worked || Time::Span.zero
+      def day_of_week : Time::DayOfWeek
+        date.day_of_week
+      end
+
+      def valid_breaks : Array(ShiftBreak)
+        @valid_breaks ||= breaks.select(&.valid?)
       end
 
       def ongoing? : Bool
-        shift.time_worked(@treat_paid_breaks_as_unpaid).nil? &&
-          !shift.worked_so_far(@treat_paid_breaks_as_unpaid).nil?
+        return false unless start_time
+        return false unless finish_time.nil?
+
+        date.date == Utils::Time.now.date
+      end
+
+      def ongoing_break? : Bool
+        valid_breaks.any?(&.ongoing?)
+      end
+
+      def ongoing_without_break? : Bool
+        ongoing? && valid_breaks.empty?
+      end
+
+      def time_worked : Time::Span
+        resolved_time_worked || Time::Span.zero
       end
 
       def assumed_finish? : Bool
@@ -45,13 +71,31 @@ module TandaCLI
       end
 
       def shift_representer : Representers::Shift
-        Representers::Shift.new(shift, expected_finish_time, expected_break_length)
+        Representers::Shift.new(self, expected_finish_time, expected_break_length)
       end
 
       private def resolved_time_worked : Time::Span?
-        shift.time_worked(@treat_paid_breaks_as_unpaid) ||
-          expected_time_worked ||
-          shift.worked_so_far(@treat_paid_breaks_as_unpaid)
+        raw_time_worked || expected_time_worked || raw_worked_so_far
+      end
+
+      private def raw_time_worked : Time::Span?
+        start_time = self.start_time
+        return if start_time.nil?
+
+        finish_time = self.finish_time
+        return if finish_time.nil?
+
+        (finish_time - start_time) - total_unpaid_break_minutes
+      end
+
+      private def raw_worked_so_far : Time::Span?
+        start_time = self.start_time
+        return if start_time.nil?
+
+        now = Utils::Time.now
+        return if now.date != start_time.date
+
+        (now - start_time) - total_unpaid_break_minutes
       end
 
       private def expected_time_worked : Time::Span?
@@ -62,34 +106,38 @@ module TandaCLI
       end
 
       private def matching_schedule : RegularHoursSchedule?
-        return if shift.time_worked(@treat_paid_breaks_as_unpaid)
-        return if shift.finish_time
+        return if raw_time_worked
+        return if finish_time
 
         schedules = @regular_hours_schedules
         return unless schedules
-        return if shift.date.date == Utils::Time.now.date
+        return if date.date == Utils::Time.now.date
 
-        schedules.find(&.day_of_week.==(shift.day_of_week))
+        schedules.find(&.day_of_week.==(day_of_week))
       end
 
       private def calculate_expected_time_worked(schedule : RegularHoursSchedule) : Time::Span?
-        start_time = shift.start_time
+        start_time = self.start_time
         return unless start_time
 
         expected_finish = Time.local(
-          shift.date.year,
-          shift.date.month,
-          shift.date.day,
+          date.year,
+          date.month,
+          date.day,
           schedule.finish_time.hour,
           schedule.finish_time.minute,
           location: Utils::Time.location
         )
 
-        actual_break_time = (@treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
+        actual_break_time = (@treat_paid_breaks_as_unpaid ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
         expected_break_time = actual_break_time == 0.minutes ? schedule.break_length : 0.minutes
         total_break_time = actual_break_time + expected_break_time
 
         (expected_finish - start_time) - total_break_time
+      end
+
+      private def total_unpaid_break_minutes : Time::Span
+        (@treat_paid_breaks_as_unpaid ? valid_breaks : valid_breaks.reject(&.paid?)).sum(&.ongoing_length).minutes
       end
     end
   end

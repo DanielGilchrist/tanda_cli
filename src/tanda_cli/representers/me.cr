@@ -1,11 +1,11 @@
 require "colorize"
 
 require "./base"
-require "../types/me/**"
+require "../api/types/me/**"
 
 module TandaCLI
   module Representers
-    struct Me < Base(Types::Me)
+    struct Me < Base(API::Types::Me)
       private def build_display(builder : Builder)
         builder << "👤 #{@object.name}\n".colorize.white.bold
 

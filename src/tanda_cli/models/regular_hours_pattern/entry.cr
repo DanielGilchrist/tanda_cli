@@ -7,7 +7,7 @@ module TandaCLI
           @start_time : Time,
           @finish_time : Time,
           @automatic_break_length : UInt16,
-          @breaks : Array(Break),
+          @breaks : Array(Schedule::Break),
           @source_date : Time,
           @weeks_seen : Int32,
         ); end
@@ -16,7 +16,7 @@ module TandaCLI
         getter start_time : Time
         getter finish_time : Time
         getter automatic_break_length : UInt16
-        getter breaks : Array(Break)
+        getter breaks : Array(Schedule::Break)
         getter source_date : Time
         getter weeks_seen : Int32
 

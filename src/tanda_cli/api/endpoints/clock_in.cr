@@ -3,7 +3,7 @@ require "../client"
 module TandaCLI
   module API
     module Endpoints::ClockIn
-      def clockins(user_id : Int32, date : Time) : API::Result(Array(Types::ClockIn))
+      def clockins(user_id : Int32, date : Time) : API::Result(Array(API::Types::ClockIn))
         date_string = date.to_s("%Y-%m-%d")
 
         response = get("/clockins", query: {
@@ -12,7 +12,7 @@ module TandaCLI
           "to"      => date_string,
         })
 
-        API::Result(Array(Types::ClockIn)).from(response)
+        API::Result(Array(API::Types::ClockIn)).from(response)
       end
 
       def send_clock_in(

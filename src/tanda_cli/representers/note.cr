@@ -1,9 +1,9 @@
 require "./base"
-require "../types/note"
+require "../api/types/note"
 
 module TandaCLI
   module Representers
-    struct Note < Base(Types::Note)
+    struct Note < Base(API::Types::Note)
       private def build_display(builder : Builder)
         with_padding("✍️  #{@object.author}", builder)
         with_padding("💬 #{@object.body}", builder)

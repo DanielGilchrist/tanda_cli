@@ -1,10 +1,10 @@
 require "../base"
-require "../../types/leave_request/daily_breakdown"
+require "../../api/types/leave_request/daily_breakdown"
 
 module TandaCLI
   module Representers
-    struct LeaveRequest::DailyBreakdown < Base(Types::LeaveRequest::DailyBreakdown)
-      def initialize(object : T, @leave_request : Types::LeaveRequest)
+    struct LeaveRequest::DailyBreakdown < Base(API::Types::LeaveRequest::DailyBreakdown)
+      def initialize(object : T, @leave_request : API::Types::LeaveRequest)
         super(object)
       end
 

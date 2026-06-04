@@ -1,9 +1,9 @@
 require "./base"
-require "../types/shift_break"
+require "../models/shift_break"
 
 module TandaCLI
   module Representers
-    struct ShiftBreak < Base(Types::ShiftBreak)
+    struct ShiftBreak < Base(Models::ShiftBreak)
       private def build_display(builder : Builder)
         pretty_start = @object.pretty_start_time
         pretty_finish = @object.pretty_finish_time

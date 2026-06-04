@@ -1,0 +1,37 @@
+require "json"
+require "../../utils/mixins/pretty_times"
+
+require "./converters/time"
+
+module TandaCLI
+  module API
+    module Types
+      struct ClockIn
+        include JSON::Serializable
+        include Utils::Mixins::PrettyTimes
+
+        enum Type
+          Start
+          Finish
+          BreakStart
+          BreakFinish
+        end
+
+        module TypeConverter
+          def self.from_json(value : JSON::PullParser) : Type
+            type_string = value.read_string
+            Type.parse?(type_string) || raise("Unknown type: #{type_string}")
+          end
+        end
+
+        getter id : Int32
+
+        @[JSON::Field(key: "type", converter: TandaCLI::API::Types::ClockIn::TypeConverter)]
+        getter type : Type
+
+        @[JSON::Field(key: "time", converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
+        getter time : Time
+      end
+    end
+  end
+end
