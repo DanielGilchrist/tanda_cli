@@ -13,24 +13,20 @@ module TandaCLI
           config.reset_environment!
           config.save!
 
-          environment = config.staging? ? "staging" : "production"
-          display.success("Logged out of #{environment} environment")
+          display.success("Logged out of #{config.mode.display_label} environment")
         end
 
         private def revoke_access_token
-          token = config.access_token.token
-          return unless token
-
-          url = config.oauth_url(:revoke)
-          return unless url.is_a?(String)
+          access_token = config.access_token
+          return unless access_token
 
           display.info("Revoking access token...")
           response = HTTP::Client.post(
-            url,
+            config.oauth_url(:revoke),
             headers: HTTP::Headers{
               "Content-Type" => "application/json",
             },
-            body: {token: token}.to_json,
+            body: {token: access_token.token}.to_json,
           )
 
           if response.success?

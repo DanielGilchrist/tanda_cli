@@ -2,7 +2,7 @@
   "mode": "production",
   "production": {
     "region": "eu",
-    "access_token": {},
+    "access_token": null,
     "organisations": []
   },
   "start_of_week": "saturday"

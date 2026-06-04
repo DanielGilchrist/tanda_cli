@@ -57,7 +57,7 @@ module TandaCLI
 
     def overwrite!(region : Region, email : String, access_token : API::Types::AccessToken)
       self.region = region
-      self.access_token.overwrite!(email, access_token)
+      current_environment.access_token = Serialisable::AccessToken.from(email, access_token)
 
       save!
     end

@@ -6,12 +6,12 @@ module TandaCLI
 
         def initialize(
           @region : Region = Region::APAC,
-          @access_token : AccessToken = AccessToken.new,
+          @access_token : AccessToken? = nil,
           @organisations : Array(Organisation) = Array(Organisation).new,
         ); end
 
         property region : Region = Region::APAC
-        property access_token : AccessToken
+        property access_token : AccessToken?
         property organisations : Array(Organisation)
 
         def current_organisation! : Organisation | NoReturn

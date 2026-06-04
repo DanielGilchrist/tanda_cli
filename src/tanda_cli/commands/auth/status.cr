@@ -16,11 +16,11 @@ module TandaCLI
             return
           end
 
-          email = config.access_token.email
+          access_token = config.access_token
           organisation = config.current_organisation?
 
           display.puts "🔓 #{"Authenticated (#{mode.display_label})".colorize.green}"
-          display.puts "📧 #{email}" if email
+          display.puts "📧 #{access_token.email}" if access_token
           display.puts "🏢 #{organisation.name} (user #{organisation.user_id})" if organisation
 
           case mode
