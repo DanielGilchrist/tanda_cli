@@ -39,7 +39,11 @@ module TandaCLI
         getter status : Status
 
         @[JSON::Field(key: "notes")]
-        getter _nilable_notes : Array(API::Types::Note)?
+        private getter _nilable_notes : Array(API::Types::Note)?
+
+        def notes : Array(API::Types::Note)
+          _nilable_notes || Array(API::Types::Note).new
+        end
       end
     end
   end

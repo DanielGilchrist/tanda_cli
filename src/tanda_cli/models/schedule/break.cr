@@ -14,10 +14,6 @@ module TandaCLI
 
         getter start_time : Time
         getter finish_time : Time
-
-        def length : Time::Span
-          finish_time - start_time
-        end
       end
     end
   end

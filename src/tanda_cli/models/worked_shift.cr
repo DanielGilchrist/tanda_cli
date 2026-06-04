@@ -17,6 +17,8 @@ module TandaCLI
         new(api_shift, treat_paid_breaks_as_unpaid, regular_hours_schedules)
       end
 
+      @valid_breaks : Array(ShiftBreak)? = nil
+
       def initialize(
         @api_shift : API::Types::Shift,
         @treat_paid_breaks_as_unpaid : Bool = false,
@@ -25,16 +27,12 @@ module TandaCLI
         @breaks = @api_shift.breaks.map { |api_break| ShiftBreak.new(api_break) }
       end
 
-      delegate :id, :user_id, :date, :status, :start_time, :finish_time, to: @api_shift
+      delegate :id, :user_id, :date, :status, :start_time, :finish_time, :notes, to: @api_shift
 
       getter breaks : Array(ShiftBreak)
 
       def day_of_week : Time::DayOfWeek
         date.day_of_week
-      end
-
-      def notes : Array(API::Types::Note)
-        @api_shift._nilable_notes || Array(API::Types::Note).new
       end
 
       def valid_breaks : Array(ShiftBreak)
@@ -75,8 +73,6 @@ module TandaCLI
       def shift_representer : Representers::Shift
         Representers::Shift.new(self, expected_finish_time, expected_break_length)
       end
-
-      @valid_breaks : Array(ShiftBreak)? = nil
 
       private def resolved_time_worked : Time::Span?
         raw_time_worked || expected_time_worked || raw_worked_so_far
