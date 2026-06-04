@@ -2,7 +2,7 @@ module TandaCLI
   module Models
     struct RegularHoursPattern
       struct Candidate
-        def self.from?(daily : Types::Roster::DailySchedule, user_id : Int32) : Candidate?
+        def self.from?(daily : API::Types::Roster::DailySchedule, user_id : Int32) : Candidate?
           schedule = daily.schedules.find(&.user_id.==(user_id))
           return if schedule.nil?
 

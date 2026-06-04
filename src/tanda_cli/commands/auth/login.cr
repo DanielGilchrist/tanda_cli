@@ -41,7 +41,7 @@ module TandaCLI
           {email, password}
         end
 
-        private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, Types::AccessToken)
+        private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, API::Types::AccessToken)
           staging = config.staging?
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
@@ -62,7 +62,7 @@ module TandaCLI
           display.error!("Unable to authenticate (incorrect email or password)")
         end
 
-        private def try_authenticate(region : Region, email : String, password : String, staging : Bool) : Types::AccessToken?
+        private def try_authenticate(region : Region, email : String, password : String, staging : Bool) : API::Types::AccessToken?
           url = region.oauth_url(:token, staging)
 
           response = HTTP::Client.post(
@@ -83,7 +83,7 @@ module TandaCLI
 
           return nil unless response.success?
 
-          Types::AccessToken.from_json(response.body)
+          API::Types::AccessToken.from_json(response.body)
         rescue Socket::Addrinfo::Error
           Log.debug(&.emit("Network error for #{region.display_name}"))
           nil

@@ -2,7 +2,7 @@ module TandaCLI
   module Models
     struct RegularHoursPattern
       struct Break
-        def self.from?(schedule_break : Types::Schedule::Break) : Break?
+        def self.from?(schedule_break : API::Types::Schedule::Break) : Break?
           start_time = schedule_break.start_time
           finish_time = schedule_break.finish_time
           return if start_time.nil? || finish_time.nil?

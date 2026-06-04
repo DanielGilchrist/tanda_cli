@@ -4,7 +4,7 @@ module TandaCLI
       alias RegularHoursSchedule = Configuration::Serialisable::Organisation::RegularHoursSchedule
 
       def self.from(
-        shift : Types::Shift,
+        shift : API::Types::Shift,
         treat_paid_breaks_as_unpaid : Bool = false,
         regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
       ) : WorkedShift
@@ -13,13 +13,13 @@ module TandaCLI
       end
 
       def initialize(
-        @shift : Types::Shift,
+        @shift : API::Types::Shift,
         @treat_paid_breaks_as_unpaid : Bool = false,
         @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
       )
       end
 
-      getter shift : Types::Shift
+      getter shift : API::Types::Shift
 
       delegate :date, to: shift
 

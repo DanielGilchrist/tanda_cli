@@ -1,10 +1,10 @@
 require "../base"
-require "../../types/me/organisation"
+require "../../api/types/me/organisation"
 
 module TandaCLI
   module Representers
     struct Me
-      struct Organisation < Base(Types::Me::Organisation)
+      struct Organisation < Base(API::Types::Me::Organisation)
         private def build_display(builder : Builder)
           with_padding("🏷 #{@object.name}", builder)
           with_padding("🌏 #{@object.country}", builder)

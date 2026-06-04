@@ -52,7 +52,7 @@ module TandaCLI
           display.puts
         end
 
-        private def fetch_rosters(dates : Array(Time)) : Array(Types::Roster)
+        private def fetch_rosters(dates : Array(Time)) : Array(API::Types::Roster)
           API::Concurrent
             .fetch(dates) { |date| client.roster_on_date(date) }
             .map(&.or { |error| display.error!(error) })

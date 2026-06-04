@@ -12,8 +12,8 @@ module TandaCLI
       @classified_shifts : Array(ClassifiedShift)
 
       def initialize(
-        shifts : Array(Types::Shift),
-        leave_requests : Array(Types::LeaveRequest) = Array(Types::LeaveRequest).new,
+        shifts : Array(API::Types::Shift),
+        leave_requests : Array(API::Types::LeaveRequest) = Array(API::Types::LeaveRequest).new,
         treat_paid_breaks_as_unpaid : Bool = false,
         @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
       )
@@ -77,8 +77,8 @@ module TandaCLI
       end
 
       private def classify(
-        shifts : Array(Types::Shift),
-        leave_requests : Array(Types::LeaveRequest),
+        shifts : Array(API::Types::Shift),
+        leave_requests : Array(API::Types::LeaveRequest),
         treat_paid_breaks_as_unpaid : Bool,
       ) : Array(ClassifiedShift)
         leave_requests_by_id = leave_requests.index_by(&.id)
@@ -96,7 +96,7 @@ module TandaCLI
 
       private def breaks_already_taken?(
         regular_hours_schedule : RegularHoursSchedule,
-        shifts : Array(Types::Shift),
+        shifts : Array(API::Types::Shift),
       ) : Bool
         expected_break_count =
           if regular_hours_schedule.breaks.present?

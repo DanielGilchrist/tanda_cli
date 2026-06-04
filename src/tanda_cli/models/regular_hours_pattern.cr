@@ -4,7 +4,7 @@ module TandaCLI
       alias OrganisationConfig = Configuration::Serialisable::Organisation
       alias RegularHoursSchedule = OrganisationConfig::RegularHoursSchedule
 
-      def self.from_rosters(rosters : Array(Types::Roster), user_id : Int32) : self
+      def self.from_rosters(rosters : Array(API::Types::Roster), user_id : Int32) : self
         candidates_by_day = Hash(Time::DayOfWeek, Array(Candidate)).new { |hash, key| hash[key] = Array(Candidate).new }
         seen_dates = Set(Time).new
         weeks_with_data = 0

@@ -19,7 +19,7 @@ module TandaCLI
 
         property created_at : Int32?
 
-        def overwrite!(email : String, access_token : Types::AccessToken)
+        def overwrite!(email : String, access_token : API::Types::AccessToken)
           self.email = email
           self.token = access_token.token
           self.token_type = access_token.token_type

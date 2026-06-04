@@ -8,7 +8,7 @@ module TandaCLI
 
         TIME_STRING_FORMAT = "%H:%M"
 
-        def self.from(organisation : Types::Me::Organisation) : self
+        def self.from(organisation : API::Types::Me::Organisation) : self
           new(
             organisation.id,
             organisation.name,
@@ -16,8 +16,8 @@ module TandaCLI
           )
         end
 
-        def self.from(me : Types::Me) : Array(self)
-          me.organisations.map(&->from(Types::Me::Organisation))
+        def self.from(me : API::Types::Me) : Array(self)
+          me.organisations.map(&->from(API::Types::Me::Organisation))
         end
 
         def initialize(

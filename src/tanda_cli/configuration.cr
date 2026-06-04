@@ -3,7 +3,7 @@ require "file_utils"
 
 require "./configuration/**"
 require "./error/invalid_start_of_week"
-require "./types/access_token"
+require "./api/types/access_token"
 require "./utils/url"
 
 module TandaCLI
@@ -59,7 +59,7 @@ module TandaCLI
       :staging?,
       to: @serialisable
 
-    def overwrite!(region : Region, email : String, access_token : Types::AccessToken)
+    def overwrite!(region : Region, email : String, access_token : API::Types::AccessToken)
       self.region = region
       self.access_token.overwrite!(email, access_token)
 

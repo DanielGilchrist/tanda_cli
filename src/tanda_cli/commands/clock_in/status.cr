@@ -20,7 +20,7 @@ module TandaCLI
           handle_clocked_out(last_shift)
         end
 
-        private def handle_ongoing_shift(shift : Types::Shift)
+        private def handle_ongoing_shift(shift : API::Types::Shift)
           if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
@@ -38,7 +38,7 @@ module TandaCLI
           end
         end
 
-        private def handle_clocked_out(last_shift : Types::Shift)
+        private def handle_clocked_out(last_shift : API::Types::Shift)
           display.puts "🔴 #{"Clocked out".colorize.red}"
           display.puts "🕐 At #{last_shift.pretty_finish_time}"
         end

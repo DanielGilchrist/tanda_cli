@@ -2,12 +2,12 @@ module TandaCLI
   module Models
     struct LeaveShift
       class MismatchedLeaveShift < ArgumentError
-        def initialize(shift : Types::Shift, leave_request : Types::LeaveRequest)
+        def initialize(shift : API::Types::Shift, leave_request : API::Types::LeaveRequest)
           super("Leave request is for a different shift!\nShift: #{shift.inspect}\nLeaveRequest: #{leave_request.inspect}")
         end
       end
 
-      def self.from?(shift : Types::Shift, leave_request : Types::LeaveRequest?) : LeaveShift?
+      def self.from?(shift : API::Types::Shift, leave_request : API::Types::LeaveRequest?) : LeaveShift?
         raise(ArgumentError.new("#{shift.inspect} is not a leave shift!")) unless shift.leave?
         raise(MismatchedLeaveShift.new(shift, leave_request)) if shift.leave_request_id != leave_request.id
 
@@ -18,15 +18,15 @@ module TandaCLI
       end
 
       def initialize(
-        @shift : Types::Shift,
-        @breakdown : Types::LeaveRequest::DailyBreakdown,
-        @leave_request : Types::LeaveRequest,
+        @shift : API::Types::Shift,
+        @breakdown : API::Types::LeaveRequest::DailyBreakdown,
+        @leave_request : API::Types::LeaveRequest,
       )
       end
 
-      getter shift : Types::Shift
-      getter breakdown : Types::LeaveRequest::DailyBreakdown
-      getter leave_request : Types::LeaveRequest
+      getter shift : API::Types::Shift
+      getter breakdown : API::Types::LeaveRequest::DailyBreakdown
+      getter leave_request : API::Types::LeaveRequest
 
       def leave_taken : Time::Span
         breakdown.hours
