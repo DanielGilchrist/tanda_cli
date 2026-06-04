@@ -1,8 +1,6 @@
 module TandaCLI
   module Models
     struct WorkedShift
-      alias RegularHoursSchedule = Configuration::Serialisable::Organisation::RegularHoursSchedule
-
       def self.from(
         shift : API::Types::Shift,
         treat_paid_breaks_as_unpaid : Bool = false,

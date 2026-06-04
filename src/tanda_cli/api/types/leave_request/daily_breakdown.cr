@@ -1,4 +1,6 @@
 require "json"
+require "../../../utils/mixins/pretty_times"
+
 require "../converters/span"
 require "../converters/time"
 

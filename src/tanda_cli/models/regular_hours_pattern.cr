@@ -1,9 +1,6 @@
 module TandaCLI
   module Models
     struct RegularHoursPattern
-      alias OrganisationConfig = Configuration::Serialisable::Organisation
-      alias RegularHoursSchedule = OrganisationConfig::RegularHoursSchedule
-
       def self.from_rosters(rosters : Array(API::Types::Roster), user_id : Int32) : self
         candidates_by_day = Hash(Time::DayOfWeek, Array(Candidate)).new { |hash, key| hash[key] = Array(Candidate).new }
         seen_dates = Set(Time).new
@@ -61,7 +58,7 @@ module TandaCLI
             day_of_week: entry.day_of_week,
             start_time: entry.start_time,
             finish_time: entry.finish_time,
-            breaks: entry.breaks.map { |brk| build_persisted_break(brk) },
+            breaks: entry.breaks.map { |brk| RegularHoursSchedule::Break.new(brk.start_time, brk.finish_time) },
             automatic_break_length: entry.automatic_break_length,
           )
         end
@@ -69,13 +66,6 @@ module TandaCLI
 
       def representer : Representers::RegularHoursPattern
         Representers::RegularHoursPattern.new(self)
-      end
-
-      private def build_persisted_break(brk : Break) : RegularHoursSchedule::Break
-        RegularHoursSchedule::Break.new(
-          brk.start_time.to_s(OrganisationConfig::TIME_STRING_FORMAT),
-          brk.finish_time.to_s(OrganisationConfig::TIME_STRING_FORMAT),
-        )
       end
     end
   end

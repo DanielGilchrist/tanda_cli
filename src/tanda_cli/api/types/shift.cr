@@ -1,4 +1,6 @@
 require "json"
+require "../../utils/mixins/pretty_times"
+
 require "./shift_break"
 require "./converters/time"
 

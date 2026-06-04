@@ -1,4 +1,5 @@
 require "json"
+require "../../utils/mixins/pretty_times"
 
 module TandaCLI
   module API

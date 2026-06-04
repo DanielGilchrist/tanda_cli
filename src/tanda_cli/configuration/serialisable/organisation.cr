@@ -1,12 +1,8 @@
-require "../../utils/mixins/pretty_times"
-
 module TandaCLI
   class Configuration
     class Serialisable
       class Organisation
         include JSON::Serializable
-
-        TIME_STRING_FORMAT = "%H:%M"
 
         def self.from(organisation : API::Types::Me::Organisation) : self
           new(
@@ -25,7 +21,7 @@ module TandaCLI
           @name : String,
           @user_id : Int32,
           @current : Bool = false,
-          @_regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
+          @_regular_hours_schedules : Array(Models::RegularHoursSchedule)? = nil,
         ); end
 
         getter id : Int32
@@ -34,17 +30,17 @@ module TandaCLI
         property? current : Bool
 
         @[JSON::Field(key: "regular_hours")]
-        private getter _regular_hours_schedules : Array(RegularHoursSchedule)?
+        private getter _regular_hours_schedules : Array(Models::RegularHoursSchedule)?
 
-        def regular_hours_schedules : Array(RegularHoursSchedule)
-          @_regular_hours_schedules || Array(RegularHoursSchedule).new
+        def regular_hours_schedules : Array(Models::RegularHoursSchedule)
+          @_regular_hours_schedules || Array(Models::RegularHoursSchedule).new
         end
 
         def clear_regular_hours_schedules!
           @_regular_hours_schedules = nil
         end
 
-        def replace_regular_hours_schedules!(schedules : Array(RegularHoursSchedule)) : Nil
+        def replace_regular_hours_schedules!(schedules : Array(Models::RegularHoursSchedule)) : Nil
           @_regular_hours_schedules = schedules
         end
       end
