@@ -4,16 +4,16 @@ require "file_utils"
 require "./configuration/**"
 require "./error/invalid_start_of_week"
 require "./api/types/access_token"
-require "./utils/url"
 
 module TandaCLI
   class Configuration
-    PRODUCTION = "production"
-    STAGING    = "staging"
-
     enum OAuthEndpoint
       Token
       Revoke
+
+      def url(base_url : String) : String
+        "#{base_url}/api/oauth/#{to_s.downcase}"
+      end
     end
 
     def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
@@ -40,29 +40,23 @@ module TandaCLI
 
     def initialize(@file : Configuration::AbstractFile, @serialisable = Serialisable.new); end
 
-    delegate :current_organisation?, :current_organisation!, to: current_environment
     delegate :start_of_week,
       :start_of_week=,
       :pretty_start_of_week,
       :clockin_photo_path,
       :clockin_photo_path=,
-      :mode,
-      :mode=,
       :treat_paid_breaks_as_unpaid?,
-      :organisations,
-      :organisations=,
-      :region,
-      :region=,
-      :access_token,
-      :current_environment,
-      :reset_environment!,
-      :staging?,
+      :current,
+      :use_production!,
+      :use_staging!,
+      :use_custom!,
+      :reset_current_environment!,
       to: @serialisable
 
-    def overwrite!(region : Region, email : String, access_token : API::Types::AccessToken)
-      self.region = region
-      self.access_token.overwrite!(email, access_token)
+    delegate :access_token, :organisations, :organisations=, :current_organisation?, :current_organisation!, to: current
 
+    def overwrite_access_token!(email : String, access_token : API::Types::AccessToken) : Nil
+      current.access_token = Serialisable::AccessToken.from(email, access_token)
       save!
     end
 
@@ -70,34 +64,8 @@ module TandaCLI
       @file.write(@serialisable.to_json)
     end
 
-    def api_url : String | Error::InvalidURL
-      base = base_url
-      return base if base.is_a?(Error::InvalidURL)
-
-      "#{base}/api/v2"
-    end
-
-    def oauth_url(endpoint : OAuthEndpoint) : String | Error::InvalidURL
-      base = base_url
-      return base if base.is_a?(Error::InvalidURL)
-
-      "#{base}/api/oauth/#{endpoint.to_s.downcase}"
-    end
-
-    def host : String
-      region.host(staging: staging?)
-    end
-
-    private def base_url : String | Error::InvalidURL
-      case mode
-      when PRODUCTION, STAGING
-        "https://#{host}"
-      else
-        validated_url = Utils::URL.validate(mode)
-        return validated_url if validated_url.is_a?(Error::InvalidURL)
-
-        validated_url.to_s
-      end
+    def api_url : String
+      "#{current.base_url}/api/v2"
     end
   end
 end

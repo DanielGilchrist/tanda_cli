@@ -10,16 +10,30 @@ module TandaCLI
         include JSON::Serializable
         include Enumerable(DailyBreakdown)
 
-        enum Status
-          Pending
-          Approved
-          Rejected
+        module Status
+          alias Any = Known | Unknown
+
+          enum Known
+            Pending
+            Approved
+            Rejected
+          end
+
+          struct Unknown
+            def initialize(@value : String); end
+
+            getter value : String
+
+            def to_s(io : IO) : Nil
+              io << value
+            end
+          end
         end
 
         module StatusConverter
-          def self.from_json(value : JSON::PullParser) : Status
-            status_string = value.read_string
-            Status.parse?(status_string) || raise("Unknown status: #{status_string}")
+          def self.from_json(value : JSON::PullParser) : Status::Any
+            raw = value.read_string
+            Status::Known.parse?(raw) || Status::Unknown.new(raw)
           end
         end
 
@@ -30,7 +44,7 @@ module TandaCLI
         getter daily_breakdown : Array(DailyBreakdown)
 
         @[JSON::Field(key: "status", converter: TandaCLI::API::Types::LeaveRequest::StatusConverter)]
-        getter status : Status
+        getter status : Status::Any
 
         def each(& : DailyBreakdown ->) : Nil
           daily_breakdown.each { |breakdown| yield breakdown }

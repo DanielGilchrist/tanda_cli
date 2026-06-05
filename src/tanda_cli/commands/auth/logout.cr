@@ -10,27 +10,24 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           revoke_access_token
 
-          config.reset_environment!
+          label = config.current.display_label
+          config.reset_current_environment!
           config.save!
 
-          environment = config.staging? ? "staging" : "production"
-          display.success("Logged out of #{environment} environment")
+          display.success("Logged out of #{label} environment")
         end
 
         private def revoke_access_token
-          token = config.access_token.token
-          return unless token
-
-          url = config.oauth_url(:revoke)
-          return unless url.is_a?(String)
+          access_token = config.access_token
+          return unless access_token
 
           display.info("Revoking access token...")
           response = HTTP::Client.post(
-            url,
+            config.current.oauth_url(:revoke),
             headers: HTTP::Headers{
               "Content-Type" => "application/json",
             },
-            body: {token: token}.to_json,
+            body: {token: access_token.token}.to_json,
           )
 
           if response.success?

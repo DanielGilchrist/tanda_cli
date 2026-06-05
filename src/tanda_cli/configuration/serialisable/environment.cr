@@ -1,25 +1,38 @@
 module TandaCLI
   class Configuration
     class Serialisable
-      class Environment
-        include JSON::Serializable
+      module Environment
+        alias Any = Production | Staging | Custom
 
-        def initialize(
-          @region : Region = Region::APAC,
-          @access_token : AccessToken = AccessToken.new,
-          @organisations : Array(Organisation) = Array(Organisation).new,
-        ); end
+        struct AuthCandidate
+          getter base_url : String
+          getter display_name : String
 
-        property region : Region = Region::APAC
-        property access_token : AccessToken
-        property organisations : Array(Organisation)
+          def initialize(@base_url : String, @display_name : String, &on_selected : ->)
+            @on_selected = on_selected
+          end
 
-        def current_organisation! : Organisation | NoReturn
-          current_organisation? || raise("No current organisation set!")
+          def initialize(@base_url : String, @display_name : String)
+            @on_selected = -> { }
+          end
+
+          def oauth_url(endpoint : Configuration::OAuthEndpoint) : String
+            endpoint.url(@base_url)
+          end
+
+          def selected! : Nil
+            @on_selected.call
+          end
         end
 
-        def current_organisation? : Organisation?
-          @organisations.find(&.current?)
+        enum Name
+          Production
+          Staging
+          Custom
+
+          def to_json(builder : JSON::Builder) : Nil
+            builder.string(to_s.downcase)
+          end
         end
       end
     end

@@ -1,5 +1,5 @@
 {
-  "mode": "production",
+  "current_environment": "production",
   "treat_paid_breaks_as_unpaid": true,
   "production": {
     "region": "eu",

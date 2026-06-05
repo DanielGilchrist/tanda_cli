@@ -9,6 +9,10 @@ module TandaCLI
             timestamp = value.read_int
             ::Time.unix(timestamp.to_i32).in(Utils::Time.location)
           end
+
+          def self.to_json(value : ::Time, json_builder : JSON::Builder) : Nil
+            json_builder.number(value.to_unix.to_i)
+          end
         end
 
         module FromMaybeUnix

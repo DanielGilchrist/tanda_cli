@@ -221,7 +221,8 @@ describe TandaCLI::Commands::Auth::Login do
 
     output = context.stdout.to_s
     output.should contain("Authenticated!")
-    context.config.region.should eq(TandaCLI::Region::InternalAPAC)
+    env = context.config.current.as(TandaCLI::Configuration::Serialisable::Environment::Production)
+    env.region.should eq(TandaCLI::Region::InternalAPAC)
   end
 
   it "does not try internal regions in staging mode" do

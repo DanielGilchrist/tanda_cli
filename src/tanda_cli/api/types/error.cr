@@ -6,6 +6,9 @@ module TandaCLI
       struct Error
         include TandaCLI::Error::Interface
         include JSON::Serializable
+
+        getter error : String
+        getter error_description : String?
       end
     end
   end

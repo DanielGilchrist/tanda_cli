@@ -8,16 +8,30 @@ module TandaCLI
       struct Shift
         include JSON::Serializable
 
-        enum Status
-          Pending
-          Approved
-          Exported
+        module Status
+          alias Any = Known | Unknown
+
+          enum Known
+            Pending
+            Approved
+            Exported
+          end
+
+          struct Unknown
+            def initialize(@value : String); end
+
+            getter value : String
+
+            def to_s(io : IO) : Nil
+              io << value
+            end
+          end
         end
 
         module StatusConverter
-          def self.from_json(value : JSON::PullParser) : Status
-            status_string = value.read_string
-            Status.parse?(status_string) || raise("Unknown status: #{status_string}")
+          def self.from_json(value : JSON::PullParser) : Status::Any
+            raw = value.read_string
+            Status::Known.parse?(raw) || Status::Unknown.new(raw)
           end
         end
 
@@ -36,7 +50,7 @@ module TandaCLI
         getter finish_time : Time?
 
         @[JSON::Field(key: "status", converter: TandaCLI::API::Types::Shift::StatusConverter)]
-        getter status : Status
+        getter status : Status::Any
 
         @[JSON::Field(key: "notes")]
         private getter _nilable_notes : Array(API::Types::Note)?

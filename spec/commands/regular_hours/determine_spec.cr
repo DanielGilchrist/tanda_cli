@@ -40,7 +40,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
       monday_schedule.should_not be_nil
       monday_schedule.try(&.pretty_start_time).should eq("8:30 am")
       monday_schedule.try(&.pretty_finish_time).should eq("5:00 pm")
-      monday_schedule.try(&.automatic_break_length).should eq(30)
+      monday_schedule.try(&.automatic_break_length).should eq(30.minutes)
     end
   end
 

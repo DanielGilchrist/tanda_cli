@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class Auth
       class Login < Base
+        private alias Environment = Configuration::Serialisable::Environment
+
         SCOPES = "device leave personal roster timesheet me"
 
         def setup_
@@ -10,20 +12,20 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.reset_environment!
+          config.reset_current_environment!
 
           display.puts "🔐 #{"Tanda CLI Login".colorize.white.bold}"
           display.puts
 
           email, password = prompt_for_credentials
-          region, access_token = detect_region_and_authenticate(email, password)
 
-          config.overwrite!(region, email, access_token)
+          display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          url = config.api_url
-          display.error!(url) unless url.is_a?(String)
+          access_token = authenticate(config.current, email, password)
 
-          client = API::Client.new(url, access_token.token)
+          config.overwrite_access_token!(email, access_token)
+
+          client = API::Client.new(config.api_url, access_token.token)
           select_and_save_organisation(client)
         end
 
@@ -41,30 +43,24 @@ module TandaCLI
           {email, password}
         end
 
-        private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, API::Types::AccessToken)
-          staging = config.staging?
+        private def authenticate(env : Environment::Any, email : String, password : String) : API::Types::AccessToken
+          env.auth_candidates.each do |candidate|
+            url = candidate.oauth_url(:token)
+            Log.debug(&.emit("Trying #{candidate.display_name} (#{url})"))
 
-          display.puts "🔍 #{"Authenticating...".colorize.cyan}"
+            access_token = post_oauth_token(url, email, password, candidate.display_name)
+            next unless access_token
 
-          Region.values.each do |region|
-            next if staging && region.internal?
-
-            Log.debug(&.emit("Trying #{region.display_name} (#{region.host(staging)})"))
-
-            access_token = try_authenticate(region, email, password, staging)
-            if access_token
-              Log.debug(&.emit("Authenticated via #{region.display_name}"))
-              display.success("Authenticated!")
-              return {region, access_token}
-            end
+            Log.debug(&.emit("Authenticated via #{candidate.display_name}"))
+            display.success("Authenticated!")
+            candidate.selected!
+            return access_token
           end
 
           display.error!("Unable to authenticate (incorrect email or password)")
         end
 
-        private def try_authenticate(region : Region, email : String, password : String, staging : Bool) : API::Types::AccessToken?
-          url = region.oauth_url(:token, staging)
-
+        private def post_oauth_token(url : String, email : String, password : String, label : String) : API::Types::AccessToken?
           response = HTTP::Client.post(
             url,
             headers: HTTP::Headers{
@@ -79,16 +75,16 @@ module TandaCLI
             }.to_json
           )
 
-          Log.debug(&.emit("Response from #{region.display_name}", body: response.body))
+          Log.debug(&.emit("Response from #{label}", body: response.body))
 
           return nil unless response.success?
 
           API::Types::AccessToken.from_json(response.body)
         rescue Socket::Addrinfo::Error
-          Log.debug(&.emit("Network error for #{region.display_name}"))
+          Log.debug(&.emit("Network error for #{label}"))
           nil
         rescue JSON::SerializableError | JSON::ParseException
-          Log.debug(&.emit("Failed to parse response from #{region.display_name}"))
+          Log.debug(&.emit("Failed to parse response from #{label}"))
           nil
         end
 

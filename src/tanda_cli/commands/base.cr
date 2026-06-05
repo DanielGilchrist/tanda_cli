@@ -4,6 +4,8 @@ require "./help"
 module TandaCLI
   module Commands
     abstract class Base < Cling::Command
+      private alias Environment = Configuration::Serialisable::Environment
+
       @disable_staging_warning = false
       @requires_auth = false
 
@@ -115,17 +117,15 @@ module TandaCLI
 
       private def maybe_display_staging_warning
         return if @disable_staging_warning
-        return unless config.staging?
 
-        message = begin
-          if (mode = config.mode) != "staging"
-            "Command running on #{mode}"
-          else
-            "Command running in staging mode"
-          end
+        case env = config.current
+        in Environment::Production
+          # no warning needed
+        in Environment::Staging
+          display.warning("Command running in staging mode")
+        in Environment::Custom
+          display.warning("Command running on #{env.url}")
         end
-
-        display.warning(message)
       end
 
       private def handle_maybe_no_colour(options : Cling::Options)

@@ -4,28 +4,33 @@ module TandaCLI
       class AccessToken
         include JSON::Serializable
 
+        def self.from(email : String, api_token : API::Types::AccessToken) : self
+          new(
+            email: email,
+            token: api_token.token,
+            token_type: api_token.token_type,
+            scopes: api_token.scopes,
+            created_at: api_token.created_at,
+          )
+        end
+
         def initialize(
-          @email : String? = nil,
-          @token : String? = nil,
-          @token_type : String? = nil,
-          @scopes : String? = nil,
-          @created_at : Int32? = nil,
+          @email : String,
+          @token : String,
+          @token_type : String,
+          @scopes : String,
+          @created_at : Time,
         ); end
 
-        property email : String?
-        property token : String?
-        property token_type : String?
-        property scopes : String?
+        getter email : String
+        getter token : String
+        getter token_type : String
 
-        property created_at : Int32?
+        @[JSON::Field(key: "scope")]
+        getter scopes : String
 
-        def overwrite!(email : String, access_token : API::Types::AccessToken)
-          self.email = email
-          self.token = access_token.token
-          self.token_type = access_token.token_type
-          self.scopes = access_token.scopes
-          self.created_at = access_token.created_at
-        end
+        @[JSON::Field(converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
+        getter created_at : Time
       end
     end
   end
