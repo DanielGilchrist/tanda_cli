@@ -39,13 +39,5 @@ module TandaCLI
     def internal? : Bool
       internal_global? || internal_apac?
     end
-
-    def host(staging : Bool = false) : String
-      staging ? staging_host : production_host
-    end
-
-    def oauth_url(endpoint : Configuration::OAuthEndpoint, staging : Bool = false) : String
-      "https://#{host(staging)}/api/oauth/#{endpoint.to_s.downcase}"
-    end
   end
 end

@@ -21,19 +21,7 @@ module TandaCLI
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          access_token =
-            case env = config.current
-            in Environment::Production
-              region, token = authenticate_via_region(email, password, staging: false)
-              env.region = region
-              token
-            in Environment::Staging
-              region, token = authenticate_via_region(email, password, staging: true)
-              env.region = region
-              token
-            in Environment::Custom
-              authenticate_via_custom_url(env.url, email, password)
-            end
+          access_token = authenticate(config.current, email, password)
 
           config.overwrite_access_token!(email, access_token)
 
@@ -55,34 +43,21 @@ module TandaCLI
           {email, password}
         end
 
-        private def authenticate_via_region(email : String, password : String, staging : Bool) : Tuple(Region, API::Types::AccessToken)
-          Region.values.each do |region|
-            next if staging && region.internal?
+        private def authenticate(env : Environment::Any, email : String, password : String) : API::Types::AccessToken
+          env.auth_candidates.each do |candidate|
+            url = candidate.oauth_url(:token)
+            Log.debug(&.emit("Trying #{candidate.display_name} (#{url})"))
 
-            url = region.oauth_url(:token, staging)
-            Log.debug(&.emit("Trying #{region.display_name} (#{region.host(staging)})"))
+            access_token = post_oauth_token(url, email, password, candidate.display_name)
+            next unless access_token
 
-            access_token = post_oauth_token(url, email, password, region.display_name)
-            if access_token
-              Log.debug(&.emit("Authenticated via #{region.display_name}"))
-              display.success("Authenticated!")
-              return {region, access_token}
-            end
+            Log.debug(&.emit("Authenticated via #{candidate.display_name}"))
+            display.success("Authenticated!")
+            candidate.selected!
+            return access_token
           end
 
           display.error!("Unable to authenticate (incorrect email or password)")
-        end
-
-        private def authenticate_via_custom_url(url : URI, email : String, password : String) : API::Types::AccessToken
-          oauth_url = "#{url}/api/oauth/token"
-          Log.debug(&.emit("Trying #{oauth_url}"))
-
-          access_token = post_oauth_token(oauth_url, email, password, url.to_s)
-          display.error!("Unable to authenticate (incorrect email or password)") unless access_token
-
-          Log.debug(&.emit("Authenticated via #{url}"))
-          display.success("Authenticated!")
-          access_token
         end
 
         private def post_oauth_token(url : String, email : String, password : String, label : String) : API::Types::AccessToken?

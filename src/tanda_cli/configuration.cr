@@ -10,6 +10,10 @@ module TandaCLI
     enum OAuthEndpoint
       Token
       Revoke
+
+      def url(base_url : String) : String
+        "#{base_url}/api/oauth/#{to_s.downcase}"
+      end
     end
 
     def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
@@ -62,10 +66,6 @@ module TandaCLI
 
     def api_url : String
       "#{current.base_url}/api/v2"
-    end
-
-    def oauth_url(endpoint : OAuthEndpoint) : String
-      "#{current.base_url}/api/oauth/#{endpoint.to_s.downcase}"
     end
   end
 end

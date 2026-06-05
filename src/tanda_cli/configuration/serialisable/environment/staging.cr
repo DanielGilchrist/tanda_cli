@@ -19,6 +19,16 @@ module TandaCLI
             "https://#{region.staging_host}"
           end
 
+          def oauth_url(endpoint : Configuration::OAuthEndpoint) : String
+            endpoint.url(base_url)
+          end
+
+          def auth_candidates : Array(AuthCandidate)
+            Region.values.reject(&.internal?).map do |region|
+              AuthCandidate.new("https://#{region.staging_host}", region.display_name) { self.region = region }
+            end
+          end
+
           def display_label : String
             "Staging"
           end

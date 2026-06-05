@@ -23,7 +23,7 @@ module TandaCLI
 
           display.info("Revoking access token...")
           response = HTTP::Client.post(
-            config.oauth_url(:revoke),
+            config.current.oauth_url(:revoke),
             headers: HTTP::Headers{
               "Content-Type" => "application/json",
             },

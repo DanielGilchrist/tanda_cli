@@ -31,6 +31,14 @@ module TandaCLI
             url.to_s
           end
 
+          def oauth_url(endpoint : Configuration::OAuthEndpoint) : String
+            endpoint.url(base_url)
+          end
+
+          def auth_candidates : Array(AuthCandidate)
+            [AuthCandidate.new(base_url, base_url)]
+          end
+
           def display_label : String
             "Custom (#{url})"
           end
