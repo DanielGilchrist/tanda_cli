@@ -151,15 +151,15 @@ module TandaCLI
           location: Utils::Time.location
         )
 
-        actual_break_time = breaks_for_calculation(shift).sum(&.ongoing_length).minutes
-        expected_break_time = actual_break_time == 0.minutes ? schedule.break_length : 0.minutes
+        actual_break_time = breaks_for_calculation(shift).sum(&.ongoing_length)
+        expected_break_time = actual_break_time.zero? ? schedule.break_length : Time::Span.zero
         total_break_time = actual_break_time + expected_break_time
 
         (expected_finish - start_time) - total_break_time
       end
 
       private def total_unpaid_break_minutes(shift : WorkedShift) : Time::Span
-        breaks_for_calculation(shift).sum(&.ongoing_length).minutes
+        breaks_for_calculation(shift).sum(&.ongoing_length)
       end
 
       private def breaks_for_calculation(shift : WorkedShift) : Array(ShiftBreak)

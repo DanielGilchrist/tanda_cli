@@ -1,4 +1,5 @@
 require "json"
+require "./converters/span"
 require "./converters/time"
 
 module TandaCLI
@@ -9,7 +10,10 @@ module TandaCLI
 
         getter id : Int32
         getter shift_id : Int32
-        getter length : UInt16 # length in minutes
+
+        @[JSON::Field(converter: TandaCLI::API::Types::Converters::Span::FromMinutes)]
+        getter length : Time::Span
+
         getter? paid : Bool
 
         @[JSON::Field(key: "start", converter: TandaCLI::API::Types::Converters::Time::FromMaybeUnix)]
