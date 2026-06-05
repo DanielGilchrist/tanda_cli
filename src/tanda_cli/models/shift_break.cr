@@ -10,7 +10,7 @@ module TandaCLI
       delegate :id, :shift_id, :length, :paid?, :start_time, :finish_time, to: @api_shift_break
 
       def valid? : Bool
-        !!start_time || !length.zero?
+        !!start_time || length > 0.minutes
       end
 
       def ongoing? : Bool

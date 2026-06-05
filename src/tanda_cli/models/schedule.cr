@@ -24,7 +24,7 @@ module TandaCLI
         @user_id : Int32,
         @start_time : Time,
         @finish_time : Time,
-        @automatic_break_length : UInt16,
+        @automatic_break_length : Time::Span,
         @breaks : Array(Break),
       ); end
 
@@ -32,7 +32,7 @@ module TandaCLI
       getter user_id : Int32
       getter start_time : Time
       getter finish_time : Time
-      getter automatic_break_length : UInt16
+      getter automatic_break_length : Time::Span
       getter breaks : Array(Break)
 
       def day_of_week : Time::DayOfWeek

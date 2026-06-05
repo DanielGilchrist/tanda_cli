@@ -32,7 +32,7 @@ module TandaCLI
         @start_time : Time,
         @finish_time : Time,
         @breaks : Array(Break) = Array(Break).new,
-        @automatic_break_length : UInt16 = 0,
+        @automatic_break_length : Time::Span = Time::Span.zero,
       ); end
 
       @[JSON::Field(converter: TandaCLI::Models::RegularHoursSchedule::DayOfWeekConverter)]
@@ -45,7 +45,9 @@ module TandaCLI
       getter finish_time : Time
 
       getter breaks : Array(Break)
-      getter automatic_break_length : UInt16
+
+      @[JSON::Field(converter: TandaCLI::API::Types::Converters::Span::FromMinutes)]
+      getter automatic_break_length : Time::Span
 
       def length : Time::Span
         finish_time - start_time
@@ -59,7 +61,7 @@ module TandaCLI
         if (breaks = self.breaks).present?
           breaks.sum(&.length)
         else
-          automatic_break_length.minutes
+          automatic_break_length
         end
       end
     end

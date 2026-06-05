@@ -24,8 +24,8 @@ module TandaCLI
           regular_hours_schedules.each_with_index do |schedule, index|
             hours = "#{schedule.pretty_start_time} - #{schedule.pretty_finish_time}"
 
-            if (automatic_break_length = schedule.automatic_break_length) && automatic_break_length > 0
-              break_info = " • #{automatic_break_length}min break"
+            if (automatic_break_length = schedule.automatic_break_length) > 0.minutes
+              break_info = " • #{automatic_break_length.total_minutes.to_i}min break"
             end
 
             display.puts "📆 #{schedule.day_of_week}".colorize.white.bold

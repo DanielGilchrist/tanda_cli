@@ -173,7 +173,7 @@ module TandaCLI
         expected_break_count =
           if regular_hours_schedule.breaks.present?
             regular_hours_schedule.breaks.size
-          elsif regular_hours_schedule.automatic_break_length > 0
+          elsif regular_hours_schedule.automatic_break_length > 0.minutes
             1
           else
             0
