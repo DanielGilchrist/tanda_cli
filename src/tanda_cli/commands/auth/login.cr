@@ -16,14 +16,22 @@ module TandaCLI
           display.puts
 
           email, password = prompt_for_credentials
-          region, access_token = detect_region_and_authenticate(email, password)
 
-          config.overwrite!(region, email, access_token)
+          display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          url = config.api_url
-          display.error!(url) unless url.is_a?(String)
+          case mode = config.mode
+          in Configuration::Mode::Production
+            region, access_token = authenticate_via_region(email, password, staging: false)
+            config.overwrite!(email: email, access_token: access_token, region: region)
+          in Configuration::Mode::Staging
+            region, access_token = authenticate_via_region(email, password, staging: true)
+            config.overwrite!(email: email, access_token: access_token, region: region)
+          in Configuration::Mode::Custom
+            access_token = authenticate_via_custom_url(mode.url, email, password)
+            config.overwrite!(email: email, access_token: access_token)
+          end
 
-          client = API::Client.new(url, access_token.token)
+          client = API::Client.new(config.api_url, access_token.token)
           select_and_save_organisation(client)
         end
 
@@ -41,23 +49,14 @@ module TandaCLI
           {email, password}
         end
 
-        private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, API::Types::AccessToken)
-          staging =
-            case config.mode
-            in Configuration::Mode::Production
-              false
-            in Configuration::Mode::Staging, Configuration::Mode::Custom
-              true
-            end
-
-          display.puts "🔍 #{"Authenticating...".colorize.cyan}"
-
+        private def authenticate_via_region(email : String, password : String, staging : Bool) : Tuple(Region, API::Types::AccessToken)
           Region.values.each do |region|
             next if staging && region.internal?
 
+            url = region.oauth_url(:token, staging)
             Log.debug(&.emit("Trying #{region.display_name} (#{region.host(staging)})"))
 
-            access_token = try_authenticate(region, email, password, staging)
+            access_token = post_oauth_token(url, email, password, region.display_name)
             if access_token
               Log.debug(&.emit("Authenticated via #{region.display_name}"))
               display.success("Authenticated!")
@@ -68,9 +67,19 @@ module TandaCLI
           display.error!("Unable to authenticate (incorrect email or password)")
         end
 
-        private def try_authenticate(region : Region, email : String, password : String, staging : Bool) : API::Types::AccessToken?
-          url = region.oauth_url(:token, staging)
+        private def authenticate_via_custom_url(url : URI, email : String, password : String) : API::Types::AccessToken
+          oauth_url = "#{url}/api/oauth/token"
+          Log.debug(&.emit("Trying #{oauth_url}"))
 
+          access_token = post_oauth_token(oauth_url, email, password, url.to_s)
+          display.error!("Unable to authenticate (incorrect email or password)") unless access_token
+
+          Log.debug(&.emit("Authenticated via #{url}"))
+          display.success("Authenticated!")
+          access_token
+        end
+
+        private def post_oauth_token(url : String, email : String, password : String, label : String) : API::Types::AccessToken?
           response = HTTP::Client.post(
             url,
             headers: HTTP::Headers{
@@ -85,16 +94,16 @@ module TandaCLI
             }.to_json
           )
 
-          Log.debug(&.emit("Response from #{region.display_name}", body: response.body))
+          Log.debug(&.emit("Response from #{label}", body: response.body))
 
           return nil unless response.success?
 
           API::Types::AccessToken.from_json(response.body)
         rescue Socket::Addrinfo::Error
-          Log.debug(&.emit("Network error for #{region.display_name}"))
+          Log.debug(&.emit("Network error for #{label}"))
           nil
         rescue JSON::SerializableError | JSON::ParseException
-          Log.debug(&.emit("Failed to parse response from #{region.display_name}"))
+          Log.debug(&.emit("Failed to parse response from #{label}"))
           nil
         end
 

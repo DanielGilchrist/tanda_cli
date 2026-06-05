@@ -54,8 +54,8 @@ module TandaCLI
       :reset_environment!,
       to: @serialisable
 
-    def overwrite!(region : Region, email : String, access_token : API::Types::AccessToken)
-      self.region = region
+    def overwrite!(email : String, access_token : API::Types::AccessToken, region : Region? = nil) : Nil
+      self.region = region if region
       current_environment.access_token = Serialisable::AccessToken.from(email, access_token)
 
       save!
