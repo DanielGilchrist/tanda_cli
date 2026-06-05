@@ -18,12 +18,12 @@ module TandaCLI
           end
 
           struct Unknown
-            def initialize(@raw : String); end
+            def initialize(@value : String); end
 
-            getter raw : String
+            getter value : String
 
             def to_s(io : IO) : Nil
-              io << raw
+              io << value
             end
           end
         end

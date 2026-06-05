@@ -31,27 +31,21 @@ module TandaCLI
       end
 
       def current_environment : Environment
-        staging? ? @staging : @production
-      end
-
-      def staging? : Bool
-        @mode.is_a?(Mode::Staging)
-      end
-
-      def reset_environment!
-        if staging?
-          reset_staging!
-        else
-          reset_production!
+        case @mode
+        in Mode::Production
+          @production
+        in Mode::Staging, Mode::Custom
+          @staging
         end
       end
 
-      private def reset_staging!
-        @staging = Environment.new
-      end
-
-      private def reset_production!
-        @production = Environment.new
+      def reset_environment! : Nil
+        case @mode
+        in Mode::Production
+          @production = Environment.new
+        in Mode::Staging, Mode::Custom
+          @staging = Environment.new
+        end
       end
     end
   end

@@ -42,7 +42,13 @@ module TandaCLI
         end
 
         private def detect_region_and_authenticate(email : String, password : String) : Tuple(Region, API::Types::AccessToken)
-          staging = config.staging?
+          staging =
+            case config.mode
+            in Configuration::Mode::Production
+              false
+            in Configuration::Mode::Staging, Configuration::Mode::Custom
+              true
+            end
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 

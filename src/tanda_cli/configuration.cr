@@ -52,7 +52,6 @@ module TandaCLI
       :access_token,
       :current_environment,
       :reset_environment!,
-      :staging?,
       to: @serialisable
 
     def overwrite!(region : Region, email : String, access_token : API::Types::AccessToken)
