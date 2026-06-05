@@ -9,9 +9,10 @@ module TandaCLI
       end
 
       private struct Validator
-        VALID_HOSTS = [
+        VALID_HOST_SUFFIXES = [
           ".tanda.co",
           ".workforce.com",
+          ".adnat.co",
         ]
 
         def initialize(@uri : URI); end
@@ -31,7 +32,7 @@ module TandaCLI
           elsif query_params?
             "URL cannot contain query parameters"
           elsif invalid_host?
-            "Host must contain #{VALID_HOSTS.join(" or ")}"
+            "Host must end with #{VALID_HOST_SUFFIXES.join(" or ")}"
           end
         end
 
@@ -47,7 +48,7 @@ module TandaCLI
           host = @uri.host
           return true if host.nil?
 
-          VALID_HOSTS.none? { |valid_host| host.includes?(valid_host) }
+          VALID_HOST_SUFFIXES.none? { |suffix| host.ends_with?(suffix) }
         end
       end
     end

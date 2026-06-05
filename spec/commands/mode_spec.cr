@@ -19,12 +19,29 @@ describe TandaCLI::Commands::Mode do
       context.stdout.to_s.should eq("Success: Successfully set custom url \"#{url}\"\n")
     end
 
+    it "Sets mode to a valid custom .adnat.co url" do
+      url = "https://dangilchrist.dev.us.adnat.co"
+      context = run(["mode", "custom", url])
+
+      env = context.config.current
+      env.should be_a(TandaCLI::Configuration::Serialisable::Environment::Custom)
+      env.as(TandaCLI::Configuration::Serialisable::Environment::Custom).url.to_s.should eq(url)
+    end
+
     it "Doesn't set mode if it's an invalid url" do
       url = "https://invalid_url.com"
       context = run(["mode", "custom", url])
 
       context.config.current.should be_a(TandaCLI::Configuration::Serialisable::Environment::Production)
-      context.stderr.to_s.should contain("Error: Host must contain")
+      context.stderr.to_s.should contain("Error: Host must end with")
+    end
+
+    it "Doesn't set mode if a valid host suffix only appears in the middle of the host" do
+      url = "https://my.tanda.co.attacker.com"
+      context = run(["mode", "custom", url])
+
+      context.config.current.should be_a(TandaCLI::Configuration::Serialisable::Environment::Production)
+      context.stderr.to_s.should contain("Error: Host must end with")
     end
   end
 
