@@ -8,7 +8,7 @@ module TandaCLI
         @production : Environment::Production = Environment::Production.new,
         @staging : Environment::Staging = Environment::Staging.new,
         @custom : Environment::Custom? = nil,
-        @kind : Environment::Kind = Environment::Kind::Production,
+        @current_environment : Environment::Name = Environment::Name::Production,
         @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
         @treat_paid_breaks_as_unpaid : Bool = false,
       ); end
@@ -22,14 +22,14 @@ module TandaCLI
       @production : Environment::Production = Environment::Production.new
       @staging : Environment::Staging = Environment::Staging.new
       @custom : Environment::Custom? = nil
-      @kind : Environment::Kind = Environment::Kind::Production
+      @current_environment : Environment::Name = Environment::Name::Production
 
       def pretty_start_of_week : String
         @start_of_week.to_s
       end
 
       def current : Environment::Any
-        case @kind
+        case @current_environment
         in .production?
           @production
         in .staging?
@@ -40,11 +40,11 @@ module TandaCLI
       end
 
       def use_production! : Nil
-        @kind = Environment::Kind::Production
+        @current_environment = Environment::Name::Production
       end
 
       def use_staging! : Nil
-        @kind = Environment::Kind::Staging
+        @current_environment = Environment::Name::Staging
       end
 
       def use_custom!(url : URI) : Nil
@@ -52,11 +52,11 @@ module TandaCLI
         if existing.nil? || existing.url != url
           @custom = Environment::Custom.new(url: url)
         end
-        @kind = Environment::Kind::Custom
+        @current_environment = Environment::Name::Custom
       end
 
       def reset_current_environment! : Nil
-        case @kind
+        case @current_environment
         in .production?
           @production = Environment::Production.new
         in .staging?

@@ -4,7 +4,7 @@ module TandaCLI
       module Environment
         alias Any = Production | Staging | Custom
 
-        enum Kind
+        enum Name
           Production
           Staging
           Custom

@@ -1,5 +1,5 @@
 {
-  "kind": "production",
+  "current_environment": "production",
   "production": {
     "region": "eu",
     "access_token": null,
