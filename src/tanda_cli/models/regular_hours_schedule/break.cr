@@ -7,10 +7,10 @@ module TandaCLI
 
         def initialize(@start_time : Time, @finish_time : Time); end
 
-        @[JSON::Field(key: "_start_time", converter: TandaCLI::Models::RegularHoursSchedule::TimeOfDayConverter)]
+        @[JSON::Field(converter: TandaCLI::Models::RegularHoursSchedule::TimeOfDayConverter)]
         getter start_time : Time
 
-        @[JSON::Field(key: "_finish_time", converter: TandaCLI::Models::RegularHoursSchedule::TimeOfDayConverter)]
+        @[JSON::Field(converter: TandaCLI::Models::RegularHoursSchedule::TimeOfDayConverter)]
         getter finish_time : Time
 
         def length : Time::Span
