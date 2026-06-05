@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class Auth
       class Status < Base
+        private alias Environment = Configuration::Serialisable::Environment
+
         def setup_
           @name = "status"
           @summary = @description = "Show current authentication status"
@@ -24,11 +26,11 @@ module TandaCLI
           display.puts "🏢 #{organisation.name} (user #{organisation.user_id})" if organisation
 
           case env
-          in Configuration::Serialisable::Environment::Production
+          in Environment::Production
             display.puts "🌐 #{env.region.display_name} (#{env.region.production_host})"
-          in Configuration::Serialisable::Environment::Staging
+          in Environment::Staging
             display.puts "🌐 #{env.region.display_name} (#{env.region.staging_host})"
-          in Configuration::Serialisable::Environment::Custom
+          in Environment::Custom
             # URL already shown in display_label
           end
         end

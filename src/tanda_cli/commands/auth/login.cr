@@ -2,6 +2,8 @@ module TandaCLI
   module Commands
     class Auth
       class Login < Base
+        private alias Environment = Configuration::Serialisable::Environment
+
         SCOPES = "device leave personal roster timesheet me"
 
         def setup_
@@ -21,15 +23,15 @@ module TandaCLI
 
           access_token =
             case env = config.current
-            in Configuration::Serialisable::Environment::Production
+            in Environment::Production
               region, token = authenticate_via_region(email, password, staging: false)
               env.region = region
               token
-            in Configuration::Serialisable::Environment::Staging
+            in Environment::Staging
               region, token = authenticate_via_region(email, password, staging: true)
               env.region = region
               token
-            in Configuration::Serialisable::Environment::Custom
+            in Environment::Custom
               authenticate_via_custom_url(env.url, email, password)
             end
 

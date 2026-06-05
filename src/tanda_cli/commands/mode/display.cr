@@ -4,6 +4,8 @@ module TandaCLI
   module Commands
     class Mode
       class Display < Base
+        private alias Environment = Configuration::Serialisable::Environment
+
         disable_staging_warning!
 
         def setup_
@@ -13,11 +15,11 @@ module TandaCLI
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           case env = config.current
-          in Configuration::Serialisable::Environment::Production
+          in Environment::Production
             display.puts env.display_label.colorize.green
-          in Configuration::Serialisable::Environment::Staging
+          in Environment::Staging
             display.puts env.display_label.colorize.yellow
-          in Configuration::Serialisable::Environment::Custom
+          in Environment::Custom
             display.puts env.display_label.colorize.cyan
           end
         end
