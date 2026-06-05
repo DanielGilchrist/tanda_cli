@@ -116,13 +116,13 @@ module TandaCLI
       private def maybe_display_staging_warning
         return if @disable_staging_warning
 
-        case mode = config.mode
-        in Configuration::Mode::Production
+        case env = config.current
+        in Configuration::Serialisable::Environment::Production
           # no warning needed
-        in Configuration::Mode::Staging
+        in Configuration::Serialisable::Environment::Staging
           display.warning("Command running in staging mode")
-        in Configuration::Mode::Custom
-          display.warning("Command running on #{mode.url}")
+        in Configuration::Serialisable::Environment::Custom
+          display.warning("Command running on #{env.url}")
         end
       end
 

@@ -10,10 +10,11 @@ module TandaCLI
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           revoke_access_token
 
-          config.reset_environment!
+          label = config.current.display_label
+          config.reset_current_environment!
           config.save!
 
-          display.success("Logged out of #{config.mode.display_label} environment")
+          display.success("Logged out of #{label} environment")
         end
 
         private def revoke_access_token

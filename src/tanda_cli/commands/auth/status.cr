@@ -8,28 +8,28 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          mode = config.mode
+          env = config.current
 
           unless context.authenticated?
-            display.puts "🔒 #{"Not authenticated (#{mode.display_label})".colorize.yellow}"
+            display.puts "🔒 #{"Not authenticated (#{env.display_label})".colorize.yellow}"
             display.puts "Run `tanda_cli auth login` to authenticate"
             return
           end
 
-          access_token = config.access_token
-          organisation = config.current_organisation?
+          access_token = env.access_token
+          organisation = env.current_organisation?
 
-          display.puts "🔓 #{"Authenticated (#{mode.display_label})".colorize.green}"
+          display.puts "🔓 #{"Authenticated (#{env.display_label})".colorize.green}"
           display.puts "📧 #{access_token.email}" if access_token
           display.puts "🏢 #{organisation.name} (user #{organisation.user_id})" if organisation
 
-          case mode
-          in Configuration::Mode::Production
-            display.puts "🌐 #{config.region.display_name} (#{config.region.production_host})"
-          in Configuration::Mode::Staging
-            display.puts "🌐 #{config.region.display_name} (#{config.region.staging_host})"
-          in Configuration::Mode::Custom
-            # location already shown in display_label
+          case env
+          in Configuration::Serialisable::Environment::Production
+            display.puts "🌐 #{env.region.display_name} (#{env.region.production_host})"
+          in Configuration::Serialisable::Environment::Staging
+            display.puts "🌐 #{env.region.display_name} (#{env.region.staging_host})"
+          in Configuration::Serialisable::Environment::Custom
+            # URL already shown in display_label
           end
         end
       end

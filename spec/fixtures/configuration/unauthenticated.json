@@ -1,5 +1,5 @@
 {
-  "mode": "production",
+  "kind": "production",
   "production": {
     "region": "eu",
     "access_token": null,

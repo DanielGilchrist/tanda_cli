@@ -12,7 +12,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.mode = Configuration::Mode::Staging.new
+          config.use_staging!
           config.save!
 
           display.success("Successfully set mode to staging!")

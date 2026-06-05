@@ -10,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.reset_environment!
+          config.reset_current_environment!
 
           display.puts "🔐 #{"Tanda CLI Login".colorize.white.bold}"
           display.puts
@@ -19,17 +19,21 @@ module TandaCLI
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          case mode = config.mode
-          in Configuration::Mode::Production
-            region, access_token = authenticate_via_region(email, password, staging: false)
-            config.overwrite!(email: email, access_token: access_token, region: region)
-          in Configuration::Mode::Staging
-            region, access_token = authenticate_via_region(email, password, staging: true)
-            config.overwrite!(email: email, access_token: access_token, region: region)
-          in Configuration::Mode::Custom
-            access_token = authenticate_via_custom_url(mode.url, email, password)
-            config.overwrite!(email: email, access_token: access_token)
-          end
+          access_token =
+            case env = config.current
+            in Configuration::Serialisable::Environment::Production
+              region, token = authenticate_via_region(email, password, staging: false)
+              env.region = region
+              token
+            in Configuration::Serialisable::Environment::Staging
+              region, token = authenticate_via_region(email, password, staging: true)
+              env.region = region
+              token
+            in Configuration::Serialisable::Environment::Custom
+              authenticate_via_custom_url(env.url, email, password)
+            end
+
+          config.overwrite_access_token!(email, access_token)
 
           client = API::Client.new(config.api_url, access_token.token)
           select_and_save_organisation(client)

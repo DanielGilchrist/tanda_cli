@@ -36,28 +36,23 @@ module TandaCLI
 
     def initialize(@file : Configuration::AbstractFile, @serialisable = Serialisable.new); end
 
-    delegate :current_organisation?, :current_organisation!, to: current_environment
     delegate :start_of_week,
       :start_of_week=,
       :pretty_start_of_week,
       :clockin_photo_path,
       :clockin_photo_path=,
-      :mode,
-      :mode=,
       :treat_paid_breaks_as_unpaid?,
-      :organisations,
-      :organisations=,
-      :region,
-      :region=,
-      :access_token,
-      :current_environment,
-      :reset_environment!,
+      :current,
+      :use_production!,
+      :use_staging!,
+      :use_custom!,
+      :reset_current_environment!,
       to: @serialisable
 
-    def overwrite!(email : String, access_token : API::Types::AccessToken, region : Region? = nil) : Nil
-      self.region = region if region
-      current_environment.access_token = Serialisable::AccessToken.from(email, access_token)
+    delegate :access_token, :organisations, :organisations=, :current_organisation?, :current_organisation!, to: current
 
+    def overwrite_access_token!(email : String, access_token : API::Types::AccessToken) : Nil
+      current.access_token = Serialisable::AccessToken.from(email, access_token)
       save!
     end
 
@@ -66,22 +61,11 @@ module TandaCLI
     end
 
     def api_url : String
-      build_url("api/v2")
+      "#{current.base_url}/api/v2"
     end
 
     def oauth_url(endpoint : OAuthEndpoint) : String
-      build_url("api/oauth/#{endpoint.to_s.downcase}")
-    end
-
-    private def build_url(path_suffix : String) : String
-      case current_mode = mode
-      in Mode::Production
-        "https://#{region.host(staging: false)}/#{path_suffix}"
-      in Mode::Staging
-        "https://#{region.host(staging: true)}/#{path_suffix}"
-      in Mode::Custom
-        "#{current_mode.url}/#{path_suffix}"
-      end
+      "#{current.base_url}/api/oauth/#{endpoint.to_s.downcase}"
     end
   end
 end

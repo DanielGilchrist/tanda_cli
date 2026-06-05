@@ -12,13 +12,13 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          case mode = config.mode
-          in Configuration::Mode::Production
-            display.puts mode.display_label.colorize.green
-          in Configuration::Mode::Staging
-            display.puts mode.display_label.colorize.yellow
-          in Configuration::Mode::Custom
-            display.puts mode.display_label.colorize.cyan
+          case env = config.current
+          in Configuration::Serialisable::Environment::Production
+            display.puts env.display_label.colorize.green
+          in Configuration::Serialisable::Environment::Staging
+            display.puts env.display_label.colorize.yellow
+          in Configuration::Serialisable::Environment::Custom
+            display.puts env.display_label.colorize.cyan
           end
         end
       end

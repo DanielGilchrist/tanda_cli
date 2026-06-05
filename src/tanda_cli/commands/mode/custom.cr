@@ -17,15 +17,13 @@ module TandaCLI
           url = arguments.get("url").as_s
           display.error!("Must pass an argument to custom") if url.blank?
 
-          case parsed = Configuration::Mode.from_string(url)
-          in Configuration::Mode::Custom
-            config.mode = parsed
+          case validated = Utils::URL.validate(url)
+          in URI
+            config.use_custom!(validated)
             config.save!
-            display.success("Successfully set custom url", parsed.url.to_s)
-          in Configuration::Mode::Production, Configuration::Mode::Staging
-            display.error!("Use the dedicated subcommand for #{parsed.display_label}, not custom")
+            display.success("Successfully set custom url", validated.to_s)
           in Error::InvalidURL
-            display.error!(parsed)
+            display.error!(validated)
           end
         end
       end

@@ -5,46 +5,65 @@ module TandaCLI
 
       def initialize(
         @clockin_photo_path : String? = nil,
-        @production : Environment = Environment.new,
-        @staging : Environment = Environment.new,
-        @mode : Mode::Any = Mode::Production.new,
+        @production : Environment::Production = Environment::Production.new,
+        @staging : Environment::Staging = Environment::Staging.new,
+        @custom : Environment::Custom? = nil,
+        @kind : Environment::Kind = Environment::Kind::Production,
         @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
         @treat_paid_breaks_as_unpaid : Bool = false,
       ); end
 
       property clockin_photo_path : String?
-      property production : Environment = Environment.new
-      property staging : Environment = Environment.new
-
-      @[JSON::Field(converter: TandaCLI::Configuration::Mode::Converter)]
-      property mode : Mode::Any = Mode::Production.new
-
       property start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday
 
       @[JSON::Field(emit_null: true)]
       property? treat_paid_breaks_as_unpaid : Bool = false
 
-      delegate :organisations, :organisations=, :region, :region=, :access_token, to: current_environment
+      @production : Environment::Production = Environment::Production.new
+      @staging : Environment::Staging = Environment::Staging.new
+      @custom : Environment::Custom? = nil
+      @kind : Environment::Kind = Environment::Kind::Production
 
       def pretty_start_of_week : String
         @start_of_week.to_s
       end
 
-      def current_environment : Environment
-        case @mode
-        in Mode::Production
+      def current : Environment::Any
+        case @kind
+        in .production?
           @production
-        in Mode::Staging, Mode::Custom
+        in .staging?
           @staging
+        in .custom?
+          @custom || raise("Custom environment selected but not configured")
         end
       end
 
-      def reset_environment! : Nil
-        case @mode
-        in Mode::Production
-          @production = Environment.new
-        in Mode::Staging, Mode::Custom
-          @staging = Environment.new
+      def use_production! : Nil
+        @kind = Environment::Kind::Production
+      end
+
+      def use_staging! : Nil
+        @kind = Environment::Kind::Staging
+      end
+
+      def use_custom!(url : URI) : Nil
+        existing = @custom
+        if existing.nil? || existing.url != url
+          @custom = Environment::Custom.new(url: url)
+        end
+        @kind = Environment::Kind::Custom
+      end
+
+      def reset_current_environment! : Nil
+        case @kind
+        in .production?
+          @production = Environment::Production.new
+        in .staging?
+          @staging = Environment::Staging.new
+        in .custom?
+          existing = @custom
+          @custom = existing && Environment::Custom.new(existing.url)
         end
       end
     end
