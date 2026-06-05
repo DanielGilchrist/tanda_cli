@@ -14,12 +14,12 @@ module TandaCLI
           Pending
           Approved
           Rejected
+          Unknown
         end
 
         module StatusConverter
           def self.from_json(value : JSON::PullParser) : Status
-            status_string = value.read_string
-            Status.parse?(status_string) || raise("Unknown status: #{status_string}")
+            Status.parse?(value.read_string) || Status::Unknown
           end
         end
 
