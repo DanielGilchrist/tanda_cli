@@ -19,7 +19,7 @@ module TandaCLI
           @token : String,
           @token_type : String,
           @scopes : String,
-          @created_at : Int32,
+          @created_at : Time,
         ); end
 
         getter email : String
@@ -29,7 +29,8 @@ module TandaCLI
         @[JSON::Field(key: "scope")]
         getter scopes : String
 
-        getter created_at : Int32
+        @[JSON::Field(converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
+        getter created_at : Time
       end
     end
   end

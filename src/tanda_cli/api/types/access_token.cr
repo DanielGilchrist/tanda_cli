@@ -1,4 +1,5 @@
 require "json"
+require "./converters/time"
 
 module TandaCLI
   module API
@@ -14,7 +15,8 @@ module TandaCLI
         @[JSON::Field(key: "scope")]
         getter scopes : String
 
-        getter created_at : Int32
+        @[JSON::Field(converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
+        getter created_at : Time
       end
     end
   end
