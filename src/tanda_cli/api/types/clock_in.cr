@@ -10,24 +10,38 @@ module TandaCLI
         include JSON::Serializable
         include Utils::Mixins::PrettyTimes
 
-        enum Type
-          Start
-          Finish
-          BreakStart
-          BreakFinish
+        module Type
+          alias Any = Known | Unknown
+
+          enum Known
+            Start
+            Finish
+            BreakStart
+            BreakFinish
+          end
+
+          struct Unknown
+            def initialize(@raw : String); end
+
+            getter raw : String
+
+            def to_s(io : IO) : Nil
+              io << raw
+            end
+          end
         end
 
         module TypeConverter
-          def self.from_json(value : JSON::PullParser) : Type
-            type_string = value.read_string
-            Type.parse?(type_string) || raise("Unknown type: #{type_string}")
+          def self.from_json(value : JSON::PullParser) : Type::Any
+            raw = value.read_string
+            Type::Known.parse?(raw) || Type::Unknown.new(raw)
           end
         end
 
         getter id : Int32
 
         @[JSON::Field(key: "type", converter: TandaCLI::API::Types::ClockIn::TypeConverter)]
-        getter type : Type
+        getter type : Type::Any
 
         @[JSON::Field(key: "time", converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
         getter time : Time
