@@ -33,8 +33,8 @@ module TandaCLI
           end
 
           from ||= to.at_beginning_of_week(start_day)
-          api_shifts = client
-            .shifts(current.user.id, from, to, show_notes: print_shifts)
+          api_shifts = client.shifts
+            .list(current.user.id, from, to, show_notes: print_shifts)
             .or { |error| display.error!(error) }
 
           leave_requests = leave_requests_for(api_shifts)

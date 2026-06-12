@@ -18,7 +18,7 @@ module TandaCLI
           base64_photo = resolve_clockin_photo(options.clockin_photo)
           display.error!(base64_photo) if base64_photo.is_a?(Error::Base)
 
-          client.send_clock_in(
+          client.clock_ins.create(
             current.user.id,
             now,
             clock_type.to_underscore,
@@ -30,7 +30,7 @@ module TandaCLI
         end
 
         private def check_status!(clock_type : ClockType, now : Time)
-          api_shifts = client.shifts(current.user.id, now).or { |error| display.error!(error) }
+          api_shifts = client.shifts.list(current.user.id, now).or { |error| display.error!(error) }
           shifts = api_shifts.compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
           status = Models::ClockInStatus.from_shifts(shifts)
           error = status.error_for(clock_type)

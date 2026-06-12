@@ -1,4 +1,5 @@
-require "./client"
+require "./fatal_error"
+require "./network_error"
 require "./result"
 
 module TandaCLI
@@ -13,7 +14,7 @@ module TandaCLI
           spawn do
             outcome = begin
               block.call(input)
-            rescue ex : Client::NetworkError | Client::FatalAPIError
+            rescue ex : NetworkError | FatalError
               ex
             end
             channel.send({index, outcome})

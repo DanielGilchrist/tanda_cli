@@ -13,8 +13,8 @@ module TandaCLI
       end
 
       def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        leave_balance = client
-          .leave_balances(current.user.id)
+        leave_balance = client.leave_balances
+          .list(current.user.id)
           .or { |error| display.error!(error) }
           .find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
 

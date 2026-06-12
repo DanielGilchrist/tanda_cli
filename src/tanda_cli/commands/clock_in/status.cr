@@ -10,7 +10,7 @@ module TandaCLI
         end
 
         def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          api_shifts = client.shifts(current.user.id, Utils::Time.now).or { |error| display.error!(error) }
+          api_shifts = client.shifts.list(current.user.id, Utils::Time.now).or { |error| display.error!(error) }
           todays_shifts = api_shifts
             .compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
             .sort_by!(&.id)

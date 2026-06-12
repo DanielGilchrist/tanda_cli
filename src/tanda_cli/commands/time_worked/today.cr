@@ -30,8 +30,8 @@ module TandaCLI
             display.info("Showing time worked offset #{offset} days")
           end
 
-          api_shifts = client
-            .shifts(current.user.id, now, now, show_notes: print_shifts)
+          api_shifts = client.shifts
+            .list(current.user.id, now, now, show_notes: print_shifts)
             .or { |error| display.error!(error) }
 
           leave_requests = leave_requests_for(api_shifts)

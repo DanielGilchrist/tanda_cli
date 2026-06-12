@@ -89,7 +89,7 @@ module TandaCLI
         end
 
         private def select_and_save_organisation(client : API::Client)
-          me = client.me.unwrap!
+          me = client.users.me.unwrap!
           organisations = Configuration::Serialisable::Organisation.from(me)
 
           display.error!("You don't have access to any organisations") if organisations.empty?
