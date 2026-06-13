@@ -2,9 +2,9 @@ module TandaCLI
   module Commands
     struct ClockIn
       struct Photo
-        @[Kebab::Command(name: "set", summary: "Set a default clockin photo or directory of photos")]
+        @[Kebab::Command(summary: "Set a default clockin photo or directory of photos")]
         struct Set
-          include Kebab::Serialisable
+          include Kebab::Parseable
 
           @[Kebab::Argument(description: "Path to the photo or directory of photos to set")]
           getter path : String

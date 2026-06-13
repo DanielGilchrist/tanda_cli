@@ -1,16 +1,14 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class CurrentUser
-      class Display < Base
-        def setup_
-          @name = "display"
-          @summary = @description = "Display the current user"
-        end
+    struct CurrentUser
+      @[Kebab::Command(summary: "Display the current user")]
+      struct Display
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          if organisation = config.current_organisation?
+        def run(context : Context) : Nil
+          display = context.display
+
+          if organisation = context.config.current_organisation?
             display.puts "#{organisation.name.colorize.white.bold} (User #{organisation.user_id})"
           else
             display.puts "A current user hasn't been set!"

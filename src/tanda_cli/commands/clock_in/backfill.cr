@@ -3,9 +3,9 @@ require "../../models/clock_in_backfill"
 module TandaCLI
   module Commands
     struct ClockIn
-      @[Kebab::Command(name: "backfill", summary: "Backfill missed clock ins for a day")]
+      @[Kebab::Command(summary: "Backfill missed clock ins for a day")]
       struct Backfill
-        include Kebab::Serialisable
+        include Kebab::Parseable
 
         @[Kebab::Option(short: 'd', description: "Day to backfill, defaults to today (\"yesterday\" or YYYY-MM-DD)")]
         getter date : String?

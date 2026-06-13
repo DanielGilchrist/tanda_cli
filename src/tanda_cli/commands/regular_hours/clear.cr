@@ -1,23 +1,21 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class RegularHours
-      class Clear < Base
-        def setup_
-          @name = "clear"
-          @summary = @description = "Clear regular hours for the current user"
-        end
+    struct RegularHours
+      @[Kebab::Command(summary: "Clear regular hours for the current user")]
+      struct Clear
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          organisation = config.current_organisation!
+        def run(context : Context) : Nil
+          display = context.display
+          input = context.input
+          organisation = context.config.current_organisation!
 
-          input.request_and("Are you sure you want to clear regular hours for #{organisation.name}? (y/n)", :warning) do |input|
-            return if input != "y"
+          input.request_and("Are you sure you want to clear regular hours for #{organisation.name}? (y/n)", :warning) do |user_input|
+            return if user_input != "y"
           end
 
           organisation.clear_regular_hours_schedules!
-          config.save!
+          context.config.save!
 
           display.success("Regular hours cleared for #{organisation.name}.")
         end

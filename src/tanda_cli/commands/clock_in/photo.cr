@@ -3,20 +3,12 @@ require "./photo/*"
 module TandaCLI
   module Commands
     struct ClockIn
-      @[Kebab::Command(name: "photo", summary: "View, set or clear clockin photo to be used by default")]
+      @[Kebab::Command(summary: "View, set or clear clockin photo to be used by default")]
       struct Photo
-        include Kebab::Serialisable
+        include Kebab::Parseable
 
         @[Kebab::Subcommand]
-        getter command : Clear | List | Set | View | Nil
-
-        def run(context : Context) : Nil
-          if command = @command
-            command.run(context)
-          else
-            context.display.puts(__kebab_help_text)
-          end
-        end
+        getter command : Clear | List | Set | View
       end
     end
   end

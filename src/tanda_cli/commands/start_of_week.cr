@@ -1,18 +1,14 @@
-require "./base"
+require "../ext/kebab"
+require "./start_of_week/*"
 
 module TandaCLI
   module Commands
-    class StartOfWeek < Base
-      def setup_
-        @name = "start_of_week"
-        @summary = @description = "Set the start of the week (e.g. monday/sunday)"
+    @[Kebab::Command(summary: "Set the start of the week (e.g. monday/sunday)")]
+    struct StartOfWeek
+      include Kebab::Parseable
 
-        add_commands(StartOfWeek::Display, StartOfWeek::Set)
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        display.puts help_template
-      end
+      @[Kebab::Subcommand]
+      getter command : Display | Set
     end
   end
 end

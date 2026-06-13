@@ -1,21 +1,15 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class Mode
-      class Production < Base
-        disable_staging_warning!
+    struct Mode
+      @[Kebab::Command(summary: "Set the app to run commands in production mode")]
+      struct Production
+        include Kebab::Parseable
 
-        def setup_
-          @name = "production"
-          @summary = @description = "Set the app to run commands in production mode"
-        end
+        def run(context : Context) : Nil
+          context.config.use_production!
+          context.config.save!
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.use_production!
-          config.save!
-
-          display.success("Successfully set mode to production!")
+          context.display.success("Successfully set mode to production!")
         end
       end
     end

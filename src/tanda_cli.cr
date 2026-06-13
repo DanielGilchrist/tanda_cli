@@ -6,32 +6,22 @@ module TandaCLI
 
   def main(args : Array(String), stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context
     build_context(stdin, stdout, stderr, config_file).tap do |context|
-      # "clockin" is kebab-based and dispatched before cling; everything else
-      # still runs through cling until the migration completes.
-      if args.first? == "clockin"
-        execute_clock_in(args[1..], context)
-      else
-        Commands::Main.new(context).execute(args)
-      end
+      Commands::Main.execute(args, context)
+    rescue ExitProgram
+      # graceful exit via display.error! / TandaCLI.exit!
+    rescue ex
+      {% if flag?(:debug) && !flag?(:test) %}
+        raise ex
+      {% else %}
+        context.display.error(ex.message || "An error occurred")
+      {% end %}
     end
   ensure
     config_file.close
   end
 
-  private def execute_clock_in(args : Array(String), context : Context) : Nil
-    Commands::ClockIn.execute(args, context)
-  rescue Cling::ExitProgram
-    # graceful exit via display.error! / TandaCLI.exit!
-  rescue ex
-    {% if flag?(:debug) && !flag?(:test) %}
-      raise ex
-    {% else %}
-      context.display.error(ex.message || "An error occurred")
-    {% end %}
-  end
-
   def exit! : NoReturn
-    raise(Cling::ExitProgram.new(0))
+    raise(ExitProgram.new)
   end
 
   private def build_context(stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context

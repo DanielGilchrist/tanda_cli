@@ -1,16 +1,15 @@
 module TandaCLI
   module Commands
-    class Auth
-      class Status < Base
+    struct Auth
+      @[Kebab::Command(summary: "Show current authentication status")]
+      struct Status
+        include Kebab::Parseable
+
         private alias Environment = Configuration::Serialisable::Environment
 
-        def setup_
-          @name = "status"
-          @summary = @description = "Show current authentication status"
-        end
-
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          env = config.current
+        def run(context : Context) : Nil
+          display = context.display
+          env = context.config.current
 
           unless context.authenticated?
             display.puts "🔒 #{"Not authenticated (#{env.display_label})".colorize.yellow}"

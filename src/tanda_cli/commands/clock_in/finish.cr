@@ -4,9 +4,9 @@ require "./options"
 module TandaCLI
   module Commands
     struct ClockIn
-      @[Kebab::Command(name: "finish", summary: "Clock out")]
+      @[Kebab::Command(summary: "Clock out")]
       struct Finish
-        include Kebab::Serialisable
+        include Kebab::Parseable
         include Options
         include Helpers::ClockIn
 

@@ -1,9 +1,9 @@
 module TandaCLI
   module Commands
     struct ClockIn
-      @[Kebab::Command(name: "status", summary: "Check current clockin status")]
+      @[Kebab::Command(summary: "Check current clockin status")]
       struct Status
-        include Kebab::Serialisable
+        include Kebab::Parseable
 
         def run(context : Context) : Nil
           display = context.display

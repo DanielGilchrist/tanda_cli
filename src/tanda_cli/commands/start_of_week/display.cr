@@ -1,16 +1,12 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class StartOfWeek
-      class Display < Base
-        def setup_
-          @name = "display"
-          @summary = @description = "Display the currently set start of the week"
-        end
+    struct StartOfWeek
+      @[Kebab::Command(summary: "Display the currently set start of the week")]
+      struct Display
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display.puts "#{config.pretty_start_of_week.colorize.white.bold}"
+        def run(context : Context) : Nil
+          context.display.puts "#{context.config.pretty_start_of_week.colorize.white.bold}"
         end
       end
     end

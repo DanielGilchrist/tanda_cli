@@ -5,9 +5,9 @@ module TandaCLI
   module Commands
     struct ClockIn
       struct Break
-        @[Kebab::Command(name: "start", summary: "Start break")]
+        @[Kebab::Command(summary: "Start break")]
         struct Start
-          include Kebab::Serialisable
+          include Kebab::Parseable
           include ClockIn::Options
           include Helpers::ClockIn
 

@@ -2,29 +2,25 @@ require "../helpers/time_worked"
 
 module TandaCLI
   module Commands
-    class TimeWorked
-      class Week < Commands::Base
-        requires_auth!
+    struct TimeWorked
+      @[Kebab::Command(summary: "Show time worked for a week")]
+      struct Week
+        include Kebab::Parseable
         include Helpers::TimeWorked
 
-        def setup_
-          @name = "week"
-          @summary = @description = "Show time worked for a week"
+        @[Kebab::Option(short: 'd', description: "Print Shift")]
+        getter? display : Bool = false
 
-          add_option 'd', "display", description: "Print Shift"
-          add_option 'o', "offset", type: :single, required: false, description: "Offset from today"
-        end
+        @[Kebab::Option(short: 'o', description: "Offset from today")]
+        getter offset : Int32?
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display = options.has?("display")
-          offset = options.get?("offset").try(&.as_s.to_i32?)
+        def run(context : Context) : Nil
+          display = context.display
+          print_shifts = self.display?
+          offset = self.offset
 
-          execute(display, offset)
-        end
-
-        private def execute(print_shifts : Bool, offset : Int32?)
           to = Utils::Time.now
-          start_day = config.start_of_week
+          start_day = context.config.start_of_week
 
           if offset
             from = (to + offset.weeks).at_beginning_of_week(start_day)
@@ -33,15 +29,15 @@ module TandaCLI
           end
 
           from ||= to.at_beginning_of_week(start_day)
-          api_shifts = client.shifts
-            .list(current.user.id, from, to, show_notes: print_shifts)
+          api_shifts = context.client.shifts
+            .list(context.current.user.id, from, to, show_notes: print_shifts)
             .or { |error| display.error!(error) }
 
-          leave_requests = leave_requests_for(api_shifts)
+          leave_requests = leave_requests_for(context, api_shifts)
 
-          organisation = config.current_organisation!
+          organisation = context.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
-          treat_paid_breaks_as_unpaid = config.treat_paid_breaks_as_unpaid?
+          treat_paid_breaks_as_unpaid = context.config.treat_paid_breaks_as_unpaid?
 
           summary = Models::ShiftSummary.from_api(api_shifts, leave_requests, treat_paid_breaks_as_unpaid, regular_hours_schedules)
 
@@ -55,7 +51,7 @@ module TandaCLI
           end
 
           if summary.any_ongoing?
-            maybe_print_time_left_or_overtime(summary)
+            maybe_print_time_left_or_overtime(display, summary)
           end
 
           worked_time = summary.worked_time
@@ -68,7 +64,7 @@ module TandaCLI
           end
         end
 
-        private def maybe_print_time_left_or_overtime(summary : Models::ShiftSummary)
+        private def maybe_print_time_left_or_overtime(display : TandaCLI::Display, summary : Models::ShiftSummary)
           time_left = summary.time_left
           return unless time_left
 

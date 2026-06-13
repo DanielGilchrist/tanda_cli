@@ -2,9 +2,9 @@ module TandaCLI
   module Commands
     struct ClockIn
       struct Photo
-        @[Kebab::Command(name: "clear", summary: "Clear set clockin photo or directory")]
+        @[Kebab::Command(summary: "Clear set clockin photo or directory")]
         struct Clear
-          include Kebab::Serialisable
+          include Kebab::Parseable
 
           def run(context : Context) : Nil
             context.config.clockin_photo_path = nil

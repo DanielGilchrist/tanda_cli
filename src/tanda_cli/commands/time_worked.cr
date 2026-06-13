@@ -1,16 +1,14 @@
+require "../ext/kebab"
+require "./time_worked/*"
+
 module TandaCLI
   module Commands
-    class TimeWorked < Base
-      def setup_
-        @name = "time_worked"
-        @summary = @description = "See how many hours you've worked"
+    @[Kebab::Command(summary: "See how many hours you've worked")]
+    struct TimeWorked
+      include Kebab::Parseable
 
-        add_commands(Today, Week)
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        display.puts help_template
-      end
+      @[Kebab::Subcommand]
+      getter command : Today | Week
     end
   end
 end

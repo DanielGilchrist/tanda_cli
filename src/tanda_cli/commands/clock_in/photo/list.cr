@@ -2,9 +2,9 @@ module TandaCLI
   module Commands
     struct ClockIn
       struct Photo
-        @[Kebab::Command(name: "list", summary: "List photos current used for clock ins if a directory has been set")]
+        @[Kebab::Command(summary: "List photos current used for clock ins if a directory has been set")]
         struct List
-          include Kebab::Serialisable
+          include Kebab::Parseable
 
           VALID_FILTER_COMMANDS = {"valid", "invalid"}
 

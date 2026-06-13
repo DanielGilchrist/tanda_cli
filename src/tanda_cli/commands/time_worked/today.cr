@@ -2,27 +2,22 @@ require "../helpers/time_worked"
 
 module TandaCLI
   module Commands
-    class TimeWorked
-      class Today < Commands::Base
-        requires_auth!
+    struct TimeWorked
+      @[Kebab::Command(summary: "Show time worked for today")]
+      struct Today
+        include Kebab::Parseable
         include Helpers::TimeWorked
 
-        def setup_
-          @name = "today"
-          @summary = @description = "Show time worked for today"
+        @[Kebab::Option(short: 'd', description: "Print Shift")]
+        getter? display : Bool = false
 
-          add_option 'd', "display", description: "Print Shift"
-          add_option 'o', "offset", type: :single, required: false, description: "Offset from today"
-        end
+        @[Kebab::Option(short: 'o', description: "Offset from today")]
+        getter offset : Int32?
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display = options.has?("display")
-          offset = options.get?("offset").try(&.as_s.to_i32?)
-
-          execute(display, offset)
-        end
-
-        private def execute(print_shifts : Bool, offset : Int32?)
+        def run(context : Context) : Nil
+          display = context.display
+          print_shifts = self.display?
+          offset = self.offset
           now = Utils::Time.now
 
           if offset
@@ -30,12 +25,12 @@ module TandaCLI
             display.info("Showing time worked offset #{offset} days")
           end
 
-          api_shifts = client.shifts
-            .list(current.user.id, now, now, show_notes: print_shifts)
+          api_shifts = context.client.shifts
+            .list(context.current.user.id, now, now, show_notes: print_shifts)
             .or { |error| display.error!(error) }
 
-          leave_requests = leave_requests_for(api_shifts)
-          treat_paid_breaks_as_unpaid = config.treat_paid_breaks_as_unpaid?
+          leave_requests = leave_requests_for(context, api_shifts)
+          treat_paid_breaks_as_unpaid = context.config.treat_paid_breaks_as_unpaid?
 
           summary = Models::ShiftSummary.from_api(api_shifts, leave_requests, treat_paid_breaks_as_unpaid)
 

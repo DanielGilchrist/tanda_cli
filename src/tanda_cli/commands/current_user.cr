@@ -1,22 +1,14 @@
-require "./base"
+require "../ext/kebab"
+require "./current_user/*"
 
 module TandaCLI
   module Commands
-    class CurrentUser < Base
-      def setup_
-        @name = "current_user"
-        @summary = @description = "View the current user, list available users or set the current user"
+    @[Kebab::Command(summary: "View the current user, list available users or set the current user")]
+    struct CurrentUser
+      include Kebab::Parseable
 
-        add_commands(
-          CurrentUser::Display,
-          CurrentUser::List,
-          CurrentUser::Set
-        )
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        display.puts help_template
-      end
+      @[Kebab::Subcommand]
+      getter command : Display | List | Set
     end
   end
 end

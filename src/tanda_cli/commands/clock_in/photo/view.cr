@@ -2,9 +2,9 @@ module TandaCLI
   module Commands
     struct ClockIn
       struct Photo
-        @[Kebab::Command(name: "view", summary: "View the currently set clockin photo or directory")]
+        @[Kebab::Command(summary: "View the currently set clockin photo or directory")]
         struct View
-          include Kebab::Serialisable
+          include Kebab::Parseable
 
           def run(context : Context) : Nil
             message =

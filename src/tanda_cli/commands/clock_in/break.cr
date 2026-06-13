@@ -3,20 +3,12 @@ require "./break/*"
 module TandaCLI
   module Commands
     struct ClockIn
-      @[Kebab::Command(name: "break", summary: "Clock a break")]
+      @[Kebab::Command(summary: "Clock a break")]
       struct Break
-        include Kebab::Serialisable
+        include Kebab::Parseable
 
         @[Kebab::Subcommand]
-        getter command : Start | Finish | Nil
-
-        def run(context : Context) : Nil
-          if command = @command
-            command.run(context)
-          else
-            context.display.puts(__kebab_help_text)
-          end
-        end
+        getter command : Start | Finish
       end
     end
   end

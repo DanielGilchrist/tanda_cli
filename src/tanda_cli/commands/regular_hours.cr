@@ -1,22 +1,14 @@
-require "./base"
+require "../ext/kebab"
+require "./regular_hours/*"
 
 module TandaCLI
   module Commands
-    class RegularHours < Base
-      def setup_
-        @name = "regular_hours"
-        @summary = @description = "View or set your regular hours"
+    @[Kebab::Command(summary: "View or set your regular hours")]
+    struct RegularHours
+      include Kebab::Parseable
 
-        add_commands(
-          RegularHours::Determine,
-          RegularHours::Display,
-          RegularHours::Clear,
-        )
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        display.puts help_template
-      end
+      @[Kebab::Subcommand]
+      getter command : Determine | Display | Clear
     end
   end
 end

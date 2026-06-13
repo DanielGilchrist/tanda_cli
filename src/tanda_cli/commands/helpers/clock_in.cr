@@ -33,13 +33,13 @@ module TandaCLI
         end
 
         private def clock_in_time(context : Context) : Time
-          at = self.at
-          if at.nil?
+          time_of_day = at
+          if time_of_day.nil?
             context.display.error!("The --date option can only be used with --at") if date
             return Utils::Time.now
           end
 
-          case moment = Models::ClockInMoment.parse(at, date)
+          case moment = Models::ClockInMoment.from(time_of_day, on: date || Utils::Time.now)
           in Models::ClockInMoment
             moment.time
           in Error::Base

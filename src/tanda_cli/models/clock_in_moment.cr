@@ -27,6 +27,10 @@ module TandaCLI
             return parsed
           end
 
+        from(time_of_day, on: day, after: previous)
+      end
+
+      def self.from(time_of_day : TimeOfDay, on day : ::Time, after previous : ::Time? = nil) : ClockInMoment | Error::Base
         time = time_of_day.on(day)
         return Error::FutureClockIn.new(time) if time > Utils::Time.now
         return Error::OutOfOrderClockIn.new(time, previous) if previous && time <= previous
