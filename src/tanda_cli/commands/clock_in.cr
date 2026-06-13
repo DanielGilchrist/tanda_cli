@@ -39,6 +39,7 @@ module TandaCLI
           ClockIn::Start,
           ClockIn::Finish,
           ClockIn::Break,
+          ClockIn::Backfill,
           ClockIn::Photo,
           ClockIn::Status,
           ClockIn::Display
