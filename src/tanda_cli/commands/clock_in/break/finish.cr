@@ -1,23 +1,18 @@
 require "../../helpers/clock_in"
+require "../options"
 
 module TandaCLI
   module Commands
-    class ClockIn
-      class Break
-        class Finish < Commands::Base
+    struct ClockIn
+      struct Break
+        @[Kebab::Command(name: "finish", summary: "Finish break")]
+        struct Finish
+          include Kebab::Serialisable
+          include ClockIn::Options
           include Helpers::ClockIn
-          requires_auth!
 
-          def setup_
-            @name = "finish"
-            @summary = @description = "Finish break"
-
-            ClockIn.add_options(self)
-          end
-
-          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            parsed_options = ClockIn.parse_options(options)
-            execute_clock_in(:break_finish, parsed_options)
+          def run(context : Context) : Nil
+            execute_clock_in(context, :break_finish)
           end
         end
       end

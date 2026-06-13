@@ -1,21 +1,21 @@
+require "./photo/*"
+
 module TandaCLI
   module Commands
-    class ClockIn
-      class Photo < Commands::Base
-        def setup_
-          @name = "photo"
-          @summary = @description = "View, set or clear clockin photo to be used by default"
+    struct ClockIn
+      @[Kebab::Command(name: "photo", summary: "View, set or clear clockin photo to be used by default")]
+      struct Photo
+        include Kebab::Serialisable
 
-          add_commands(
-            Photo::Clear,
-            Photo::List,
-            Photo::Set,
-            Photo::View
-          )
-        end
+        @[Kebab::Subcommand]
+        getter command : Clear | List | Set | View | Nil
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display.puts help_template
+        def run(context : Context) : Nil
+          if command = @command
+            command.run(context)
+          else
+            context.display.puts(__kebab_help_text)
+          end
         end
       end
     end

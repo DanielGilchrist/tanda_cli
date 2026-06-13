@@ -1,26 +1,23 @@
 module TandaCLI
   module Commands
-    class ClockIn
-      class Photo
-        class Set < Commands::Base
-          def setup_
-            @name = "set"
-            @summary = @description = "Set a default clockin photo or directory of photos"
+    struct ClockIn
+      struct Photo
+        @[Kebab::Command(name: "set", summary: "Set a default clockin photo or directory of photos")]
+        struct Set
+          include Kebab::Serialisable
 
-            add_argument "path", description: "Path to the photo or directory of photos to set", required: true
-          end
+          @[Kebab::Argument(description: "Path to the photo or directory of photos to set")]
+          getter path : String
 
-          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            path = arguments.get("path").as_s
-
+          def run(context : Context) : Nil
             if !Models::PhotoPathParser.valid?(path)
-              display.error!("Invalid photo path")
+              context.display.error!("Invalid photo path")
             end
 
-            config.clockin_photo_path = path
-            config.save!
+            context.config.clockin_photo_path = path
+            context.config.save!
 
-            display.success("Clock in photo set to \"#{path}\"")
+            context.display.success("Clock in photo set to \"#{path}\"")
           end
         end
       end

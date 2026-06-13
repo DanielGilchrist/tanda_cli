@@ -9,7 +9,7 @@ module TandaCLI
           Auth,
           Me,
           PersonalDetails,
-          ClockIn,
+          ClockInStub,
           TimeWorked,
           Balance,
           RegularHours,

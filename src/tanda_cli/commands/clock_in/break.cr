@@ -1,16 +1,21 @@
+require "./break/*"
+
 module TandaCLI
   module Commands
-    class ClockIn
-      class Break < Commands::Base
-        def setup_
-          @name = "break"
-          @summary = @description = "Clock a break"
+    struct ClockIn
+      @[Kebab::Command(name: "break", summary: "Clock a break")]
+      struct Break
+        include Kebab::Serialisable
 
-          add_commands(Break::Start, Break::Finish)
-        end
+        @[Kebab::Subcommand]
+        getter command : Start | Finish | Nil
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          display.puts help_template
+        def run(context : Context) : Nil
+          if command = @command
+            command.run(context)
+          else
+            context.display.puts(__kebab_help_text)
+          end
         end
       end
     end
