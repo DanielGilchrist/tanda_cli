@@ -1,25 +1,47 @@
+require "../convert/failure"
 require "./base"
 
 module Kebab
   module Error
     class InvalidValue < Error::Base
-      def initialize(@reason : String, @option : String? = nil, @value : String? = nil)
-        message =
-          if (option = @option) && (value = @value)
-            "\"#{value}\" isn't a valid value for \"#{option}\" (#{@reason})"
-          else
-            @reason
-          end
-
-        super(message)
+      def self.from(failure : ::Kebab::Convert::Failure, *, value : String, option : String, target_type : Class) : self
+        new(
+          value: value,
+          option: option,
+          target_type_name: target_type.name,
+          target_name: failure.name,
+          reason: failure.reason,
+        )
       end
 
-      getter reason : String
-      getter option : String?
-      getter value : String?
+      def initialize(
+        @value : String,
+        @option : String,
+        @target_type_name : String,
+        @target_name : String? = nil,
+        @reason : String? = nil,
+      )
+        super(build_message)
+      end
 
-      def with(option : String, value : String) : InvalidValue
-        InvalidValue.new(reason: @reason, option: option, value: value)
+      getter value : String
+      getter option : String
+      getter target_type_name : String
+      getter target_name : String?
+      getter reason : String?
+
+      def of?(klass : Class) : Bool
+        klass.name == @target_type_name
+      end
+
+      private def build_message : String
+        message = "\"#{@value}\" isn't a valid #{noun} for \"#{@option}\""
+        message += " (#{@reason})" if @reason
+        message
+      end
+
+      private def noun : String
+        @target_name || @target_type_name
       end
     end
   end

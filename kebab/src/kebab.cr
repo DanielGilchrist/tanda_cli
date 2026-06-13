@@ -7,8 +7,4 @@ module Kebab
   annotation Option; end
   annotation Argument; end
   annotation Subcommand; end
-
-  def self.invalid_value(reason : String) : Error::InvalidValue
-    Error::InvalidValue.new(reason: reason)
-  end
 end

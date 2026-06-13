@@ -1,10 +1,10 @@
-require "../error/invalid_value"
+require "./failure"
 
 module Kebab
   module Convert
     module Enum(T)
-      def self.parse(input : String) : T | ::Kebab::Error::InvalidValue
-        T.parse?(input) || ::Kebab.invalid_value("expected one of: #{T.names.map(&.downcase).join(", ")}")
+      def self.parse(input : String) : T | ::Kebab::Convert::Failure
+        T.parse?(input) || ::Kebab::Convert.failure("one of: #{T.names.map(&.downcase).join(", ")}")
       end
     end
   end

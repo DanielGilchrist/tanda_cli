@@ -114,7 +114,13 @@ module Kebab
                         end
                         {% if base == Bool %}
                           if %inline = %token.value
-                            __kebab_bail(::Kebab::Error::InvalidValue.new("--#{{{long}}}", %inline))
+                            __kebab_bail(::Kebab::Error::InvalidValue.new(
+                              value: %inline,
+                              option: "--#{{{long}}}",
+                              target_type_name: "Bool",
+                              target_name: "flag",
+                              reason: "flags don't accept inline values",
+                            ))
                           end
                           %value{ivar.name} = true
                         {% else %}
@@ -161,7 +167,13 @@ module Kebab
                           end
                           {% if base == Bool %}
                             if %last_char && (%inline = %token.value)
-                              __kebab_bail(::Kebab::Error::InvalidValue.new("-#{{{short}}}", %inline))
+                              __kebab_bail(::Kebab::Error::InvalidValue.new(
+                                value: %inline,
+                                option: "-#{{{short}}}",
+                                target_type_name: "Bool",
+                                target_name: "flag",
+                                reason: "flags don't accept inline values",
+                              ))
                             end
                             %value{ivar.name} = true
                           {% else %}
@@ -480,12 +492,12 @@ module Kebab
       __kebab_unwrap(type, name, raw, converter.parse(raw))
     end
 
-    private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Error::InvalidValue) : T forall T
+    private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Convert::Failure) : T forall T
       case result
       in T
         result
-      in ::Kebab::Error::InvalidValue
-        __kebab_bail(result.with(option: name, value: raw))
+      in ::Kebab::Convert::Failure
+        __kebab_bail(::Kebab::Error::InvalidValue.from(result, value: raw, option: name, target_type: type))
       end
     end
   end

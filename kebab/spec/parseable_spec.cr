@@ -1,11 +1,11 @@
 require "./spec_helper"
 
 struct SpecDuration
-  def self.parse(input : String) : self | Kebab::Error::InvalidValue
+  def self.parse(input : String) : self | Kebab::Convert::Failure
     if minutes = input.to_i32?
       new(minutes)
     else
-      Kebab.invalid_value("expected a duration in minutes")
+      Kebab::Convert.failure("expected a duration in minutes", name: "duration")
     end
   end
 
@@ -15,7 +15,7 @@ struct SpecDuration
 end
 
 module UpcaseConverter
-  def self.parse(input : String) : String | Kebab::Error::InvalidValue
+  def self.parse(input : String) : String | Kebab::Convert::Failure
     input.upcase
   end
 end
@@ -165,13 +165,13 @@ describe Kebab::Parseable do
   it "errors when a built-in conversion fails" do
     error = parse_punch_error!(["--weeks", "potato"])
     error.should be_a(Kebab::Error::InvalidValue)
-    error.message.should eq("\"potato\" isn't a valid value for \"--weeks\" (expected a number (Int32))")
+    error.message.should eq("\"potato\" isn't a valid whole number for \"--weeks\"")
   end
 
   it "errors when a custom conversion fails" do
     error = parse_punch_error!(["--duration", "potato"])
     error.should be_a(Kebab::Error::InvalidValue)
-    error.message.should eq("\"potato\" isn't a valid value for \"--duration\" (expected a duration in minutes)")
+    error.message.should eq("\"potato\" isn't a valid duration for \"--duration\" (expected a duration in minutes)")
   end
 
   it "errors when a flag is given an inline value" do
@@ -290,11 +290,15 @@ describe Kebab::Parseable do
     error.value.should eq("wat")
   end
 
-  it "exposes option, value, and reason on InvalidValue" do
+  it "exposes structured fields on InvalidValue" do
     error = parse_punch_error!(["--weeks", "potato"]).as(Kebab::Error::InvalidValue)
     error.option.should eq("--weeks")
     error.value.should eq("potato")
-    error.reason.should eq("expected a number (Int32)")
+    error.target_type_name.should eq("Int32")
+    error.target_name.should eq("whole number")
+    error.reason.should be_nil
+    error.of?(Int32).should be_true
+    error.of?(String).should be_false
   end
 end
 
@@ -323,8 +327,10 @@ describe Kebab::Convert::Enum do
 
   it "errors with the valid names when unrecognised" do
     error = EnumHaver.parse(["--format", "xml"]).as(Kebab::Error::InvalidValue)
-    error.reason.should eq("expected one of: json, yaml, text")
+    error.reason.should eq("one of: json, yaml, text")
     error.option.should eq("--format")
     error.value.should eq("xml")
+    error.target_type_name.should eq("SpecOutputFormat")
+    error.of?(SpecOutputFormat).should be_true
   end
 end
