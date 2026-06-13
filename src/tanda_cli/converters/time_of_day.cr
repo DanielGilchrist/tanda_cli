@@ -9,7 +9,7 @@ module TandaCLI
         in Models::TimeOfDay
           parsed
         in ::TandaCLI::Error::Base
-          Kebab::Convert.failure(parsed.error_description || parsed.error, name: "time of day")
+          Kebab::Convert.failure(%(try "8:45", "5:30pm" or "17:30"), name: "time of day")
         end
       end
     end

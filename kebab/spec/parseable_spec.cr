@@ -297,8 +297,17 @@ describe Kebab::Parseable do
     error.target_type_name.should eq("Int32")
     error.target_name.should eq("whole number")
     error.reason.should be_nil
-    error.of?(Int32).should be_true
-    error.of?(String).should be_false
+    error.should be_a(Kebab::Error::InvalidValueOf(Int32))
+  end
+
+  it "narrows InvalidValue by target type via case" do
+    error = parse_punch_error!(["--weeks", "potato"])
+    case error
+    when Kebab::Error::InvalidValueOf(Int32)
+      error.target_type.should eq(Int32)
+    else
+      fail "expected InvalidValueOf(Int32)"
+    end
   end
 end
 
@@ -331,6 +340,6 @@ describe Kebab::Convert::Enum do
     error.option.should eq("--format")
     error.value.should eq("xml")
     error.target_type_name.should eq("SpecOutputFormat")
-    error.of?(SpecOutputFormat).should be_true
+    error.should be_a(Kebab::Error::InvalidValueOf(SpecOutputFormat))
   end
 end

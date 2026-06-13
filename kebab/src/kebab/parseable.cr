@@ -114,10 +114,9 @@ module Kebab
                         end
                         {% if base == Bool %}
                           if %inline = %token.value
-                            __kebab_bail(::Kebab::Error::InvalidValue.new(
+                            __kebab_bail(::Kebab::Error::InvalidValueOf(Bool).new(
                               value: %inline,
                               option: "--#{{{long}}}",
-                              target_type_name: "Bool",
                               target_name: "flag",
                               reason: "flags don't accept inline values",
                             ))
@@ -167,10 +166,9 @@ module Kebab
                           end
                           {% if base == Bool %}
                             if %last_char && (%inline = %token.value)
-                              __kebab_bail(::Kebab::Error::InvalidValue.new(
+                              __kebab_bail(::Kebab::Error::InvalidValueOf(Bool).new(
                                 value: %inline,
                                 option: "-#{{{short}}}",
-                                target_type_name: "Bool",
                                 target_name: "flag",
                                 reason: "flags don't accept inline values",
                               ))
@@ -497,7 +495,7 @@ module Kebab
       in T
         result
       in ::Kebab::Convert::Failure
-        __kebab_bail(::Kebab::Error::InvalidValue.from(result, value: raw, option: name, target_type: type))
+        __kebab_bail(::Kebab::Error::InvalidValueOf(T).from(result, value: raw, option: name))
       end
     end
   end

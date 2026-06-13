@@ -69,7 +69,7 @@ describe TandaCLI::Commands::ClockIn::Start do
     context = run(["clockin", "start", "--at", "potato"])
 
     context.stderr.to_s.should contain("\"potato\" isn't a valid time of day for \"--at\"")
-    context.stderr.to_s.should contain("doesn't look like a time of day")
+    context.stderr.to_s.should contain(%(try "8:45", "5:30pm" or "17:30"))
     context.stdout.to_s.should be_empty
   end
 
