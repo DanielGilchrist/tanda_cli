@@ -7,4 +7,8 @@ module Kebab
   annotation Option; end
   annotation Argument; end
   annotation Subcommand; end
+
+  def self.parse_error(description : String) : Error::Unparseable
+    Error::Unparseable.new(description)
+  end
 end

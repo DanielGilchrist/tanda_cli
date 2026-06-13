@@ -1,11 +1,11 @@
 require "./spec_helper"
 
 struct SpecDuration
-  def self.parse(input : String) : self | Kebab::Errors
+  def self.parse(input : String) : self | Kebab::Error::Unparseable
     if minutes = input.to_i32?
       new(minutes)
     else
-      Kebab::Error::Unparsable.new("a duration in minutes")
+      Kebab.parse_error("expected a duration in minutes")
     end
   end
 
@@ -15,7 +15,7 @@ struct SpecDuration
 end
 
 module UpcaseConverter
-  def self.parse(input : String) : String | Kebab::Errors
+  def self.parse(input : String) : String | Kebab::Error::Unparseable
     input.upcase
   end
 end

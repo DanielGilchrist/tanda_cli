@@ -1,4 +1,5 @@
-require "../../converters"
+require "../../converters/day"
+require "../../converters/time_of_day"
 
 module TandaCLI
   module Commands

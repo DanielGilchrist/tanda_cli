@@ -1,6 +1,6 @@
 require "../error/future_clock_in"
 require "../error/out_of_order_clock_in"
-require "../error/unparsable_date"
+require "../error/unparseable_date"
 require "./time_of_day"
 
 module TandaCLI
@@ -48,7 +48,7 @@ module TandaCLI
           begin
             Utils::Time.iso_date(input)
           rescue ::Time::Format::Error
-            Error::UnparsableDate.new(input)
+            Error::UnparseableDate.new(input)
           end
         end
       end

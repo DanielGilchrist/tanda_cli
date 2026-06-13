@@ -1,4 +1,4 @@
-require "../ext/kebab"
+require "../../../kebab/src/kebab"
 require "./auth"
 require "./me"
 require "./personal_details"
@@ -25,9 +25,10 @@ module TandaCLI
           maybe_display_staging_warning(context, result.command)
           result.run(context)
         in Kebab::Help
-          context.display.puts(result.text)
+          context.display.puts(result)
         in Kebab::Errors
-          context.display.error!(result)
+          context.display.puts_error(result)
+          TandaCLI.exit!
         end
       end
 

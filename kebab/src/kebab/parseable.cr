@@ -375,11 +375,11 @@ module Kebab
       __kebab_unwrap(type, name, raw, converter.parse(raw))
     end
 
-    private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Error::Base) : T forall T
+    private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Error::Unparseable) : T forall T
       case result
       in T
         result
-      in ::Kebab::Error::Base
+      in ::Kebab::Error::Unparseable
         __kebab_bail(::Kebab::Error::InvalidValue.new(name, raw, result))
       end
     end

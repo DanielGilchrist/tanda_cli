@@ -1,4 +1,4 @@
-require "../ext/kebab"
+require "../../../kebab/src/kebab"
 require "./clock_in/*"
 
 module TandaCLI

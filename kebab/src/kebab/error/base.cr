@@ -6,6 +6,13 @@ module Kebab
 
       getter error : String
       getter error_description : String?
+
+      def to_s(io : IO) : Nil
+        io << "Error: " << @error
+        if description = @error_description
+          io << '\n' << "       " << description
+        end
+      end
     end
   end
 end
