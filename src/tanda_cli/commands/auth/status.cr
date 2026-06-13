@@ -30,7 +30,6 @@ module TandaCLI
           in Environment::Staging
             display.puts "🌐 #{env.region.display_name} (#{env.region.staging_host})"
           in Environment::Custom
-            # URL already shown in display_label
           end
         end
       end

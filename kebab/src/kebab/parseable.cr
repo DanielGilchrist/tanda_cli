@@ -43,9 +43,6 @@ module Kebab
                   elsif ivar.annotation(::Kebab::Option)
                     option_ivars << ivar
                   end
-                  # Unannotated ivars are intentionally ignored — they're not
-                  # part of the CLI surface and the caller is responsible for
-                  # giving them a value (nilable or default).
                 end
 
                 if subcommand_ivars.size > 1
@@ -188,9 +185,6 @@ module Kebab
                         when ::Kebab::Errors
                           __kebab_bail(%subcommand)
                         else
-                          # Unreachable by {{member}}.parse's signature, but the
-                          # compiler can't see that — branch defensively so the
-                          # case has no silent fall-through.
                           raise "unreachable: #{%subcommand.class} from {{member}}.parse"
                         end
 
@@ -306,7 +300,6 @@ module Kebab
               left = "#{left.id} <value>" unless base == Bool
               option_rows << {left, option[:description] || ""}
             end
-            # Unannotated ivars don't appear in the CLI surface or in help.
           end
 
           option_rows << {"-h, --help", "Show this help"}

@@ -8,9 +8,6 @@ require "./error/unknown_command"
 require "./error/unknown_option"
 
 module Kebab
-  # The closed set of parse errors. `parse` returns one of these (alongside the
-  # parsed struct or `Help`), so callers exhaustively `case ... in` on each
-  # outcome — no `Error::Base` escape hatch in the public surface.
   alias Errors = Error::InvalidValue |
                  Error::MissingArgument |
                  Error::MissingCommand |

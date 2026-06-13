@@ -1,7 +1,5 @@
 require "./spec_helper"
 
-# Field and converter types can't be file-private — their paths are emitted
-# into generated code (same limitation as JSON::Serializable field types).
 struct SpecDuration
   def self.parse(input : String) : self | Kebab::Errors
     if minutes = input.to_i32?
@@ -32,7 +30,7 @@ private struct Punch
   getter? skip_validations : Bool = false
 
   @[Kebab::Option]
-  getter verbose : Bool = false
+  getter? verbose : Bool = false
 
   @[Kebab::Option]
   getter weeks : Int32 = 4
@@ -54,6 +52,27 @@ private struct Trim
   getter limit : Int32 = 10
 end
 
+private struct ConvertedArg
+  include Kebab::Parseable
+
+  @[Kebab::Argument(converter: UpcaseConverter)]
+  getter value : String
+end
+
+private struct RequiredOption
+  include Kebab::Parseable
+
+  @[Kebab::Option]
+  getter token : String
+end
+
+private struct FloatHaver
+  include Kebab::Parseable
+
+  @[Kebab::Option]
+  getter ratio : Float64 = 0.5
+end
+
 private def parse_punch!(args : Array(String)) : Punch
   Punch.parse(args).as(Punch)
 end
@@ -68,7 +87,7 @@ describe Kebab::Parseable do
 
     punch.at.should be_nil
     punch.skip_validations?.should be_false
-    punch.verbose.should be_false
+    punch.verbose?.should be_false
     punch.weeks.should eq(4)
     punch.pause.should be_nil
   end
@@ -87,7 +106,7 @@ describe Kebab::Parseable do
   end
 
   it "parses long flags" do
-    parse_punch!(["--verbose"]).verbose.should be_true
+    parse_punch!(["--verbose"]).verbose?.should be_true
   end
 
   it "kebab-cases multi-word ivar names into long flags" do
@@ -178,5 +197,37 @@ describe Kebab::Parseable do
   it "accepts option values after the -- separator as positionals" do
     trim = Trim.parse(["--", "--weird-filename"]).as(Trim)
     trim.path.should eq("--weird-filename")
+  end
+
+  it "last-write-wins for repeated options" do
+    parse_punch!(["--at", "8:45", "--at", "9:30"]).at.should eq("9:30")
+  end
+
+  it "errors when an option value looks like another option" do
+    error = parse_punch_error!(["--at", "-3"])
+    error.should be_a(Kebab::Error::MissingValue)
+  end
+
+  it "accepts negative-looking values via the inline = form" do
+    parse_punch!(["--at=-3"]).at.should eq("-3")
+  end
+
+  it "errors when a required option is missing" do
+    error = RequiredOption.parse([] of String).as(Kebab::Errors)
+    error.should be_a(Kebab::Error::MissingOption)
+    error.error_description.should eq("\"--token\" is required.")
+  end
+
+  it "applies a converter to a positional argument" do
+    ConvertedArg.parse(["hello"]).as(ConvertedArg).value.should eq("HELLO")
+  end
+
+  it "converts floats" do
+    FloatHaver.parse(["--ratio", "0.25"]).as(FloatHaver).ratio.should eq(0.25)
+  end
+
+  it "errors on integer overflow" do
+    error = parse_punch_error!(["--weeks", "99999999999999999999"])
+    error.should be_a(Kebab::Error::InvalidValue)
   end
 end

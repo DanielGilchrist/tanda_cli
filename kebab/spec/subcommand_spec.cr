@@ -112,10 +112,20 @@ describe "Kebab::Parseable subcommands" do
     clock.run(seen)
     seen.should eq(["start:8:45"])
   end
+
+  it "shows the nested subcommand's help via `parent sub help`" do
+    SubcommandSpecClock.parse(["break", "help"]).should be_a(Kebab::Help)
+  end
+
+  it "treats --help as winning over a later unknown option" do
+    SubcommandSpecClock.parse(["--help", "--bogus"]).should be_a(Kebab::Help)
+  end
+
+  it "errors on an unknown option that appears before --help" do
+    SubcommandSpecClock.parse(["--bogus", "--help"]).should be_a(Kebab::Error::UnknownOption)
+  end
 end
 
-# Test-only `run` overloads used by the auto-`run` spec — Array(String) is a
-# unique-enough signature that it won't clash with anything else.
 struct SubcommandSpecStart
   def run(seen : Array(String)) : Nil
     seen << "start:#{@at}"

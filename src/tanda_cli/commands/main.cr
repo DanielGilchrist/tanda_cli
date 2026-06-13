@@ -32,13 +32,10 @@ module TandaCLI
       end
 
       private def self.maybe_display_staging_warning(context : Context, command) : Nil
-        # The Mode command sets the environment, so warning about staging while
-        # the user is in the middle of changing it is noise.
         return if command.is_a?(Mode)
 
         case env = context.config.current
         in Environment::Production
-          # no warning needed
         in Environment::Staging
           context.display.warning("Command running in staging mode")
         in Environment::Custom

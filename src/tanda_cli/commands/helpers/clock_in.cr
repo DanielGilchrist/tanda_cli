@@ -3,8 +3,6 @@ require "./clock_type"
 module TandaCLI
   module Commands
     module Helpers
-      # Expects the including command to provide `at`, `date`, `photo` and
-      # `skip_validations?` (see Commands::ClockIn::Options).
       module ClockIn
         alias ClockType = Helpers::ClockType
 
