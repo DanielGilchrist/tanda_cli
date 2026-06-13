@@ -146,7 +146,7 @@ describe Kebab::Parseable do
   it "errors on unknown long options" do
     error = parse_punch_error!(["--nope"])
     error.should be_a(Kebab::Error::UnknownOption)
-    error.error_description.should eq("\"--nope\" isn't a recognised option.")
+    error.message.should eq("\"--nope\" isn't a recognised option.")
   end
 
   it "errors on unknown short options" do
@@ -165,13 +165,13 @@ describe Kebab::Parseable do
   it "errors when a built-in conversion fails" do
     error = parse_punch_error!(["--weeks", "potato"])
     error.should be_a(Kebab::Error::InvalidValue)
-    error.error_description.should eq("\"potato\" isn't a valid value for \"--weeks\" (expected a number (Int32))")
+    error.message.should eq("\"potato\" isn't a valid value for \"--weeks\" (expected a number (Int32))")
   end
 
   it "errors when a custom conversion fails" do
     error = parse_punch_error!(["--duration", "potato"])
     error.should be_a(Kebab::Error::InvalidValue)
-    error.error_description.should eq("\"potato\" isn't a valid value for \"--duration\" (expected a duration in minutes)")
+    error.message.should eq("\"potato\" isn't a valid value for \"--duration\" (expected a duration in minutes)")
   end
 
   it "errors when a flag is given an inline value" do
@@ -200,7 +200,7 @@ describe Kebab::Parseable do
   it "errors when a required positional argument is missing" do
     error = Trim.parse([] of String).as(Kebab::Errors)
     error.should be_a(Kebab::Error::MissingArgument)
-    error.error_description.should eq("\"path\" is required.")
+    error.message.should eq("argument \"path\" is required.")
   end
 
   it "accepts option values after the -- separator as positionals" do
@@ -211,7 +211,7 @@ describe Kebab::Parseable do
   it "errors on a repeated long option" do
     error = parse_punch_error!(["--at", "8:45", "--at", "9:30"])
     error.should be_a(Kebab::Error::RepeatedOption)
-    error.error_description.should eq("\"--at\" was given more than once.")
+    error.message.should eq("option \"--at\" was given more than once.")
   end
 
   it "errors on a repeated short option" do
@@ -225,7 +225,7 @@ describe Kebab::Parseable do
   it "errors on an empty short cluster" do
     error = parse_punch_error!(["-=foo"])
     error.should be_a(Kebab::Error::UnknownOption)
-    error.error_description.should eq("\"-\" isn't a recognised option.")
+    error.message.should eq("\"-\" isn't a recognised option.")
   end
 
   it "errors when an option value looks like another option" do
@@ -240,7 +240,7 @@ describe Kebab::Parseable do
   it "errors when a required option is missing" do
     error = RequiredOption.parse([] of String).as(Kebab::Errors)
     error.should be_a(Kebab::Error::MissingOption)
-    error.error_description.should eq("\"--token\" is required.")
+    error.message.should eq("option \"--token\" is required.")
   end
 
   it "applies a converter to a positional argument" do

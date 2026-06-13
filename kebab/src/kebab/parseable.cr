@@ -5,19 +5,27 @@ require "./errors"
 require "./help"
 require "./internal"
 require "./parseable/schema_check"
+require "./renderer"
 require "./scanner"
+require "./schema/argument"
+require "./schema/command"
+require "./schema/option"
+require "./schema/usage"
 
 module Kebab
   module Parseable
     macro included
-      def self.parse(args : Array(String)) : self | ::Kebab::Help | ::Kebab::Errors
-        new(__kebab_args: args)
+      @__kebab_parent_path : Array(String) = [] of String
+
+      def self.parse(args : Array(String), parent_path : Array(String) = [] of String) : self | ::Kebab::Help | ::Kebab::Errors
+        new(__kebab_args: args, __kebab_parent_path: parent_path)
       rescue ex : ::Kebab::Internal::ParseExit
         ex.result
       end
 
       {% verbatim do %}
-        def initialize(*, __kebab_args args : Array(String))
+        def initialize(*, __kebab_args args : Array(String), __kebab_parent_path parent_path : Array(String) = [] of String)
+          @__kebab_parent_path = parent_path
           __kebab_validate_schema
 
           {% begin %}
@@ -62,6 +70,9 @@ module Kebab
                   (member.annotation(::Kebab::Command) && member.annotation(::Kebab::Command)[:name]) || member.name.stringify.split("::").last.underscore
                 end
                 user_defined_help_subcommand = subcommand_names.includes?("help")
+
+                command_annotation = @type.annotation(::Kebab::Command)
+                own_command_name = (command_annotation && command_annotation[:name]) || @type.name.stringify.split("::").last.underscore
               %}
 
               {% for ivar in option_ivars + argument_ivars %}
@@ -87,7 +98,7 @@ module Kebab
                 in ::Kebab::Tokens::Long
                   {% if option_ivars.empty? %}
                     __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %token.name == "help"
-                    __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s))
+                    __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s, __kebab_options_schema, __kebab_usage))
                   {% else %}
                     case %token.name
                     {% for ivar in option_ivars %}
@@ -120,13 +131,13 @@ module Kebab
                         __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                     {% end %}
                     else
-                      __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s))
+                      __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s, __kebab_options_schema, __kebab_usage))
                     end
                   {% end %}
                 in ::Kebab::Tokens::Shorts
                   %chars = %token.chars
                   if %chars.empty?
-                    __kebab_bail(::Kebab::Error::UnknownOption.new("-"))
+                    __kebab_bail(::Kebab::Error::UnknownOption.new("-", __kebab_options_schema, __kebab_usage))
                   end
                   %chars.each_char_with_index do |%char, %char_index|
                     %last_char = %char_index == %chars.size - 1
@@ -134,7 +145,7 @@ module Kebab
                       {% unless user_defined_help_short %}
                         __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %char == 'h'
                       {% end %}
-                      __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
+                      __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}", __kebab_options_schema, __kebab_usage))
                     {% else %}
                       case %char
                       {% for ivar in short_ivars %}
@@ -169,7 +180,7 @@ module Kebab
                           __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                       {% end %}
                       else
-                        __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
+                        __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}", __kebab_options_schema, __kebab_usage))
                       end
                     {% end %}
                   end
@@ -182,7 +193,7 @@ module Kebab
                     {% end %}
                     {% for member, member_index in subcommand_members %}
                       when {{subcommand_names[member_index]}}
-                        case %subcommand = {{member}}.parse(args[(%index + 1)..])
+                        case %subcommand = {{member}}.parse(args[(%index + 1)..], parent_path: @__kebab_parent_path + [{{own_command_name}}])
                         when {{member}}
                           %value{subcommand_ivar.name} = %subcommand
                         when ::Kebab::Help
@@ -196,7 +207,7 @@ module Kebab
                         break
                     {% end %}
                     else
-                      __kebab_bail(::Kebab::Error::UnknownCommand.new(%token.value, {{subcommand_names.sort}}))
+                      __kebab_bail(::Kebab::Error::UnknownCommand.new(%token.value, __kebab_commands_schema, __kebab_usage))
                     end
                   {% else %}
                     %positionals << %token.value
@@ -222,9 +233,11 @@ module Kebab
                 end
               {% end %}
 
-              if %extra = %positionals[{{argument_ivars.size}}]?
-                __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%extra))
-              end
+              {% unless subcommand_ivar %}
+                if %extra = %positionals[{{argument_ivars.size}}]?
+                  __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%extra, __kebab_arguments_schema, __kebab_usage))
+                end
+              {% end %}
 
               {% if subcommand_ivar %}
                 {% subcommand_annotation = subcommand_ivar.annotation(::Kebab::Subcommand) %}
@@ -232,7 +245,7 @@ module Kebab
                 %assigned{subcommand_ivar.name} = %value{subcommand_ivar.name}
                 if %assigned{subcommand_ivar.name}.nil?
                   {% if subcommand_required %}
-                    __kebab_bail(::Kebab::Error::MissingCommand.new({{subcommand_names.sort}}))
+                    __kebab_bail(::Kebab::Error::MissingCommand.new(__kebab_commands_schema, __kebab_usage))
                   {% else %}
                     __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                   {% end %}
@@ -252,8 +265,6 @@ module Kebab
                     else
                       "--#{((option && option[:long]) || ivar.name.stringify.gsub(/_/, "-")).id}"
                     end
-
-                  missing_error = argument ? ::Kebab::Error::MissingArgument : ::Kebab::Error::MissingOption
                 %}
                 %assigned{ivar.name} = %value{ivar.name}
                 @{{ivar.name}} =
@@ -265,7 +276,11 @@ module Kebab
                     {% elsif ivar.type.nilable? %}
                       nil
                     {% else %}
-                      __kebab_bail({{missing_error}}.new({{display_name}}))
+                      {% if argument %}
+                        __kebab_bail(::Kebab::Error::MissingArgument.new({{display_name}}, __kebab_arguments_schema, __kebab_usage))
+                      {% else %}
+                        __kebab_bail(::Kebab::Error::MissingOption.new({{display_name}}, __kebab_options_schema, __kebab_usage))
+                      {% end %}
                     {% end %}
                   else
                     %assigned{ivar.name}
@@ -274,21 +289,51 @@ module Kebab
             {% end %}
         end
 
-        private def __kebab_help_text : String
+        private def __kebab_usage
           {% begin %}
             {%
-              option_rows = [] of Nil
-              argument_rows = [] of Nil
-              command_rows = [] of Nil
-              argument_names = [] of Nil
+              command = @type.annotation(::Kebab::Command)
+              command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
+
               has_subcommand = false
-              user_defined_help_long = false
-              user_defined_help_short = false
-              user_defined_help_subcommand = false
+              has_options = false
+              argument_names = [] of Nil
 
               @type.instance_vars.each do |ivar|
                 if ivar.annotation(::Kebab::Subcommand)
                   has_subcommand = true
+                elsif argument = ivar.annotation(::Kebab::Argument)
+                  argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
+                  argument_names << argument_name
+                elsif ivar.annotation(::Kebab::Option)
+                  has_options = true
+                end
+              end
+            %}
+
+            {% if has_subcommand %}
+              ::Kebab::Schema::Usage::Subcommand.new(
+                command_path: @__kebab_parent_path + [{{command_name}}],
+                has_options: {{has_options}},
+              )
+            {% else %}
+              ::Kebab::Schema::Usage::Arguments.new(
+                command_path: @__kebab_parent_path + [{{command_name}}],
+                has_options: true,
+                argument_names: {{argument_names}} of ::String,
+              )
+            {% end %}
+          {% end %}
+        end
+
+        private def __kebab_commands_schema : Array(::Kebab::Schema::Command)
+          {% begin %}
+            {%
+              command_rows = [] of Nil
+              user_defined_help_subcommand = false
+
+              @type.instance_vars.each do |ivar|
+                if ivar.annotation(::Kebab::Subcommand)
                   members = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type]
                   members.each do |member|
                     member_command = member.annotation(::Kebab::Command)
@@ -296,74 +341,105 @@ module Kebab
                     user_defined_help_subcommand = true if member_name == "help"
                     command_rows << {member_name, (member_command && member_command[:summary]) || ""}
                   end
-                elsif argument = ivar.annotation(::Kebab::Argument)
-                  argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
-                  argument_names << argument_name
-                  argument_rows << {"<#{argument_name.id}>", argument[:description] || ""}
-                elsif option = ivar.annotation(::Kebab::Option)
+                end
+              end
+
+              if !command_rows.empty? && !user_defined_help_subcommand
+                command_rows << {"help", "Show this help"}
+              end
+              command_rows = command_rows.sort_by { |command_row| command_row[0] }
+            %}
+
+            [
+              {% for command_row in command_rows %}
+                ::Kebab::Schema::Command.new({{command_row[0]}}, {{command_row[1]}}),
+              {% end %}
+            ] of ::Kebab::Schema::Command
+          {% end %}
+        end
+
+        private def __kebab_options_schema : Array(::Kebab::Schema::Option)
+          {% begin %}
+            {%
+              option_rows = [] of Nil
+              user_defined_help_long = false
+              user_defined_help_short = false
+
+              @type.instance_vars.each do |ivar|
+                if option = ivar.annotation(::Kebab::Option)
                   long = option[:long] || ivar.name.stringify.gsub(/_/, "-")
                   short = option[:short]
                   user_defined_help_long = true if long == "help"
                   user_defined_help_short = true if short == 'h'
                   base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
-
-                  left = short ? "-#{short.id}, --#{long.id}" : "    --#{long.id}"
-                  left = "#{left.id} <value>" unless base == Bool
-                  option_rows << {left, option[:description] || ""}
+                  option_rows << {long, short, option[:description] || "", base != Bool}
                 end
               end
 
               unless user_defined_help_long || user_defined_help_short
-                option_rows << {"-h, --help", "Show this help"}
-              end
-              if !command_rows.empty? && !user_defined_help_subcommand
-                command_rows << {"help", "Show this help"}
-              end
-              command_rows = command_rows.sort_by { |command_row| command_row[0] }
-
-              command = @type.annotation(::Kebab::Command)
-              command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
-              summary = command && command[:summary]
-
-              usage_tail = "[options]"
-              argument_names.each { |argument_name| usage_tail = "#{usage_tail.id} <#{argument_name.id}>" }
-
-              if has_subcommand
-                usage_tail = "#{usage_tail.id} <command>"
+                option_rows << {"help", 'h', "Show this help", false}
               end
             %}
 
-            %rows = {{option_rows + argument_rows + command_rows}}
-            %width = %rows.max_of(&.first.size) + 2
+            [
+              {% for option_row in option_rows %}
+                ::Kebab::Schema::Option.new(
+                  long: {{option_row[0]}},
+                  short: {{option_row[1]}},
+                  description: {{option_row[2]}},
+                  takes_value: {{option_row[3]}},
+                ),
+              {% end %}
+            ] of ::Kebab::Schema::Option
+          {% end %}
+        end
+
+        private def __kebab_arguments_schema : Array(::Kebab::Schema::Argument)
+          {% begin %}
+            {%
+              argument_rows = [] of Nil
+              @type.instance_vars.each do |ivar|
+                if argument = ivar.annotation(::Kebab::Argument)
+                  argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
+                  argument_rows << {argument_name, argument[:description] || ""}
+                end
+              end
+            %}
+
+            [
+              {% for argument_row in argument_rows %}
+                ::Kebab::Schema::Argument.new({{argument_row[0]}}, {{argument_row[1]}}),
+              {% end %}
+            ] of ::Kebab::Schema::Argument
+          {% end %}
+        end
+
+        private def __kebab_help_text : String
+          {% begin %}
+            {% command = @type.annotation(::Kebab::Command) %}
+            {% summary = command && command[:summary] %}
 
             ::String.build do |%io|
-              %io << "Usage:".colorize.bold.underline << ' ' << {{command_name}} << ' ' << {{usage_tail}}
+              ::Kebab::Renderer.usage(%io, __kebab_usage)
 
               {% if summary %}
                 %io << "\n\n" << {{summary}}
               {% end %}
 
-              {% unless argument_rows.empty? %}
-                %io << "\n\n" << "Arguments:".colorize.bold.underline
-                {{argument_rows}}.each do |(%left, %description)|
-                  %io << "\n  " << %left.colorize.bold
-                  %io << " " * (%width - %left.size) << %description unless %description.empty?
-                end
-              {% end %}
-
-              {% unless command_rows.empty? %}
-                %io << "\n\n" << "Commands:".colorize.bold.underline
-                {{command_rows}}.each do |(%left, %description)|
-                  %io << "\n  " << %left.colorize.bold
-                  %io << " " * (%width - %left.size) << %description unless %description.empty?
-                end
-              {% end %}
-
-              %io << "\n\n" << "Options:".colorize.bold.underline
-              {{option_rows}}.each do |(%left, %description)|
-                %io << "\n  " << %left.colorize.bold
-                %io << " " * (%width - %left.size) << %description unless %description.empty?
+              %arguments = __kebab_arguments_schema
+              unless %arguments.empty?
+                %io << "\n\n"
+                ::Kebab::Renderer.section(%io, "Arguments:", %arguments)
               end
+
+              %commands = __kebab_commands_schema
+              unless %commands.empty?
+                %io << "\n\n"
+                ::Kebab::Renderer.section(%io, "Commands:", %commands)
+              end
+
+              %io << "\n\n"
+              ::Kebab::Renderer.section(%io, "Options:", __kebab_options_schema)
 
               %io << '\n'
             end

@@ -57,9 +57,9 @@ describe "Kebab::Parseable help" do
       Clock in/out
 
       Commands:
-        finish         Clock out
-        help           Show this help
-        start          Clock in
+        finish  Clock out
+        help    Show this help
+        start   Clock in
 
       Options:
             --verbose  Noisy output
@@ -91,8 +91,8 @@ describe "Kebab::Parseable help" do
       Trim a file
 
       Arguments:
-        <path>      File to trim
-        <limit>     Max lines to keep
+        <path>   File to trim
+        <limit>  Max lines to keep
 
       Options:
         -h, --help  Show this help
@@ -101,9 +101,9 @@ describe "Kebab::Parseable help" do
     )
   end
 
-  it "shows the subcommand's help for `command sub --help`" do
+  it "shows the subcommand's help for `command sub --help` with the full path" do
     result = HelpSpecClock.parse(["start", "--help"])
-    help_for(result).should contain("Usage: start [options]")
+    help_for(result).should contain("Usage: clockin start [options]")
   end
 
   it "takes priority over unknown option errors at the point reached" do

@@ -5,7 +5,7 @@ describe TandaCLI::Commands::ClockIn do
     context = run(["clockin", "--help"])
 
     output = context.stdout.to_s
-    output.should contain("Usage: clockin [options] <command>")
+    output.should contain("Usage: tanda_cli clockin <command>")
     output.should contain("Clock in/out")
     output.should contain("start")
     output.should contain("backfill")
@@ -16,7 +16,7 @@ describe TandaCLI::Commands::ClockIn do
   it "shows help when run bare" do
     context = run(["clockin"])
 
-    context.stdout.to_s.should contain("Usage: clockin [options] <command>")
+    context.stdout.to_s.should contain("Usage: tanda_cli clockin <command>")
     context.stderr.to_s.should be_empty
   end
 
@@ -24,28 +24,31 @@ describe TandaCLI::Commands::ClockIn do
     context = run(["clockin", "start", "--help"])
 
     output = context.stdout.to_s
-    output.should contain("Usage: start [options]")
+    output.should contain("Usage: tanda_cli clockin start [options]")
     output.should contain("-a, --at <value>")
     output.should contain("-s, --skip-validations")
   end
 
-  it "errors on unknown commands listing candidates" do
+  it "errors on unknown commands and lists them as context" do
     context = run(["clockin", "strat"])
 
-    context.stderr.to_s.should eq(
-      "Error: Unknown command!\n" \
-      "       \"strat\" isn't a known command (expected one of: backfill, break, display, finish, photo, start, status).\n"
-    )
+    stderr = context.stderr.to_s
+    stderr.should contain("Error: \"strat\" isn't a known command.")
+    stderr.should contain("Usage: tanda_cli clockin <command>")
+    stderr.should contain("Commands:")
+    stderr.should contain("backfill")
+    stderr.should contain("start")
     context.stdout.to_s.should be_empty
   end
 
-  it "errors on unknown options" do
+  it "errors on unknown options and lists them as context" do
     context = run(["clockin", "start", "--nope"])
 
-    context.stderr.to_s.should eq(
-      "Error: Unknown option!\n" \
-      "       \"--nope\" isn't a recognised option.\n"
-    )
+    stderr = context.stderr.to_s
+    stderr.should contain("Error: \"--nope\" isn't a recognised option.")
+    stderr.should contain("Usage: tanda_cli clockin start [options]")
+    stderr.should contain("Options:")
+    stderr.should contain("-a, --at <value>")
   end
 
   it "runs photo subcommands" do

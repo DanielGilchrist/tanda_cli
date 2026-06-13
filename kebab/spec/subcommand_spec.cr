@@ -82,9 +82,9 @@ describe "Kebab::Parseable subcommands" do
   end
 
   it "errors on unknown commands listing candidates" do
-    error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Errors)
-    error.should be_a(Kebab::Error::UnknownCommand)
-    error.error_description.should eq("\"strat\" isn't a known command (expected one of: break, start, subcommand_spec_finish).")
+    error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Error::UnknownCommand)
+    error.message.should eq("\"strat\" isn't a known command.")
+    error.commands.map(&.name).should eq(["break", "help", "start", "subcommand_spec_finish"])
   end
 
   it "propagates subcommand parse errors" do
@@ -95,18 +95,18 @@ describe "Kebab::Parseable subcommands" do
   it "errors when a `required: true` subcommand is missing" do
     error = SubcommandSpecStrict.parse([] of String).as(Kebab::Errors)
     error.should be_a(Kebab::Error::MissingCommand)
-    error.error_description.should eq("expected one of: start, subcommand_spec_finish.")
+    error.message.should eq("a command is required.")
   end
 
-  it "exposes command and candidates on UnknownCommand" do
+  it "exposes command and commands on UnknownCommand" do
     error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Error::UnknownCommand)
     error.command.should eq("strat")
-    error.candidates.should eq(["break", "start", "subcommand_spec_finish"])
+    error.commands.map(&.name).should eq(["break", "help", "start", "subcommand_spec_finish"])
   end
 
-  it "exposes candidates on MissingCommand" do
+  it "exposes commands on MissingCommand" do
     error = SubcommandSpecStrict.parse([] of String).as(Kebab::Error::MissingCommand)
-    error.candidates.should eq(["start", "subcommand_spec_finish"])
+    error.commands.map(&.name).should eq(["help", "start", "subcommand_spec_finish"])
   end
 
   it "errors on parent options placed after the subcommand" do
