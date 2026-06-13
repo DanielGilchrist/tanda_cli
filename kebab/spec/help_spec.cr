@@ -52,14 +52,14 @@ end
 describe "Kebab::Parseable help" do
   it "renders options, commands, and the summary for --help" do
     help_for(HelpSpecClock.parse(["--help"])).should eq(<<-HELP
-      Usage: clockin [options] <command>
-
       Clock in/out
+
+      Usage: clockin [options] <command>
 
       Commands:
         finish  Clock out
-        help    Show this help
         start   Clock in
+        help    Show this help
 
       Options:
             --verbose  Noisy output
@@ -71,9 +71,9 @@ describe "Kebab::Parseable help" do
 
   it "renders short options and value placeholders for -h" do
     help_for(HelpSpecStart.parse(["-h"])).should eq(<<-HELP
-      Usage: start [options]
-
       Clock in
+
+      Usage: start [options]
 
       Options:
         -a, --at <value>        Clock in at a past time
@@ -86,9 +86,9 @@ describe "Kebab::Parseable help" do
 
   it "renders positional arguments in usage and sections" do
     help_for(HelpSpecTrim.parse(["--help"])).should eq(<<-HELP
-      Usage: trim [options] <path> <limit>
-
       Trim a file
+
+      Usage: trim [options] <path> <limit>
 
       Arguments:
         <path>   File to trim

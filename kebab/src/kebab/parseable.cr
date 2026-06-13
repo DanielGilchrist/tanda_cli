@@ -344,10 +344,10 @@ module Kebab
                 end
               end
 
+              command_rows = command_rows.sort_by { |command_row| command_row[0] }
               if !command_rows.empty? && !user_defined_help_subcommand
                 command_rows << {"help", "Show this help"}
               end
-              command_rows = command_rows.sort_by { |command_row| command_row[0] }
             %}
 
             [
@@ -420,11 +420,11 @@ module Kebab
             {% summary = command && command[:summary] %}
 
             ::String.build do |%io|
-              ::Kebab::Renderer.usage(%io, __kebab_usage)
-
               {% if summary %}
-                %io << "\n\n" << {{summary}}
+                %io << {{summary}} << "\n\n"
               {% end %}
+
+              ::Kebab::Renderer.usage(%io, __kebab_usage)
 
               %arguments = __kebab_arguments_schema
               unless %arguments.empty?
