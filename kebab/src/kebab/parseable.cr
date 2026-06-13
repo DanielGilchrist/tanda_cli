@@ -94,7 +94,7 @@ module Kebab
 
               while %index < args.size
                 %raw = args[%index]
-                %token = %separated ? ::Kebab::Tokens::Positional.new(%raw).as(::Kebab::Token) : ::Kebab::Scanner.scan(%raw)
+                %token = %separated ? ::Kebab::Tokens::Positional.new(%raw) : ::Kebab::Scanner.scan(%raw)
 
                 case %token
                 in ::Kebab::Tokens::Separator
