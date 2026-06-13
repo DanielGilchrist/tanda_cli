@@ -1,6 +1,6 @@
 module Kebab
   module Parseable
-    private macro __kebab_validate_schema
+    macro __kebab_validate_schema
       {%
         allowed_option_keys = ["short", "long", "description", "converter"]
         allowed_argument_keys = ["name", "description", "converter"]
@@ -43,10 +43,10 @@ module Kebab
                 raise "@[Kebab::Argument] on '#{ivar.name}' has unknown key `#{key.id}`. Valid keys: #{allowed_argument_keys.join(", ").id}."
               end
             end
-            if (name_value = argument[:name]) && !name_value.is_a?(StringLiteral)
+            if (name_value = argument[:name]) && !(name_value.is_a?(StringLiteral) || name_value.is_a?(StringInterpolation))
               raise "@[Kebab::Argument(name:)] on '#{ivar.name}' must be a String, got `#{name_value}`."
             end
-            if (description = argument[:description]) && !description.is_a?(StringLiteral)
+            if (description = argument[:description]) && !(description.is_a?(StringLiteral) || description.is_a?(StringInterpolation))
               raise "@[Kebab::Argument(description:)] on '#{ivar.name}' must be a String, got `#{description}`."
             end
             if (converter = argument[:converter]) && !(converter.is_a?(Path) || converter.is_a?(Generic) || converter.is_a?(TypeNode))
@@ -66,10 +66,10 @@ module Kebab
             if (short = option[:short]) && !short.is_a?(CharLiteral)
               raise "@[Kebab::Option(short:)] on '#{ivar.name}' must be a Char like 'a' (single quotes), got `#{short}`."
             end
-            if (long = option[:long]) && !long.is_a?(StringLiteral)
+            if (long = option[:long]) && !(long.is_a?(StringLiteral) || long.is_a?(StringInterpolation))
               raise "@[Kebab::Option(long:)] on '#{ivar.name}' must be a String, got `#{long}`."
             end
-            if (description = option[:description]) && !description.is_a?(StringLiteral)
+            if (description = option[:description]) && !(description.is_a?(StringLiteral) || description.is_a?(StringInterpolation))
               raise "@[Kebab::Option(description:)] on '#{ivar.name}' must be a String, got `#{description}`."
             end
             if (converter = option[:converter]) && !(converter.is_a?(Path) || converter.is_a?(Generic) || converter.is_a?(TypeNode))
@@ -94,10 +94,10 @@ module Kebab
               raise "@[Kebab::Command] on #{@type} has unknown key `#{key.id}`. Valid keys: #{allowed_command_keys.join(", ").id}."
             end
           end
-          if (name_value = command[:name]) && !name_value.is_a?(StringLiteral)
+          if (name_value = command[:name]) && !(name_value.is_a?(StringLiteral) || name_value.is_a?(StringInterpolation))
             raise "@[Kebab::Command(name:)] on #{@type} must be a String, got `#{name_value}`."
           end
-          if (summary = command[:summary]) && !summary.is_a?(StringLiteral)
+          if (summary = command[:summary]) && !(summary.is_a?(StringLiteral) || summary.is_a?(StringInterpolation))
             raise "@[Kebab::Command(summary:)] on #{@type} must be a String, got `#{summary}`."
           end
         end

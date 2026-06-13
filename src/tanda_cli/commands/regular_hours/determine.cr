@@ -11,8 +11,8 @@ module TandaCLI
         @[Kebab::Argument(description: "Date to start checking from (YYYY-MM-DD). Defaults to today.")]
         getter date : String?
 
-        @[Kebab::Option(short: 'w', description: "Number of weeks to look back (1-52). Defaults to 8.")]
-        getter weeks : Int32 = 8
+        @[Kebab::Option(short: 'w', description: "Number of weeks to look back (1-#{MAX_WEEKS_TO_CHECK}). Defaults to #{DEFAULT_WEEKS_TO_CHECK}.")]
+        getter weeks : Int32 = DEFAULT_WEEKS_TO_CHECK
 
         def run(context : Context) : Nil
           display = context.display

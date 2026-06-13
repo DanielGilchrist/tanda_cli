@@ -73,6 +73,15 @@ private struct FloatHaver
   getter ratio : Float64 = 0.5
 end
 
+private struct ConstantDefault
+  include Kebab::Parseable
+
+  MAX_WEEKS = 52
+
+  @[Kebab::Option]
+  getter weeks : Int32 = MAX_WEEKS
+end
+
 private def parse_punch!(args : Array(String)) : Punch
   Punch.parse(args).as(Punch)
 end
@@ -245,5 +254,9 @@ describe Kebab::Parseable do
   it "errors on integer overflow" do
     error = parse_punch_error!(["--weeks", "99999999999999999999"])
     error.should be_a(Kebab::Error::InvalidValue)
+  end
+
+  it "resolves constants defined on the including struct as defaults" do
+    ConstantDefault.parse([] of String).as(ConstantDefault).weeks.should eq(52)
   end
 end

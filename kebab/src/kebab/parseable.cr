@@ -13,23 +13,12 @@ module Kebab
       rescue ex : ::Kebab::Internal::ParseExit
         ex.result
       end
-    end
 
-    def run(context) : Nil
-      {% begin %}
-        {% subcommand_ivar = @type.instance_vars.find(&.annotation(::Kebab::Subcommand)) %}
-        {% if subcommand_ivar %}
-          @{{subcommand_ivar.id}}.run(context)
-        {% else %}
-          raise "#{self.class}#run isn't defined. Add `def run(context : YourContextType) : Nil` so kebab can call it after parsing."
-        {% end %}
-      {% end %}
-    end
+      {% verbatim do %}
+        def initialize(*, __kebab_args args : Array(String))
+          __kebab_validate_schema
 
-    def initialize(*, __kebab_args args : Array(String))
-      __kebab_validate_schema
-
-      {% begin %}
+          {% begin %}
               {%
                 option_ivars = [] of Nil
                 argument_ivars = [] of Nil
@@ -281,98 +270,111 @@ module Kebab
                   end
               {% end %}
             {% end %}
+        end
+
+        private def __kebab_help_text : String
+          {% begin %}
+            {%
+              option_rows = [] of Nil
+              argument_rows = [] of Nil
+              command_rows = [] of Nil
+              argument_names = [] of Nil
+              has_subcommand = false
+              user_defined_help_long = false
+              user_defined_help_short = false
+              user_defined_help_subcommand = false
+
+              @type.instance_vars.each do |ivar|
+                if ivar.annotation(::Kebab::Subcommand)
+                  has_subcommand = true
+                  members = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type]
+                  members.each do |member|
+                    member_command = member.annotation(::Kebab::Command)
+                    member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore
+                    user_defined_help_subcommand = true if member_name == "help"
+                    command_rows << {member_name, (member_command && member_command[:summary]) || ""}
+                  end
+                elsif argument = ivar.annotation(::Kebab::Argument)
+                  argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
+                  argument_names << argument_name
+                  argument_rows << {"<#{argument_name.id}>", argument[:description] || ""}
+                elsif option = ivar.annotation(::Kebab::Option)
+                  long = option[:long] || ivar.name.stringify.gsub(/_/, "-")
+                  short = option[:short]
+                  user_defined_help_long = true if long == "help"
+                  user_defined_help_short = true if short == 'h'
+                  base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+
+                  left = short ? "-#{short.id}, --#{long.id}" : "    --#{long.id}"
+                  left = "#{left.id} <value>" unless base == Bool
+                  option_rows << {left, option[:description] || ""}
+                end
+              end
+
+              unless user_defined_help_long || user_defined_help_short
+                option_rows << {"-h, --help", "Show this help"}
+              end
+              if !command_rows.empty? && !user_defined_help_subcommand
+                command_rows << {"help", "Show this help"}
+              end
+              command_rows = command_rows.sort_by { |command_row| command_row[0] }
+
+              command = @type.annotation(::Kebab::Command)
+              command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
+              summary = command && command[:summary]
+
+              usage = "Usage: #{command_name.id} [options]"
+              argument_names.each { |argument_name| usage = "#{usage.id} <#{argument_name.id}>" }
+
+              if has_subcommand
+                usage = "#{usage.id} <command>"
+              end
+            %}
+
+            %rows = {{option_rows + argument_rows + command_rows}}
+            %width = %rows.max_of(&.first.size) + 2
+
+            ::String.build do |%io|
+              %io << {{usage}}
+
+              {% if summary %}
+                %io << "\n\n" << {{summary}}
+              {% end %}
+
+              {% unless argument_rows.empty? %}
+                %io << "\n\nArguments:"
+                {{argument_rows}}.each do |(%left, %description)|
+                  %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+                end
+              {% end %}
+
+              {% unless command_rows.empty? %}
+                %io << "\n\nCommands:"
+                {{command_rows}}.each do |(%left, %description)|
+                  %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+                end
+              {% end %}
+
+              %io << "\n\nOptions:"
+              {{option_rows}}.each do |(%left, %description)|
+                %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+              end
+
+              %io << '\n'
+            end
+          {% end %}
+        end
+      {% end %}
     end
 
-    private def __kebab_help_text : String
+    def run(context) : Nil
       {% begin %}
-        {%
-          option_rows = [] of Nil
-          argument_rows = [] of Nil
-          command_rows = [] of Nil
-          argument_names = [] of Nil
-          has_subcommand = false
-          user_defined_help_long = false
-          user_defined_help_short = false
-          user_defined_help_subcommand = false
-
-          @type.instance_vars.each do |ivar|
-            if ivar.annotation(::Kebab::Subcommand)
-              has_subcommand = true
-              members = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type]
-              members.each do |member|
-                member_command = member.annotation(::Kebab::Command)
-                member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore
-                user_defined_help_subcommand = true if member_name == "help"
-                command_rows << {member_name, (member_command && member_command[:summary]) || ""}
-              end
-            elsif argument = ivar.annotation(::Kebab::Argument)
-              argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
-              argument_names << argument_name
-              argument_rows << {"<#{argument_name.id}>", argument[:description] || ""}
-            elsif option = ivar.annotation(::Kebab::Option)
-              long = option[:long] || ivar.name.stringify.gsub(/_/, "-")
-              short = option[:short]
-              user_defined_help_long = true if long == "help"
-              user_defined_help_short = true if short == 'h'
-              base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
-
-              left = short ? "-#{short.id}, --#{long.id}" : "    --#{long.id}"
-              left = "#{left.id} <value>" unless base == Bool
-              option_rows << {left, option[:description] || ""}
-            end
-          end
-
-          unless user_defined_help_long || user_defined_help_short
-            option_rows << {"-h, --help", "Show this help"}
-          end
-          if !command_rows.empty? && !user_defined_help_subcommand
-            command_rows << {"help", "Show this help"}
-          end
-          command_rows = command_rows.sort_by { |command_row| command_row[0] }
-
-          command = @type.annotation(::Kebab::Command)
-          command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
-          summary = command && command[:summary]
-
-          usage = "Usage: #{command_name.id} [options]"
-          argument_names.each { |argument_name| usage = "#{usage.id} <#{argument_name.id}>" }
-
-          if has_subcommand
-            usage = "#{usage.id} <command>"
-          end
-        %}
-
-        %rows = {{option_rows + argument_rows + command_rows}}
-        %width = %rows.max_of(&.first.size) + 2
-
-        ::String.build do |%io|
-          %io << {{usage}}
-
-          {% if summary %}
-            %io << "\n\n" << {{summary}}
-          {% end %}
-
-          {% unless argument_rows.empty? %}
-            %io << "\n\nArguments:"
-            {{argument_rows}}.each do |(%left, %description)|
-              %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
-            end
-          {% end %}
-
-          {% unless command_rows.empty? %}
-            %io << "\n\nCommands:"
-            {{command_rows}}.each do |(%left, %description)|
-              %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
-            end
-          {% end %}
-
-          %io << "\n\nOptions:"
-          {{option_rows}}.each do |(%left, %description)|
-            %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
-          end
-
-          %io << '\n'
-        end
+        {% subcommand_ivar = @type.instance_vars.find(&.annotation(::Kebab::Subcommand)) %}
+        {% if subcommand_ivar %}
+          @{{subcommand_ivar.id}}.run(context)
+        {% else %}
+          raise "#{self.class}#run isn't defined. Add `def run(context : YourContextType) : Nil` so kebab can call it after parsing."
+        {% end %}
       {% end %}
     end
 
