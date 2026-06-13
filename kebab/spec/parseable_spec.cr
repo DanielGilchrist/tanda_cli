@@ -297,3 +297,34 @@ describe Kebab::Parseable do
     error.reason.should eq("expected a number (Int32)")
   end
 end
+
+enum SpecOutputFormat
+  Json
+  Yaml
+  Text
+end
+
+private struct EnumHaver
+  include Kebab::Parseable
+
+  @[Kebab::Option(converter: Kebab::Convert::Enum(SpecOutputFormat))]
+  getter format : SpecOutputFormat = SpecOutputFormat::Text
+end
+
+describe Kebab::Convert::Enum do
+  it "parses a matching enum value (case-insensitive)" do
+    EnumHaver.parse(["--format", "json"]).as(EnumHaver).format.should eq(SpecOutputFormat::Json)
+    EnumHaver.parse(["--format", "YAML"]).as(EnumHaver).format.should eq(SpecOutputFormat::Yaml)
+  end
+
+  it "uses the default when not given" do
+    EnumHaver.parse([] of String).as(EnumHaver).format.should eq(SpecOutputFormat::Text)
+  end
+
+  it "errors with the valid names when unrecognised" do
+    error = EnumHaver.parse(["--format", "xml"]).as(Kebab::Error::InvalidValue)
+    error.reason.should eq("expected one of: json, yaml, text")
+    error.option.should eq("--format")
+    error.value.should eq("xml")
+  end
+end
