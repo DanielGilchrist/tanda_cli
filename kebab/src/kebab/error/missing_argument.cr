@@ -3,9 +3,11 @@ require "./base"
 module Kebab
   module Error
     class MissingArgument < Error::Base
-      def initialize(name : String)
-        super("Missing argument!", "\"#{name}\" is required.")
+      def initialize(@argument : String)
+        super("Missing argument!", "\"#{@argument}\" is required.")
       end
+
+      getter argument : String
     end
   end
 end

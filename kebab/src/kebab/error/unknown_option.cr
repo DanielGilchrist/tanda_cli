@@ -3,9 +3,11 @@ require "./base"
 module Kebab
   module Error
     class UnknownOption < Error::Base
-      def initialize(name : String)
-        super("Unknown option!", "\"#{name}\" isn't a recognised option.")
+      def initialize(@option : String)
+        super("Unknown option!", "\"#{@option}\" isn't a recognised option.")
       end
+
+      getter option : String
     end
   end
 end

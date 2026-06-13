@@ -1,11 +1,11 @@
 require "./spec_helper"
 
 struct SpecDuration
-  def self.parse(input : String) : self | Kebab::Error::Unparseable
+  def self.parse(input : String) : self | Kebab::Error::InvalidValue
     if minutes = input.to_i32?
       new(minutes)
     else
-      Kebab.parse_error("expected a duration in minutes")
+      Kebab.invalid_value("expected a duration in minutes")
     end
   end
 
@@ -15,7 +15,7 @@ struct SpecDuration
 end
 
 module UpcaseConverter
-  def self.parse(input : String) : String | Kebab::Error::Unparseable
+  def self.parse(input : String) : String | Kebab::Error::InvalidValue
     input.upcase
   end
 end
@@ -258,5 +258,42 @@ describe Kebab::Parseable do
 
   it "resolves constants defined on the including struct as defaults" do
     ConstantDefault.parse([] of String).as(ConstantDefault).weeks.should eq(52)
+  end
+
+  it "exposes the option name on UnknownOption" do
+    error = parse_punch_error!(["--nope"]).as(Kebab::Error::UnknownOption)
+    error.option.should eq("--nope")
+  end
+
+  it "exposes the option name on MissingValue" do
+    error = parse_punch_error!(["--at"]).as(Kebab::Error::MissingValue)
+    error.option.should eq("--at")
+  end
+
+  it "exposes the option name on RepeatedOption" do
+    error = parse_punch_error!(["--at", "8:45", "--at", "9:30"]).as(Kebab::Error::RepeatedOption)
+    error.option.should eq("--at")
+  end
+
+  it "exposes the argument name on MissingArgument" do
+    error = Trim.parse([] of String).as(Kebab::Error::MissingArgument)
+    error.argument.should eq("path")
+  end
+
+  it "exposes the option name on MissingOption" do
+    error = RequiredOption.parse([] of String).as(Kebab::Error::MissingOption)
+    error.option.should eq("--token")
+  end
+
+  it "exposes the raw value on UnexpectedArgument" do
+    error = parse_punch_error!(["wat"]).as(Kebab::Error::UnexpectedArgument)
+    error.value.should eq("wat")
+  end
+
+  it "exposes option, value, and reason on InvalidValue" do
+    error = parse_punch_error!(["--weeks", "potato"]).as(Kebab::Error::InvalidValue)
+    error.option.should eq("--weeks")
+    error.value.should eq("potato")
+    error.reason.should eq("expected a number (Int32)")
   end
 end

@@ -8,7 +8,7 @@ module Kebab
   annotation Argument; end
   annotation Subcommand; end
 
-  def self.parse_error(description : String) : Error::Unparseable
-    Error::Unparseable.new(description)
+  def self.invalid_value(reason : String) : Error::InvalidValue
+    Error::InvalidValue.new(reason: reason)
   end
 end

@@ -3,9 +3,11 @@ require "./base"
 module Kebab
   module Error
     class MissingCommand < Error::Base
-      def initialize(candidates : Array(String))
-        super("Missing command!", "expected one of: #{candidates.join(", ")}.")
+      def initialize(@candidates : Array(String))
+        super("Missing command!", "expected one of: #{@candidates.join(", ")}.")
       end
+
+      getter candidates : Array(String)
     end
   end
 end

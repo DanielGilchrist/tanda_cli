@@ -1,10 +1,10 @@
-require "./error/unparseable"
+require "./error/invalid_value"
 
 module Kebab
   module Convert
     extend self
 
-    def parse(type : String.class, raw : String) : String | Error::Unparseable
+    def parse(type : String.class, raw : String) : String | Error::InvalidValue
       raw
     end
 
@@ -13,12 +13,12 @@ module Kebab
                                     UInt8 => "u8", UInt16 => "u16", UInt32 => "u32", UInt64 => "u64",
                                     Float32 => "f32", Float64 => "f64",
                                   } %}
-      def parse(type : {{number_type}}.class, raw : String) : {{number_type}} | Error::Unparseable
-        raw.to_{{suffix.id}}? || ::Kebab.parse_error("expected a number ({{number_type}})")
+      def parse(type : {{number_type}}.class, raw : String) : {{number_type}} | Error::InvalidValue
+        raw.to_{{suffix.id}}? || ::Kebab.invalid_value("expected a number ({{number_type}})")
       end
     {% end %}
 
-    def parse(type : T.class, raw : String) : T | Error::Unparseable forall T
+    def parse(type : T.class, raw : String) : T | Error::InvalidValue forall T
       type.parse(raw)
     end
   end

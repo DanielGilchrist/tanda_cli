@@ -98,6 +98,17 @@ describe "Kebab::Parseable subcommands" do
     error.error_description.should eq("expected one of: start, subcommand_spec_finish.")
   end
 
+  it "exposes command and candidates on UnknownCommand" do
+    error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Error::UnknownCommand)
+    error.command.should eq("strat")
+    error.candidates.should eq(["break", "start", "subcommand_spec_finish"])
+  end
+
+  it "exposes candidates on MissingCommand" do
+    error = SubcommandSpecStrict.parse([] of String).as(Kebab::Error::MissingCommand)
+    error.candidates.should eq(["start", "subcommand_spec_finish"])
+  end
+
   it "errors on parent options placed after the subcommand" do
     SubcommandSpecClock.parse(["start", "--verbose"]).as(Kebab::Errors).should be_a(Kebab::Error::UnknownOption)
   end
