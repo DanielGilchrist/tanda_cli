@@ -384,10 +384,10 @@ module Kebab
 
     private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Error::Base) : T forall T
       case result
-      when T
+      in T
         result
-      else
-        __kebab_bail(::Kebab::Error::InvalidValue.new(name, raw, result.as(::Kebab::Error::Base)))
+      in ::Kebab::Error::Base
+        __kebab_bail(::Kebab::Error::InvalidValue.new(name, raw, result))
       end
     end
   end
