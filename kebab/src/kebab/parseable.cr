@@ -1,3 +1,5 @@
+require "colorize"
+
 require "./convert"
 require "./errors"
 require "./help"
@@ -323,11 +325,11 @@ module Kebab
               command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
               summary = command && command[:summary]
 
-              usage = "Usage: #{command_name.id} [options]"
-              argument_names.each { |argument_name| usage = "#{usage.id} <#{argument_name.id}>" }
+              usage_tail = "[options]"
+              argument_names.each { |argument_name| usage_tail = "#{usage_tail.id} <#{argument_name.id}>" }
 
               if has_subcommand
-                usage = "#{usage.id} <command>"
+                usage_tail = "#{usage_tail.id} <command>"
               end
             %}
 
@@ -335,29 +337,32 @@ module Kebab
             %width = %rows.max_of(&.first.size) + 2
 
             ::String.build do |%io|
-              %io << {{usage}}
+              %io << "Usage:".colorize.bold.underline << ' ' << {{command_name}} << ' ' << {{usage_tail}}
 
               {% if summary %}
                 %io << "\n\n" << {{summary}}
               {% end %}
 
               {% unless argument_rows.empty? %}
-                %io << "\n\nArguments:"
+                %io << "\n\n" << "Arguments:".colorize.bold.underline
                 {{argument_rows}}.each do |(%left, %description)|
-                  %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+                  %io << "\n  " << %left.colorize.bold
+                  %io << " " * (%width - %left.size) << %description unless %description.empty?
                 end
               {% end %}
 
               {% unless command_rows.empty? %}
-                %io << "\n\nCommands:"
+                %io << "\n\n" << "Commands:".colorize.bold.underline
                 {{command_rows}}.each do |(%left, %description)|
-                  %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+                  %io << "\n  " << %left.colorize.bold
+                  %io << " " * (%width - %left.size) << %description unless %description.empty?
                 end
               {% end %}
 
-              %io << "\n\nOptions:"
+              %io << "\n\n" << "Options:".colorize.bold.underline
               {{option_rows}}.each do |(%left, %description)|
-                %io << "\n  " << "#{%left.ljust(%width)}#{%description}".rstrip
+                %io << "\n  " << %left.colorize.bold
+                %io << " " * (%width - %left.size) << %description unless %description.empty?
               end
 
               %io << '\n'

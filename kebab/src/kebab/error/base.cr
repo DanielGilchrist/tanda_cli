@@ -1,3 +1,5 @@
+require "colorize"
+
 module Kebab
   module Error
     abstract class Base
@@ -8,7 +10,7 @@ module Kebab
       getter error_description : String?
 
       def to_s(io : IO) : Nil
-        io << "Error: " << @error
+        io << "Error:".colorize.red.bold << ' ' << @error
         if description = @error_description
           io << '\n' << "       " << description
         end
