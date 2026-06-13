@@ -3,7 +3,7 @@ require "./spec_helper"
 # Field and converter types can't be file-private — their paths are emitted
 # into generated code (same limitation as JSON::Serializable field types).
 struct SpecDuration
-  def self.parse(input : String) : self | Kebab::Error::Base
+  def self.parse(input : String) : self | Kebab::Errors
     if minutes = input.to_i32?
       new(minutes)
     else
@@ -17,13 +17,13 @@ struct SpecDuration
 end
 
 module UpcaseConverter
-  def self.parse(input : String) : String | Kebab::Error::Base
+  def self.parse(input : String) : String | Kebab::Errors
     input.upcase
   end
 end
 
 private struct Punch
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Option(short: 'a', description: "Clock in at a past time")]
   getter at : String?
@@ -43,7 +43,7 @@ private struct Punch
 end
 
 private struct Trim
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Argument]
   getter path : String
@@ -56,11 +56,11 @@ private def parse_punch!(args : Array(String)) : Punch
   Punch.parse(args).as(Punch)
 end
 
-private def parse_punch_error!(args : Array(String)) : Kebab::Error::Base
-  Punch.parse(args).as(Kebab::Error::Base)
+private def parse_punch_error!(args : Array(String)) : Kebab::Errors
+  Punch.parse(args).as(Kebab::Errors)
 end
 
-describe Kebab::Serialisable do
+describe Kebab::Parseable do
   it "defaults everything with no args" do
     punch = parse_punch!([] of String)
 
@@ -168,7 +168,7 @@ describe Kebab::Serialisable do
   end
 
   it "errors when a required positional argument is missing" do
-    error = Trim.parse([] of String).as(Kebab::Error::Base)
+    error = Trim.parse([] of String).as(Kebab::Errors)
     error.should be_a(Kebab::Error::MissingArgument)
     error.error_description.should eq("\"path\" is required.")
   end

@@ -2,7 +2,7 @@ require "./spec_helper"
 
 @[Kebab::Command(name: "start", summary: "Clock in")]
 struct SubcommandSpecStart
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Option(short: 'a')]
   getter at : String?
@@ -12,32 +12,32 @@ struct SubcommandSpecStart
 end
 
 struct SubcommandSpecFinish
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   getter at : String?
 end
 
 @[Kebab::Command(name: "break")]
 struct SubcommandSpecBreak
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Subcommand]
-  getter command : SubcommandSpecStart | SubcommandSpecFinish | Nil
+  getter command : SubcommandSpecStart | SubcommandSpecFinish
 end
 
 struct SubcommandSpecClock
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   getter? verbose : Bool = false
 
   @[Kebab::Subcommand]
-  getter command : SubcommandSpecStart | SubcommandSpecFinish | SubcommandSpecBreak | Nil
+  getter command : SubcommandSpecStart | SubcommandSpecFinish | SubcommandSpecBreak
 end
 
 struct SubcommandSpecStrict
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
-  @[Kebab::Subcommand]
+  @[Kebab::Subcommand(required: true)]
   getter command : SubcommandSpecStart | SubcommandSpecFinish
 end
 
@@ -45,9 +45,9 @@ private def parse_clock!(args : Array(String)) : SubcommandSpecClock
   SubcommandSpecClock.parse(args).as(SubcommandSpecClock)
 end
 
-describe "Kebab::Serialisable subcommands" do
-  it "is nil when no subcommand is given and the field is nilable" do
-    parse_clock!([] of String).command.should be_nil
+describe "Kebab::Parseable subcommands" do
+  it "raises HelpRequested when no subcommand is given (default optionality)" do
+    SubcommandSpecClock.parse([] of String).should be_a(Kebab::Help)
   end
 
   it "dispatches to a subcommand by its annotated name" do
@@ -55,8 +55,8 @@ describe "Kebab::Serialisable subcommands" do
     command.should be_a(SubcommandSpecStart)
   end
 
-  it "dispatches by the kebab-cased type name when there is no annotation" do
-    command = parse_clock!(["subcommand-spec-finish"]).command
+  it "dispatches by the underscored type name when there is no annotation" do
+    command = parse_clock!(["subcommand_spec_finish"]).command
     command.should be_a(SubcommandSpecFinish)
   end
 
@@ -81,23 +81,54 @@ describe "Kebab::Serialisable subcommands" do
   end
 
   it "errors on unknown commands listing candidates" do
-    error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Error::Base)
+    error = SubcommandSpecClock.parse(["strat"]).as(Kebab::Errors)
     error.should be_a(Kebab::Error::UnknownCommand)
-    error.error_description.should eq("\"strat\" isn't a known command (expected one of: break, start, subcommand-spec-finish).")
+    error.error_description.should eq("\"strat\" isn't a known command (expected one of: break, start, subcommand_spec_finish).")
   end
 
   it "propagates subcommand parse errors" do
-    error = SubcommandSpecClock.parse(["start", "--nope"]).as(Kebab::Error::Base)
+    error = SubcommandSpecClock.parse(["start", "--nope"]).as(Kebab::Errors)
     error.should be_a(Kebab::Error::UnknownOption)
   end
 
-  it "errors when a required subcommand is missing" do
-    error = SubcommandSpecStrict.parse([] of String).as(Kebab::Error::Base)
+  it "errors when a `required: true` subcommand is missing" do
+    error = SubcommandSpecStrict.parse([] of String).as(Kebab::Errors)
     error.should be_a(Kebab::Error::MissingCommand)
-    error.error_description.should eq("expected one of: start, subcommand-spec-finish.")
+    error.error_description.should eq("expected one of: start, subcommand_spec_finish.")
   end
 
   it "errors on parent options placed after the subcommand" do
-    SubcommandSpecClock.parse(["start", "--verbose"]).as(Kebab::Error::Base).should be_a(Kebab::Error::UnknownOption)
+    SubcommandSpecClock.parse(["start", "--verbose"]).as(Kebab::Errors).should be_a(Kebab::Error::UnknownOption)
+  end
+
+  it "treats `help` as a subcommand synonym for --help" do
+    SubcommandSpecClock.parse(["help"]).should be_a(Kebab::Help)
+  end
+
+  it "auto-delegates `run(context)` to the chosen subcommand" do
+    clock = parse_clock!(["start", "--at", "8:45"])
+    seen = [] of String
+    clock.run(seen)
+    seen.should eq(["start:8:45"])
+  end
+end
+
+# Test-only `run` overloads used by the auto-`run` spec — Array(String) is a
+# unique-enough signature that it won't clash with anything else.
+struct SubcommandSpecStart
+  def run(seen : Array(String)) : Nil
+    seen << "start:#{@at}"
+  end
+end
+
+struct SubcommandSpecFinish
+  def run(seen : Array(String)) : Nil
+    seen << "finish"
+  end
+end
+
+struct SubcommandSpecBreak
+  def run(seen : Array(String)) : Nil
+    @command.run(seen)
   end
 end

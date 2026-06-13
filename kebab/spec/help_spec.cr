@@ -2,7 +2,7 @@ require "./spec_helper"
 
 @[Kebab::Command(name: "start", summary: "Clock in")]
 struct HelpSpecStart
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Option(short: 'a', description: "Clock in at a past time")]
   getter at : String?
@@ -13,25 +13,25 @@ end
 
 @[Kebab::Command(name: "finish", summary: "Clock out")]
 struct HelpSpecFinish
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   getter at : String?
 end
 
 @[Kebab::Command(name: "clockin", summary: "Clock in/out")]
 struct HelpSpecClock
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Option(description: "Noisy output")]
   getter? verbose : Bool = false
 
   @[Kebab::Subcommand]
-  getter command : HelpSpecStart | HelpSpecFinish | Nil
+  getter command : HelpSpecStart | HelpSpecFinish
 end
 
 @[Kebab::Command(name: "trim", summary: "Trim a file")]
 struct HelpSpecTrim
-  include Kebab::Serialisable
+  include Kebab::Parseable
 
   @[Kebab::Argument(description: "File to trim")]
   getter path : String
@@ -40,11 +40,16 @@ struct HelpSpecTrim
   getter limit : Int32 = 10
 end
 
-private def help_for(result : HelpSpecClock | HelpSpecStart | HelpSpecTrim | Kebab::Error::Base) : String
-  result.as(Kebab::Error::HelpRequested).help
+private def help_for(result) : String
+  case result
+  when Kebab::Help
+    result.text
+  else
+    fail "expected Kebab::Help, got #{result.class}: #{result.inspect}"
+  end
 end
 
-describe "Kebab::Serialisable help" do
+describe "Kebab::Parseable help" do
   it "renders options, commands, and the summary for --help" do
     help_for(HelpSpecClock.parse(["--help"])).should eq(<<-HELP
       Usage: clockin [options] <command>
@@ -53,6 +58,7 @@ describe "Kebab::Serialisable help" do
 
       Commands:
         finish         Clock out
+        help           Show this help
         start          Clock in
 
       Options:
@@ -101,6 +107,6 @@ describe "Kebab::Serialisable help" do
   end
 
   it "takes priority over unknown option errors at the point reached" do
-    HelpSpecClock.parse(["--help", "--nope"]).should be_a(Kebab::Error::HelpRequested)
+    HelpSpecClock.parse(["--help", "--nope"]).should be_a(Kebab::Help)
   end
 end

@@ -1,24 +1,42 @@
 require "./convert"
-require "./error/base"
-require "./error/help_requested"
-require "./error/invalid_value"
-require "./error/missing_argument"
-require "./error/missing_command"
-require "./error/missing_option"
-require "./error/missing_value"
-require "./error/unexpected_argument"
-require "./error/unknown_command"
-require "./error/unknown_option"
+require "./errors"
+require "./help"
+require "./internal"
 require "./scanner"
 
 module Kebab
-  module Serialisable
+  module Parseable
     macro included
-      def self.parse(args : Array(String)) : self | ::Kebab::Error::Base
+      # `parse` returns one of three concrete outcomes: the parsed struct, a
+      # `Help` request, or one of the `Kebab::Errors` variants. Callers
+      # `case ... in` exhaustively — no abstract `Error::Base` in the public
+      # surface.
+      #
+      # Only `Internal::ParseExit` (raised by our own bail helper) is rescued;
+      # anything else — a converter bug, a user `raise` — propagates normally.
+      def self.parse(args : Array(String)) : self | ::Kebab::Help | ::Kebab::Errors
         new(__kebab_args: args)
-      rescue ex : ::Kebab::Error::Base
-        ex
+      rescue ex : ::Kebab::Internal::ParseExit
+        ex.result
       end
+    end
+
+    # Default `run(context)` for command structs.
+    #
+    # - Subcommand-bearing structs auto-dispatch to the chosen subcommand (the
+    #   field is never nil — `parse` returns `Help` upfront if no subcommand
+    #   is given and the annotation isn't `required: true`).
+    # - Leaf commands must override this with their own `def run(context : T)`;
+    #   that overload wins via Crystal's standard overload resolution.
+    def run(context) : Nil
+      {% begin %}
+        {% subcommand_ivar = @type.instance_vars.find(&.annotation(::Kebab::Subcommand)) %}
+        {% if subcommand_ivar %}
+          @{{subcommand_ivar.id}}.run(context)
+        {% else %}
+          raise "#{self.class}#run(context) must be defined"
+        {% end %}
+      {% end %}
     end
 
     # NOTE: field types are emitted by their fully-qualified paths, so (exactly
@@ -58,13 +76,17 @@ module Kebab
                 short_ivars = option_ivars.select { |option_ivar| option_ivar.annotation(::Kebab::Option) && option_ivar.annotation(::Kebab::Option)[:short] }
 
                 subcommand_ivar = subcommand_ivars.first
+                if subcommand_ivar && subcommand_ivar.type.nilable?
+                  raise "@[Kebab::Subcommand] field '#{subcommand_ivar.name}' on #{@type} can't be nilable — use `required: true/false` on the annotation instead"
+                end
+
                 subcommand_members = if subcommand_ivar
-                                       subcommand_ivar.type.union? ? subcommand_ivar.type.union_types.reject { |union_type| union_type == Nil } : [subcommand_ivar.type]
+                                       subcommand_ivar.type.union? ? subcommand_ivar.type.union_types : [subcommand_ivar.type]
                                      else
                                        [] of Nil
                                      end
                 subcommand_names = subcommand_members.map do |member|
-                  (member.annotation(::Kebab::Command) && member.annotation(::Kebab::Command)[:name]) || member.name.stringify.split("::").last.underscore.gsub(/_/, "-")
+                  (member.annotation(::Kebab::Command) && member.annotation(::Kebab::Command)[:name]) || member.name.stringify.split("::").last.underscore
                 end
               %}
 
@@ -96,8 +118,8 @@ module Kebab
                   %separated = true
                 in ::Kebab::Tokens::Long
                   {% if option_ivars.empty? %}
-                    raise ::Kebab::Error::HelpRequested.new(__kebab_help_text) if %token.name == "help"
-                    raise ::Kebab::Error::UnknownOption.new(%token.to_s)
+                    __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %token.name == "help"
+                    __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s))
                   {% else %}
                     case %token.name
                     {% for ivar in option_ivars %}
@@ -110,7 +132,7 @@ module Kebab
                       when {{long}}
                         {% if base == Bool %}
                           if %inline = %token.value
-                            raise ::Kebab::Error::InvalidValue.new("--#{{{long}}}", %inline)
+                            __kebab_bail(::Kebab::Error::InvalidValue.new("--#{{{long}}}", %inline))
                           end
                           %value{ivar.name} = true
                         {% else %}
@@ -123,9 +145,9 @@ module Kebab
                         {% end %}
                     {% end %}
                     when "help"
-                      raise ::Kebab::Error::HelpRequested.new(__kebab_help_text)
+                      __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                     else
-                      raise ::Kebab::Error::UnknownOption.new(%token.to_s)
+                      __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s))
                     end
                   {% end %}
                 in ::Kebab::Tokens::Shorts
@@ -133,8 +155,8 @@ module Kebab
                   %chars.each_char_with_index do |%char, %char_index|
                     %last_char = %char_index == %chars.size - 1
                     {% if short_ivars.empty? %}
-                      raise ::Kebab::Error::HelpRequested.new(__kebab_help_text) if %char == 'h'
-                      raise ::Kebab::Error::UnknownOption.new("-#{%char}")
+                      __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %char == 'h'
+                      __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
                     {% else %}
                       case %char
                       {% for ivar in short_ivars %}
@@ -147,11 +169,11 @@ module Kebab
                         when {{short}}
                           {% if base == Bool %}
                             if %last_char && (%inline = %token.value)
-                              raise ::Kebab::Error::InvalidValue.new("-#{{{short}}}", %inline)
+                              __kebab_bail(::Kebab::Error::InvalidValue.new("-#{{{short}}}", %inline))
                             end
                             %value{ivar.name} = true
                           {% else %}
-                            raise ::Kebab::Error::MissingValue.new("-#{{{short}}}") unless %last_char
+                            __kebab_bail(::Kebab::Error::MissingValue.new("-#{{{short}}}")) unless %last_char
 
                             %raw_value = %token.value || __kebab_next_value(args, %index, %separated, "-#{{{short}}}").tap { %index += 1 }
                             {% if converter %}
@@ -162,28 +184,37 @@ module Kebab
                           {% end %}
                       {% end %}
                       when 'h'
-                        raise ::Kebab::Error::HelpRequested.new(__kebab_help_text)
+                        __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                       else
-                        raise ::Kebab::Error::UnknownOption.new("-#{%char}")
+                        __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
                       end
                     {% end %}
                   end
                 in ::Kebab::Tokens::Positional
                   {% if subcommand_ivar %}
                     case %token.value
+                    when "help"
+                      __kebab_bail(::Kebab::Help.new(__kebab_help_text))
                     {% for member, member_index in subcommand_members %}
                       when {{subcommand_names[member_index]}}
                         case %subcommand = {{member}}.parse(args[(%index + 1)..])
-                        in {{member}}
+                        when {{member}}
                           %value{subcommand_ivar.name} = %subcommand
-                        in ::Kebab::Error::Base
-                          raise %subcommand
+                        when ::Kebab::Help
+                          __kebab_bail(%subcommand)
+                        when ::Kebab::Errors
+                          __kebab_bail(%subcommand)
+                        else
+                          # Unreachable by {{member}}.parse's signature, but the
+                          # compiler can't see that — branch defensively so the
+                          # case has no silent fall-through.
+                          raise "unreachable: #{%subcommand.class} from {{member}}.parse"
                         end
 
                         break
                     {% end %}
                     else
-                      raise ::Kebab::Error::UnknownCommand.new(%token.value, {{subcommand_names.sort}})
+                      __kebab_bail(::Kebab::Error::UnknownCommand.new(%token.value, {{subcommand_names.sort}}))
                     end
                   {% else %}
                     %positionals << %token.value
@@ -210,23 +241,21 @@ module Kebab
               {% end %}
 
               if %extra = %positionals[{{argument_ivars.size}}]?
-                raise ::Kebab::Error::UnexpectedArgument.new(%extra)
+                __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%extra))
               end
 
               {% if subcommand_ivar %}
+                {% subcommand_annotation = subcommand_ivar.annotation(::Kebab::Subcommand) %}
+                {% subcommand_required = !!(subcommand_annotation && subcommand_annotation[:required]) %}
                 %assigned{subcommand_ivar.name} = %value{subcommand_ivar.name}
-                @{{subcommand_ivar.name}} =
-                  if %assigned{subcommand_ivar.name}.nil?
-                    {% if subcommand_ivar.has_default_value? %}
-                      {{subcommand_ivar.default_value}}
-                    {% elsif subcommand_ivar.type.nilable? %}
-                      nil
-                    {% else %}
-                      raise ::Kebab::Error::MissingCommand.new({{subcommand_names.sort}})
-                    {% end %}
-                  else
-                    %assigned{subcommand_ivar.name}
-                  end
+                if %assigned{subcommand_ivar.name}.nil?
+                  {% if subcommand_required %}
+                    __kebab_bail(::Kebab::Error::MissingCommand.new({{subcommand_names.sort}}))
+                  {% else %}
+                    __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                  {% end %}
+                end
+                @{{subcommand_ivar.name}} = %assigned{subcommand_ivar.name}
               {% end %}
 
               {% for ivar in option_ivars + argument_ivars %}
@@ -254,7 +283,7 @@ module Kebab
                     {% elsif ivar.type.nilable? %}
                       nil
                     {% else %}
-                      raise {{missing_error}}.new({{display_name}})
+                      __kebab_bail({{missing_error}}.new({{display_name}}))
                     {% end %}
                   else
                     %assigned{ivar.name}
@@ -263,6 +292,8 @@ module Kebab
             {% end %}
     end
 
+    # Safe to call from inside `initialize` — the body only reads
+    # macro-generated literals, no instance state.
     private def __kebab_help_text : String
       {% begin %}
         {%
@@ -280,7 +311,7 @@ module Kebab
               members = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type]
               members.each do |member|
                 member_command = member.annotation(::Kebab::Command)
-                member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore.gsub(/_/, "-")
+                member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore
                 command_rows << {member_name, (member_command && member_command[:summary]) || ""}
               end
             elsif ivar.annotation(::Kebab::Argument)
@@ -301,10 +332,13 @@ module Kebab
           end
 
           option_rows << {"-h, --help", "Show this help"}
+          unless command_rows.empty?
+            command_rows << {"help", "Show this help"}
+          end
           command_rows = command_rows.sort_by { |command_row| command_row[0] }
 
           command = @type.annotation(::Kebab::Command)
-          command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore.gsub(/_/, "-")
+          command_name = (command && command[:name]) || @type.name.stringify.split("::").last.underscore
           summary = command && command[:summary]
 
           usage = "Usage: #{command_name.id} [options]"
@@ -349,10 +383,18 @@ module Kebab
       {% end %}
     end
 
+    # The one path out of `initialize` for any parse outcome other than the
+    # successfully constructed struct. Wrapping in `Internal::ParseExit`
+    # means `self.parse` only rescues this one class — every other exception
+    # propagates for the caller to deal with.
+    private def __kebab_bail(result : ::Kebab::Help | ::Kebab::Errors) : NoReturn
+      raise ::Kebab::Internal::ParseExit.new(result)
+    end
+
     private def __kebab_next_value(args : Array(String), index : Int32, separated : Bool, name : String) : String
       next_raw = args[index + 1]?
       if next_raw.nil? || (!separated && !::Kebab::Scanner.scan(next_raw).is_a?(::Kebab::Tokens::Positional))
-        raise ::Kebab::Error::MissingValue.new(name)
+        __kebab_bail(::Kebab::Error::MissingValue.new(name))
       end
 
       next_raw
@@ -368,10 +410,12 @@ module Kebab
 
     private def __kebab_unwrap(type : T.class, name : String, raw : String, result : T | ::Kebab::Error::Base) : T forall T
       case result
-      in T
+      when T
         result
-      in ::Kebab::Error::Base
-        raise ::Kebab::Error::InvalidValue.new(name, raw, result)
+      else
+        # The convert protocol only ever returns T or a Kebab::Error::Base
+        # subclass; the cast is safe.
+        __kebab_bail(::Kebab::Error::InvalidValue.new(name, raw, result.as(::Kebab::Error::Base)))
       end
     end
   end
