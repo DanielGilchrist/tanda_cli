@@ -7,13 +7,6 @@ require "./scanner"
 module Kebab
   module Parseable
     macro included
-      # `parse` returns one of three concrete outcomes: the parsed struct, a
-      # `Help` request, or one of the `Kebab::Errors` variants. Callers
-      # `case ... in` exhaustively — no abstract `Error::Base` in the public
-      # surface.
-      #
-      # Only `Internal::ParseExit` (raised by our own bail helper) is rescued;
-      # anything else — a converter bug, a user `raise` — propagates normally.
       def self.parse(args : Array(String)) : self | ::Kebab::Help | ::Kebab::Errors
         new(__kebab_args: args)
       rescue ex : ::Kebab::Internal::ParseExit
@@ -21,13 +14,6 @@ module Kebab
       end
     end
 
-    # Default `run(context)` for command structs.
-    #
-    # - Subcommand-bearing structs auto-dispatch to the chosen subcommand (the
-    #   field is never nil — `parse` returns `Help` upfront if no subcommand
-    #   is given and the annotation isn't `required: true`).
-    # - Leaf commands must override this with their own `def run(context : T)`;
-    #   that overload wins via Crystal's standard overload resolution.
     def run(context) : Nil
       {% begin %}
         {% subcommand_ivar = @type.instance_vars.find(&.annotation(::Kebab::Subcommand)) %}
@@ -39,8 +25,6 @@ module Kebab
       {% end %}
     end
 
-    # NOTE: field types are emitted by their fully-qualified paths, so (exactly
-    # like JSON::Serializable) file-private types can't be used as field types.
     def initialize(*, __kebab_args args : Array(String))
       {% begin %}
               {%
@@ -49,20 +33,19 @@ module Kebab
                 subcommand_ivars = [] of Nil
 
                 @type.instance_vars.each do |ivar|
-                  if ivar.annotation(::Kebab::Ignore)
-                    unless ivar.type.nilable? || ivar.has_default_value?
-                      raise "@[Kebab::Ignore] field '#{ivar.name}' on #{@type} must be nilable or have a default value"
-                    end
-                  elsif ivar.annotation(::Kebab::Subcommand)
+                  if ivar.annotation(::Kebab::Subcommand)
                     subcommand_ivars << ivar
                   elsif ivar.annotation(::Kebab::Argument)
                     if ivar.annotation(::Kebab::Option)
                       raise "'#{ivar.name}' on #{@type} can't be both an option and an argument"
                     end
                     argument_ivars << ivar
-                  else
+                  elsif ivar.annotation(::Kebab::Option)
                     option_ivars << ivar
                   end
+                  # Unannotated ivars are intentionally ignored — they're not
+                  # part of the CLI surface and the caller is responsible for
+                  # giving them a value (nilable or default).
                 end
 
                 if subcommand_ivars.size > 1
@@ -292,8 +275,6 @@ module Kebab
             {% end %}
     end
 
-    # Safe to call from inside `initialize` — the body only reads
-    # macro-generated literals, no instance state.
     private def __kebab_help_text : String
       {% begin %}
         {%
@@ -304,9 +285,7 @@ module Kebab
           has_subcommand = false
 
           @type.instance_vars.each do |ivar|
-            if ivar.annotation(::Kebab::Ignore)
-              # not part of the CLI surface
-            elsif ivar.annotation(::Kebab::Subcommand)
+            if ivar.annotation(::Kebab::Subcommand)
               has_subcommand = true
               members = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type]
               members.each do |member|
@@ -314,21 +293,20 @@ module Kebab
                 member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore
                 command_rows << {member_name, (member_command && member_command[:summary]) || ""}
               end
-            elsif ivar.annotation(::Kebab::Argument)
-              argument = ivar.annotation(::Kebab::Argument)
-              argument_name = (argument && argument[:name]) || ivar.name.stringify.gsub(/_/, "-")
+            elsif argument = ivar.annotation(::Kebab::Argument)
+              argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
               argument_names << argument_name
-              argument_rows << {"<#{argument_name.id}>", (argument && argument[:description]) || ""}
-            else
-              option = ivar.annotation(::Kebab::Option)
-              long = (option && option[:long]) || ivar.name.stringify.gsub(/_/, "-")
-              short = option && option[:short]
+              argument_rows << {"<#{argument_name.id}>", argument[:description] || ""}
+            elsif option = ivar.annotation(::Kebab::Option)
+              long = option[:long] || ivar.name.stringify.gsub(/_/, "-")
+              short = option[:short]
               base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
 
               left = short ? "-#{short.id}, --#{long.id}" : "    --#{long.id}"
               left = "#{left.id} <value>" unless base == Bool
-              option_rows << {left, (option && option[:description]) || ""}
+              option_rows << {left, option[:description] || ""}
             end
+            # Unannotated ivars don't appear in the CLI surface or in help.
           end
 
           option_rows << {"-h, --help", "Show this help"}
@@ -383,10 +361,6 @@ module Kebab
       {% end %}
     end
 
-    # The one path out of `initialize` for any parse outcome other than the
-    # successfully constructed struct. Wrapping in `Internal::ParseExit`
-    # means `self.parse` only rescues this one class — every other exception
-    # propagates for the caller to deal with.
     private def __kebab_bail(result : ::Kebab::Help | ::Kebab::Errors) : NoReturn
       raise ::Kebab::Internal::ParseExit.new(result)
     end
@@ -413,8 +387,6 @@ module Kebab
       when T
         result
       else
-        # The convert protocol only ever returns T or a Kebab::Error::Base
-        # subclass; the cast is safe.
         __kebab_bail(::Kebab::Error::InvalidValue.new(name, raw, result.as(::Kebab::Error::Base)))
       end
     end

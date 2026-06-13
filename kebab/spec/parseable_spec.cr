@@ -31,8 +31,10 @@ private struct Punch
   @[Kebab::Option(short: 's')]
   getter? skip_validations : Bool = false
 
+  @[Kebab::Option]
   getter verbose : Bool = false
 
+  @[Kebab::Option]
   getter weeks : Int32 = 4
 
   @[Kebab::Option(converter: UpcaseConverter)]

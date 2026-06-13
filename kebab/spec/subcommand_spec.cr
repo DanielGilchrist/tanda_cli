@@ -28,6 +28,7 @@ end
 struct SubcommandSpecClock
   include Kebab::Parseable
 
+  @[Kebab::Option]
   getter? verbose : Bool = false
 
   @[Kebab::Subcommand]

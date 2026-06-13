@@ -7,5 +7,4 @@ module Kebab
   annotation Option; end
   annotation Argument; end
   annotation Subcommand; end
-  annotation Ignore; end
 end
