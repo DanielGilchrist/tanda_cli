@@ -28,4 +28,16 @@ describe TandaCLI::Commands::ClockIn::Finish do
     context.stderr.to_s.should eq("Error: You need to finish your break before clocking out!\n")
     context.stdout.to_s.should be_empty
   end
+
+  it "clocks out on a previous day with --at and --date" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_in_shift)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "finish", "--at", "5:30pm", "--date", "yesterday"])
+
+      context.stdout.to_s.should eq("Success: Clock out recorded at 5:30 pm (Tuesday, 17 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
 end

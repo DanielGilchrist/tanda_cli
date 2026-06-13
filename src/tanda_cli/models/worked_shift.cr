@@ -38,6 +38,11 @@ module TandaCLI
         date.date == Utils::Time.now.date
       end
 
+      def last_event_time : ::Time?
+        break_times = breaks.flat_map { |shift_break| [shift_break.start_time, shift_break.finish_time] }
+        ([start_time, finish_time] + break_times).compact.max?
+      end
+
       def ongoing_break? : Bool
         valid_breaks.any?(&.ongoing?)
       end
