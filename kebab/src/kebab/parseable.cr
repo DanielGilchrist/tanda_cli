@@ -2,6 +2,7 @@ require "./convert"
 require "./errors"
 require "./help"
 require "./internal"
+require "./parseable/schema_check"
 require "./scanner"
 
 module Kebab
@@ -20,12 +21,14 @@ module Kebab
         {% if subcommand_ivar %}
           @{{subcommand_ivar.id}}.run(context)
         {% else %}
-          raise "#{self.class}#run(context) must be defined"
+          raise "#{self.class}#run isn't defined. Add `def run(context : YourContextType) : Nil` so kebab can call it after parsing."
         {% end %}
       {% end %}
     end
 
     def initialize(*, __kebab_args args : Array(String))
+      __kebab_validate_schema
+
       {% begin %}
               {%
                 option_ivars = [] of Nil
@@ -36,30 +39,29 @@ module Kebab
                   if ivar.annotation(::Kebab::Subcommand)
                     subcommand_ivars << ivar
                   elsif ivar.annotation(::Kebab::Argument)
-                    if ivar.annotation(::Kebab::Option)
-                      raise "'#{ivar.name}' on #{@type} can't be both an option and an argument"
-                    end
                     argument_ivars << ivar
                   elsif ivar.annotation(::Kebab::Option)
                     option_ivars << ivar
                   end
                 end
 
-                if subcommand_ivars.size > 1
-                  raise "#{@type} can only have one @[Kebab::Subcommand] field"
-                end
-
-                if !subcommand_ivars.empty? && !argument_ivars.empty?
-                  raise "#{@type} can't have both positional arguments and a subcommand"
-                end
-
                 short_ivars = option_ivars.select { |option_ivar| option_ivar.annotation(::Kebab::Option) && option_ivar.annotation(::Kebab::Option)[:short] }
 
-                subcommand_ivar = subcommand_ivars.first
-                if subcommand_ivar && subcommand_ivar.type.nilable?
-                  raise "@[Kebab::Subcommand] field '#{subcommand_ivar.name}' on #{@type} can't be nilable — use `required: true/false` on the annotation instead"
+                long_names = {} of String => String
+                option_ivars.each do |ivar|
+                  option = ivar.annotation(::Kebab::Option)
+                  long = (option && option[:long]) || ivar.name.stringify.gsub(/_/, "-")
+                  long_names[long] = ivar.name.stringify
                 end
+                short_letters = {} of Char => String
+                option_ivars.each do |ivar|
+                  short = ivar.annotation(::Kebab::Option)[:short]
+                  short_letters[short] = ivar.name.stringify if short
+                end
+                user_defined_help_long = long_names["help"] != nil
+                user_defined_help_short = short_letters['h'] != nil
 
+                subcommand_ivar = subcommand_ivars.first
                 subcommand_members = if subcommand_ivar
                                        subcommand_ivar.type.union? ? subcommand_ivar.type.union_types : [subcommand_ivar.type]
                                      else
@@ -68,16 +70,11 @@ module Kebab
                 subcommand_names = subcommand_members.map do |member|
                   (member.annotation(::Kebab::Command) && member.annotation(::Kebab::Command)[:name]) || member.name.stringify.split("::").last.underscore
                 end
+                user_defined_help_subcommand = subcommand_names.includes?("help")
               %}
 
               {% for ivar in option_ivars + argument_ivars %}
                 {% bases = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil } : [ivar.type] %}
-                {% if bases.size != 1 %}
-                  {% raise "Unsupported union type for '#{ivar.name}' on #{@type}: #{ivar.type}" %}
-                {% end %}
-                {% if bases.first == Bool && ivar.type.nilable? %}
-                  {% raise "Flag '#{ivar.name}' on #{@type} can't be nilable — use `Bool = false`" %}
-                {% end %}
                 %value{ivar.name} : {{bases.first}}? = nil
               {% end %}
 
@@ -110,6 +107,9 @@ module Kebab
                         base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
                       %}
                       when {{long}}
+                        unless %value{ivar.name}.nil?
+                          __kebab_bail(::Kebab::Error::RepeatedOption.new("--#{{{long}}}"))
+                        end
                         {% if base == Bool %}
                           if %inline = %token.value
                             __kebab_bail(::Kebab::Error::InvalidValue.new("--#{{{long}}}", %inline))
@@ -124,18 +124,25 @@ module Kebab
                           {% end %}
                         {% end %}
                     {% end %}
-                    when "help"
-                      __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                    {% unless user_defined_help_long %}
+                      when "help"
+                        __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                    {% end %}
                     else
                       __kebab_bail(::Kebab::Error::UnknownOption.new(%token.to_s))
                     end
                   {% end %}
                 in ::Kebab::Tokens::Shorts
                   %chars = %token.chars
+                  if %chars.empty?
+                    __kebab_bail(::Kebab::Error::UnknownOption.new("-"))
+                  end
                   %chars.each_char_with_index do |%char, %char_index|
                     %last_char = %char_index == %chars.size - 1
                     {% if short_ivars.empty? %}
-                      __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %char == 'h'
+                      {% unless user_defined_help_short %}
+                        __kebab_bail(::Kebab::Help.new(__kebab_help_text)) if %char == 'h'
+                      {% end %}
                       __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
                     {% else %}
                       case %char
@@ -147,6 +154,9 @@ module Kebab
                           base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
                         %}
                         when {{short}}
+                          unless %value{ivar.name}.nil?
+                            __kebab_bail(::Kebab::Error::RepeatedOption.new("-#{{{short}}}"))
+                          end
                           {% if base == Bool %}
                             if %last_char && (%inline = %token.value)
                               __kebab_bail(::Kebab::Error::InvalidValue.new("-#{{{short}}}", %inline))
@@ -163,8 +173,10 @@ module Kebab
                             {% end %}
                           {% end %}
                       {% end %}
-                      when 'h'
-                        __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                      {% unless user_defined_help_short %}
+                        when 'h'
+                          __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                      {% end %}
                       else
                         __kebab_bail(::Kebab::Error::UnknownOption.new("-#{%char}"))
                       end
@@ -173,8 +185,10 @@ module Kebab
                 in ::Kebab::Tokens::Positional
                   {% if subcommand_ivar %}
                     case %token.value
-                    when "help"
-                      __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                    {% unless user_defined_help_subcommand %}
+                      when "help"
+                        __kebab_bail(::Kebab::Help.new(__kebab_help_text))
+                    {% end %}
                     {% for member, member_index in subcommand_members %}
                       when {{subcommand_names[member_index]}}
                         case %subcommand = {{member}}.parse(args[(%index + 1)..])
@@ -277,6 +291,9 @@ module Kebab
           command_rows = [] of Nil
           argument_names = [] of Nil
           has_subcommand = false
+          user_defined_help_long = false
+          user_defined_help_short = false
+          user_defined_help_subcommand = false
 
           @type.instance_vars.each do |ivar|
             if ivar.annotation(::Kebab::Subcommand)
@@ -285,6 +302,7 @@ module Kebab
               members.each do |member|
                 member_command = member.annotation(::Kebab::Command)
                 member_name = (member_command && member_command[:name]) || member.name.stringify.split("::").last.underscore
+                user_defined_help_subcommand = true if member_name == "help"
                 command_rows << {member_name, (member_command && member_command[:summary]) || ""}
               end
             elsif argument = ivar.annotation(::Kebab::Argument)
@@ -294,6 +312,8 @@ module Kebab
             elsif option = ivar.annotation(::Kebab::Option)
               long = option[:long] || ivar.name.stringify.gsub(/_/, "-")
               short = option[:short]
+              user_defined_help_long = true if long == "help"
+              user_defined_help_short = true if short == 'h'
               base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
 
               left = short ? "-#{short.id}, --#{long.id}" : "    --#{long.id}"
@@ -302,8 +322,10 @@ module Kebab
             end
           end
 
-          option_rows << {"-h, --help", "Show this help"}
-          unless command_rows.empty?
+          unless user_defined_help_long || user_defined_help_short
+            option_rows << {"-h, --help", "Show this help"}
+          end
+          if !command_rows.empty? && !user_defined_help_subcommand
             command_rows << {"help", "Show this help"}
           end
           command_rows = command_rows.sort_by { |command_row| command_row[0] }

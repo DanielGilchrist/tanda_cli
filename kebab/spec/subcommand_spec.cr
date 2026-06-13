@@ -126,6 +126,42 @@ describe "Kebab::Parseable subcommands" do
   end
 end
 
+struct HelpOverrideSpecBare
+  include Kebab::Parseable
+
+  @[Kebab::Option(long: "help")]
+  getter explanation : String?
+end
+
+@[Kebab::Command(name: "help")]
+struct HelpOverrideSpecHelpCmd
+  include Kebab::Parseable
+end
+
+@[Kebab::Command(name: "start")]
+struct HelpOverrideSpecStartCmd
+  include Kebab::Parseable
+end
+
+struct HelpOverrideSpecParent
+  include Kebab::Parseable
+
+  @[Kebab::Subcommand]
+  getter command : HelpOverrideSpecHelpCmd | HelpOverrideSpecStartCmd
+end
+
+describe "Kebab::Parseable help override" do
+  it "lets a user-defined --help win" do
+    result = HelpOverrideSpecBare.parse(["--help", "see-readme"]).as(HelpOverrideSpecBare)
+    result.explanation.should eq("see-readme")
+  end
+
+  it "lets a user-defined `help` subcommand win" do
+    result = HelpOverrideSpecParent.parse(["help"]).as(HelpOverrideSpecParent)
+    result.command.should be_a(HelpOverrideSpecHelpCmd)
+  end
+end
+
 struct SubcommandSpecStart
   def run(seen : Array(String)) : Nil
     seen << "start:#{@at}"

@@ -199,8 +199,24 @@ describe Kebab::Parseable do
     trim.path.should eq("--weird-filename")
   end
 
-  it "last-write-wins for repeated options" do
-    parse_punch!(["--at", "8:45", "--at", "9:30"]).at.should eq("9:30")
+  it "errors on a repeated long option" do
+    error = parse_punch_error!(["--at", "8:45", "--at", "9:30"])
+    error.should be_a(Kebab::Error::RepeatedOption)
+    error.error_description.should eq("\"--at\" was given more than once.")
+  end
+
+  it "errors on a repeated short option" do
+    parse_punch_error!(["-a", "8:45", "-a", "9:30"]).should be_a(Kebab::Error::RepeatedOption)
+  end
+
+  it "errors on a repeated flag" do
+    parse_punch_error!(["--verbose", "--verbose"]).should be_a(Kebab::Error::RepeatedOption)
+  end
+
+  it "errors on an empty short cluster" do
+    error = parse_punch_error!(["-=foo"])
+    error.should be_a(Kebab::Error::UnknownOption)
+    error.error_description.should eq("\"-\" isn't a recognised option.")
   end
 
   it "errors when an option value looks like another option" do
