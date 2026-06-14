@@ -6,18 +6,6 @@ require "./time_of_day"
 module TandaCLI
   module Models
     struct ClockInMoment
-      def self.parse(at : String, date : String?) : ClockInMoment | Error::Base
-        day =
-          case parsed_day = parse_day(date || "today")
-          in ::Time
-            parsed_day
-          in Error::Base
-            return parsed_day
-          end
-
-        parse(at, on: day)
-      end
-
       def self.parse(input : String, on day : ::Time, after previous : ::Time? = nil) : ClockInMoment | Error::Base
         time_of_day =
           case parsed = TimeOfDay.parse(input)
