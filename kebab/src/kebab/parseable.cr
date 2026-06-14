@@ -84,7 +84,10 @@ module Kebab
                 %value{subcommand_ivar.name} : ::Union({{subcommand_members.splat}}, ::Nil) = nil
               {% end %}
 
-              %positionals = [] of String
+              {% unless subcommand_ivar %}
+                %positionals = uninitialized StaticArray(String, {{argument_ivars.size + 1}})
+                %positionals_count = 0
+              {% end %}
               %separated = false
               %index = 0
 
@@ -220,7 +223,8 @@ module Kebab
                       __kebab_bail(::Kebab::Error::UnknownCommand.new(%token.value, __kebab_commands_schema, __kebab_usage))
                     end
                   {% else %}
-                    %positionals << %token.value
+                    %positionals[%positionals_count] = %token.value if %positionals_count < {{argument_ivars.size + 1}}
+                    %positionals_count += 1
                   {% end %}
                 end
 
@@ -234,7 +238,8 @@ module Kebab
                   converter = argument && argument[:converter]
                   base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
                 %}
-                if %positional{ivar.name} = %positionals[{{position}}]?
+                if %positionals_count > {{position}}
+                  %positional{ivar.name} = %positionals[{{position}}]
                   {% if converter %}
                     %value{ivar.name} = __kebab_convert({{base}}, {{argument_name}}, %positional{ivar.name}, converter: {{converter}})
                   {% else %}
@@ -244,8 +249,8 @@ module Kebab
               {% end %}
 
               {% unless subcommand_ivar %}
-                if %extra = %positionals[{{argument_ivars.size}}]?
-                  __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%extra, __kebab_arguments_schema, __kebab_usage))
+                if %positionals_count > {{argument_ivars.size}}
+                  __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%positionals[{{argument_ivars.size}}], __kebab_arguments_schema, __kebab_usage))
                 end
               {% end %}
 
