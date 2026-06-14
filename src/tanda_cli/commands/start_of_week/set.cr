@@ -1,24 +1,21 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class StartOfWeek
-      class Set < Base
-        def setup_
-          @name = "set"
-          @summary = @description = "Set the start of the week"
+    struct StartOfWeek
+      @[Kebab::Command(summary: "Set the start of the week")]
+      struct Set
+        include Kebab::Parseable
 
-          add_argument "day", description: "The day to set the start of the week to", required: true
-        end
+        @[Kebab::Argument(description: "The day to set the start of the week to")]
+        getter day : String
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          day = arguments.get("day").as_s
+        def run(context : Context) : Nil
+          display = context.display
           parsed = Time::DayOfWeek.parse?(day)
           display.error!(Error::InvalidStartOfWeek.new(day)) if parsed.nil?
 
-          config.start_of_week = parsed
-          config.save!
-          display.success("Start of the week set to #{config.pretty_start_of_week}")
+          context.config.start_of_week = parsed
+          context.config.save!
+          display.success("Start of the week set to #{context.config.pretty_start_of_week}")
         end
       end
     end

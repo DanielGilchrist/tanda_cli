@@ -68,10 +68,8 @@ describe TandaCLI::Commands::ClockIn::Start do
   it "errors when --at can't be parsed" do
     context = run(["clockin", "start", "--at", "potato"])
 
-    context.stderr.to_s.should eq(
-      "Error: Unable to parse time!\n" \
-      "       \"potato\" doesn't look like a time of day (try \"8:45\", \"5:30pm\" or \"17:30\").\n"
-    )
+    context.stderr.to_s.should contain("\"potato\" isn't a valid time of day for \"--at\"")
+    context.stderr.to_s.should contain(%(try "8:45", "5:30pm" or "17:30"))
     context.stdout.to_s.should be_empty
   end
 

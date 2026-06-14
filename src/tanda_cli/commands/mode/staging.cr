@@ -1,21 +1,15 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class Mode
-      class Staging < Base
-        disable_staging_warning!
+    struct Mode
+      @[Kebab::Command(summary: "Set the app to run commands in staging mode")]
+      struct Staging
+        include Kebab::Parseable
 
-        def setup_
-          @name = "staging"
-          @summary = @description = "Set the app to run commands in staging mode"
-        end
+        def run(context : Context) : Nil
+          context.config.use_staging!
+          context.config.save!
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.use_staging!
-          config.save!
-
-          display.success("Successfully set mode to staging!")
+          context.display.success("Successfully set mode to staging!")
         end
       end
     end

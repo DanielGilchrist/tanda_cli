@@ -1,17 +1,15 @@
 module TandaCLI
   module Commands
-    class ClockIn
-      class Display < Commands::Base
-        requires_auth!
+    struct ClockIn
+      @[Kebab::Command(summary: "Display current clockins")]
+      struct Display
+        include Kebab::Parseable
 
-        def setup_
-          @name = "display"
-          @summary = @description = "Display current clockins"
-        end
+        def run(context : Context) : Nil
+          display = context.display
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           now = Utils::Time.now
-          clockins = client.clock_ins.list(current.user.id, now).or { |error| display.error!(error) }.sort_by(&.time)
+          clockins = context.client.clock_ins.list(context.current.user.id, now).or { |error| display.error!(error) }.sort_by(&.time)
           return display.puts "You aren't currently clocked in" if clockins.empty?
 
           display.puts "Clock ins for today"

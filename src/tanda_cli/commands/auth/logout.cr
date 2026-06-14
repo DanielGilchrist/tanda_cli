@@ -1,14 +1,15 @@
 module TandaCLI
   module Commands
-    class Auth
-      class Logout < Base
-        def setup_
-          @name = "logout"
-          @summary = @description = "Clear authentication for the current environment"
-        end
+    struct Auth
+      @[Kebab::Command(summary: "Clear authentication for the current environment")]
+      struct Logout
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          revoke_access_token
+        def run(context : Context) : Nil
+          display = context.display
+          config = context.config
+
+          revoke_access_token(display, config)
 
           label = config.current.display_label
           config.reset_current_environment!
@@ -17,7 +18,7 @@ module TandaCLI
           display.success("Logged out of #{label} environment")
         end
 
-        private def revoke_access_token
+        private def revoke_access_token(display : TandaCLI::Display, config : Configuration)
           access_token = config.access_token
           return unless access_token
 

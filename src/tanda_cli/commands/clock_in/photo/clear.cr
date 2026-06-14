@@ -1,18 +1,16 @@
 module TandaCLI
   module Commands
-    class ClockIn
-      class Photo
-        class Clear < Commands::Base
-          def setup_
-            @name = "clear"
-            @summary = @description = "Clear set clockin photo or directory"
-          end
+    struct ClockIn
+      struct Photo
+        @[Kebab::Command(summary: "Clear set clockin photo or directory")]
+        struct Clear
+          include Kebab::Parseable
 
-          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            config.clockin_photo_path = nil
-            config.save!
+          def run(context : Context) : Nil
+            context.config.clockin_photo_path = nil
+            context.config.save!
 
-            display.success("Clock in photo cleared")
+            context.display.success("Clock in photo cleared")
           end
         end
       end

@@ -1,29 +1,24 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class CurrentUser
-      class Set < Base
-        def setup_
-          @name = "set"
-          @summary = @description = "Set the current user"
+    struct CurrentUser
+      @[Kebab::Command(summary: "Set the current user")]
+      struct Set
+        include Kebab::Parseable
 
-          add_argument "id_or_name",
-            description: "The ID of the user or name of the organisation to set as the current user",
-            required: true
-        end
+        @[Kebab::Argument(description: "The ID of the user or name of the organisation to set as the current user")]
+        getter id_or_name : String
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          id_or_name = arguments.get("id_or_name").as_s
+        def run(context : Context) : Nil
+          display = context.display
+          config = context.config
 
-          organisation = begin
+          organisation =
             if user_id = id_or_name.to_i?
               config.organisations.find(&.user_id.==(user_id))
             else
               input_name = id_or_name.downcase
               config.organisations.find(&.name.downcase.includes?(input_name))
             end
-          end
 
           display.error!("Invalid argument", id_or_name) if organisation.nil?
 

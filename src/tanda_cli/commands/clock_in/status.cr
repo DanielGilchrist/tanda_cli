@@ -1,30 +1,28 @@
 module TandaCLI
   module Commands
-    class ClockIn
-      class Status < Commands::Base
-        requires_auth!
+    struct ClockIn
+      @[Kebab::Command(summary: "Check current clockin status")]
+      struct Status
+        include Kebab::Parseable
 
-        def setup_
-          @name = "status"
-          @summary = @description = "Check current clockin status"
-        end
+        def run(context : Context) : Nil
+          display = context.display
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          api_shifts = client.shifts.list(current.user.id, Utils::Time.now).or { |error| display.error!(error) }
+          api_shifts = context.client.shifts.list(context.current.user.id, Utils::Time.now).or { |error| display.error!(error) }
           todays_shifts = api_shifts
             .compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
             .sort_by!(&.id)
 
           ongoing_shift = todays_shifts.reverse_each.find(&.ongoing?)
-          return handle_ongoing_shift(ongoing_shift) if ongoing_shift
+          return handle_ongoing_shift(display, ongoing_shift) if ongoing_shift
 
           last_shift = todays_shifts.last?
           return display.puts "You aren't currently clocked in" if last_shift.nil?
 
-          handle_clocked_out(last_shift)
+          handle_clocked_out(display, last_shift)
         end
 
-        private def handle_ongoing_shift(shift : Models::WorkedShift)
+        private def handle_ongoing_shift(display : TandaCLI::Display, shift : Models::WorkedShift)
           if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
@@ -42,7 +40,7 @@ module TandaCLI
           end
         end
 
-        private def handle_clocked_out(last_shift : Models::WorkedShift)
+        private def handle_clocked_out(display : TandaCLI::Display, last_shift : Models::WorkedShift)
           display.puts "🔴 #{"Clocked out".colorize.red}"
           display.puts "🕐 At #{last_shift.pretty_finish_time}"
         end

@@ -1,20 +1,18 @@
-require "./base"
+require "../../../kebab/src/kebab"
 
 module TandaCLI
   module Commands
-    class Balance < Base
-      requires_auth!
+    @[Kebab::Command(name: "balance", summary: "Check your leave balances")]
+    struct Balance
+      include Kebab::Parseable
 
       DEFAULT_LEAVE_TYPE = "Holiday Leave"
 
-      def setup_
-        @name = "balance"
-        @summary = @description = "Check your leave balances"
-      end
+      def run(context : Context) : Nil
+        display = context.display
 
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        leave_balance = client.leave_balances
-          .list(current.user.id)
+        leave_balance = context.client.leave_balances
+          .list(context.current.user.id)
           .or { |error| display.error!(error) }
           .find(&.leave_type.==(DEFAULT_LEAVE_TYPE))
 

@@ -1,35 +1,37 @@
 module TandaCLI
   module Commands
-    class Auth
-      class Login < Base
-        private alias Environment = Configuration::Serialisable::Environment
+    struct Auth
+      @[Kebab::Command(summary: "Authenticate with Tanda")]
+      struct Login
+        include Kebab::Parseable
+
+        private alias Environment = ::TandaCLI::Configuration::Serialisable::Environment
 
         SCOPES = "device leave personal roster timesheet me"
 
-        def setup_
-          @name = "login"
-          @summary = @description = "Authenticate with Tanda"
-        end
+        def run(context : Context) : Nil
+          display = context.display
+          input = context.input
+          config = context.config
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
           config.reset_current_environment!
 
           display.puts "🔐 #{"Tanda CLI Login".colorize.white.bold}"
           display.puts
 
-          email, password = prompt_for_credentials
+          email, password = prompt_for_credentials(display, input)
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          access_token = authenticate(config.current, email, password)
+          access_token = authenticate(display, config.current, email, password)
 
           config.overwrite_access_token!(email, access_token)
 
           client = API::Client.new(config.api_url, access_token.token)
-          select_and_save_organisation(client)
+          select_and_save_organisation(context, client)
         end
 
-        private def prompt_for_credentials : Tuple(String, String)
+        private def prompt_for_credentials(display : TandaCLI::Display, input : TandaCLI::Input) : Tuple(String, String)
           email = input.request_or(message: "📧 #{"Email:".colorize.cyan}") do
             display.error!("Email cannot be blank")
           end
@@ -43,7 +45,7 @@ module TandaCLI
           {email, password}
         end
 
-        private def authenticate(env : Environment::Any, email : String, password : String) : API::Types::AccessToken
+        private def authenticate(display : TandaCLI::Display, env : Environment::Any, email : String, password : String) : API::Types::AccessToken
           env.auth_candidates.each do |candidate|
             url = candidate.oauth_url(:token)
             Log.debug(&.emit("Trying #{candidate.display_name} (#{url})"))
@@ -88,7 +90,11 @@ module TandaCLI
           nil
         end
 
-        private def select_and_save_organisation(client : API::Client)
+        private def select_and_save_organisation(context : Context, client : API::Client)
+          display = context.display
+          input = context.input
+          config = context.config
+
           me = client.users.me.unwrap!
           organisations = Configuration::Serialisable::Organisation.from(me)
 
@@ -99,7 +105,7 @@ module TandaCLI
             display.puts
             display.puts "🏢 #{"Select an organisation:".colorize.white.bold}"
             while organisation.nil?
-              organisation = prompt_for_organisation(organisations)
+              organisation = prompt_for_organisation(display, input, organisations)
             end
           end
 
@@ -113,6 +119,8 @@ module TandaCLI
         end
 
         private def prompt_for_organisation(
+          display : TandaCLI::Display,
+          input : TandaCLI::Input,
           organisations : Array(Configuration::Serialisable::Organisation),
         ) : Configuration::Serialisable::Organisation?
           organisations.each_with_index(1) do |org, index|
@@ -124,14 +132,14 @@ module TandaCLI
 
             if number
               index = number - 1
-              organisations[index]? || handle_invalid_selection(organisations.size, user_input)
+              organisations[index]? || handle_invalid_selection(display, organisations.size, user_input)
             else
-              handle_invalid_selection
+              handle_invalid_selection(display)
             end
           end
         end
 
-        private def handle_invalid_selection(length : Int32? = nil, user_input : String? = nil) : Nil
+        private def handle_invalid_selection(display : TandaCLI::Display, length : Int32? = nil, user_input : String? = nil) : Nil
           display.puts "\n"
           if user_input
             display.error("Invalid selection", user_input) do |sub_errors|

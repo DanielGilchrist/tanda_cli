@@ -51,7 +51,7 @@ jobs:
         run: shards install --frozen
 
       - name: Check for dead code
-        run: crystal tool unreachable src/tanda_cli.cr --check
+        run: crystal tool unreachable src/tanda_cli.cr --check --exclude kebab
 
       - name: Check formatting
         run: crystal tool format --check

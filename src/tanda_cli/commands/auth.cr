@@ -1,22 +1,14 @@
-require "./base"
+require "../../../kebab/src/kebab"
+require "./auth/*"
 
 module TandaCLI
   module Commands
-    class Auth < Base
-      def setup_
-        @name = "auth"
-        @summary = @description = "Manage authentication"
+    @[Kebab::Command(summary: "Manage authentication")]
+    struct Auth
+      include Kebab::Parseable
 
-        add_commands(
-          Auth::Login,
-          Auth::Logout,
-          Auth::Status
-        )
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        display.puts help_template
-      end
+      @[Kebab::Subcommand]
+      getter command : Login | Logout | Status
     end
   end
 end

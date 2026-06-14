@@ -1,16 +1,14 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class CurrentUser
-      class List < Base
-        def setup_
-          @name = "list"
-          @summary = @description = "List available current users"
-        end
+    struct CurrentUser
+      @[Kebab::Command(summary: "List available current users")]
+      struct List
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          config.organisations.each do |organisation|
+        def run(context : Context) : Nil
+          display = context.display
+
+          context.config.organisations.each do |organisation|
             current = organisation.current? ? " #{"(current)".colorize.green}" : ""
             display.puts "#{organisation.name.colorize.white.bold}#{current}"
             display.puts "User ID: #{organisation.user_id}\n\n"

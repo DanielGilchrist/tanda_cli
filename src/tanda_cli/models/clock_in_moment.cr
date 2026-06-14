@@ -1,23 +1,11 @@
 require "../error/future_clock_in"
 require "../error/out_of_order_clock_in"
-require "../error/unparsable_date"
+require "../error/unparseable_date"
 require "./time_of_day"
 
 module TandaCLI
   module Models
     struct ClockInMoment
-      def self.parse(at : String, date : String?) : ClockInMoment | Error::Base
-        day =
-          case parsed_day = parse_day(date || "today")
-          in ::Time
-            parsed_day
-          in Error::Base
-            return parsed_day
-          end
-
-        parse(at, on: day)
-      end
-
       def self.parse(input : String, on day : ::Time, after previous : ::Time? = nil) : ClockInMoment | Error::Base
         time_of_day =
           case parsed = TimeOfDay.parse(input)
@@ -27,6 +15,10 @@ module TandaCLI
             return parsed
           end
 
+        from(time_of_day, on: day, after: previous)
+      end
+
+      def self.from(time_of_day : TimeOfDay, on day : ::Time, after previous : ::Time? = nil) : ClockInMoment | Error::Base
         time = time_of_day.on(day)
         return Error::FutureClockIn.new(time) if time > Utils::Time.now
         return Error::OutOfOrderClockIn.new(time, previous) if previous && time <= previous
@@ -44,7 +36,7 @@ module TandaCLI
           begin
             Utils::Time.iso_date(input)
           rescue ::Time::Format::Error
-            Error::UnparsableDate.new(input)
+            Error::UnparseableDate.new(input)
           end
         end
       end

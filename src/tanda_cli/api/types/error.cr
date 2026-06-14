@@ -1,5 +1,7 @@
 require "json"
 
+require "../../error/interface"
+
 module TandaCLI
   module API
     module Types

@@ -1,4 +1,4 @@
-require "../error/unparsable_time_of_day"
+require "../error/unparseable_time_of_day"
 
 module TandaCLI
   module Models
@@ -7,7 +7,7 @@ module TandaCLI
 
       def self.parse(input : String) : TimeOfDay | Error::Base
         match = PATTERN.match(input.strip)
-        return Error::UnparsableTimeOfDay.new(input) if match.nil?
+        return Error::UnparseableTimeOfDay.new(input) if match.nil?
 
         hour = match["hour"].to_i
         minute = match["minute"]?.try(&.to_i) || 0
@@ -15,12 +15,12 @@ module TandaCLI
 
         case meridiem
         when "am", "pm"
-          return Error::UnparsableTimeOfDay.new(input) unless hour.in?(1..12)
+          return Error::UnparseableTimeOfDay.new(input) unless hour.in?(1..12)
 
           hour = 0 if hour == 12
           hour += 12 if meridiem == "pm"
         else
-          return Error::UnparsableTimeOfDay.new(input) unless hour.in?(0..23)
+          return Error::UnparseableTimeOfDay.new(input) unless hour.in?(0..23)
         end
 
         new(hour, minute)

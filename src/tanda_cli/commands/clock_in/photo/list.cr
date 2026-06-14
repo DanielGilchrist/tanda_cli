@@ -1,38 +1,38 @@
 module TandaCLI
   module Commands
-    class ClockIn
-      class Photo
-        class List < Commands::Base
+    struct ClockIn
+      struct Photo
+        @[Kebab::Command(summary: "List photos current used for clock ins if a directory has been set")]
+        struct List
+          include Kebab::Parseable
+
           VALID_FILTER_COMMANDS = {"valid", "invalid"}
 
-          def setup_
-            @name = "list"
-            @summary = @description = "List photos current used for clock ins if a directory has been set"
+          @[Kebab::Option(short: 'f', description: "Filter photos by 'valid' or 'invalid'")]
+          getter filter : String?
 
-            add_option 'f', "filter", type: :single, required: false, description: "Filter photos by 'valid' or 'invalid'"
-          end
+          def run(context : Context) : Nil
+            display = context.display
 
-          def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-            filter = options.get?("filter").try(&.as_s)
-
+            filter = self.filter
             if filter && invalid_filter_option?(filter)
-              on_invalid_option("Invalid 'filter' option '#{filter}'")
+              display.error!("Invalid 'filter' option '#{filter}'")
             end
 
-            clockin_photo_path = config.clockin_photo_path
+            clockin_photo_path = context.config.clockin_photo_path
             return display.info("No clock in photo set") if clockin_photo_path.nil?
 
             case photo_or_dir = Models::PhotoPathParser.new(clockin_photo_path).parse
             in Models::Photo
               display.warning("Directory not set for clock in photos ('#{photo_or_dir.path}')")
             in Models::PhotoDirectory
-              display_photos(photo_or_dir, filter)
+              display_photos(display, photo_or_dir, filter)
             in Error::Base
               display.error!(photo_or_dir)
             end
           end
 
-          private def display_photos(photo_directory : Models::PhotoDirectory, filter : String?)
+          private def display_photos(display : TandaCLI::Display, photo_directory : Models::PhotoDirectory, filter : String?)
             photos = photo_directory.photos
 
             if filter == "valid"

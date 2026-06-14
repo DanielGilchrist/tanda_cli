@@ -1,16 +1,13 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class RegularHours
-      class Display < Base
-        def setup_
-          @name = "display"
-          @summary = @description = "Display the regular hours for the current user"
-        end
+    struct RegularHours
+      @[Kebab::Command(summary: "Display the regular hours for the current user")]
+      struct Display
+        include Kebab::Parseable
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          organisation = config.current_organisation!
+        def run(context : Context) : Nil
+          display = context.display
+          organisation = context.config.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
 
           if regular_hours_schedules.empty?

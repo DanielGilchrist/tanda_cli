@@ -1,26 +1,22 @@
-require "../base"
-
 module TandaCLI
   module Commands
-    class Mode
-      class Custom < Base
-        disable_staging_warning!
+    struct Mode
+      @[Kebab::Command(summary: "Set the app to run commands from a custom environment")]
+      struct Custom
+        include Kebab::Parseable
 
-        def setup_
-          @name = "custom"
-          @summary = @description = "Set the app to run commands from a custom environment"
+        @[Kebab::Argument(description: "The URL of the custom environment")]
+        getter url : String
 
-          add_argument "url", description: "The URL of the custom environment", required: true
-        end
+        def run(context : Context) : Nil
+          display = context.display
 
-        def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-          url = arguments.get("url").as_s
           display.error!("Must pass an argument to custom") if url.blank?
 
           case validated = Utils::URL.validate(url)
           in URI
-            config.use_custom!(validated)
-            config.save!
+            context.config.use_custom!(validated)
+            context.config.save!
             display.success("Successfully set custom url", validated.to_s)
           in Error::InvalidURL
             display.error!(validated)

@@ -6,14 +6,22 @@ module TandaCLI
 
   def main(args : Array(String), stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context
     build_context(stdin, stdout, stderr, config_file).tap do |context|
-      Commands::Main.new(context).execute(args)
+      Commands::Main.execute(args, context)
+    rescue ExitProgram
+      # graceful exit via display.error! / TandaCLI.exit!
+    rescue ex
+      {% if flag?(:debug) && !flag?(:test) %}
+        raise ex
+      {% else %}
+        context.display.error(ex.message || "An error occurred")
+      {% end %}
     end
   ensure
     config_file.close
   end
 
   def exit! : NoReturn
-    raise(Cling::ExitProgram.new(0))
+    raise(ExitProgram.new)
   end
 
   private def build_context(stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context

@@ -1,15 +1,14 @@
+require "../../../kebab/src/kebab"
+
 module TandaCLI
   module Commands
-    class Me < Base
-      requires_auth!
+    @[Kebab::Command(name: "me", summary: "Get your own information")]
+    struct Me
+      include Kebab::Parseable
 
-      def setup_
-        @name = "me"
-        @summary = @description = "Get your own information"
-      end
-
-      def run_(arguments : Cling::Arguments, options : Cling::Options) : Nil
-        me = client.users.me.or { |error| display.error!(error) }
+      def run(context : Context) : Nil
+        display = context.display
+        me = context.client.users.me.or { |error| display.error!(error) }
         Representers::Me.new(me).display(display)
       end
     end
