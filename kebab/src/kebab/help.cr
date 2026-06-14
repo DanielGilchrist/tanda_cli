@@ -1,11 +1,7 @@
 module Kebab
-  class Help
-    def initialize(@text : String); end
-
-    getter text : String
-
+  record Help, text : String do
     def to_s(io : IO) : Nil
-      io << @text
+      io << text
     end
   end
 end
