@@ -17,6 +17,16 @@ module TandaCLI
       include Kebab::Parseable
 
       private alias Environment = Configuration::Serialisable::Environment
+      private alias Subcommand = Auth |
+                                 Me |
+                                 PersonalDetails |
+                                 ClockIn |
+                                 TimeWorked |
+                                 Balance |
+                                 RegularHours |
+                                 CurrentUser |
+                                 Mode |
+                                 StartOfWeek
 
       def self.execute(args : Array(String), context : Context) : Nil
         case result = parse(args)
@@ -48,7 +58,7 @@ module TandaCLI
       getter? no_colour : Bool = false
 
       @[Kebab::Subcommand]
-      getter command : Auth | Me | PersonalDetails | ClockIn | TimeWorked | Balance | RegularHours | CurrentUser | Mode | StartOfWeek
+      getter command : Subcommand
     end
   end
 end
