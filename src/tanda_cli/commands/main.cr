@@ -1,4 +1,4 @@
-require "../../../kebab/src/kebab"
+require "kebab"
 require "./auth"
 require "./me"
 require "./personal_details"

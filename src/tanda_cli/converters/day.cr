@@ -1,4 +1,4 @@
-require "../../../kebab/src/kebab"
+require "kebab"
 require "../models/clock_in_moment"
 
 module TandaCLI

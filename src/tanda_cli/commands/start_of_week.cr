@@ -1,4 +1,4 @@
-require "../../../kebab/src/kebab"
+require "kebab"
 require "./start_of_week/*"
 
 module TandaCLI

@@ -1,4 +1,4 @@
-require "../../../kebab/src/kebab"
+require "kebab"
 
 module TandaCLI
   module Commands
