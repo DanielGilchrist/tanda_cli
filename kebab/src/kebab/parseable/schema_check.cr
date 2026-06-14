@@ -151,6 +151,16 @@ module Kebab
           end
         end
 
+        argument_names = {} of String => String
+        seen_arguments.each do |ivar|
+          argument = ivar.annotation(::Kebab::Argument)
+          name = (argument && argument[:name]) || ivar.name.stringify.gsub(/_/, "-")
+          if existing = argument_names[name]
+            raise "Duplicate argument <#{name.id}> on #{@type}: '#{existing.id}' and '#{ivar.name}' both use it."
+          end
+          argument_names[name] = ivar.name.stringify
+        end
+
         seen_optional_argument = false
         seen_arguments.each do |ivar|
           optional = ivar.type.nilable? || ivar.has_default_value?
