@@ -324,6 +324,103 @@ private struct EnumHaver
   getter format : SpecOutputFormat = SpecOutputFormat::Text
 end
 
+private struct VariadicRequired
+  include Kebab::Parseable
+
+  @[Kebab::Argument(description: "Output directory")]
+  getter output : String
+
+  @[Kebab::Argument(description: "Files")]
+  getter files : Array(String)
+end
+
+private struct VariadicOptional
+  include Kebab::Parseable
+
+  @[Kebab::Argument(description: "Files")]
+  getter files : Array(String) = [] of String
+end
+
+private struct VariadicTyped
+  include Kebab::Parseable
+
+  @[Kebab::Argument(description: "Numbers")]
+  getter values : Array(Int32)
+end
+
+module VariadicDoubler
+  def self.parse(input : String) : Int32 | Kebab::Convert::Failure
+    if n = input.to_i32?
+      n * 2
+    else
+      Kebab::Convert.failure("not a number", name: "doubled int")
+    end
+  end
+end
+
+private struct VariadicWithConverter
+  include Kebab::Parseable
+
+  @[Kebab::Argument(converter: VariadicDoubler)]
+  getter values : Array(Int32)
+end
+
+describe "Kebab::Parseable variadic arguments" do
+  it "collects multiple positionals into the variadic field" do
+    result = VariadicRequired.parse(["out", "a.txt", "b.txt", "c.txt"]).as(VariadicRequired)
+    result.output.should eq("out")
+    result.files.should eq(["a.txt", "b.txt", "c.txt"])
+  end
+
+  it "accepts a single positional for the variadic field" do
+    result = VariadicRequired.parse(["out", "only.txt"]).as(VariadicRequired)
+    result.files.should eq(["only.txt"])
+  end
+
+  it "errors when a required variadic has no positionals" do
+    error = VariadicRequired.parse(["out"]).as(Kebab::Errors)
+    error.should be_a(Kebab::Error::MissingArgument)
+  end
+
+  it "defaults to empty array when variadic has a default and no positionals" do
+    result = VariadicOptional.parse([] of String).as(VariadicOptional)
+    result.files.should eq([] of String)
+  end
+
+  it "converts each variadic element via the element type's converter" do
+    result = VariadicTyped.parse(["1", "2", "3"]).as(VariadicTyped)
+    result.values.should eq([1, 2, 3])
+  end
+
+  it "reports the failing element when a variadic element fails to convert" do
+    error = VariadicTyped.parse(["1", "potato", "3"]).as(Kebab::Error::InvalidValueOf(Int32))
+    error.value.should eq("potato")
+    error.option.should eq("values")
+  end
+
+  it "shows the variadic tail in the usage line and arguments section" do
+    help = VariadicRequired.parse(["--help"]).as(Kebab::Help).text
+    help.should contain("<output> <files>...")
+    help.should contain("<files>...")
+  end
+
+  it "renders <name>... in the Arguments section" do
+    error = VariadicRequired.parse(["out"]).as(Kebab::Error::MissingArgument)
+    error.to_s.should contain("<files>...")
+  end
+
+  it "applies the converter to each variadic element" do
+    result = VariadicWithConverter.parse(["1", "2", "3"]).as(VariadicWithConverter)
+    result.values.should eq([2, 4, 6])
+  end
+
+  it "reports the failing element when a variadic-with-converter element fails" do
+    error = VariadicWithConverter.parse(["1", "potato", "3"]).as(Kebab::Error::InvalidValueOf(Int32))
+    error.value.should eq("potato")
+    error.target_name.should eq("doubled int")
+  end
+end
+
 describe Kebab::Convert::Enum do
   it "parses a matching enum value (case-insensitive)" do
     EnumHaver.parse(["--format", "json"]).as(EnumHaver).format.should eq(SpecOutputFormat::Json)

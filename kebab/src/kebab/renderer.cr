@@ -40,7 +40,8 @@ module Kebab
     end
 
     def row(argument : Schema::Argument) : Tuple(String, String)
-      {"<#{argument.name}>", argument.description}
+      left = argument.variadic? ? "<#{argument.name}>..." : "<#{argument.name}>"
+      {left, argument.description}
     end
   end
 end

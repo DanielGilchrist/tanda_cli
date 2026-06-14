@@ -74,6 +74,9 @@ module Kebab
             if base == Bool
               raise "@[Kebab::Argument] '#{ivar.name}' has type Bool. Bool fields can't be positional. Use @[Kebab::Option] for flags."
             end
+            if base.name(generic_args: false).stringify == "Array" && ivar.type.nilable?
+              raise "Variadic argument '#{ivar.name}' on #{@type} can't be nilable. Use `Array(T)` (and default to `[] of T` for optional)."
+            end
             seen_arguments << ivar
           elsif option = ivar.annotation(::Kebab::Option)
             option.named_args.keys.each do |key|
@@ -159,6 +162,18 @@ module Kebab
             raise "Duplicate argument <#{name.id}> on #{@type}: '#{existing.id}' and '#{ivar.name}' both use it."
           end
           argument_names[name] = ivar.name.stringify
+        end
+
+        variadic_arguments = [] of Nil
+        seen_arguments.each do |ivar|
+          base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+          variadic_arguments << ivar if base.name(generic_args: false).stringify == "Array"
+        end
+        if variadic_arguments.size > 1
+          raise "#{@type} has #{variadic_arguments.size} variadic Array(T) arguments. Only one is allowed."
+        end
+        if variadic_arguments.size == 1 && variadic_arguments.first != seen_arguments.last
+          raise "Variadic Array(T) argument '#{variadic_arguments.first.name}' on #{@type} must be the last positional argument."
         end
 
         seen_optional_argument = false

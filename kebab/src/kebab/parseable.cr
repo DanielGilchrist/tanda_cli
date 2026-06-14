@@ -73,6 +73,11 @@ module Kebab
 
                 command_annotation = @type.annotation(::Kebab::Command)
                 own_command_name = (command_annotation && command_annotation[:name]) || @type.name.stringify.split("::").last.underscore
+
+                has_variadic_argument = argument_ivars.any? do |ivar|
+                  base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+                  base.name(generic_args: false).stringify == "Array"
+                end
               %}
 
               {% for ivar in option_ivars + argument_ivars %}
@@ -85,8 +90,7 @@ module Kebab
               {% end %}
 
               {% unless subcommand_ivar %}
-                %positionals = uninitialized StaticArray(String, {{argument_ivars.size + 1}})
-                %positionals_count = 0
+                %positionals = [] of String
               {% end %}
               %separated = false
               %index = 0
@@ -223,8 +227,7 @@ module Kebab
                       __kebab_bail(::Kebab::Error::UnknownCommand.new(%token.value, __kebab_commands_schema, __kebab_usage))
                     end
                   {% else %}
-                    %positionals[%positionals_count] = %token.value if %positionals_count < {{argument_ivars.size + 1}}
-                    %positionals_count += 1
+                    %positionals << %token.value
                   {% end %}
                 end
 
@@ -237,20 +240,37 @@ module Kebab
                   argument_name = (argument && argument[:name]) || ivar.name.stringify.gsub(/_/, "-")
                   converter = argument && argument[:converter]
                   base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+                  is_variadic = base.name(generic_args: false).stringify == "Array"
                 %}
-                if %positionals_count > {{position}}
-                  %positional{ivar.name} = %positionals[{{position}}]
-                  {% if converter %}
-                    %value{ivar.name} = __kebab_convert({{base}}, {{argument_name}}, %positional{ivar.name}, converter: {{converter}})
-                  {% else %}
-                    %value{ivar.name} = __kebab_convert({{base}}, {{argument_name}}, %positional{ivar.name})
-                  {% end %}
-                end
+                {% if is_variadic %}
+                  {% inner_type = base.type_vars.first %}
+                  if %positionals.size > {{position}}
+                    %elements = [] of {{inner_type}}
+                    %i = {{position}}
+                    while %i < %positionals.size
+                      {% if converter %}
+                        %elements << __kebab_convert({{inner_type}}, {{argument_name}}, %positionals[%i], converter: {{converter}})
+                      {% else %}
+                        %elements << __kebab_convert({{inner_type}}, {{argument_name}}, %positionals[%i])
+                      {% end %}
+                      %i += 1
+                    end
+                    %value{ivar.name} = %elements
+                  end
+                {% else %}
+                  if %positional{ivar.name} = %positionals[{{position}}]?
+                    {% if converter %}
+                      %value{ivar.name} = __kebab_convert({{base}}, {{argument_name}}, %positional{ivar.name}, converter: {{converter}})
+                    {% else %}
+                      %value{ivar.name} = __kebab_convert({{base}}, {{argument_name}}, %positional{ivar.name})
+                    {% end %}
+                  end
+                {% end %}
               {% end %}
 
-              {% unless subcommand_ivar %}
-                if %positionals_count > {{argument_ivars.size}}
-                  __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%positionals[{{argument_ivars.size}}], __kebab_arguments_schema, __kebab_usage))
+              {% if !subcommand_ivar && !has_variadic_argument %}
+                if %extra = %positionals[{{argument_ivars.size}}]?
+                  __kebab_bail(::Kebab::Error::UnexpectedArgument.new(%extra, __kebab_arguments_schema, __kebab_usage))
                 end
               {% end %}
 
@@ -313,6 +333,7 @@ module Kebab
               has_subcommand = false
               has_options = false
               argument_names = [] of Nil
+              tail_variadic = false
 
               @type.instance_vars.each do |ivar|
                 if ivar.annotation(::Kebab::Subcommand)
@@ -320,6 +341,8 @@ module Kebab
                 elsif argument = ivar.annotation(::Kebab::Argument)
                   argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
                   argument_names << argument_name
+                  base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+                  tail_variadic = base.name(generic_args: false).stringify == "Array"
                 elsif ivar.annotation(::Kebab::Option)
                   has_options = true
                 end
@@ -336,6 +359,7 @@ module Kebab
                 command_path: @__kebab_parent_path + [{{command_name}}],
                 has_options: true,
                 argument_names: {{argument_names}} of ::String,
+                has_variadic_tail: {{tail_variadic}},
               )
             {% end %}
           {% end %}
@@ -416,14 +440,16 @@ module Kebab
               @type.instance_vars.each do |ivar|
                 if argument = ivar.annotation(::Kebab::Argument)
                   argument_name = argument[:name] || ivar.name.stringify.gsub(/_/, "-")
-                  argument_rows << {argument_name, argument[:description] || ""}
+                  base = ivar.type.union? ? ivar.type.union_types.reject { |union_type| union_type == Nil }.first : ivar.type
+                  is_variadic = base.name(generic_args: false).stringify == "Array"
+                  argument_rows << {argument_name, argument[:description] || "", is_variadic}
                 end
               end
             %}
 
             [
               {% for argument_row in argument_rows %}
-                ::Kebab::Schema::Argument.new({{argument_row[0]}}, {{argument_row[1]}}),
+                ::Kebab::Schema::Argument.new({{argument_row[0]}}, {{argument_row[1]}}, {{argument_row[2]}}),
               {% end %}
             ] of ::Kebab::Schema::Argument
           {% end %}
