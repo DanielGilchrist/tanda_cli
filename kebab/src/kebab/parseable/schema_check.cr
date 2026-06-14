@@ -11,6 +11,24 @@ module Kebab
         seen_arguments = [] of Nil
         seen_subcommands = [] of Nil
 
+        ivar_names = [] of Nil
+        @type.instance_vars.each { |ivar| ivar_names << ivar.name.stringify }
+
+        @type.methods.each do |method|
+          kebab_annotation = method.annotation(::Kebab::Option) ||
+                             method.annotation(::Kebab::Argument) ||
+                             method.annotation(::Kebab::Subcommand)
+          if kebab_annotation
+            method_name = method.name.stringify
+            expected_ivar = method_name.ends_with?("?") ? method_name[0...(method_name.size - 1)] : method_name
+            unless ivar_names.includes?(expected_ivar)
+              raise "Field '#{method.name}' on #{@type} needs an explicit type. " \
+                    "Declare it as `getter #{expected_ivar.id} : SomeType` (required) or " \
+                    "`getter #{expected_ivar.id} : SomeType?` (optional)."
+            end
+          end
+        end
+
         @type.instance_vars.each do |ivar|
           applied = [] of String
           applied << "@[Kebab::Subcommand]" if ivar.annotation(::Kebab::Subcommand)
