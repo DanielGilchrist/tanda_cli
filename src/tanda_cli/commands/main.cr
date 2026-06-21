@@ -9,6 +9,7 @@ require "./regular_hours"
 require "./current_user"
 require "./mode"
 require "./start_of_week"
+require "./completions"
 
 module TandaCLI
   module Commands
@@ -26,13 +27,14 @@ module TandaCLI
                                  RegularHours |
                                  CurrentUser |
                                  Mode |
-                                 StartOfWeek
+                                 StartOfWeek |
+                                 Completions
 
       def self.execute(args : Array(String), context : Context) : Nil
         case result = parse(args)
         in Main
           Colorize.enabled = false if result.no_colour?
-          maybe_display_staging_warning(context, result.command)
+          maybe_display_staging_warning(context) unless result.command.is_a?(Mode) || result.command.is_a?(Completions)
           result.run(context)
         in Kebab::Help
           context.display.puts(result)
@@ -42,9 +44,7 @@ module TandaCLI
         end
       end
 
-      private def self.maybe_display_staging_warning(context : Context, command) : Nil
-        return if command.is_a?(Mode)
-
+      private def self.maybe_display_staging_warning(context : Context) : Nil
         case env = context.config.current
         in Environment::Production
         in Environment::Staging

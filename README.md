@@ -75,6 +75,23 @@ tanda_cli mode production # this is the default mode
 tanda_cli mode staging
 ```
 
+## Shell completions
+
+`tanda_cli` generates completion scripts for fish, bash, and zsh. Source it at shell startup so completions always match the installed binary:
+
+```fish
+# fish (~/.config/fish/config.fish)
+tanda_cli completions fish | source
+```
+```sh
+# bash (~/.bashrc)
+eval "$(tanda_cli completions bash)"
+```
+```sh
+# zsh (~/.zshrc, after compinit)
+source <(tanda_cli completions zsh)
+```
+
 ## Development
 
 ### API Docs

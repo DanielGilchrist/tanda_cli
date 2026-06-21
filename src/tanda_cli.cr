@@ -8,7 +8,6 @@ module TandaCLI
     build_context(stdin, stdout, stderr, config_file).tap do |context|
       Commands::Main.execute(args, context)
     rescue ExitProgram
-      # graceful exit via display.error! / TandaCLI.exit!
     rescue ex
       {% if flag?(:debug) && !flag?(:test) %}
         raise ex
