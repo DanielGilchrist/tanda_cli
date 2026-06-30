@@ -5,7 +5,7 @@ describe TandaCLI::Commands::ClockIn do
     context = run(["clockin", "--help"])
 
     output = context.stdout.to_s
-    output.should contain("Usage: tanda_cli clockin <command>")
+    output.should contain("Usage: tanda_cli clockin [options] <command>")
     output.should contain("Clock in/out")
     output.should contain("start")
     output.should contain("backfill")
@@ -16,7 +16,7 @@ describe TandaCLI::Commands::ClockIn do
   it "shows help when run bare" do
     context = run(["clockin"])
 
-    context.stdout.to_s.should contain("Usage: tanda_cli clockin <command>")
+    context.stdout.to_s.should contain("Usage: tanda_cli clockin [options] <command>")
     context.stderr.to_s.should be_empty
   end
 
@@ -34,7 +34,7 @@ describe TandaCLI::Commands::ClockIn do
 
     stderr = context.stderr.to_s
     stderr.should contain("Error: \"strat\" isn't a known command.")
-    stderr.should contain("Usage: tanda_cli clockin <command>")
+    stderr.should contain("Usage: tanda_cli clockin [options] <command>")
     stderr.should contain("Commands:")
     stderr.should contain("backfill")
     stderr.should contain("start")

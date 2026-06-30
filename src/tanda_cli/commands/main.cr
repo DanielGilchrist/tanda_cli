@@ -54,7 +54,7 @@ module TandaCLI
         end
       end
 
-      @[Kebab::Option(long: "no-colour", description: "Disable ANSI colours")]
+      @[Kebab::Option(global: true, long: "no-colour", description: "Disable ANSI colours")]
       getter? no_colour : Bool = false
 
       @[Kebab::Subcommand]
