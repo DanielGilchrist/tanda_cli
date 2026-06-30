@@ -8,7 +8,7 @@ module TandaCLI
       def self.from_shifts(shifts : Array(WorkedShift)) : self
         if shifts.any?(&.ongoing_break?)
           OnBreak
-        elsif shifts.any? { |shift| shift.start_time && shift.finish_time.nil? }
+        elsif shifts.any?(&.open?)
           ClockedIn
         else
           ClockedOut

@@ -29,10 +29,10 @@ describe TandaCLI::Commands::ClockIn::Finish do
     context.stdout.to_s.should be_empty
   end
 
-  it "clocks out on a previous day with --at and --date" do
+  it "updates the existing open shift when clocking out on a previous day" do
     travel_to(Time.local(2026, 2, 18, 10, 0)) do
       ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_in_shift)
-      ClockInSpecHelper.stub_clockin_success
+      ClockInSpecHelper.stub_shift_update(1, {finish: Time.local(2026, 2, 17, 17, 30).to_unix}.to_json)
 
       context = run(["clockin", "finish", "--at", "5:30pm", "--date", "yesterday"])
 

@@ -11,6 +11,7 @@ module TandaCLI
     class Request
       GET  = "GET"
       POST = "POST"
+      PUT  = "PUT"
 
       INTERNAL_SERVER_ERROR_STRING = "Internal Server Error"
 
@@ -24,14 +25,18 @@ module TandaCLI
       end
 
       def post(type : T.class, endpoint : String, body : Body) : Result(T) forall T
-        Result(T).from(exec(POST, endpoint, body: body))
+        Result(T).from(exec(POST, endpoint, body: body.to_json))
       end
 
-      private def exec(method : String, endpoint : String, query : Query? = nil, body : Body? = nil) : HTTP::Client::Response
+      def put(type : T.class, endpoint : String, body) : Result(T) forall T
+        Result(T).from(exec(PUT, endpoint, body: body.to_json))
+      end
+
+      private def exec(method : String, endpoint : String, query : Query? = nil, body : String? = nil) : HTTP::Client::Response
         with_no_internet_handler! do
           encoded_params = URI::Params.encode(query) if query
           uri = build_uri(endpoint, encoded_params)
-          request_body = body.try(&.to_json)
+          request_body = body
           headers = build_headers
 
           HTTP::Client.exec(method, url: uri, headers: headers, body: request_body).tap do |response|

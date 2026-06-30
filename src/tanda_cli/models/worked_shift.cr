@@ -31,11 +31,12 @@ module TandaCLI
         @valid_breaks ||= breaks.select(&.valid?)
       end
 
-      def ongoing? : Bool
-        return false unless start_time
-        return false unless finish_time.nil?
+      def open? : Bool
+        !start_time.nil? && finish_time.nil?
+      end
 
-        date.date == Utils::Time.now.date
+      def ongoing? : Bool
+        open? && date.date == Utils::Time.now.date
       end
 
       def last_event_time : ::Time?

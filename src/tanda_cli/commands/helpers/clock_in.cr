@@ -10,10 +10,24 @@ module TandaCLI
           display = context.display
           time = clock_in_time(context)
 
-          if skip_validations?
-            display.warning("Skipping clock in validations")
-          else
-            check_status!(context, clock_type, time)
+          shifts =
+            if skip_validations?
+              display.warning("Skipping clock in validations")
+              nil
+            else
+              worked_shifts(context, time)
+            end
+
+          check_status!(context, clock_type, shifts) if shifts
+
+          if backdated_finish?(clock_type, time)
+            shifts ||= worked_shifts(context, time)
+            open_shift = shifts.find(&.open?)
+
+            if open_shift
+              context.client.shifts.update(open_shift.id, &.finish(time)).or { |error| display.error!(error) }
+              return display_clock_in_success(context, clock_type, time)
+            end
           end
 
           base64_photo = resolve_clockin_photo(context, photo)
@@ -28,6 +42,10 @@ module TandaCLI
           ).or { |error| display.error!(error) }
 
           display_clock_in_success(context, clock_type, at ? time : nil)
+        end
+
+        private def backdated_finish?(clock_type : ClockType, time : Time) : Bool
+          clock_type.finish? && time.date < Utils::Time.now.date
         end
 
         private def clock_in_time(context : Context) : Time
@@ -45,13 +63,14 @@ module TandaCLI
           end
         end
 
-        private def check_status!(context : Context, clock_type : ClockType, time : Time)
-          display = context.display
-          api_shifts = context.client.shifts.list(context.current.user.id, time).or { |error| display.error!(error) }
-          shifts = api_shifts.compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
-          status = Models::ClockInStatus.from_shifts(shifts)
-          error = status.error_for(clock_type)
-          display.error!(error) if error
+        private def check_status!(context : Context, clock_type : ClockType, shifts : Array(Models::WorkedShift)) : Nil
+          error = Models::ClockInStatus.from_shifts(shifts).error_for(clock_type)
+          context.display.error!(error) if error
+        end
+
+        private def worked_shifts(context : Context, time : Time) : Array(Models::WorkedShift)
+          api_shifts = context.client.shifts.list(context.current.user.id, time).or { |error| context.display.error!(error) }
+          api_shifts.compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
         end
 
         private def resolve_clockin_photo(context : Context, clockin_photo : String?) : String? | Error::Base

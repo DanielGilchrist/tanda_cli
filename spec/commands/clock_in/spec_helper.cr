@@ -64,4 +64,10 @@ module ClockInSpecHelper
       .stub(:post, endpoint("/clockins"))
       .to_return(status: 200, body: "{}")
   end
+
+  def stub_shift_update(shift_id : Int32, body : String? = nil)
+    stub = WebMock.stub(:put, endpoint("/shifts/#{shift_id}"))
+    stub = stub.with(body: body) if body
+    stub.to_return(status: 200, body: "{}")
+  end
 end

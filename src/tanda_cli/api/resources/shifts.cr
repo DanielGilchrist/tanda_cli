@@ -1,4 +1,5 @@
 require "../request"
+require "../types/shift_update"
 
 module TandaCLI
   module API
@@ -24,6 +25,13 @@ module TandaCLI
             "show_notes" => show_notes.to_s,
             "cache_key"  => cache_key,
           })
+        end
+
+        def update(shift_id : Int32, & : Types::ShiftUpdate ->) : Result(Nil)
+          update = Types::ShiftUpdate.new
+          yield update
+
+          @request.put(Nil, "/shifts/#{shift_id}", body: update)
         end
 
         private def cache_key : String

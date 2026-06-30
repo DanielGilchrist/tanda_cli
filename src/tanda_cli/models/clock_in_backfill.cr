@@ -1,3 +1,4 @@
+require "./clock_in_backfill/break"
 require "./clock_in_backfill/entry"
 require "./clock_in_moment"
 require "./clock_in_status"
@@ -26,6 +27,34 @@ module TandaCLI
       getter ongoing_shift : WorkedShift?
       getter? complete : Bool
       getter? on_break : Bool
+
+      def finish_time : ::Time?
+        @entries.find(&.clock_type.finish?).try(&.time)
+      end
+
+      def breaks : Array(Break)?
+        shift = @ongoing_shift
+        return if shift.nil?
+
+        break_entries = @entries.select do |entry|
+          entry.clock_type.break_start? || entry.clock_type.break_finish?
+        end
+        return if break_entries.empty?
+
+        breaks = shift.valid_breaks.compact_map do |shift_break|
+          start = shift_break.start_time
+          next if start.nil?
+
+          finish = shift_break.ongoing? ? break_entries.shift?.try(&.time) : shift_break.finish_time
+          Break.new(start, finish, shift_break.paid?)
+        end
+
+        break_entries.each_slice(2) do |(start_entry, finish_entry)|
+          breaks << Break.new(start_entry.time, finish_entry.time, false)
+        end
+
+        breaks
+      end
 
       def needs_start? : Bool
         !@started
