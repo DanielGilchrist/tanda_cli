@@ -32,7 +32,7 @@ module TandaCLI
           summarise(context, entries)
           return display.puts "Cancelled — nothing submitted." unless confirm?(context)
 
-          submit(context, entries)
+          submit(context, backfill)
 
           clock_in_word = entries.one? ? "clock in" : "clock ins"
           display.success("Backfilled #{entries.size} #{clock_in_word} for #{Utils::Time.pretty_date(day)}")
@@ -124,15 +124,35 @@ module TandaCLI
           answer.nil? || answer.downcase.in?("y", "yes")
         end
 
-        private def submit(context : Context, entries : Array(Models::ClockInBackfill::Entry)) : Nil
-          entries.each do |entry|
-            context.client.clock_ins.create(
-              context.current.user.id,
-              entry.time,
-              entry.clock_type.to_underscore,
-              mobile_clockin: true
-            ).or { |error| context.display.error!(error) }
+        private def submit(context : Context, backfill : Models::ClockInBackfill) : Nil
+          shift = backfill.ongoing_shift
+
+          if shift && backfill.day.date < Utils::Time.now.date
+            update_shift(context, shift, backfill)
+          else
+            backfill.entries.each do |entry|
+              context.client.clock_ins.create(
+                context.current.user.id,
+                entry.time,
+                entry.clock_type.to_underscore,
+                mobile_clockin: true
+              ).or { |error| context.display.error!(error) }
+            end
           end
+        end
+
+        private def update_shift(context : Context, shift : Models::WorkedShift, backfill : Models::ClockInBackfill) : Nil
+          context.client.shifts.update(shift.id) do |update|
+            if finish = backfill.finish_time
+              update.finish(finish)
+            end
+
+            if breaks = backfill.breaks
+              breaks.each do |shift_break|
+                update.add_break(start: shift_break.start, finish: shift_break.finish, paid: shift_break.paid)
+              end
+            end
+          end.or { |error| context.display.error!(error) }
         end
       end
     end

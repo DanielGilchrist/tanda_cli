@@ -39,6 +39,48 @@ describe TandaCLI::Commands::ClockIn::Backfill do
     end
   end
 
+  it "updates the existing shift when backfilling a finish on a previous day" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_in_shift)
+      ClockInSpecHelper.stub_shift_update(1, {finish: Time.local(2026, 2, 17, 17, 30).to_unix}.to_json)
+
+      stdin = build_stdin("", "5:30pm", "")
+      context = run(["clockin", "backfill", "--date", "yesterday"], stdin: stdin)
+
+      output = context.stdout.to_s
+      output.should contain("You clocked in at 12:54 am.")
+      output.should contain("Clock out: 5:30 pm")
+      output.should contain("Success: Backfilled 1 clock in for Tuesday, 17 Feb 2026")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "updates the existing shift when backfilling an open break on a previous day" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.on_break_shift)
+      ClockInSpecHelper.stub_shift_update(1, {
+        finish: Time.local(2026, 2, 17, 2, 30).to_unix,
+        breaks: [{
+          start:  Time.local(2026, 2, 17, 0, 55).to_unix,
+          finish: Time.local(2026, 2, 17, 1, 25).to_unix,
+          paid:   false,
+          length: 30,
+        }],
+      }.to_json)
+
+      stdin = build_stdin("1:25am", "", "2:30am", "")
+      context = run(["clockin", "backfill", "--date", "yesterday"], stdin: stdin)
+
+      output = context.stdout.to_s
+      output.should contain("You clocked in at 12:54 am.")
+      output.should contain("Your break started at 12:55 am.")
+      output.should contain("Break finish: 1:25 am")
+      output.should contain("Clock out: 2:30 am")
+      output.should contain("Success: Backfilled 2 clock ins for Tuesday, 17 Feb 2026")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
   it "does nothing when the day is already complete" do
     travel_to(ClockInSpecHelper::SHIFT_FINISH + 1.hour) do
       ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_out_shift)
