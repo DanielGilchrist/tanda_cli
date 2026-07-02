@@ -35,7 +35,7 @@ module TandaCLI
         end
 
         private def cache_key : String
-          Time::Format.new("%Y-%m-%d-%H-%M").format(Time.local)
+          Time.utc.to_unix_ns.to_s
         end
       end
     end
