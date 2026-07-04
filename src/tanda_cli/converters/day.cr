@@ -4,7 +4,7 @@ require "../models/clock_in_moment"
 module TandaCLI
   module Converters
     module Day
-      def self.parse(input : String) : ::Time | Kebab::Convert::Failure
+      def self.convert(input : String) : ::Time | Kebab::Convert::Failure
         case parsed = Models::ClockInMoment.parse_day(input)
         in ::Time
           parsed
