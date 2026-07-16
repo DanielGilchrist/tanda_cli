@@ -6,7 +6,7 @@ shards:
 
   kebab:
     git: https://github.com/danielgilchrist/kebab.git
-    version: 0.1.0+git.commit.88b82ec609bfda0e5fd5aefced6713cd90e1da59
+    version: 0.1.0+git.commit.1a5f35a47e8d19744c17a76c1c534da634b4adf4
 
   webmock:
     git: https://github.com/manastech/webmock.cr.git

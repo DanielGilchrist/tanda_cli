@@ -23,7 +23,7 @@ module TandaCLI
       begin
         new(file, Serialisable.from_json(config_contents))
       rescue ex
-        {% if flag?(:debug) %}
+        {% if flag?(:raise_errors) %}
           raise(ex)
         {% else %}
           reason = ex.message.try(&.split("\n").first) if ex.is_a?(JSON::SerializableError) || ex.is_a?(JSON::ParseException)

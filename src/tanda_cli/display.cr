@@ -27,7 +27,7 @@ module TandaCLI
     end
 
     def fatal!(message : String) : NoReturn
-      {% if flag?(:debug) && !flag?(:test) %}
+      {% if flag?(:raise_errors) %}
         raise message
       {% else %}
         display_message(:fatal, message)
@@ -63,7 +63,7 @@ module TandaCLI
     end
 
     def error!(error_object : Error::Base) : NoReturn
-      {% if flag?(:debug) && !flag?(:test) %}
+      {% if flag?(:raise_errors) %}
         raise error_object
       {% else %}
         error(error_object)

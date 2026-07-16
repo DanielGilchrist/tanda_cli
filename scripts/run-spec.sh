@@ -13,4 +13,4 @@ for arg in "$@"; do
 	fi
 done
 
-shards check || shards install && crystal spec -Dtest $EXTRA_FLAGS --error-on-warnings --progress --error-trace $SPEC_ARGS
+shards check || shards install && crystal spec $EXTRA_FLAGS --error-on-warnings --progress --error-trace $SPEC_ARGS

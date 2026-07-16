@@ -21,15 +21,5 @@ module TandaCLI
     private def not_authenticated! : NoReturn
       @display.error!("Not authenticated. Run `tanda_cli auth login` to authenticate.")
     end
-
-    {% if flag?(:test) %}
-      def stdout : IO
-        @display.@stdout
-      end
-
-      def stderr : IO
-        @display.@stderr
-      end
-    {% end %}
   end
 end

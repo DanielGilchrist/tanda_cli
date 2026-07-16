@@ -6,6 +6,7 @@ require "webmock"
 Colorize.enabled = false
 
 require "../src/tanda_cli"
+require "./support/context"
 require "./support/travel_to_hack"
 require "./support/configuration/fixture_file"
 require "./support/shift_builder"

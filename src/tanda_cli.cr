@@ -9,7 +9,7 @@ module TandaCLI
       Commands::Main.execute(args, context)
     rescue ExitProgram
     rescue ex
-      {% if flag?(:debug) && !flag?(:test) %}
+      {% if flag?(:raise_errors) %}
         raise ex
       {% else %}
         context.display.error(ex.message || "An error occurred")
@@ -48,17 +48,3 @@ module TandaCLI
     Current::User.new(organisation.user_id, organisation.name)
   end
 end
-
-{% unless flag?(:test) %}
-  {% if flag?(:debug) %}
-    TandaCLI::Debug.setup
-  {% end %}
-
-  TandaCLI.main(
-    args: ARGV,
-    stdout: STDOUT,
-    stdin: STDIN,
-    stderr: STDERR,
-    config_file: TandaCLI::Configuration::File.new
-  )
-{% end %}
