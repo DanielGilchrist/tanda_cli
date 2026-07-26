@@ -13,12 +13,22 @@ on:
         default: "1.21.0"
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Run Ameba Linter
+        uses: crystal-ameba/github-action@master
+
   test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        crystal: ["${{ inputs.crystal_version }}"]
+        crystal: ["${{ inputs.crystal_version || '1.21.0' }}"]
 
     runs-on: ${{ matrix.os }}
 
@@ -42,10 +52,9 @@ jobs:
           path: |
             ~/.cache/shards
             lib
-            bin/ameba
-          key: ${{ runner.os }}-shards-v2-${{ hashFiles('**/shard.lock') }}
+          key: ${{ runner.os }}-shards-v3-${{ hashFiles('**/shard.lock') }}
           restore-keys: |
-            ${{ runner.os }}-shards-v2-
+            ${{ runner.os }}-shards-v3-
 
       - name: Install shards
         run: shards install --frozen
@@ -55,9 +64,6 @@ jobs:
 
       - name: Check formatting
         run: crystal tool format --check
-
-      - name: Lint
-        run: ./bin/ameba
 
       - name: Compile
         run: crystal build src/main.cr
