@@ -35,21 +35,21 @@ describe TandaCLI::Commands::Me do
     context = run(["me"])
 
     expected = <<-OUTPUT
-    👤 Harry Potter
-    📧 harrypotter@hogwarts.com
-    🌍 United Kingdom
-    🔑 Wizard
+      👤 Harry Potter
+      📧 harrypotter@hogwarts.com
+      🌍 United Kingdom
+      🔑 Wizard
 
-    🏢 Organisations:
-        🏷 Hogwarts
-        🌏 United Kingdom
-        📍 en-GB
+      🏢 Organisations:
+          🏷 Hogwarts
+          🌏 United Kingdom
+          📍 en-GB
 
-        🏷 Hogwarts 2: Electric Boogaloo
-        🌏 United Kingdom
-        📍 en-GB
+          🏷 Hogwarts 2: Electric Boogaloo
+          🌏 United Kingdom
+          📍 en-GB
 
-    OUTPUT
+      OUTPUT
 
     context.stdout.to_s.should eq(expected)
   end
@@ -68,10 +68,10 @@ describe TandaCLI::Commands::Me do
     context = run(["me"])
 
     expected = <<-OUTPUT
-    Error: Bad Request
-           Something went wrong!
+      Error: Bad Request
+             Something went wrong!
 
-    OUTPUT
+      OUTPUT
 
     context.stderr.to_s.should eq(expected)
   end

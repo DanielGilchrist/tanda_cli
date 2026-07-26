@@ -35,18 +35,18 @@ describe TandaCLI::Commands::TimeWorked::Today do
       context = run(["time_worked", "today", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      You've worked 8 hours and 0 minutes today
+        You've worked 8 hours and 0 minutes today
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end

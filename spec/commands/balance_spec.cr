@@ -32,11 +32,11 @@ describe TandaCLI::Commands::Balance do
     context = run(["balance"])
 
     expected = <<-OUTPUT
-    Leave Balance
-        ⏳ 128.0 hours
-        🌴 Holiday Leave
+      Leave Balance
+          ⏳ 128.0 hours
+          🌴 Holiday Leave
 
-    OUTPUT
+      OUTPUT
 
     context.stdout.to_s.should eq(expected)
   end

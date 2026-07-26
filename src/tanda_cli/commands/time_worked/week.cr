@@ -16,7 +16,6 @@ module TandaCLI
 
         def run(context : Context) : Nil
           display = context.display
-          print_shifts = self.display?
           offset = self.offset
 
           to = Utils::Time.now
@@ -30,7 +29,7 @@ module TandaCLI
 
           from ||= to.at_beginning_of_week(start_day)
           api_shifts = context.client.shifts
-            .list(context.current.user.id, from, to, show_notes: print_shifts)
+            .list(context.current.user.id, from, to, show_notes: display?)
             .or { |error| display.error!(error) }
 
           leave_requests = leave_requests_for(context, api_shifts)
@@ -45,7 +44,7 @@ module TandaCLI
             return display.puts "You haven't clocked in this week"
           end
 
-          if print_shifts
+          if display?
             summary.representer.display(display)
             display.puts
           end

@@ -38,18 +38,18 @@ describe TandaCLI::Commands::PersonalDetails do
     context = run(["personal_details"])
 
     expected = <<-OUTPUT
-    📖 Personal Details
-    📧 harrypotter@hogwarts.com
+      📖 Personal Details
+      📧 harrypotter@hogwarts.com
 
-    🚑 Emergency Contacts
-    🏷 Ronald Weasley
-    👥 Friend
-    📞 +440000000000
+      🚑 Emergency Contacts
+      🏷 Ronald Weasley
+      👥 Friend
+      📞 +440000000000
 
-    🏠 Address
-    4 Privet Drive, Little Whinging, Surrey, England, GU4 8HS, United Kingdom
+      🏠 Address
+      4 Privet Drive, Little Whinging, Surrey, England, GU4 8HS, United Kingdom
 
-    OUTPUT
+      OUTPUT
 
     context.stdout.to_s.should eq(expected)
   end
@@ -68,10 +68,10 @@ describe TandaCLI::Commands::PersonalDetails do
     context = run(["personal_details"])
 
     expected = <<-OUTPUT
-    Error: Bad Request
-           Something went wrong!
+      Error: Bad Request
+             Something went wrong!
 
-    OUTPUT
+      OUTPUT
 
     context.stderr.to_s.should eq(expected)
   end

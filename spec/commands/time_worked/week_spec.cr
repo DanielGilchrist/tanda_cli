@@ -51,30 +51,30 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Worked so far: 5 hours and 0 minutes
-      📅 Tuesday, 24 Dec 2024
-      🕓 8:30 am -<space>
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Worked so far: 5 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Time left today: 3 hours and 0 minutes
-      You can clock out at: 5:00 pm
+        Time left today: 3 hours and 0 minutes
+        You can clock out at: 5:00 pm
 
-      You've worked 13 hours and 0 minutes this week
+        You've worked 13 hours and 0 minutes this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -101,26 +101,26 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      Time worked: 5 hours and 50 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:41 am - 3:01 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:04 pm - 12:51 pm
-          ⏸️  30 minutes
-          💰 false
+        Time worked: 5 hours and 50 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:41 am - 3:01 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:04 pm - 12:51 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Worked so far: 0 hours and 53 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 4:27 pm -<space>
-      🚧 Pending
+        Worked so far: 0 hours and 53 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 4:27 pm -<space>
+        🚧 Pending
 
-      Time left today: 1 hours and 17 minutes
-      You can clock out at: 6:37 pm
+        Time left today: 1 hours and 17 minutes
+        You can clock out at: 6:37 pm
 
-      You've worked 6 hours and 43 minutes this week
+        You've worked 6 hours and 43 minutes this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -151,10 +151,10 @@ describe TandaCLI::Commands::TimeWorked::Week do
     travel_to(Time.local(2024, 12, 25)) do
       context = run(["time_worked", "week"])
       expected = <<-OUTPUT
-      You've worked 8 hours and 0 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+        You've worked 8 hours and 0 minutes this week
+        You've taken 8 hours and 0 minutes of leave this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -203,39 +203,39 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Leave taken: 8 hours and 0 minutes
-      📅 Tuesday, 24 Dec 2024
-      🚧 Approved
-      🌴 Annual Leave
+        Leave taken: 8 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🚧 Approved
+        🌴 Annual Leave
 
-      Leave taken: 8 hours and 0 minutes
-      📅 Wednesday, 25 Dec 2024
-      🚧 Approved
-      🌴 Holiday Leave
-      ℹ️  Christmas Day
+        Leave taken: 8 hours and 0 minutes
+        📅 Wednesday, 25 Dec 2024
+        🚧 Approved
+        🌴 Holiday Leave
+        ℹ️  Christmas Day
 
-      Time worked: 8 hours and 0 minutes
-      📅 Thursday, 26 Dec 2024
-      🕓 9:00 am - 5:30 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:30 pm - 1:00 pm
-          ⏸️  30 minutes
-          💰 false
+        Time worked: 8 hours and 0 minutes
+        📅 Thursday, 26 Dec 2024
+        🕓 9:00 am - 5:30 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:30 pm - 1:00 pm
+            ⏸️  30 minutes
+            💰 false
 
-      You've worked 16 hours and 0 minutes this week
-      You've taken 16 hours and 0 minutes of leave this week
+        You've worked 16 hours and 0 minutes this week
+        You've taken 16 hours and 0 minutes of leave this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -265,31 +265,31 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Worked so far: 5 hours and 0 minutes
-      📅 Tuesday, 24 Dec 2024
-      🕓 8:30 am -<space>
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Worked so far: 5 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Time left today: 3 hours and 0 minutes
-      You can clock out at: 5:00 pm
+        Time left today: 3 hours and 0 minutes
+        You can clock out at: 5:00 pm
 
-      You've worked 13 hours and 0 minutes this week
+        You've worked 13 hours and 0 minutes this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -319,31 +319,31 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Worked so far: 10 hours and 0 minutes
-      📅 Tuesday, 24 Dec 2024
-      🕓 8:30 am -<space>
-      🚧 Pending
-      ☕️ Breaks:
-          🕓 12:00 pm - 12:30 pm
-          ⏸️  30 minutes
-          💰 false
+        Worked so far: 10 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
 
-      Overtime this week: 2 hours and 0 minutes
-      Overtime since: 5:00 pm
+        Overtime this week: 2 hours and 0 minutes
+        Overtime since: 5:00 pm
 
-      You've worked 18 hours and 0 minutes this week
+        You've worked 18 hours and 0 minutes this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -367,23 +367,23 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
-      Time worked: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ 30 minutes
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ 30 minutes
 
-      ⚠️ Warning: Missing finish time for Tuesday, assuming regular hours finish time
-      Time worked: 8 hours and 0 minutes
-      📅 Tuesday, 24 Dec 2024
-      🕓 8:30 am - 5:00 pm
-      🚧 Pending
-      ☕️ 30 minutes
+        ⚠️ Warning: Missing finish time for Tuesday, assuming regular hours finish time
+        Time worked: 8 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ 30 minutes
 
-      You've worked 16 hours and 0 minutes this week
+        You've worked 16 hours and 0 minutes this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -415,24 +415,24 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT.gsub("<space>", " ")
-      Leave taken: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🚧 Approved
-      🌴 Holiday Leave
-      ℹ️  Christmas Eve (auto applied)
+        Leave taken: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🚧 Approved
+        🌴 Holiday Leave
+        ℹ️  Christmas Eve (auto applied)
 
-      Worked so far: 3 hours and 30 minutes
-      📅 Tuesday, 24 Dec 2024
-      🕓 8:30 am -<space>
-      🚧 Pending
+        Worked so far: 3 hours and 30 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
 
-      Time left today: 5 hours and 0 minutes
-      You can clock out at: 5:00 pm
+        Time left today: 5 hours and 0 minutes
+        You can clock out at: 5:00 pm
 
-      You've worked 3 hours and 30 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+        You've worked 3 hours and 30 minutes this week
+        You've taken 8 hours and 0 minutes of leave this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
@@ -454,15 +454,15 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"])
 
       expected = <<-OUTPUT
-      Leave taken: 8 hours and 0 minutes
-      📅 Monday, 23 Dec 2024
-      🚧 Approved
-      🌴 Annual Leave
+        Leave taken: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🚧 Approved
+        🌴 Annual Leave
 
-      You've worked 0 hours and 0 minutes this week
-      You've taken 8 hours and 0 minutes of leave this week
+        You've worked 0 hours and 0 minutes this week
+        You've taken 8 hours and 0 minutes of leave this week
 
-      OUTPUT
+        OUTPUT
 
       context.stdout.to_s.should eq(expected)
     end
