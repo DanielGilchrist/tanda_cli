@@ -56,7 +56,7 @@ jobs:
         run: shards install --frozen
 
       - name: Build ameba
-        run: test -x bin/ameba || (mkdir -p bin && crystal build lib/ameba/src/cli.cr -o bin/ameba)
+        run: test -x bin/ameba || shards build ameba
 
       - name: Check for dead code
         run: crystal tool unreachable src/main.cr --check

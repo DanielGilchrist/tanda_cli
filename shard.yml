@@ -7,6 +7,8 @@ authors:
 targets:
   tanda_cli:
     main: src/main.cr
+  ameba:
+    main: lib/ameba/bin/ameba.cr
 
 dependencies:
   kebab:
