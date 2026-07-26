@@ -98,7 +98,7 @@ module TandaCLI
             answer = context.input.request(message)
 
             if answer.nil?
-              return nil unless required
+              return unless required
 
               context.display.error!("Cancelled — nothing submitted.")
             end

@@ -13,16 +13,6 @@ on:
         default: "1.21.0"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download source
-        uses: actions/checkout@v4
-
-      - name: Run Ameba Linter
-        uses: crystal-ameba/github-action@master
-
   test:
     strategy:
       fail-fast: false
@@ -56,14 +46,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-shards-v3-
 
+      - name: Cache ameba binary
+        uses: actions/cache@v3
+        with:
+          path: bin/ameba
+          key: ${{ runner.os }}-ameba-${{ matrix.crystal }}-${{ hashFiles('**/shard.lock') }}
+
       - name: Install shards
         run: shards install --frozen
+
+      - name: Build ameba
+        run: test -x bin/ameba || (mkdir -p bin && crystal build lib/ameba/src/cli.cr -o bin/ameba)
 
       - name: Check for dead code
         run: crystal tool unreachable src/main.cr --check
 
       - name: Check formatting
         run: crystal tool format --check
+
+      - name: Lint
+        run: ./bin/ameba
 
       - name: Compile
         run: crystal build src/main.cr

@@ -79,7 +79,7 @@ module TandaCLI
 
           Log.debug(&.emit("Response from #{label}", body: response.body))
 
-          return nil unless response.success?
+          return unless response.success?
 
           API::Types::AccessToken.from_json(response.body)
         rescue Socket::Addrinfo::Error

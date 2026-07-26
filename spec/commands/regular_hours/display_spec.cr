@@ -10,24 +10,24 @@ describe TandaCLI::Commands::RegularHours::Display do
     context = run(["regular_hours", "display"])
 
     expected = <<-OUTPUT
-    Regular hours for Test Organisation
+      Regular hours for Test Organisation
 
-    📆 Monday
-      🕐 8:30 am - 5:00 pm • 30min break
+      📆 Monday
+        🕐 8:30 am - 5:00 pm • 30min break
 
-    📆 Tuesday
-      🕐 8:30 am - 5:00 pm • 30min break
+      📆 Tuesday
+        🕐 8:30 am - 5:00 pm • 30min break
 
-    📆 Wednesday
-      🕐 8:30 am - 5:00 pm • 30min break
+      📆 Wednesday
+        🕐 8:30 am - 5:00 pm • 30min break
 
-    📆 Thursday
-      🕐 8:30 am - 5:00 pm • 30min break
+      📆 Thursday
+        🕐 8:30 am - 5:00 pm • 30min break
 
-    📆 Friday
-      🕐 8:30 am - 5:00 pm • 30min break
+      📆 Friday
+        🕐 8:30 am - 5:00 pm • 30min break
 
-    OUTPUT
+      OUTPUT
 
     context.stdout.to_s.should eq(expected)
   end

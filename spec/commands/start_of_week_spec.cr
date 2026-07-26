@@ -22,10 +22,10 @@ describe TandaCLI::Commands::StartOfWeek do
       context.config.start_of_week.should eq(Time::DayOfWeek::Saturday)
 
       expected = <<-OUTPUT
-      Error: Invalid start of week!
-             "#{start_of_week}" is not a valid day of the week.
+        Error: Invalid start of week!
+               "#{start_of_week}" is not a valid day of the week.
 
-      OUTPUT
+        OUTPUT
 
       context.stderr.to_s.should eq(expected)
     end
