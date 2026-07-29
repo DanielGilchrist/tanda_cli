@@ -7,7 +7,12 @@ require "../models/worked_shift"
 module TandaCLI
   module Representers
     struct Shift < Base(Models::WorkedShift)
-      def initialize(@object : Models::WorkedShift, @expected_finish_time : Time? = nil, @expected_break_length : Time::Span? = nil)
+      def initialize(
+        @object : Models::WorkedShift,
+        @breaks : Models::ShiftBreaks,
+        @expected_finish_time : Time? = nil,
+        @expected_break_length : Time::Span? = nil,
+      )
       end
 
       private def build_display(builder : Builder)
@@ -21,14 +26,14 @@ module TandaCLI
 
         builder << "🚧 #{@object.status}\n"
 
-        build_shift_breaks(builder) if @object.valid_breaks.present? || @expected_break_length
+        build_shift_breaks(builder) if @breaks.measured.present? || @expected_break_length
         build_notes(builder) if @object.notes.present?
       end
 
       private def build_shift_breaks(builder : Builder)
         expected_break_length = @expected_break_length
 
-        if (breaks = @object.valid_breaks).present?
+        if (breaks = @breaks.measured).present?
           builder << "☕️ Breaks:\n".colorize.white.bold
           last_break_index = breaks.size - 1
 

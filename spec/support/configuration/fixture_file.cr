@@ -5,6 +5,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
     Default
     DefaultStaging
     NoRegularHours
+    OvernightRegularHours
     Unauthenticated
 
     def read : Bytes

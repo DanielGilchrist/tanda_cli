@@ -55,7 +55,16 @@ module TandaCLI
       end
 
       def any_ongoing? : Bool
-        worked_shifts.any?(&.ongoing?)
+        worked_shifts.any? { |shift| in_progress?(shift) }
+      end
+
+      # An overnight shift is still in progress after midnight, so the date alone can't tell us
+      def in_progress?(shift : WorkedShift) : Bool
+        return false unless shift.open?
+        return true if shift.date.date == Utils::Time.now.date
+
+        expected_finish = expected_finish_at(shift)
+        !expected_finish.nil? && Utils::Time.now < expected_finish
       end
 
       def time_left : Time::Span?
@@ -72,7 +81,7 @@ module TandaCLI
 
         applicable_regular_hours_schedules.sum do |regular_hours_schedule|
           day_shifts = worked_by_day_of_week[regular_hours_schedule.day_of_week]?
-          if day_shifts && day_shifts.any?(&.ongoing_without_break?) && !breaks_already_taken?(regular_hours_schedule, day_shifts)
+          if day_shifts && day_shifts.any? { |shift| in_progress_without_break?(shift) } && !breaks_already_taken?(regular_hours_schedule, day_shifts)
             regular_hours_schedule.length
           else
             regular_hours_schedule.worked_length
@@ -96,8 +105,17 @@ module TandaCLI
         !expected_finish_time_for(shift).nil?
       end
 
+      def breaks_for(shift : WorkedShift) : ShiftBreaks
+        build_shift_breaks(shift, shift.valid_breaks)
+      end
+
       def shift_representer_for(shift : WorkedShift) : Representers::Shift
-        Representers::Shift.new(shift, expected_finish_time_for(shift), expected_break_length_for(shift))
+        Representers::Shift.new(
+          shift,
+          breaks_for(shift),
+          expected_finish_time_for(shift),
+          expected_break_length_for(shift)
+        )
       end
 
       private def raw_time_worked(shift : WorkedShift) : Time::Span?
@@ -113,11 +131,13 @@ module TandaCLI
       private def worked_so_far(shift : WorkedShift) : Time::Span?
         start_time = shift.start_time
         return if start_time.nil?
+        return unless in_progress?(shift)
 
-        now = Utils::Time.now
-        return if now.date != start_time.date
+        (Utils::Time.now - start_time) - total_unpaid_break_minutes(shift)
+      end
 
-        (now - start_time) - total_unpaid_break_minutes(shift)
+      private def in_progress_without_break?(shift : WorkedShift) : Bool
+        in_progress?(shift) && shift.valid_breaks.empty?
       end
 
       private def expected_time_worked(shift : WorkedShift) : Time::Span?
@@ -130,17 +150,31 @@ module TandaCLI
       private def matching_schedule_for(shift : WorkedShift) : RegularHoursSchedule?
         return if raw_time_worked(shift)
         return if shift.finish_time
+        return if in_progress?(shift)
 
-        schedules = @regular_hours_schedules
-        return unless schedules
-        return if shift.date.date == Utils::Time.now.date
+        schedule_for(shift)
+      end
 
-        schedules.find(&.day_of_week.==(shift.day_of_week))
+      private def schedule_for(shift : WorkedShift) : RegularHoursSchedule?
+        @regular_hours_schedules.try(&.find(&.day_of_week.==(shift.day_of_week)))
       end
 
       private def calculate_expected_time_worked(shift : WorkedShift, schedule : RegularHoursSchedule) : Time::Span?
         start_time = shift.start_time
-        return unless start_time
+        expected_finish = expected_finish_at(shift)
+        return unless start_time && expected_finish
+
+        actual_break_time = total_unpaid_break_minutes(shift)
+        expected_break_time = actual_break_time.zero? ? schedule.break_length : Time::Span.zero
+        total_break_time = actual_break_time + expected_break_time
+
+        (expected_finish - start_time) - total_break_time
+      end
+
+      # Anchored to the shift itself so an overnight shift finishes the following day
+      private def expected_finish_at(shift : WorkedShift) : Time?
+        schedule = schedule_for(shift)
+        return if schedule.nil?
 
         expected_finish = Time.local(
           shift.date.year,
@@ -151,19 +185,25 @@ module TandaCLI
           location: Utils::Time.location
         )
 
-        actual_break_time = breaks_for_calculation(shift).sum(&.ongoing_length)
-        expected_break_time = actual_break_time.zero? ? schedule.break_length : Time::Span.zero
-        total_break_time = actual_break_time + expected_break_time
+        start_time = shift.start_time
+        return expected_finish if start_time.nil? || expected_finish > start_time
 
-        (expected_finish - start_time) - total_break_time
+        expected_finish + 1.day
       end
 
       private def total_unpaid_break_minutes(shift : WorkedShift) : Time::Span
-        breaks_for_calculation(shift).sum(&.ongoing_length)
+        breaks = @treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)
+
+        build_shift_breaks(shift, breaks).total
       end
 
-      private def breaks_for_calculation(shift : WorkedShift) : Array(ShiftBreak)
-        @treat_paid_breaks_as_unpaid ? shift.valid_breaks : shift.valid_breaks.reject(&.paid?)
+      private def build_shift_breaks(shift : WorkedShift, breaks : Array(ShiftBreak)) : ShiftBreaks
+        ShiftBreaks.new(
+          shift,
+          breaks,
+          expected_finish_time: expected_finish_at(shift),
+          expected_break_length: schedule_for(shift).try(&.break_length)
+        )
       end
 
       private def breaks_already_taken?(

@@ -14,7 +14,7 @@ module TandaCLI
         getter finish_time : Time
 
         def length : Time::Span
-          finish_time - start_time
+          Utils::Time.span_between(start_time, finish_time)
         end
       end
     end

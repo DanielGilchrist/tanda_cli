@@ -18,18 +18,6 @@ module TandaCLI
 
         finish_time.nil?
       end
-
-      def ongoing_length : Time::Span
-        start_time = self.start_time
-        finish_time = self.finish_time
-        return length if finish_time || start_time.nil?
-
-        Utils::Time.now - start_time
-      end
-
-      def pretty_ongoing_length : String
-        "#{ongoing_length.total_minutes.to_i} minutes"
-      end
     end
   end
 end

@@ -12,6 +12,12 @@ module TandaCLI
         ::Time.local
       end
 
+      # Times of day carry no date, so a finish before the start wraps past midnight
+      def span_between(start_time : ::Time, finish_time : ::Time) : ::Time::Span
+        span = finish_time - start_time
+        span.negative? ? span + 1.day : span
+      end
+
       def pretty_date(date : ::Time) : String
         ::Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
       end

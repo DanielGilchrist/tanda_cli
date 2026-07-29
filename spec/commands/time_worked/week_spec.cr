@@ -295,6 +295,162 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
+  it "Assumes a regular hours break when a break was never finished on a previous day" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: nil,
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: nil,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        start: Time.local(2024, 12, 24, 8, 30),
+        finish: nil,
+        break_start: Time.local(2024, 12, 24, 12),
+        break_finish: Time.local(2024, 12, 24, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        ⚠️ Warning: Missing break finish time for Monday, assuming a 30 minute break
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm -<space>
+            ⏸️  30 minutes, assuming regular hours break
+            💰 false
+
+        Worked so far: 5 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        Time left today: 3 hours and 0 minutes
+        You can clock out at: 5:00 pm
+
+        You've worked 13 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Keeps counting a break that is still running on an overnight shift" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 22),
+        finish: nil,
+        break_start: Time.local(2024, 12, 23, 23, 50),
+        break_finish: nil,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 0, 30)) do
+      context = run(["time_worked", "week", "--display"], config_fixture: :overnight_regular_hours)
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        Worked so far: 1 hours and 50 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 10:00 pm -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 11:50 pm -<space>
+            ⏸️  40 minutes
+            💰 false
+
+        Time left today: 5 hours and 40 minutes
+        You can clock out at: 6:10 am
+
+        You've worked 1 hours and 50 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Assumes a regular hours break for an overnight break that was never finished" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 22),
+        finish: nil,
+        break_start: Time.local(2024, 12, 23, 23, 50),
+        break_finish: nil,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 8)) do
+      context = run(["time_worked", "week", "--display"], config_fixture: :overnight_regular_hours)
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        ⚠️ Warning: Missing break finish time for Monday, assuming a 30 minute break
+        Time worked: 7 hours and 30 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 10:00 pm - 6:00 am
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 11:50 pm -<space>
+            ⏸️  30 minutes, assuming regular hours break
+            💰 false
+
+        You've worked 7 hours and 30 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Assumes a regular hours break when a break was never finished on a completed previous shift" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 17),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: nil,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        ⚠️ Warning: Missing break finish time for Monday, assuming a 30 minute break
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm -<space>
+            ⏸️  30 minutes, assuming regular hours break
+            💰 false
+
+        You've worked 8 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
   it "Shows overtime if previous day filled and past expected finish" do
     TimeWorkedSpecHelper.stub_shifts([
       ShiftBuilder.build_shift(

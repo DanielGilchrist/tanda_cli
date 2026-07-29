@@ -47,10 +47,6 @@ module TandaCLI
       def ongoing_break? : Bool
         valid_breaks.any?(&.ongoing?)
       end
-
-      def ongoing_without_break? : Bool
-        ongoing? && valid_breaks.empty?
-      end
     end
   end
 end

@@ -50,7 +50,7 @@ module TandaCLI
       getter automatic_break_length : Time::Span
 
       def length : Time::Span
-        finish_time - start_time
+        Utils::Time.span_between(start_time, finish_time)
       end
 
       def worked_length : Time::Span
