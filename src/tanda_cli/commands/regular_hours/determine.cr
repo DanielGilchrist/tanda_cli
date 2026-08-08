@@ -48,8 +48,10 @@ module TandaCLI
         end
 
         private def fetch_rosters(context : Context, dates : Array(Time)) : Array(API::Types::Roster)
+          fetch_rosters = context.client.rosters
+
           API::Concurrent
-            .fetch(dates) { |date| context.client.rosters.on(date) }
+            .fetch(dates) { |date| fetch_rosters.on(date) }
             .map(&.or { |error| context.display.error!(error) })
         end
 
