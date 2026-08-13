@@ -53,6 +53,30 @@ describe TandaCLI::Commands::ClockIn::Start do
     end
   end
 
+  it "clocks in with a short am meridiem in --at" do
+    travel_to(Time.local(2026, 2, 17, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45a"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "clocks in with a short pm meridiem in --at" do
+    travel_to(Time.local(2026, 2, 17, 21, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8p"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:00 pm! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
   it "errors when --at is in the future" do
     travel_to(Time.local(2026, 2, 17, 10, 0)) do
       context = run(["clockin", "start", "--at", "11:00"])
@@ -70,6 +94,13 @@ describe TandaCLI::Commands::ClockIn::Start do
 
     context.stderr.to_s.should contain("\"potato\" isn't a valid time of day for \"--at\"")
     context.stderr.to_s.should contain(%(try "8:45", "5:30pm" or "17:30"))
+    context.stdout.to_s.should be_empty
+  end
+
+  it "errors when --at has an hour outside 1-12 with a meridiem" do
+    context = run(["clockin", "start", "--at", "13p"])
+
+    context.stderr.to_s.should contain("\"13p\" isn't a valid time of day for \"--at\"")
     context.stdout.to_s.should be_empty
   end
 

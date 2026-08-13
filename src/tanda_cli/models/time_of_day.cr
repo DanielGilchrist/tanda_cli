@@ -3,27 +3,44 @@ require "../error/unparseable_time_of_day"
 module TandaCLI
   module Models
     struct TimeOfDay
-      PATTERN = /\A(?<hour>\d{1,2}):?(?<minute>[0-5]\d)?\s*(?<meridiem>[ap]\.?m\.?)?\z/i
+      PATTERN = /\A(?<hour>\d{1,2}):?(?<minute>[0-5]\d)?\s*(?<meridiem>[ap](?:\.?m)?\.?)?\z/i
+
+      enum Meridiem
+        AM
+        PM
+
+        def self.parse?(match : Regex::MatchData) : self?
+          meridiem_str = match["meridiem"]?.try(&.downcase.delete('.'))
+          return if meridiem_str.nil? || meridiem_str.blank?
+
+          meridiem_str += 'm' if meridiem_str[-1] != 'm'
+          Meridiem.parse?(meridiem_str)
+        end
+      end
 
       def self.parse(input : String) : TimeOfDay | Error::Base
         match = PATTERN.match(input.strip)
-        return Error::UnparseableTimeOfDay.new(input) if match.nil?
+        return unparseable(input) if match.nil?
 
         hour = match["hour"].to_i
         minute = match["minute"]?.try(&.to_i) || 0
-        meridiem = match["meridiem"]?.try(&.downcase.delete('.'))
+        meridiem = Meridiem.parse?(match)
 
         case meridiem
-        when "am", "pm"
-          return Error::UnparseableTimeOfDay.new(input) unless hour.in?(1..12)
+        in Meridiem
+          return unparseable(input) unless hour.in?(1..12)
 
           hour = 0 if hour == 12
-          hour += 12 if meridiem == "pm"
-        else
-          return Error::UnparseableTimeOfDay.new(input) unless hour.in?(0..23)
+          hour += 12 if meridiem.is_a?(Meridiem::PM)
+        in Nil
+          return unparseable(input) unless hour.in?(0..23)
         end
 
         new(hour, minute)
+      end
+
+      private def self.unparseable(input : String) : Error::UnparseableTimeOfDay
+        Error::UnparseableTimeOfDay.new(input)
       end
 
       private def initialize(@hour : Int32, @minute : Int32); end

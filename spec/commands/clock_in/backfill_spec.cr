@@ -21,6 +21,24 @@ describe TandaCLI::Commands::ClockIn::Backfill do
     end
   end
 
+  it "backfills a full day using short meridiem forms" do
+    travel_to(Time.local(2026, 2, 17, 18, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      stdin = build_stdin("8:45a", "12p", "12:30p", "", "5:30p", "")
+      context = run(["clockin", "backfill"], stdin: stdin)
+
+      output = context.stdout.to_s
+      output.should contain("Clock in: 8:45 am")
+      output.should contain("Break start: 12:00 pm")
+      output.should contain("Break finish: 12:30 pm")
+      output.should contain("Clock out: 5:30 pm")
+      output.should contain("Success: Backfilled 4 clock ins for Tuesday, 17 Feb 2026")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
   it "resumes from an open break" do
     travel_to(ClockInSpecHelper::BREAK_START + 2.hours) do
       ClockInSpecHelper.stub_shifts(ClockInSpecHelper.on_break_shift)
@@ -105,6 +123,19 @@ describe TandaCLI::Commands::ClockIn::Backfill do
         "       8:30 am must be after 9:00 am.\n"
       )
       context.stdout.to_s.should contain("Success: Backfilled 1 clock in for Tuesday, 17 Feb 2026")
+    end
+  end
+
+  it "backfills a midnight clock in given as 12a" do
+    travel_to(Time.local(2026, 2, 17, 18, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      stdin = build_stdin("12a", "", "", "")
+      context = run(["clockin", "backfill"], stdin: stdin)
+
+      context.stdout.to_s.should contain("Clock in: 12:00 am")
+      context.stderr.to_s.should be_empty
     end
   end
 
