@@ -10,6 +10,7 @@ module TandaCLI
       def initialize(
         @object : Models::WorkedShift,
         @breaks : Models::ShiftBreaks,
+        @expected_start_time : Time? = nil,
         @expected_finish_time : Time? = nil,
         @expected_break_length : Time::Span? = nil,
       )
@@ -18,8 +19,10 @@ module TandaCLI
       private def build_display(builder : Builder)
         builder << "📅 #{@object.pretty_date}\n"
 
+        pretty_expected_start_time = @expected_start_time.try { |time| Utils::Time.pretty_time(time) }
         pretty_expected_finish_time = @expected_finish_time.try { |time| Utils::Time.pretty_time(time) }
-        pretty_start = @object.pretty_start_time
+        pretty_start = @object.pretty_start_time || pretty_expected_start_time
+        pretty_start = pretty_start.colorize.yellow if pretty_start && pretty_expected_start_time
         pretty_finish = @object.pretty_finish_time || pretty_expected_finish_time
         pretty_finish = pretty_finish.colorize.yellow if pretty_finish && pretty_expected_finish_time
         builder << "🕓 #{pretty_start} - #{pretty_finish}\n" if pretty_start || pretty_finish

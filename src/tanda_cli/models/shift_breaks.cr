@@ -16,6 +16,7 @@ module TandaCLI
       def initialize(
         @shift : WorkedShift,
         @breaks : Array(ShiftBreak),
+        @expected_start_time : ::Time? = nil,
         @expected_finish_time : ::Time? = nil,
         @expected_break_length : Time::Span? = nil,
       ); end
@@ -117,7 +118,7 @@ module TandaCLI
       end
 
       private def plausibly_in_progress? : Bool
-        start_time = @shift.start_time
+        start_time = @shift.start_time || @expected_start_time
         return false if start_time.nil?
 
         Utils::Time.now - start_time < MAX_SHIFT_LENGTH

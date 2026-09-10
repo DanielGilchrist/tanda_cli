@@ -6,32 +6,44 @@ module TandaCLI
   module Representers
     struct ShiftSummary < Base(Models::ShiftSummary)
       private def build_display(builder : Builder)
-        last_index = @object.size - 1
+        displayable_shifts = @object.select { |classified_shift| displayable?(classified_shift) }
+        last_index = displayable_shifts.size - 1
 
-        @object.each_with_index do |classified_shift, index|
+        displayable_shifts.each_with_index do |classified_shift, index|
           case classified_shift
           in Models::LeaveShift
             build_leave_shift(builder, classified_shift)
           in Models::WorkedShift
             build_worked_shift(builder, classified_shift)
-          end.tap do |rendered|
-            builder.puts if rendered && index != last_index
           end
+
+          builder.puts if index != last_index
         end
       end
 
-      private def build_leave_shift(builder : Builder, leave_shift : Models::LeaveShift) : Bool
-        length = leave_shift.breakdown.hours
-        return false if length.zero?
+      private def displayable?(classified_shift : Models::Shift::Any) : Bool
+        case classified_shift
+        in Models::LeaveShift
+          !classified_shift.leave_taken.zero?
+        in Models::WorkedShift
+          @object.recorded?(classified_shift)
+        end
+      end
+
+      private def build_leave_shift(builder : Builder, leave_shift : Models::LeaveShift) : Nil
+        length = leave_shift.leave_taken
 
         builder.puts "#{"Leave taken:".colorize.white.bold} #{length.hours} hours and #{length.minutes} minutes"
 
         leave_shift.daily_breakdown_representer.build(builder)
-        true
       end
 
-      private def build_worked_shift(builder : Builder, worked_shift : Models::WorkedShift) : Bool
+      private def build_worked_shift(builder : Builder, worked_shift : Models::WorkedShift) : Nil
         day_name = worked_shift.date.to_s("%A")
+
+        if @object.assumed_start_for?(worked_shift)
+          builder.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing start time for #{day_name}, assuming regular hours start time"
+        end
 
         if @object.assumed_finish_for?(worked_shift)
           builder.puts "#{"⚠️ Warning:".colorize.yellow.bold} Missing finish time for #{day_name}, assuming regular hours finish time"
@@ -56,7 +68,6 @@ module TandaCLI
         builder.puts "#{label.colorize.white.bold} #{time_worked.hours} hours and #{time_worked.minutes} minutes"
 
         @object.shift_representer_for(worked_shift).build(builder)
-        true
       end
     end
   end

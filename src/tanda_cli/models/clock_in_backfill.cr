@@ -14,7 +14,7 @@ module TandaCLI
 
       def initialize(@day : ::Time, shifts : Array(WorkedShift))
         status = ClockInStatus.from_shifts(shifts)
-        @complete = !shifts.empty? && status.clocked_out?
+        @complete = shifts.any?(&.start_time) && status.clocked_out?
         @started = !status.clocked_out?
         @on_break = status.on_break?
         @last_event_time = shifts.compact_map(&.last_event_time).max?

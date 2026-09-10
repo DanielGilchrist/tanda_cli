@@ -8,7 +8,6 @@ module TandaCLI
 
       def self.from?(api_shift : API::Types::Shift) : WorkedShift?
         return if api_shift.leave_request_id
-        return if api_shift.start_time.nil? && api_shift.finish_time.nil?
 
         new(api_shift)
       end

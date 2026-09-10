@@ -60,7 +60,8 @@ module TandaCLI
 
       # An overnight shift is still in progress after midnight, so the date alone can't tell us
       def in_progress?(shift : WorkedShift) : Bool
-        return false unless shift.open?
+        return false if shift.finish_time
+        return false if effective_start_time_for(shift).nil?
         return true if shift.date.date == Utils::Time.now.date
 
         expected_finish = expected_finish_at(shift)
@@ -97,6 +98,23 @@ module TandaCLI
         matching_schedule_for(shift).try(&.finish_time)
       end
 
+      def expected_start_time_for(shift : WorkedShift) : Time?
+        return unless shift.start_time.nil?
+
+        assumed_start_at(shift)
+      end
+
+      def assumed_start_for?(shift : WorkedShift) : Bool
+        !expected_start_time_for(shift).nil?
+      end
+
+      def recorded?(shift : WorkedShift) : Bool
+        return true if shift.start_time || shift.finish_time
+        return true if shift.valid_breaks.present?
+
+        assumed_start_for?(shift)
+      end
+
       def expected_break_length_for(shift : WorkedShift) : Time::Span?
         matching_schedule_for(shift).try(&.break_length)
       end
@@ -113,9 +131,24 @@ module TandaCLI
         Representers::Shift.new(
           shift,
           breaks_for(shift),
+          expected_start_time_for(shift),
           expected_finish_time_for(shift),
           expected_break_length_for(shift)
         )
+      end
+
+      private def effective_start_time_for(shift : WorkedShift) : ::Time?
+        shift.start_time || assumed_start_at(shift)
+      end
+
+      private def assumed_start_at(shift : WorkedShift) : ::Time?
+        schedule = schedule_for(shift)
+        return if schedule.nil?
+
+        assumed_start = at_shift_date(shift, schedule.start_time)
+        return if Utils::Time.now < assumed_start
+
+        assumed_start
       end
 
       private def raw_time_worked(shift : WorkedShift) : Time::Span?
@@ -129,7 +162,7 @@ module TandaCLI
       end
 
       private def worked_so_far(shift : WorkedShift) : Time::Span?
-        start_time = shift.start_time
+        start_time = effective_start_time_for(shift)
         return if start_time.nil?
         return unless in_progress?(shift)
 
@@ -151,6 +184,7 @@ module TandaCLI
         return if raw_time_worked(shift)
         return if shift.finish_time
         return if in_progress?(shift)
+        return if effective_start_time_for(shift).nil?
 
         schedule_for(shift)
       end
@@ -160,7 +194,7 @@ module TandaCLI
       end
 
       private def calculate_expected_time_worked(shift : WorkedShift, schedule : RegularHoursSchedule) : Time::Span?
-        start_time = shift.start_time
+        start_time = effective_start_time_for(shift)
         expected_finish = expected_finish_at(shift)
         return unless start_time && expected_finish
 
@@ -176,19 +210,23 @@ module TandaCLI
         schedule = schedule_for(shift)
         return if schedule.nil?
 
-        expected_finish = Time.local(
-          shift.date.year,
-          shift.date.month,
-          shift.date.day,
-          schedule.finish_time.hour,
-          schedule.finish_time.minute,
-          location: Utils::Time.location
-        )
+        expected_finish = at_shift_date(shift, schedule.finish_time)
 
         start_time = shift.start_time
         return expected_finish if start_time.nil? || expected_finish > start_time
 
         expected_finish + 1.day
+      end
+
+      private def at_shift_date(shift : WorkedShift, time_of_day : Time) : Time
+        Time.local(
+          shift.date.year,
+          shift.date.month,
+          shift.date.day,
+          time_of_day.hour,
+          time_of_day.minute,
+          location: Utils::Time.location
+        )
       end
 
       private def total_unpaid_break_minutes(shift : WorkedShift) : Time::Span
@@ -201,6 +239,7 @@ module TandaCLI
         ShiftBreaks.new(
           shift,
           breaks,
+          expected_start_time: expected_start_time_for(shift),
           expected_finish_time: expected_finish_at(shift),
           expected_break_length: schedule_for(shift).try(&.break_length)
         )

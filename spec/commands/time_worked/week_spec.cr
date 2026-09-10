@@ -623,4 +623,142 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context.stdout.to_s.should eq(expected)
     end
   end
+
+  it "Assumes a regular hours start time when a break was clocked without a clock in" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        date: Time.local(2024, 12, 24),
+        break_start: Time.local(2024, 12, 24, 12),
+        break_finish: Time.local(2024, 12, 24, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        ⚠️ Warning: Missing start time for Tuesday, assuming regular hours start time
+        Worked so far: 5 hours and 0 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        Time left today: 3 hours and 0 minutes
+        You can clock out at: 5:00 pm
+
+        You've worked 5 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Assumes regular hours start and finish times for a previous day with only a break" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        date: Time.local(2024, 12, 23),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        start: Time.local(2024, 12, 24, 8, 30),
+        finish: nil,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        ⚠️ Warning: Missing start time for Monday, assuming regular hours start time
+        ⚠️ Warning: Missing finish time for Monday, assuming regular hours finish time
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        Worked so far: 5 hours and 30 minutes
+        📅 Tuesday, 24 Dec 2024
+        🕓 8:30 am -<space>
+        🚧 Pending
+
+        Time left today: 3 hours and 0 minutes
+        You can clock out at: 5:00 pm
+
+        You've worked 13 hours and 30 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Ignores a shift for a day that hasn't started yet" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 17),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        date: Time.local(2024, 12, 25),
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        You've worked 8 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Does not assume a start time when regular hours aren't set" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        date: Time.local(2024, 12, 24),
+        break_start: Time.local(2024, 12, 24, 12),
+        break_finish: Time.local(2024, 12, 24, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"], config_fixture: :no_regular_hours)
+
+      context.stdout.to_s.should eq("You haven't clocked in this week\n")
+    end
+  end
 end
