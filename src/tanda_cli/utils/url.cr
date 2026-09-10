@@ -15,7 +15,7 @@ module TandaCLI
           ".adnat.co",
         ]
 
-        def initialize(@uri : URI); end
+        def initialize(@uri : URI) : Nil; end
 
         def validate : URI | Error::InvalidURL
           error = determine_error?
@@ -40,7 +40,7 @@ module TandaCLI
           @uri.scheme == "https"
         end
 
-        private def query_params?
+        private def query_params? : Bool
           !!@uri.query
         end
 

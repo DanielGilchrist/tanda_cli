@@ -7,7 +7,7 @@ module TandaCLI
     struct MeasuredBreak
       include Utils::Mixins::PrettyTimes
 
-      def initialize(@shift_break : ShiftBreak, @length : BreakLength::Any); end
+      def initialize(@shift_break : ShiftBreak, @length : BreakLength::Any) : Nil; end
 
       getter length : BreakLength::Any
 

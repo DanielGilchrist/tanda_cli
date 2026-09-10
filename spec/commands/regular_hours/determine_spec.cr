@@ -199,7 +199,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
   end
 end
 
-private def stub_roster(date_string : String, daily_schedules : Array(JSON::Any) = Array(JSON::Any).new)
+private def stub_roster(date_string : String, daily_schedules : Array(JSON::Any) = Array(JSON::Any).new) : Nil
   body = JSON.build do |json|
     json.object do
       json.field "id", 1
@@ -215,7 +215,7 @@ private def stub_roster(date_string : String, daily_schedules : Array(JSON::Any)
     .to_return(status: 200, body: body)
 end
 
-private def stub_empty_roster_for_dates(date_strings : Array(String))
+private def stub_empty_roster_for_dates(date_strings : Array(String)) : Nil
   date_strings.each { |date_string| stub_roster(date_string) }
 end
 

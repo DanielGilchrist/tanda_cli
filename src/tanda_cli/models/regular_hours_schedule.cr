@@ -33,7 +33,7 @@ module TandaCLI
         @finish_time : Time,
         @breaks : Array(Break) = Array(Break).new,
         @automatic_break_length : Time::Span = Time::Span.zero,
-      ); end
+      ) : Nil; end
 
       @[JSON::Field(converter: TandaCLI::Models::RegularHoursSchedule::DayOfWeekConverter)]
       getter day_of_week : Time::DayOfWeek

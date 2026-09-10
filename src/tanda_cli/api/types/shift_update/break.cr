@@ -13,7 +13,7 @@ module TandaCLI
         getter? paid : Bool
         getter length : Int32
 
-        def initialize(start : Time, finish : Time?, @paid : Bool)
+        def initialize(start : Time, finish : Time?, @paid : Bool) : Nil
           @start = start.to_unix
           @finish = finish.try(&.to_unix)
           @length = finish ? (finish - start).total_minutes.to_i : 0

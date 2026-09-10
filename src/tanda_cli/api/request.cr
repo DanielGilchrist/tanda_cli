@@ -18,7 +18,7 @@ module TandaCLI
       alias Query = Hash(String, String)
       alias Body = Hash(String, String)
 
-      def initialize(@base_uri : String, @token : String, @current_user : Current::User? = nil); end
+      def initialize(@base_uri : String, @token : String, @current_user : Current::User? = nil) : Nil; end
 
       def get(type : T.class, endpoint : String, query : Query? = nil) : Result(T) forall T
         Result(T).from(exec(GET, endpoint, query: query))
@@ -28,7 +28,7 @@ module TandaCLI
         Result(T).from(exec(POST, endpoint, body: body.to_json))
       end
 
-      def put(type : T.class, endpoint : String, body) : Result(T) forall T
+      def put(type : T.class, endpoint : String, body : JSON::Serializable) : Result(T) forall T
         Result(T).from(exec(PUT, endpoint, body: body.to_json))
       end
 
@@ -61,7 +61,7 @@ module TandaCLI
         end.to_pretty_json
       end
 
-      private def build_uri(endpoint, query : String? = nil) : URI
+      private def build_uri(endpoint : String, query : String? = nil) : URI
         uri = URI.parse("#{@base_uri}#{endpoint}")
         uri.query = query if query
 
@@ -79,13 +79,13 @@ module TandaCLI
         end
       end
 
-      private def with_no_internet_handler!(&)
+      private def with_no_internet_handler!(& : -> HTTP::Client::Response) : HTTP::Client::Response
         yield
       rescue Socket::Addrinfo::Error
         raise NetworkError.new("There appears to be a problem with your internet connection")
       end
 
-      private def handle_fatal_error!(response : HTTP::Client::Response)
+      private def handle_fatal_error!(response : HTTP::Client::Response) : Nil
         case response.status
         when .service_unavailable?
           raise FatalError.new("API is offline")

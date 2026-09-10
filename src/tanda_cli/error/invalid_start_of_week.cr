@@ -3,7 +3,7 @@ require "./base"
 module TandaCLI
   module Error
     class InvalidStartOfWeek < Error::Base
-      def initialize(value : String)
+      def initialize(value : String) : Nil
         super("Invalid start of week!", "\"#{value}\" is not a valid day of the week.")
       end
     end

@@ -8,11 +8,11 @@ module ClockInSpecHelper
   BREAK_FINISH = Time.local(2026, 2, 17, 1, 25)
   SHIFT_FINISH = Time.local(2026, 2, 17, 8, 54)
 
-  def no_shifts
+  def no_shifts : String
     "[]"
   end
 
-  def clocked_in_shift
+  def clocked_in_shift : String
     [
       ShiftBuilder.build_shift(
         id: 1,
@@ -21,7 +21,7 @@ module ClockInSpecHelper
     ].to_json
   end
 
-  def on_break_shift
+  def on_break_shift : String
     [
       ShiftBuilder.build_shift(
         id: 1,
@@ -31,7 +31,7 @@ module ClockInSpecHelper
     ].to_json
   end
 
-  def finished_break_shift
+  def finished_break_shift : String
     [
       ShiftBuilder.build_shift(
         id: 1,
@@ -43,7 +43,7 @@ module ClockInSpecHelper
     ].to_json
   end
 
-  def clocked_out_shift
+  def clocked_out_shift : String
     [
       ShiftBuilder.build_shift(
         id: 1,
@@ -53,19 +53,19 @@ module ClockInSpecHelper
     ].to_json
   end
 
-  def stub_shifts(body : String)
+  def stub_shifts(body : String) : Nil
     WebMock
       .stub(:get, endpoint(Regex.new("/shifts")))
       .to_return(status: 200, body: body)
   end
 
-  def stub_clockin_success
+  def stub_clockin_success : Nil
     WebMock
       .stub(:post, endpoint("/clockins"))
       .to_return(status: 200, body: "{}")
   end
 
-  def stub_shift_update(shift_id : Int32, body : String? = nil)
+  def stub_shift_update(shift_id : Int32, body : String? = nil) : Nil
     stub = WebMock.stub(:put, endpoint("/shifts/#{shift_id}"))
     stub = stub.with(body: body) if body
     stub.to_return(status: 200, body: "{}")

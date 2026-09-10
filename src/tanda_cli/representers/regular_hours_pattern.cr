@@ -9,7 +9,7 @@ module TandaCLI
         break_summary : String,
         seen : String
 
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         rows = @object.entries.map { |entry| build_row(entry) }
 
         day_width = max_width(rows.map(&.day), "Day")

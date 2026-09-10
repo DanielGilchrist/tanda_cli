@@ -11,12 +11,12 @@ module TandaCLI
         ::File.read(CONFIG_PATH)
       end
 
-      def write(content : String)
+      def write(content : String) : Nil
         FileUtils.mkdir_p(CONFIG_DIR) unless ::File.directory?(CONFIG_DIR)
         ::File.write(CONFIG_PATH, content)
       end
 
-      def close
+      def close : Nil
         # no-op
       end
     end

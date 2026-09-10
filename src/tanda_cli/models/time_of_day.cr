@@ -43,7 +43,7 @@ module TandaCLI
         Error::UnparseableTimeOfDay.new(input)
       end
 
-      private def initialize(@hour : Int32, @minute : Int32); end
+      private def initialize(@hour : Int32, @minute : Int32) : Nil; end
 
       getter hour : Int32
       getter minute : Int32

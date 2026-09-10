@@ -22,7 +22,7 @@ module TandaCLI
           @user_id : Int32,
           @current : Bool = false,
           @_regular_hours_schedules : Array(Models::RegularHoursSchedule)? = nil,
-        ); end
+        ) : Nil; end
 
         getter id : Int32
         getter name : String
@@ -36,7 +36,7 @@ module TandaCLI
           @_regular_hours_schedules || Array(Models::RegularHoursSchedule).new
         end
 
-        def clear_regular_hours_schedules!
+        def clear_regular_hours_schedules! : Nil
           @_regular_hours_schedules = nil
         end
 

@@ -22,7 +22,7 @@ module TandaCLI
           handle_clocked_out(display, last_shift)
         end
 
-        private def handle_ongoing_shift(display : TandaCLI::Display, shift : Models::WorkedShift)
+        private def handle_ongoing_shift(display : TandaCLI::Display, shift : Models::WorkedShift) : Nil
           if (shift_breaks = shift.breaks).present?
             ongoing_breaks, finished_breaks = shift_breaks.partition(&.ongoing?)
             if ongoing_break = ongoing_breaks.last?
@@ -40,7 +40,7 @@ module TandaCLI
           end
         end
 
-        private def handle_clocked_out(display : TandaCLI::Display, last_shift : Models::WorkedShift)
+        private def handle_clocked_out(display : TandaCLI::Display, last_shift : Models::WorkedShift) : Nil
           display.puts "🔴 #{"Clocked out".colorize.red}"
           display.puts "🕐 At #{last_shift.pretty_finish_time}"
         end

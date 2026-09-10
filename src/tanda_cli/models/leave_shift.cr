@@ -2,7 +2,7 @@ module TandaCLI
   module Models
     struct LeaveShift
       class MismatchedLeaveShift < ArgumentError
-        def initialize(shift : API::Types::Shift, leave_request : API::Types::LeaveRequest)
+        def initialize(shift : API::Types::Shift, leave_request : API::Types::LeaveRequest) : Nil
           super("Leave request is for a different shift!\nShift: #{shift.inspect}\nLeaveRequest: #{leave_request.inspect}")
         end
       end
@@ -22,7 +22,7 @@ module TandaCLI
         @api_shift : API::Types::Shift,
         @breakdown : API::Types::LeaveRequest::DailyBreakdown,
         @leave_request : API::Types::LeaveRequest,
-      ); end
+      ) : Nil; end
 
       getter breakdown : API::Types::LeaveRequest::DailyBreakdown
       getter leave_request : API::Types::LeaveRequest

@@ -24,7 +24,7 @@ module TandaCLI
         @classified_shifts : Array(Shift::Any),
         @treat_paid_breaks_as_unpaid : Bool = false,
         @regular_hours_schedules : Array(RegularHoursSchedule)? = nil,
-      ); end
+      ) : Nil; end
 
       def each(& : Shift::Any ->) : Nil
         @classified_shifts.each { |shift| yield shift }

@@ -3,14 +3,14 @@ module TandaCLI
     struct Builder
       @builder : String::Builder
 
-      def initialize
+      def initialize : Nil
         @builder = String::Builder.new
       end
 
       delegate :<<, to: @builder
       delegate :puts, to: @builder
 
-      def to_s(io)
+      def to_s(io : IO) : Nil
         io << @builder.to_s
       end
     end

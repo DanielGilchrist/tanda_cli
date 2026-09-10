@@ -4,7 +4,7 @@ module TandaCLI
   module API
     module Resources
       struct LeaveBalances
-        def initialize(@request : Request); end
+        def initialize(@request : Request) : Nil; end
 
         def list(user_id : Int32) : Result(Array(Types::LeaveBalance))
           @request.get(Array(Types::LeaveBalance), "/leave_balances", query: {

@@ -13,10 +13,10 @@ module TandaCLI
         @expected_start_time : Time? = nil,
         @expected_finish_time : Time? = nil,
         @expected_break_length : Time::Span? = nil,
-      )
+      ) : Nil
       end
 
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         builder << "📅 #{@object.pretty_date}\n"
 
         pretty_expected_start_time = @expected_start_time.try { |time| Utils::Time.pretty_time(time) }
@@ -33,7 +33,7 @@ module TandaCLI
         build_notes(builder) if @object.notes.present?
       end
 
-      private def build_shift_breaks(builder : Builder)
+      private def build_shift_breaks(builder : Builder) : Nil
         expected_break_length = @expected_break_length
 
         if (breaks = @breaks.measured).present?
@@ -49,7 +49,7 @@ module TandaCLI
         end
       end
 
-      private def build_notes(builder : Builder)
+      private def build_notes(builder : Builder) : Nil
         builder << "📝 Notes:\n".colorize.white.bold
         @object.notes.each do |note|
           Note.new(note).build(builder)

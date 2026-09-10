@@ -20,7 +20,7 @@ module TandaCLI
           @token_type : String,
           @scopes : String,
           @created_at : Time,
-        ); end
+        ) : Nil; end
 
         getter email : String
         getter token : String

@@ -6,7 +6,7 @@ require "../api/types/personal_details/**"
 module TandaCLI
   module Representers
     struct PersonalDetails < Base(API::Types::PersonalDetails)
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         builder << "📖 Personal Details\n".colorize.white
 
         builder << "📧 #{@object.email}\n"
@@ -21,7 +21,7 @@ module TandaCLI
         build_address(builder)
       end
 
-      private def build_emergency_contacts(builder : Builder)
+      private def build_emergency_contacts(builder : Builder) : Nil
         return if @object.emergency_contacts.empty?
 
         builder << "\n🚑 Emergency Contacts\n".colorize.white.bold
@@ -31,7 +31,7 @@ module TandaCLI
         end
       end
 
-      private def build_address(builder : Builder)
+      private def build_address(builder : Builder) : Nil
         address = @object.residential_address
         return if address.nil?
 

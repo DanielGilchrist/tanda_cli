@@ -21,7 +21,7 @@ module TandaCLI
           end
 
           struct Unknown
-            def initialize(@value : String); end
+            def initialize(@value : String) : Nil; end
 
             getter value : String
 

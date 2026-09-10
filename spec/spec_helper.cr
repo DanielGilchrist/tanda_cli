@@ -37,7 +37,7 @@ def run(
   context
 end
 
-def print_output(context : TandaCLI::Context)
+def print_output(context : TandaCLI::Context) : Nil
   stdout = context.stdout.to_s
   stderr = context.stderr.to_s
 
@@ -64,13 +64,13 @@ def build_stdin(*lines : String) : IO
   end
 end
 
-def endpoint(path : String, query = nil)
+def endpoint(path : String, query : Hash(String, String)? = nil) : String
   uri = URI.parse("#{DEFAULT_BASE_URI}#{path}")
   uri.query = URI::Params.encode(query) if query
 
   uri.to_s
 end
 
-def endpoint(regex : Regex)
+def endpoint(regex : Regex) : Regex
   Regex.new("#{DEFAULT_BASE_URI}#{regex}")
 end

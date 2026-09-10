@@ -6,7 +6,7 @@ require "../api/types/me/**"
 module TandaCLI
   module Representers
     struct Me < Base(API::Types::Me)
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         builder << "👤 #{@object.name}\n".colorize.white.bold
 
         builder << "📧 #{@object.email}\n"
@@ -16,7 +16,7 @@ module TandaCLI
         build_organisations(builder)
       end
 
-      private def build_organisations(builder : Builder)
+      private def build_organisations(builder : Builder) : Nil
         builder << "\n🏢 Organisations:\n".colorize.white.bold
         last_organisation_index = @object.organisations.size - 1
         @object.organisations.each_with_index do |organisation, index|

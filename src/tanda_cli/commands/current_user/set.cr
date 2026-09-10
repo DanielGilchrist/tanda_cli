@@ -29,7 +29,7 @@ module TandaCLI
           display.success("The current user has been set to", format_organisation(organisation))
         end
 
-        private def format_organisation(organisation : Configuration::Serialisable::Organisation)
+        private def format_organisation(organisation : Configuration::Serialisable::Organisation) : String
           "#{organisation.user_id} in #{organisation.name}"
         end
       end

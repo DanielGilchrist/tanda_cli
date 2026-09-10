@@ -12,7 +12,7 @@ module ShiftBuilder
     date : Time? = nil,
     leave_request_id : Int32? = nil,
     status : String = "PENDING",
-  )
+  ) : NamedTuple
     resolved_date = date || start || Time.local
     breaks =
       if break_start || break_finish
@@ -78,7 +78,7 @@ module ShiftBuilder
     leave_type : String = "Annual Leave",
     status : String = "approved",
     reason : String? = nil,
-  )
+  ) : NamedTuple
     build_leave_request(
       id: id,
       daily_breakdowns: [DailyBreakdown.new(shift_id: shift_id, date: date, hours: hours)],
@@ -94,7 +94,7 @@ module ShiftBuilder
     leave_type : String = "Annual Leave",
     status : String = "approved",
     reason : String? = nil,
-  )
+  ) : NamedTuple
     shifts = daily_breakdowns.map do |breakdown|
       build_shift(
         id: breakdown.shift_id,

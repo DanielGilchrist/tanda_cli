@@ -5,7 +5,7 @@ module TandaCLI
   module Representers
     struct Me
       struct Organisation < Base(API::Types::Me::Organisation)
-        private def build_display(builder : Builder)
+        private def build_display(builder : Builder) : Nil
           with_padding("🏷 #{@object.name}", builder)
           with_padding("🌏 #{@object.country}", builder)
           with_padding("📍 #{@object.locale}", builder)

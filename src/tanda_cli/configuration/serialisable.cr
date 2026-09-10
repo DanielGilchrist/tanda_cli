@@ -11,7 +11,7 @@ module TandaCLI
         @current_environment : Environment::Name = Environment::Name::Production,
         @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
         @treat_paid_breaks_as_unpaid : Bool = false,
-      ); end
+      ) : Nil; end
 
       property clockin_photo_path : String?
       property start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday

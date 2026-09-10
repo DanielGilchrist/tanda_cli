@@ -4,7 +4,7 @@ module TandaCLI
   module API
     module Resources
       struct ClockIns
-        def initialize(@request : Request); end
+        def initialize(@request : Request) : Nil; end
 
         def list(user_id : Int32, date : Time) : Result(Array(Types::ClockIn))
           date_string = date.to_s("%Y-%m-%d")

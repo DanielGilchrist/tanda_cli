@@ -8,12 +8,12 @@ module TandaCLI
           getter base_url : String
           getter display_name : String
 
-          def initialize(@base_url : String, @display_name : String, &on_selected : ->)
+          def initialize(@base_url : String, @display_name : String, &on_selected : ->) : Nil
             @on_selected = on_selected
           end
 
-          def initialize(@base_url : String, @display_name : String)
-            @on_selected = -> { }
+          def initialize(@base_url : String, @display_name : String) : Nil
+            @on_selected = -> : Nil { }
           end
 
           def oauth_url(endpoint : Configuration::OAuthEndpoint) : String

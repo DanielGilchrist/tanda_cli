@@ -90,7 +90,7 @@ module TandaCLI
           nil
         end
 
-        private def select_and_save_organisation(context : Context, client : API::Client)
+        private def select_and_save_organisation(context : Context, client : API::Client) : Nil
           display = context.display
           input = context.input
           config = context.config

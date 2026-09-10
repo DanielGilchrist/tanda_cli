@@ -32,7 +32,7 @@ module TandaCLI
             end
           end
 
-          private def display_photos(display : TandaCLI::Display, photo_directory : Models::PhotoDirectory, filter : String?)
+          private def display_photos(display : TandaCLI::Display, photo_directory : Models::PhotoDirectory, filter : String?) : Nil
             photos = photo_directory.photos
 
             if filter == "valid"
@@ -66,7 +66,7 @@ module TandaCLI
             end
           end
 
-          private def invalid_filter_option?(filter) : Bool
+          private def invalid_filter_option?(filter : String?) : Bool
             !VALID_FILTER_COMMANDS.includes?(filter)
           end
         end

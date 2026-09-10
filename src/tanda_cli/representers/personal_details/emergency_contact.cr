@@ -5,7 +5,7 @@ module TandaCLI
   module Representers
     struct PersonalDetails
       struct EmergencyContact < Base(API::Types::PersonalDetails::EmergencyContact)
-        private def build_display(builder : Builder)
+        private def build_display(builder : Builder) : Nil
           builder << "🏷 #{@object.name}\n"
           builder << "👥 #{@object.relationship}\n"
           builder << "📞 #{@object.phone}\n"

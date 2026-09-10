@@ -10,7 +10,7 @@ module TandaCLI
 
       ONE_MEGABYTE = 1 * 1024 * 1024
 
-      def initialize(@path : String); end
+      def initialize(@path : String) : Nil; end
 
       getter path : String
 

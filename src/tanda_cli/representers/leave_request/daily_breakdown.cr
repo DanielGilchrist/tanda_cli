@@ -4,11 +4,11 @@ require "../../api/types/leave_request/daily_breakdown"
 module TandaCLI
   module Representers
     struct LeaveRequest::DailyBreakdown < Base(API::Types::LeaveRequest::DailyBreakdown)
-      def initialize(object : T, @leave_request : API::Types::LeaveRequest)
+      def initialize(object : T, @leave_request : API::Types::LeaveRequest) : Nil
         super(object)
       end
 
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         builder << "📅 #{@object.pretty_date}\n"
 
         start = @object.start_time

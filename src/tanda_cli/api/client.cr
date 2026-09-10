@@ -4,7 +4,7 @@ require "./resources/*"
 module TandaCLI
   module API
     class Client
-      def initialize(base_uri : String, token : String, current_user : Current::User? = nil)
+      def initialize(base_uri : String, token : String, current_user : Current::User? = nil) : Nil
         @request = Request.new(base_uri, token, current_user)
       end
 

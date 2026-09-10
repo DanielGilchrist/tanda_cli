@@ -1,6 +1,6 @@
 module TandaCLI
   abstract struct AbstractResult(T, E)
-    def initialize(@value : T | E); end
+    def initialize(@value : T | E) : Nil; end
 
     def or(& : E -> U) : T | U forall U
       case value = @value
@@ -11,7 +11,7 @@ module TandaCLI
       end
     end
 
-    def unwrap!
+    def unwrap! : T
       case value = @value
       in T
         value

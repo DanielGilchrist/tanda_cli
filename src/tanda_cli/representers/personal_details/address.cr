@@ -5,7 +5,7 @@ module TandaCLI
   module Representers
     struct PersonalDetails
       struct Address < Base(API::Types::PersonalDetails::Address)
-        private def build_display(builder : Builder)
+        private def build_display(builder : Builder) : Nil
           address_string = {
             @object.street_line_one,
             @object.street_line_two,

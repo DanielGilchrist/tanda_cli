@@ -18,7 +18,7 @@ module TandaCLI
           display.success("Logged out of #{label} environment")
         end
 
-        private def revoke_access_token(display : TandaCLI::Display, config : Configuration)
+        private def revoke_access_token(display : TandaCLI::Display, config : Configuration) : Nil
           access_token = config.access_token
           return unless access_token
 

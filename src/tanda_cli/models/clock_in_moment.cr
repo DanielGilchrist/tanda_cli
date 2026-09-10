@@ -41,7 +41,7 @@ module TandaCLI
         end
       end
 
-      private def initialize(@time : ::Time); end
+      private def initialize(@time : ::Time) : Nil; end
 
       getter time : ::Time
     end

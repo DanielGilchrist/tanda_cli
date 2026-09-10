@@ -42,7 +42,7 @@ module TandaCLI
         @entries : Array(Entry),
         @weeks_probed : Int32,
         @weeks_with_data : Int32,
-      ); end
+      ) : Nil; end
 
       getter entries : Array(Entry)
       getter weeks_probed : Int32

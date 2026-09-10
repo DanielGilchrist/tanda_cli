@@ -1,6 +1,6 @@
 module TandaCLI
   class Context
-    def initialize(@config : Configuration, @client : API::Client?, @current : Current?, @display : Display, @input : Input); end
+    def initialize(@config : Configuration, @client : API::Client?, @current : Current?, @display : Display, @input : Input) : Nil; end
 
     getter config : Configuration
     getter display : Display

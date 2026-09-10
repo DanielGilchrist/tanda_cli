@@ -24,7 +24,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   end
 
   # Should be loaded with `load` with a fixture representing a configuration file
-  private def initialize(@io = IO::Memory.new); end
+  private def initialize(@io : IO::Memory = IO::Memory.new) : Nil; end
 
   def read : String?
     @io.rewind.gets_to_end
@@ -35,7 +35,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
     @io.write(content.to_slice)
   end
 
-  def close
+  def close : Nil
     @io.close
   end
 end

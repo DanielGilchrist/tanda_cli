@@ -10,7 +10,7 @@ module TandaCLI
           @breaks : Array(Schedule::Break),
           @source_date : Time,
           @weeks_seen : Int32,
-        ); end
+        ) : Nil; end
 
         getter day_of_week : Time::DayOfWeek
         getter start_time : Time

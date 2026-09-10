@@ -63,7 +63,7 @@ module TandaCLI
           end
         end
 
-        private def maybe_print_time_left_or_overtime(display : TandaCLI::Display, summary : Models::ShiftSummary)
+        private def maybe_print_time_left_or_overtime(display : TandaCLI::Display, summary : Models::ShiftSummary) : Nil
           time_left = summary.time_left
           return unless time_left
 

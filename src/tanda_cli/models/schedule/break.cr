@@ -10,7 +10,7 @@ module TandaCLI
           new(start_time, finish_time)
         end
 
-        def initialize(@start_time : Time, @finish_time : Time); end
+        def initialize(@start_time : Time, @finish_time : Time) : Nil; end
 
         getter start_time : Time
         getter finish_time : Time

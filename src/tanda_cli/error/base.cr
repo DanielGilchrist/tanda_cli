@@ -5,7 +5,7 @@ module TandaCLI
     abstract class Base < Exception
       include Error::Interface
 
-      def initialize(@error : String, @error_description : String? = nil)
+      def initialize(@error : String, @error_description : String? = nil) : Nil
         message =
           if @error_description
             "#{@error}: #{@error_description}"

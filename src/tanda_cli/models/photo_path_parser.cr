@@ -14,7 +14,7 @@ module TandaCLI
         end
       end
 
-      def initialize(@path : String)
+      def initialize(@path : String) : Nil
         @path = path
       end
 

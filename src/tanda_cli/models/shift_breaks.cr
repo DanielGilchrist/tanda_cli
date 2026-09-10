@@ -19,7 +19,7 @@ module TandaCLI
         @expected_start_time : ::Time? = nil,
         @expected_finish_time : ::Time? = nil,
         @expected_break_length : Time::Span? = nil,
-      ); end
+      ) : Nil; end
 
       def measured : Array(MeasuredBreak)
         @measured ||= begin

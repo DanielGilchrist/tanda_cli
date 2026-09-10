@@ -5,7 +5,7 @@ module TandaCLI
   module API
     module Resources
       struct Shifts
-        def initialize(@request : Request); end
+        def initialize(@request : Request) : Nil; end
 
         def list(user_id : Int32, date : Time, show_notes : Bool = false) : Result(Array(Types::Shift))
           list(user_id, date, date, show_notes: show_notes)

@@ -4,7 +4,7 @@ module TandaCLI
   module API
     module Resources
       struct Rosters
-        def initialize(@request : Request); end
+        def initialize(@request : Request) : Nil; end
 
         def on(date : Time) : Result(Types::Roster)
           formatted_date = Utils::Time.iso_date(date)

@@ -38,7 +38,7 @@ module TandaCLI
       end || new(file)
     end
 
-    def initialize(@file : Configuration::AbstractFile, @serialisable = Serialisable.new); end
+    def initialize(@file : Configuration::AbstractFile, @serialisable : Serialisable = Serialisable.new) : Nil; end
 
     delegate :start_of_week,
       :start_of_week=,
@@ -60,7 +60,7 @@ module TandaCLI
       save!
     end
 
-    def save!
+    def save! : Nil
       @file.write(@serialisable.to_json)
     end
 

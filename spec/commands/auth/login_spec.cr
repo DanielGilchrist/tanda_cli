@@ -12,19 +12,19 @@ AUTH_FAILED_BODY = {
   error_description: "The provided authorization grant is invalid",
 }.to_json
 
-private def stub_failed_auth(host : String)
+private def stub_failed_auth(host : String) : Nil
   WebMock
     .stub(:post, "https://#{host}/api/oauth/token")
     .to_return(status: 401, body: AUTH_FAILED_BODY)
 end
 
-private def stub_successful_auth(host : String)
+private def stub_successful_auth(host : String) : Nil
   WebMock
     .stub(:post, "https://#{host}/api/oauth/token")
     .to_return(status: 200, body: AUTH_TOKEN_BODY)
 end
 
-private def stub_all_regions_failed
+private def stub_all_regions_failed : Nil
   stub_failed_auth("my.workforce.com")
   stub_failed_auth("my.tanda.co")
   stub_failed_auth("eu.tanda.co")
@@ -32,7 +32,7 @@ private def stub_all_regions_failed
   stub_failed_auth("internal.tanda.co")
 end
 
-private def stub_eu_auth_success
+private def stub_eu_auth_success : Nil
   stub_failed_auth("my.workforce.com")
   stub_failed_auth("my.tanda.co")
   stub_successful_auth("eu.tanda.co")

@@ -5,7 +5,7 @@ module TandaCLI
     struct ShiftBreak
       include Utils::Mixins::PrettyTimes
 
-      def initialize(@api_shift_break : API::Types::ShiftBreak); end
+      def initialize(@api_shift_break : API::Types::ShiftBreak) : Nil; end
 
       delegate :id, :shift_id, :length, :paid?, :start_time, :finish_time, to: @api_shift_break
 

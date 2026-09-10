@@ -26,7 +26,7 @@ module TandaCLI
         @finish_time : Time,
         @automatic_break_length : Time::Span,
         @breaks : Array(Break),
-      ); end
+      ) : Nil; end
 
       getter date : Time
       getter user_id : Int32

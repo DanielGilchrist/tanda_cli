@@ -9,7 +9,7 @@ module TandaCLI
             @region : Region = Region::APAC,
             @access_token : AccessToken? = nil,
             @organisations : Array(Organisation) = Array(Organisation).new,
-          ); end
+          ) : Nil; end
 
           property region : Region
           property access_token : AccessToken?

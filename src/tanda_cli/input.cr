@@ -1,6 +1,6 @@
 module TandaCLI
   class Input
-    def initialize(@stdin : IO, @display : Display); end
+    def initialize(@stdin : IO, @display : Display) : Nil; end
 
     def request(message : String, display_type : Display::Type? = nil, sensitive : Bool = false) : String?
       case display_type

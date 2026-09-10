@@ -5,10 +5,10 @@ module TandaCLI
     abstract struct Base(T)
       NEWLINE_BYTE = 10_u8
 
-      def initialize(@object : T)
+      def initialize(@object : T) : Nil
       end
 
-      def display(display : Display)
+      def display(display : Display) : Nil
         display.print build
       end
 
@@ -16,9 +16,9 @@ module TandaCLI
         builder.tap(&->build_display(Builder))
       end
 
-      private abstract def build_display(builder : Builder)
+      private abstract def build_display(builder : Builder) : Nil
 
-      protected def with_padding(value : String, builder : Builder)
+      protected def with_padding(value : String, builder : Builder) : Nil
         builder << "    #{value}\n"
       end
     end

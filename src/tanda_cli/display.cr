@@ -12,17 +12,17 @@ module TandaCLI
       Fatal
     end
 
-    def initialize(@stdout : IO, @stderr : IO); end
+    def initialize(@stdout : IO, @stderr : IO) : Nil; end
 
-    def success(message : String, value : String? = nil)
+    def success(message : String, value : String? = nil) : Nil
       display_message(:success, message, value)
     end
 
-    def info(message : String, value : String? = nil)
+    def info(message : String, value : String? = nil) : Nil
       display_message(:info, message, value)
     end
 
-    def warning(message : String)
+    def warning(message : String) : Nil
       display_message(:warning, message)
     end
 
@@ -35,11 +35,11 @@ module TandaCLI
       {% end %}
     end
 
-    def error(message : String, value : String? = nil)
+    def error(message : String, value : String? = nil) : Nil
       display_message(:error, message, value)
     end
 
-    def error(message : String, value : String? = nil, & : String::Builder ->)
+    def error(message : String, value : String? = nil, & : String::Builder ->) : Nil
       error(message, value)
 
       string = String.build do |builder|
@@ -50,7 +50,7 @@ module TandaCLI
       string.split("\n").each { |error_string| sub_error(error_string) }
     end
 
-    def error(error_object : Error::Interface)
+    def error(error_object : Error::Interface) : Nil
       error(error_object.error)
 
       error_description = error_object.error_description
@@ -76,23 +76,23 @@ module TandaCLI
       TandaCLI.exit!
     end
 
-    def puts(message = nil)
+    def puts(message : Object? = nil) : Nil
       @stdout.puts message
     end
 
-    def print(message)
+    def print(message : Object) : Nil
       @stdout.print message
     end
 
-    def puts_error(message = nil)
+    def puts_error(message : Object? = nil) : Nil
       @stderr.puts message
     end
 
-    private def sub_error(message : String)
+    private def sub_error(message : String) : Nil
       puts_error "#{" " * raw_size(error_string)} #{message}"
     end
 
-    private def display_message(type : Type, message : String, value : String? = nil)
+    private def display_message(type : Type, message : String, value : String? = nil) : Nil
       message = "#{prefix(type)} #{message}#{value && " \"#{value}\""}"
 
       case type

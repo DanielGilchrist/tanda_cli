@@ -5,7 +5,7 @@ require "./leave_request/daily_breakdown"
 module TandaCLI
   module Representers
     struct ShiftSummary < Base(Models::ShiftSummary)
-      private def build_display(builder : Builder)
+      private def build_display(builder : Builder) : Nil
         displayable_shifts = @object.select { |classified_shift| displayable?(classified_shift) }
         last_index = displayable_shifts.size - 1
 

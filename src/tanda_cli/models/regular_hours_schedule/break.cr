@@ -5,7 +5,7 @@ module TandaCLI
         include JSON::Serializable
         include Utils::Mixins::PrettyTimes
 
-        def initialize(@start_time : Time, @finish_time : Time); end
+        def initialize(@start_time : Time, @finish_time : Time) : Nil; end
 
         @[JSON::Field(converter: TandaCLI::Models::RegularHoursSchedule::TimeOfDayConverter)]
         getter start_time : Time

@@ -3,7 +3,7 @@ require "./photo"
 module TandaCLI
   module Models
     class PhotoDirectory
-      def initialize(@path : String); end
+      def initialize(@path : String) : Nil; end
 
       getter path : String
 
@@ -23,7 +23,7 @@ module TandaCLI
         each_photo.to_a
       end
 
-      private def each_photo(shuffle : Bool = false)
+      private def each_photo(shuffle : Bool = false) : Iterator(Photo)
         Dir
           .open(@path)
           .children
@@ -35,7 +35,7 @@ module TandaCLI
           end
       end
 
-      private def path_with_dir(photo_name) : String
+      private def path_with_dir(photo_name : String) : String
         "#{@path}/#{photo_name}"
       end
     end

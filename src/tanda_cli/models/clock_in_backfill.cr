@@ -12,7 +12,7 @@ module TandaCLI
       @finished = false
       @last_event_time : ::Time?
 
-      def initialize(@day : ::Time, shifts : Array(WorkedShift))
+      def initialize(@day : ::Time, shifts : Array(WorkedShift)) : Nil
         status = ClockInStatus.from_shifts(shifts)
         @complete = shifts.any?(&.start_time) && status.clocked_out?
         @started = !status.clocked_out?

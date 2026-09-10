@@ -14,7 +14,7 @@ module TandaCLI
 
       @valid_breaks : Array(ShiftBreak)? = nil
 
-      def initialize(@api_shift : API::Types::Shift)
+      def initialize(@api_shift : API::Types::Shift) : Nil
         @breaks = @api_shift.breaks.map { |api_break| ShiftBreak.new(api_break) }
       end
 

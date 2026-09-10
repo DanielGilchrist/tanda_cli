@@ -4,7 +4,7 @@ module TandaCLI
   module API
     module Resources
       struct Users
-        def initialize(@request : Request); end
+        def initialize(@request : Request) : Nil; end
 
         def me : Result(Types::Me)
           @request.get(Types::Me, "/users/me")

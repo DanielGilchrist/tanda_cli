@@ -9,7 +9,7 @@ module TandaCLI
         @finish : Int64?
         @breaks : Array(Break)?
 
-        def initialize; end
+        def initialize : Nil; end
 
         def finish(time : Time) : Nil
           @finish = time.to_unix

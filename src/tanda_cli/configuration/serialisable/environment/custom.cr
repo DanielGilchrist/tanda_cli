@@ -19,7 +19,7 @@ module TandaCLI
             @url : URI,
             @access_token : AccessToken? = nil,
             @organisations : Array(Organisation) = Array(Organisation).new,
-          ); end
+          ) : Nil; end
 
           @[JSON::Field(converter: TandaCLI::Configuration::Serialisable::Environment::Custom::URIConverter)]
           property url : URI
