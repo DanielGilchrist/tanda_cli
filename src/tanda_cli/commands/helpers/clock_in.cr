@@ -14,6 +14,8 @@ module TandaCLI
             if skip_validations?
               display.warning("Skipping clock in validations")
               nil
+            elsif backdated?(time)
+              nil
             else
               worked_shifts(context, time)
             end
@@ -45,7 +47,11 @@ module TandaCLI
         end
 
         private def backdated_finish?(clock_type : ClockType, time : Time) : Bool
-          clock_type.finish? && time.date < Utils::Time.now.date
+          clock_type.finish? && backdated?(time)
+        end
+
+        private def backdated?(time : Time) : Bool
+          time.date < Utils::Time.now.date
         end
 
         private def clock_in_time(context : Context) : Time

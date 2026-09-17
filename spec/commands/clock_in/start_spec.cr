@@ -175,4 +175,16 @@ describe TandaCLI::Commands::ClockIn::Start do
     context.stderr.to_s.should contain(%(Try a day name like "wednesday" or "wed", "today", "yesterday" or YYYY-MM-DD))
     context.stdout.to_s.should be_empty
   end
+
+  it "skips clock in validations for a previous day" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_in_shift)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "tuesday"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am (Tuesday, 17 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
 end
