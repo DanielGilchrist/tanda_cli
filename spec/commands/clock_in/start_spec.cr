@@ -110,4 +110,69 @@ describe TandaCLI::Commands::ClockIn::Start do
     context.stderr.to_s.should eq("Error: The --date option can only be used with --at\n")
     context.stdout.to_s.should be_empty
   end
+
+  it "clocks in on a day of the week given to --date" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "tuesday"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am (Tuesday, 17 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "clocks in on an abbreviated day of the week given to --date" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "TUE"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am (Tuesday, 17 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "resolves a day of the week against the configured start of the week" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "sun"])
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am (Sunday, 15 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "resolves a day of the week from the previous week when the start of the week moves" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.no_shifts)
+      ClockInSpecHelper.stub_clockin_success
+
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "monday"], config_fixture: :monday_start_of_week)
+
+      context.stdout.to_s.should eq("Success: Clock in recorded at 8:45 am (Monday, 16 Feb 2026)! (1 | Test Organisation)\n")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "errors when a day of the week hasn't happened yet this week" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      context = run(["clockin", "start", "--at", "8:45am", "--date", "friday"])
+
+      context.stderr.to_s.should contain("Friday, 20 Feb 2026 | 8:45 am hasn't happened yet.")
+      context.stdout.to_s.should be_empty
+    end
+  end
+
+  it "errors when --date is too short to name a day" do
+    context = run(["clockin", "start", "--at", "8:45am", "--date", "tu"])
+
+    context.stderr.to_s.should contain(%("tu" isn't a valid day for "--date"))
+    context.stderr.to_s.should contain(%(Try a day name like "wednesday" or "wed", "today", "yesterday" or YYYY-MM-DD))
+    context.stdout.to_s.should be_empty
+  end
 end

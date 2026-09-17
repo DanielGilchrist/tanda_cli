@@ -4,6 +4,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   enum Fixture
     Default
     DefaultStaging
+    MondayStartOfWeek
     NoRegularHours
     OvernightRegularHours
     Unauthenticated

@@ -1,4 +1,5 @@
 require "../../models/clock_in_backfill"
+require "../../models/clock_in_day"
 
 module TandaCLI
   module Commands
@@ -7,7 +8,7 @@ module TandaCLI
       struct Backfill
         include Kebab::Parseable
 
-        @[Kebab::Option(short: 'd', description: "Day to backfill, defaults to today (\"yesterday\" or YYYY-MM-DD)")]
+        @[Kebab::Option(short: 'd', description: "Day to backfill, defaults to today (\"wednesday\", \"wed\", \"yesterday\" or YYYY-MM-DD)")]
         getter date : String?
 
         def run(context : Context) : Nil
@@ -43,9 +44,9 @@ module TandaCLI
           return Utils::Time.now if date_string.nil?
 
           day =
-            case parsed = Models::ClockInMoment.parse_day(date_string)
-            in ::Time
-              parsed
+            case parsed = Models::ClockInDay.parse(date_string)
+            in Models::ClockInDay
+              parsed.on(context.config.start_of_week)
             in Error::Base
               context.display.error!(parsed)
             end

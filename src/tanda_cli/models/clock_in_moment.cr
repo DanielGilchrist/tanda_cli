@@ -1,6 +1,5 @@
 require "../error/future_clock_in"
 require "../error/out_of_order_clock_in"
-require "../error/unparseable_date"
 require "./time_of_day"
 
 module TandaCLI
@@ -24,21 +23,6 @@ module TandaCLI
         return Error::OutOfOrderClockIn.new(time, previous) if previous && time <= previous
 
         new(time)
-      end
-
-      def self.parse_day(input : String) : ::Time | Error::Base
-        case input.downcase
-        when "today"
-          Utils::Time.now
-        when "yesterday"
-          Utils::Time.now - 1.day
-        else
-          begin
-            Utils::Time.iso_date(input)
-          rescue ::Time::Format::Error
-            Error::UnparseableDate.new(input)
-          end
-        end
       end
 
       private def initialize(@time : ::Time) : Nil; end

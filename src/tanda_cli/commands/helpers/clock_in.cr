@@ -55,7 +55,9 @@ module TandaCLI
             return Utils::Time.now
           end
 
-          case moment = Models::ClockInMoment.from(time_of_day, on: date || Utils::Time.now)
+          day = date.try(&.on(context.config.start_of_week)) || Utils::Time.now
+
+          case moment = Models::ClockInMoment.from(time_of_day, on: day)
           in Models::ClockInMoment
             moment.time
           in Error::Base

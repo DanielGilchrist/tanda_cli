@@ -14,8 +14,8 @@ module TandaCLI
         @[Kebab::Option(short: 'a', converter: ::TandaCLI::Converters::TimeOfDay, description: "Clock in at a past time (e.g. \"8:45\", \"5:30pm\", \"17:30\")")]
         getter at : Models::TimeOfDay?
 
-        @[Kebab::Option(short: 'd', converter: ::TandaCLI::Converters::Day, description: "Date for --at, defaults to today (\"yesterday\" or YYYY-MM-DD)")]
-        getter date : ::Time?
+        @[Kebab::Option(short: 'd', converter: ::TandaCLI::Converters::Day, description: "Date for --at, defaults to today (\"wednesday\", \"wed\", \"yesterday\" or YYYY-MM-DD)")]
+        getter date : Models::ClockInDay?
       end
     end
   end
