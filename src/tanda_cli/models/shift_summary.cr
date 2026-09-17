@@ -108,13 +108,6 @@ module TandaCLI
         !expected_start_time_for(shift).nil?
       end
 
-      def recorded?(shift : WorkedShift) : Bool
-        return true if shift.start_time || shift.finish_time
-        return true if shift.valid_breaks.present?
-
-        assumed_start_for?(shift)
-      end
-
       def expected_break_length_for(shift : WorkedShift) : Time::Span?
         matching_schedule_for(shift).try(&.break_length)
       end
@@ -142,6 +135,8 @@ module TandaCLI
       end
 
       private def assumed_start_at(shift : WorkedShift) : ::Time?
+        return if clocked_in_elsewhere_on?(shift)
+
         schedule = schedule_for(shift)
         return if schedule.nil?
 
@@ -149,6 +144,12 @@ module TandaCLI
         return if Utils::Time.now < assumed_start
 
         assumed_start
+      end
+
+      private def clocked_in_elsewhere_on?(shift : WorkedShift) : Bool
+        worked_shifts.any? do |other_shift|
+          other_shift.id != shift.id && other_shift.date.date == shift.date.date && other_shift.start_time
+        end
       end
 
       private def raw_time_worked(shift : WorkedShift) : Time::Span?

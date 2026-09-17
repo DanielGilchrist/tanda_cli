@@ -35,6 +35,10 @@ module TandaCLI
         breakdown.hours
       end
 
+      def blank? : Bool
+        leave_taken.zero?
+      end
+
       def daily_breakdown_representer : Representers::LeaveRequest::DailyBreakdown
         Representers::LeaveRequest::DailyBreakdown.new(breakdown, leave_request)
       end

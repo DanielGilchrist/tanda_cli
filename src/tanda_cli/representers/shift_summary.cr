@@ -6,7 +6,7 @@ module TandaCLI
   module Representers
     struct ShiftSummary < Base(Models::ShiftSummary)
       private def build_display(builder : Builder) : Nil
-        displayable_shifts = @object.select { |classified_shift| displayable?(classified_shift) }
+        displayable_shifts = @object.reject(&.blank?)
         last_index = displayable_shifts.size - 1
 
         displayable_shifts.each_with_index do |classified_shift, index|
@@ -18,15 +18,6 @@ module TandaCLI
           end
 
           builder.puts if index != last_index
-        end
-      end
-
-      private def displayable?(classified_shift : Models::Shift::Any) : Bool
-        case classified_shift
-        in Models::LeaveShift
-          !classified_shift.leave_taken.zero?
-        in Models::WorkedShift
-          @object.recorded?(classified_shift)
         end
       end
 

@@ -707,7 +707,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
-  it "Ignores a shift for a day that hasn't started yet" do
+  it "Ignores a blank shift left behind on a day that already has one" do
     TimeWorkedSpecHelper.stub_shifts([
       ShiftBuilder.build_shift(
         id: 1,
@@ -719,7 +719,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
       ),
       ShiftBuilder.build_shift(
         id: 2,
-        date: Time.local(2024, 12, 25),
+        date: Time.local(2024, 12, 23),
       ),
     ].to_json)
 
@@ -759,6 +759,91 @@ describe TandaCLI::Commands::TimeWorked::Week do
       context = run(["time_worked", "week", "--display"], config_fixture: :no_regular_hours)
 
       context.stdout.to_s.should eq("You haven't clocked in this week\n")
+    end
+  end
+
+  it "Does not assume a start time when another shift that day recorded one" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 17),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        date: Time.local(2024, 12, 23),
+        break_start: Time.local(2024, 12, 23, 15),
+        break_finish: Time.local(2024, 12, 23, 15, 15),
+        break_length: 15,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        Time worked: 0 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 3:00 pm - 3:15 pm
+            ⏸️  15 minutes
+            💰 false
+
+        You've worked 8 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+
+  it "Does not conjure a shift for a regular working day that was never clocked in for" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 17),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        date: Time.local(2024, 12, 24),
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 25, 14)) do
+      context = run(["time_worked", "week", "--display"])
+
+      expected = <<-OUTPUT.gsub("<space>", " ")
+        Time worked: 8 hours and 0 minutes
+        📅 Monday, 23 Dec 2024
+        🕓 8:30 am - 5:00 pm
+        🚧 Pending
+        ☕️ Breaks:
+            🕓 12:00 pm - 12:30 pm
+            ⏸️  30 minutes
+            💰 false
+
+        You've worked 8 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
     end
   end
 end

@@ -9,7 +9,8 @@ module TandaCLI
       def self.from?(api_shift : API::Types::Shift) : WorkedShift?
         return if api_shift.leave_request_id
 
-        new(api_shift)
+        shift = new(api_shift)
+        shift unless shift.blank?
       end
 
       @valid_breaks : Array(ShiftBreak)? = nil
@@ -28,6 +29,10 @@ module TandaCLI
 
       def valid_breaks : Array(ShiftBreak)
         @valid_breaks ||= breaks.select(&.valid?)
+      end
+
+      def blank? : Bool
+        start_time.nil? && finish_time.nil? && valid_breaks.empty?
       end
 
       def open? : Bool
