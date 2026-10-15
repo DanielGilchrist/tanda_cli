@@ -880,7 +880,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
       expected = <<-OUTPUT
         Overtime this week: 3 hours and 0 minutes
-        Overtime runs out at: 11:30 am (in 3 hours and 30 minutes)
+        Starting at 11:30 am clears it by your usual finish (in 3 hours and 30 minutes)
 
         You've worked 27 hours and 0 minutes this week
 
@@ -1075,6 +1075,32 @@ describe TandaCLI::Commands::TimeWorked::Week do
         Undertime this week: 1 hours and 15 minutes
 
         You've worked 14 hours and 45 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+  it "Tells you how early to start today when you're in undertime" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 15, 45),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 6)) do
+      context = run(["time_worked", "week"])
+
+      expected = <<-OUTPUT
+        Undertime this week: 1 hours and 15 minutes
+        Starting at 7:15 am clears it by your usual finish (in 1 hours and 15 minutes)
+
+        You've worked 6 hours and 45 minutes this week
 
         OUTPUT
 

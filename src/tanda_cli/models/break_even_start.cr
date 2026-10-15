@@ -2,17 +2,15 @@ require "./regular_hours_schedule"
 
 module TandaCLI
   module Models
-    struct LatestStart
+    struct BreakEvenStart
       def initialize(
-        @overtime : Time::Span,
+        @time_left : Time::Span,
         @schedule : RegularHoursSchedule,
         @date : Time,
       ) : Nil; end
 
-      private getter overtime : Time::Span
-
       def at : Time
-        Utils::Time.at_date(@date, @schedule.start_time) + overtime
+        Utils::Time.at_date(@date, @schedule.start_time) - @time_left
       end
 
       def day_off? : Bool
@@ -20,7 +18,7 @@ module TandaCLI
       end
 
       def surplus : Time::Span
-        overtime - @schedule.worked_length
+        -@time_left - @schedule.worked_length
       end
 
       def passed? : Bool

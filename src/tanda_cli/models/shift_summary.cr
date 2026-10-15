@@ -90,17 +90,17 @@ module TandaCLI
         end - worked_time - leave_time
       end
 
-      def latest_start_today : LatestStart?
+      def break_even_start_today : BreakEvenStart?
         today = Utils::Time.now
         return if any? { |shift| shift.date.date == today.date }
 
         time_left = self.time_left
-        return if time_left.nil? || !time_left.negative?
+        return if time_left.nil? || time_left.zero?
 
         schedule = @regular_hours_schedules.try(&.find(&.day_of_week.==(today.day_of_week)))
         return if schedule.nil?
 
-        LatestStart.new(time_left.abs, schedule, today)
+        BreakEvenStart.new(time_left, schedule, today)
       end
 
       def time_worked_for(shift : WorkedShift) : Time::Span

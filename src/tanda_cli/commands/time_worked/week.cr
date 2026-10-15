@@ -52,8 +52,8 @@ module TandaCLI
           if summary.any_ongoing?
             maybe_print_time_left_or_overtime(display, summary)
           else
-            latest_start = summary.latest_start_today if offset.nil?
-            maybe_print_overtime_or_undertime(display, summary, latest_start)
+            break_even_start = summary.break_even_start_today if offset.nil?
+            maybe_print_overtime_or_undertime(display, summary, break_even_start)
           end
 
           worked_time = summary.worked_time
@@ -85,7 +85,7 @@ module TandaCLI
         private def maybe_print_overtime_or_undertime(
           display : TandaCLI::Display,
           summary : Models::ShiftSummary,
-          latest_start : Models::LatestStart?,
+          break_even_start : Models::BreakEvenStart?,
         ) : Nil
           time_left = summary.time_left
           return if time_left.nil? || time_left.zero?
@@ -94,18 +94,19 @@ module TandaCLI
           header_text = time_left.negative? ? "Overtime this week" : "Undertime this week"
           display.puts "#{"#{header_text}:".colorize.white.bold} #{balance.total_hours.to_i} hours and #{balance.minutes} minutes"
 
-          print_latest_start(display, latest_start) if time_left.negative? && latest_start && !latest_start.passed?
+          print_break_even_start(display, break_even_start) if break_even_start && !break_even_start.passed?
 
           display.puts
         end
 
-        private def print_latest_start(display : TandaCLI::Display, latest_start : Models::LatestStart) : Nil
-          unless latest_start.day_off?
-            wait = latest_start.at - Utils::Time.now
-            return display.puts "Overtime runs out at: #{Utils::Time.pretty_time(latest_start.at)} (in #{wait.hours} hours and #{wait.minutes} minutes)"
+        private def print_break_even_start(display : TandaCLI::Display, break_even_start : Models::BreakEvenStart) : Nil
+          unless break_even_start.day_off?
+            at = break_even_start.at
+            wait = at - Utils::Time.now
+            return display.puts "Starting at #{Utils::Time.pretty_time(at)} clears it by your usual finish (in #{wait.hours} hours and #{wait.minutes} minutes)"
           end
 
-          surplus = latest_start.surplus
+          surplus = break_even_start.surplus
           return display.puts "Overtime covers today exactly" if surplus.zero?
 
           display.puts "Overtime covers today with #{surplus.total_hours.to_i} hours and #{surplus.minutes} minutes to spare"
