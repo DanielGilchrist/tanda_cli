@@ -1,21 +1,32 @@
 module TandaCLI
   class Context
-    def initialize(@config : Configuration, @client : API::Client?, @current : Current?, @display : Display, @input : Input) : Nil; end
+    def initialize(@config_file : Configuration::AbstractFile, @display : Display, @input : Input) : Nil; end
 
-    getter config : Configuration
     getter display : Display
     getter input : Input
 
+    getter config : Configuration { Configuration.init(@config_file, @display) }
+
+    private getter _nilable_current : Current? do
+      organisation = config.current_organisation?
+      Current.new(Current::User.new(organisation.user_id, organisation.name)) if organisation
+    end
+
+    private getter _nilable_client : API::Client? do
+      access_token = config.access_token
+      API::Client.new(config.api_url, access_token.token, _nilable_current.try(&.user)) if access_token
+    end
+
     def client : API::Client
-      @client || not_authenticated!
+      _nilable_client || not_authenticated!
     end
 
     def current : Current
-      @current || not_authenticated!
+      _nilable_current || not_authenticated!
     end
 
     def authenticated? : Bool
-      !@client.nil? && !@current.nil?
+      !_nilable_client.nil? && !_nilable_current.nil?
     end
 
     private def not_authenticated! : NoReturn

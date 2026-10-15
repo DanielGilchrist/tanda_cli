@@ -4,6 +4,7 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   enum Fixture
     Default
     DefaultStaging
+    InvalidJson
     MondayStartOfWeek
     NoRegularHours
     OvernightRegularHours
@@ -34,9 +35,5 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
   def write(content : String) : Nil
     @io.clear unless @io.empty?
     @io.write(content.to_slice)
-  end
-
-  def close : Nil
-    @io.close
   end
 end

@@ -15,10 +15,6 @@ module TandaCLI
         FileUtils.mkdir_p(CONFIG_DIR) unless ::File.directory?(CONFIG_DIR)
         ::File.write(CONFIG_PATH, content)
       end
-
-      def close : Nil
-        # no-op
-      end
     end
   end
 end
