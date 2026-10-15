@@ -881,7 +881,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
       expected = <<-OUTPUT
         Overtime this week: 3 hours and 0 minutes
         Starting at 11:30 am clears it by your usual finish (in 3 hours and 30 minutes)
-
         You've worked 27 hours and 0 minutes this week
 
         OUTPUT
@@ -916,7 +915,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
       expected = <<-OUTPUT
         Overtime this week: 10 hours and 0 minutes
         Overtime covers today with 2 hours and 0 minutes to spare
-
         You've worked 26 hours and 0 minutes this week
 
         OUTPUT
@@ -942,7 +940,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
       expected = <<-OUTPUT
         Overtime this week: 1 hours and 0 minutes
-
         You've worked 9 hours and 0 minutes this week
 
         OUTPUT
@@ -973,7 +970,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
       expected = <<-OUTPUT
         Undertime this week: 5 hours and 0 minutes
-
         You've worked 11 hours and 0 minutes this week
 
         OUTPUT
@@ -1007,7 +1003,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
       expected = <<-OUTPUT
         Overtime this week: 8 hours and 0 minutes
         Overtime covers today exactly
-
         You've worked 24 hours and 0 minutes this week
 
         OUTPUT
@@ -1040,7 +1035,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
       expected = <<-OUTPUT
         Overtime this week: 2 hours and 30 minutes
-
         You've worked 18 hours and 30 minutes this week
 
         OUTPUT
@@ -1073,7 +1067,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
       expected = <<-OUTPUT
         Undertime this week: 1 hours and 15 minutes
-
         You've worked 14 hours and 45 minutes this week
 
         OUTPUT
@@ -1099,7 +1092,6 @@ describe TandaCLI::Commands::TimeWorked::Week do
       expected = <<-OUTPUT
         Undertime this week: 1 hours and 15 minutes
         Starting at 7:15 am clears it by your usual finish (in 1 hours and 15 minutes)
-
         You've worked 6 hours and 45 minutes this week
 
         OUTPUT

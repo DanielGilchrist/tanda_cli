@@ -95,8 +95,6 @@ module TandaCLI
           display.puts "#{"#{header_text}:".colorize.white.bold} #{balance.total_hours.to_i} hours and #{balance.minutes} minutes"
 
           print_break_even_start(display, break_even_start) if break_even_start && !break_even_start.passed?
-
-          display.puts
         end
 
         private def print_break_even_start(display : TandaCLI::Display, break_even_start : Models::BreakEvenStart) : Nil
