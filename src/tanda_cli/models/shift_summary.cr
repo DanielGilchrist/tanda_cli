@@ -90,6 +90,19 @@ module TandaCLI
         end - worked_time - leave_time
       end
 
+      def latest_start_today : LatestStart?
+        today = Utils::Time.now
+        return if any? { |shift| shift.date.date == today.date }
+
+        time_left = self.time_left
+        return if time_left.nil? || !time_left.negative?
+
+        schedule = @regular_hours_schedules.try(&.find(&.day_of_week.==(today.day_of_week)))
+        return if schedule.nil?
+
+        LatestStart.new(time_left.abs, schedule, today)
+      end
+
       def time_worked_for(shift : WorkedShift) : Time::Span
         raw_time_worked(shift) || expected_time_worked(shift) || worked_so_far(shift) || Time::Span.zero
       end
@@ -220,14 +233,7 @@ module TandaCLI
       end
 
       private def at_shift_date(shift : WorkedShift, time_of_day : Time) : Time
-        Time.local(
-          shift.date.year,
-          shift.date.month,
-          shift.date.day,
-          time_of_day.hour,
-          time_of_day.minute,
-          location: Utils::Time.location
-        )
+        Utils::Time.at_date(shift.date, time_of_day)
       end
 
       private def total_unpaid_break_minutes(shift : WorkedShift) : Time::Span

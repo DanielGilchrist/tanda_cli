@@ -18,6 +18,17 @@ module TandaCLI
         span.negative? ? span + 1.day : span
       end
 
+      def at_date(date : ::Time, time_of_day : ::Time) : ::Time
+        ::Time.local(
+          date.year,
+          date.month,
+          date.day,
+          time_of_day.hour,
+          time_of_day.minute,
+          location: location
+        )
+      end
+
       def pretty_date(date : ::Time) : String
         ::Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
       end

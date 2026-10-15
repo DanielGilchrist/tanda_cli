@@ -24,6 +24,8 @@ module TandaCLI
         @leave_request : API::Types::LeaveRequest,
       ) : Nil; end
 
+      delegate :date, to: @api_shift
+
       getter breakdown : API::Types::LeaveRequest::DailyBreakdown
       getter leave_request : API::Types::LeaveRequest
 
