@@ -925,7 +925,7 @@ describe TandaCLI::Commands::TimeWorked::Week do
     end
   end
 
-  it "Does not suggest a start time once the latest start has passed" do
+  it "Shows overtime without a start time once the latest start has passed" do
     TimeWorkedSpecHelper.stub_shifts([
       ShiftBuilder.build_shift(
         id: 1,
@@ -939,7 +939,15 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     travel_to(Time.local(2024, 12, 24, 14)) do
       context = run(["time_worked", "week"])
-      context.stdout.to_s.should eq("You've worked 9 hours and 0 minutes this week\n")
+
+      expected = <<-OUTPUT
+        Overtime this week: 1 hours and 0 minutes
+
+        You've worked 9 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
     end
   end
 
@@ -962,7 +970,15 @@ describe TandaCLI::Commands::TimeWorked::Week do
 
     travel_to(Time.local(2024, 12, 24, 11)) do
       context = run(["time_worked", "week"])
-      context.stdout.to_s.should eq("You've worked 11 hours and 0 minutes this week\n")
+
+      expected = <<-OUTPUT
+        Undertime this week: 5 hours and 0 minutes
+
+        You've worked 11 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
     end
   end
   it "Says overtime covers today exactly when it matches today's regular hours" do
@@ -993,6 +1009,72 @@ describe TandaCLI::Commands::TimeWorked::Week do
         Overtime covers today exactly
 
         You've worked 24 hours and 0 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+  it "Shows overtime when today is already clocked out" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 18),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        start: Time.local(2024, 12, 24, 8, 30),
+        finish: Time.local(2024, 12, 24, 18, 30),
+        break_start: Time.local(2024, 12, 24, 12),
+        break_finish: Time.local(2024, 12, 24, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 19)) do
+      context = run(["time_worked", "week"])
+
+      expected = <<-OUTPUT
+        Overtime this week: 2 hours and 30 minutes
+
+        You've worked 18 hours and 30 minutes this week
+
+        OUTPUT
+
+      context.stdout.to_s.should eq(expected)
+    end
+  end
+  it "Shows undertime when you're behind for the week" do
+    TimeWorkedSpecHelper.stub_shifts([
+      ShiftBuilder.build_shift(
+        id: 1,
+        start: Time.local(2024, 12, 23, 8, 30),
+        finish: Time.local(2024, 12, 23, 17),
+        break_start: Time.local(2024, 12, 23, 12),
+        break_finish: Time.local(2024, 12, 23, 12, 30),
+        break_length: 30,
+      ),
+      ShiftBuilder.build_shift(
+        id: 2,
+        start: Time.local(2024, 12, 24, 8, 30),
+        finish: Time.local(2024, 12, 24, 15, 45),
+        break_start: Time.local(2024, 12, 24, 12),
+        break_finish: Time.local(2024, 12, 24, 12, 30),
+        break_length: 30,
+      ),
+    ].to_json)
+
+    travel_to(Time.local(2024, 12, 24, 16)) do
+      context = run(["time_worked", "week"])
+
+      expected = <<-OUTPUT
+        Undertime this week: 1 hours and 15 minutes
+
+        You've worked 14 hours and 45 minutes this week
 
         OUTPUT
 

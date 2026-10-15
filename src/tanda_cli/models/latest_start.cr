@@ -9,7 +9,7 @@ module TandaCLI
         @date : Time,
       ) : Nil; end
 
-      getter overtime : Time::Span
+      private getter overtime : Time::Span
 
       def at : Time
         Utils::Time.at_date(@date, @schedule.start_time) + overtime

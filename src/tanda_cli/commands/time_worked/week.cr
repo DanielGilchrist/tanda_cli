@@ -51,8 +51,9 @@ module TandaCLI
 
           if summary.any_ongoing?
             maybe_print_time_left_or_overtime(display, summary)
-          elsif offset.nil?
-            maybe_print_latest_start(display, summary)
+          else
+            latest_start = summary.latest_start_today if offset.nil?
+            maybe_print_overtime_or_undertime(display, summary, latest_start)
           end
 
           worked_time = summary.worked_time
@@ -72,7 +73,7 @@ module TandaCLI
           absolute_time_left = time_left.abs
 
           header_text = time_left.positive? ? "Time left today" : "Overtime this week"
-          display.puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.hours} hours and #{absolute_time_left.minutes} minutes"
+          display.puts "#{"#{header_text}:".colorize.white.bold} #{absolute_time_left.total_hours.to_i} hours and #{absolute_time_left.minutes} minutes"
 
           clock_out_text = time_left.positive? ? "Regular hours reached at" : "Overtime since"
 
@@ -81,27 +82,33 @@ module TandaCLI
           display.puts
         end
 
-        private def maybe_print_latest_start(display : TandaCLI::Display, summary : Models::ShiftSummary) : Nil
-          latest_start = summary.latest_start_today
-          return if latest_start.nil? || latest_start.passed?
+        private def maybe_print_overtime_or_undertime(
+          display : TandaCLI::Display,
+          summary : Models::ShiftSummary,
+          latest_start : Models::LatestStart?,
+        ) : Nil
+          time_left = summary.time_left
+          return if time_left.nil? || time_left.zero?
 
-          overtime = latest_start.overtime
-          display.puts "#{"Overtime this week:".colorize.white.bold} #{overtime.hours} hours and #{overtime.minutes} minutes"
+          balance = time_left.abs
+          header_text = time_left.negative? ? "Overtime this week" : "Undertime this week"
+          display.puts "#{"#{header_text}:".colorize.white.bold} #{balance.total_hours.to_i} hours and #{balance.minutes} minutes"
 
-          if latest_start.day_off?
-            surplus = latest_start.surplus
-
-            if surplus.zero?
-              display.puts "Overtime covers today exactly"
-            else
-              display.puts "Overtime covers today with #{surplus.hours} hours and #{surplus.minutes} minutes to spare"
-            end
-          else
-            wait = latest_start.at - Utils::Time.now
-            display.puts "Overtime runs out at: #{Utils::Time.pretty_time(latest_start.at)} (in #{wait.hours} hours and #{wait.minutes} minutes)"
-          end
+          print_latest_start(display, latest_start) if time_left.negative? && latest_start && !latest_start.passed?
 
           display.puts
+        end
+
+        private def print_latest_start(display : TandaCLI::Display, latest_start : Models::LatestStart) : Nil
+          unless latest_start.day_off?
+            wait = latest_start.at - Utils::Time.now
+            return display.puts "Overtime runs out at: #{Utils::Time.pretty_time(latest_start.at)} (in #{wait.hours} hours and #{wait.minutes} minutes)"
+          end
+
+          surplus = latest_start.surplus
+          return display.puts "Overtime covers today exactly" if surplus.zero?
+
+          display.puts "Overtime covers today with #{surplus.total_hours.to_i} hours and #{surplus.minutes} minutes to spare"
         end
       end
     end
