@@ -27,28 +27,29 @@ The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure 
 
 See `--help` for a list of commands (each subcommand also accepts a `--help` flag)
 ```fish
-╰─❮ tanda_cli help
+╰─❯ tanda_cli help
 A CLI application for people using Tanda/Workforce.com
 
-Usage:
-        tanda_cli <command> [options]
+Usage: tanda_cli [options] <command>
 
 Commands:
-        auth                Manage authentication
-        me                  Get your own information
-        personal_details    Get your personal details
-        clockin             Clock in/out
-        time_worked         See how many hours you’ve worked
-        balance             Check your leave balances
-        regular_hours       View or set your regular hours
-        current_user        View the current user, list available users or set the current user
-        mode                Set the mode to run commands in (production/staging/custom <url>)
-        start_of_week       Set the start of the week (e.g. monday/sunday)
-        help                Shows help information
+  auth              Manage authentication
+  balance           Check your leave balances
+  clockin           Clock in/out
+  completions       Print a shell completion script
+  config            Show where the configuration lives or what it contains
+  current_user      View the current user, list available users or set the current user
+  me                Get your own information
+  mode              Set the mode to run commands in (production/staging/custom <url>)
+  personal_details  Get your personal details
+  regular_hours     View or set your regular hours
+  start_of_week     Set the start of the week (e.g. monday/sunday)
+  time_worked       See how many hours you've worked
+  help              Show this help
 
 Options:
-        --no-colour      Disable ANSI colours
-        -h, --help       Shows help information
+      --no-colour  Disable ANSI colours
+  -h, --help       Show this help
 ```
 
 #### Examples

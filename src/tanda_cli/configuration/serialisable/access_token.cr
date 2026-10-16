@@ -4,6 +4,8 @@ module TandaCLI
       class AccessToken
         include JSON::Serializable
 
+        REDACTED_TOKEN = "[redacted]"
+
         def self.from(email : String, api_token : API::Types::AccessToken) : self
           new(
             email: email,
@@ -31,6 +33,16 @@ module TandaCLI
 
         @[JSON::Field(converter: TandaCLI::API::Types::Converters::Time::FromUnix)]
         getter created_at : Time
+
+        def redacted : AccessToken
+          AccessToken.new(
+            email: @email,
+            token: REDACTED_TOKEN,
+            token_type: @token_type,
+            scopes: @scopes,
+            created_at: @created_at,
+          )
+        end
       end
     end
   end

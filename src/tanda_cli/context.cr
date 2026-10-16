@@ -2,6 +2,7 @@ module TandaCLI
   class Context
     def initialize(@config_file : Configuration::AbstractFile, @display : Display, @input : Input) : Nil; end
 
+    getter config_file : Configuration::AbstractFile
     getter display : Display
     getter input : Input
     property exit_status : Int32 = ExitProgram::SUCCESS

@@ -6,6 +6,10 @@ module TandaCLI
       CONFIG_DIR  = "#{Path.home}/.tanda_cli"
       CONFIG_PATH = "#{CONFIG_DIR}/config.json"
 
+      def path : String
+        CONFIG_PATH
+      end
+
       def read : String?
         return unless ::File.exists?(CONFIG_PATH)
         ::File.read(CONFIG_PATH)

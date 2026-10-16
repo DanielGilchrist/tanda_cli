@@ -3,6 +3,7 @@ require "./auth"
 require "./me"
 require "./personal_details"
 require "./clock_in"
+require "./config"
 require "./time_worked"
 require "./balance"
 require "./regular_hours"
@@ -28,6 +29,7 @@ module TandaCLI
                                  CurrentUser |
                                  Mode |
                                  StartOfWeek |
+                                 Config |
                                  Completions
 
       def self.execute(args : Array(String), context : Context) : Nil
@@ -37,7 +39,7 @@ module TandaCLI
             Colorize.enabled = false
             Spinner.enabled = false
           end
-          maybe_display_staging_warning(context) unless result.command.is_a?(Mode) || result.command.is_a?(Completions)
+          maybe_display_staging_warning(context) unless skip_staging_warning?(result.command)
           result.run(context)
         in Kebab::Help
           context.display.puts(result)
@@ -45,6 +47,10 @@ module TandaCLI
           context.display.puts_error(result)
           TandaCLI.fail!
         end
+      end
+
+      private def self.skip_staging_warning?(command : Subcommand) : Bool
+        command.is_a?(Mode) || command.is_a?(Config) || command.is_a?(Completions)
       end
 
       private def self.maybe_display_staging_warning(context : Context) : Nil

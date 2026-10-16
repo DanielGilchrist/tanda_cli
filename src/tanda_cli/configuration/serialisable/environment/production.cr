@@ -40,6 +40,14 @@ module TandaCLI
           def current_organisation! : Organisation
             current_organisation? || raise("No current organisation set!")
           end
+
+          def redacted : Production
+            Production.new(
+              region: @region,
+              access_token: @access_token.try(&.redacted),
+              organisations: @organisations,
+            )
+          end
         end
       end
     end

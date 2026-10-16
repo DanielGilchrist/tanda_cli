@@ -10,10 +10,11 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
     OvernightRegularHours
     Unauthenticated
 
-    def read : Bytes
-      file_name = to_s.underscore
-      path = "#{FIXTURE_PATH}/#{file_name}.json"
+    def path : String
+      "#{FIXTURE_PATH}/#{to_s.underscore}.json"
+    end
 
+    def read : Bytes
       File.read(path).to_slice
     end
   end
@@ -22,11 +23,13 @@ class Configuration::FixtureFile < TandaCLI::Configuration::AbstractFile
     file_io = IO::Memory.new
     file_io.write(fixture.read)
 
-    new(file_io)
+    new(fixture.path, file_io)
   end
 
   # Should be loaded with `load` with a fixture representing a configuration file
-  private def initialize(@io : IO::Memory = IO::Memory.new) : Nil; end
+  private def initialize(@path : String, @io : IO::Memory = IO::Memory.new) : Nil; end
+
+  getter path : String
 
   def read : String?
     @io.rewind.gets_to_end

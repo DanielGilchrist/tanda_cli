@@ -3,6 +3,12 @@ module TandaCLI
     class Serialisable
       include JSON::Serializable
 
+      def self.parse?(contents : String) : Serialisable?
+        from_json(contents)
+      rescue JSON::Error
+        nil
+      end
+
       def initialize(
         @clockin_photo_path : String? = nil,
         @production : Environment::Production = Environment::Production.new,
@@ -23,6 +29,18 @@ module TandaCLI
       @staging : Environment::Staging = Environment::Staging.new
       @custom : Environment::Custom? = nil
       @current_environment : Environment::Name = Environment::Name::Production
+
+      def redacted : Serialisable
+        Serialisable.new(
+          clockin_photo_path: @clockin_photo_path,
+          production: @production.redacted,
+          staging: @staging.redacted,
+          custom: @custom.try(&.redacted),
+          current_environment: @current_environment,
+          start_of_week: @start_of_week,
+          treat_paid_breaks_as_unpaid: treat_paid_breaks_as_unpaid?,
+        )
+      end
 
       def pretty_start_of_week : String
         @start_of_week.to_s
