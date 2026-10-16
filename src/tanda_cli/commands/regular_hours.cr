@@ -8,7 +8,7 @@ module TandaCLI
       include Kebab::Parseable
 
       @[Kebab::Subcommand]
-      getter command : Determine | Display | Clear
+      getter command : Set | Determine | Display | Clear
     end
   end
 end

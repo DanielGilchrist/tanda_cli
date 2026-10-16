@@ -143,6 +143,77 @@ describe TandaCLI::Commands::RegularHours::Determine do
     end
   end
 
+  it "Lets the user fix the suggestion before applying it" do
+    stub_empty_roster_for_dates([
+      "2025-07-29",
+      "2025-07-22",
+      "2025-07-15",
+      "2025-07-08",
+      "2025-07-01",
+      "2025-06-24",
+      "2025-06-17",
+    ])
+
+    stub_roster("2025-08-05", daily_schedules: [
+      daily_schedule(
+        date: "2025-08-04",
+        start: Time.local(2025, 8, 4, 8, 30),
+        finish: Time.local(2025, 8, 4, 17, 0),
+        breaks: [{start: Time.local(2025, 8, 4, 12, 7), finish: Time.local(2025, 8, 4, 12, 51)}],
+      ),
+      daily_schedule(date: "2025-08-05", start: Time.local(2025, 8, 5, 8, 30), finish: Time.local(2025, 8, 5, 16, 0), automatic_break_length: 0),
+    ])
+
+    travel_to(Time.local(2025, 8, 5)) do
+      stdin = build_stdin("all break 30m", "tue same as mon", "y")
+
+      context = run(["regular_hours", "determine"], stdin: stdin, config_fixture: :no_regular_hours)
+
+      stdout = context.stdout.to_s
+      stdout.should contain("12:07 pm - 12:51 pm")
+      stdout.should contain("Apply these regular hours? (Y/n, type an edit, or ? for help)")
+      stdout.should contain("* Monday     8:30 am - 5:00 pm  30min  8h 00m")
+      stdout.should contain("* Tuesday    8:30 am - 5:00 pm  30min  8h 00m")
+      stdout.should contain("Regular hours set for Test Organisation")
+      context.stderr.to_s.should be_empty
+
+      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules.size.should eq(2)
+      schedules.each do |schedule|
+        schedule.automatic_break_length.should eq(30.minutes)
+        schedule.breaks.should be_empty
+        schedule.pretty_finish_time.should eq("5:00 pm")
+      end
+    end
+  end
+
+  it "Lets the user fix the suggestion in the editor" do
+    stub_empty_roster_for_dates([
+      "2025-07-29",
+      "2025-07-22",
+      "2025-07-15",
+      "2025-07-08",
+      "2025-07-01",
+      "2025-06-24",
+      "2025-06-17",
+    ])
+
+    stub_roster("2025-08-05", daily_schedules: [
+      daily_schedule(date: "2025-08-04", start: Time.local(2025, 8, 4, 8, 30), finish: Time.local(2025, 8, 4, 17, 0)),
+    ])
+
+    travel_to(Time.local(2025, 8, 5)) do
+      with_editor("replace", "mon-fri 8:30-17:00 break 30m") do
+        context = run(["regular_hours", "determine"], stdin: build_stdin("e", "y"), config_fixture: :no_regular_hours)
+
+        editor_received.should contain("monday     8:30-17:00  break 30m")
+        editor_received.should contain("tuesday    off")
+        context.stdout.to_s.should contain("Regular hours set for Test Organisation")
+        context.config.current_organisation!.regular_hours_schedules.size.should eq(5)
+      end
+    end
+  end
+
   it "Errors when no rosters with schedules are found in the lookback window" do
     stub_empty_roster_for_dates([
       "2025-08-05",
@@ -219,7 +290,15 @@ private def stub_empty_roster_for_dates(date_strings : Array(String)) : Nil
   date_strings.each { |date_string| stub_roster(date_string) }
 end
 
-private def daily_schedule(*, date : String, start : Time, finish : Time, user_id : Int32 = 1, automatic_break_length : Int32 = 30) : JSON::Any
+private def daily_schedule(
+  *,
+  date : String,
+  start : Time,
+  finish : Time,
+  user_id : Int32 = 1,
+  automatic_break_length : Int32 = 30,
+  breaks : Array(NamedTuple(start: Time, finish: Time)) = Array(NamedTuple(start: Time, finish: Time)).new,
+) : JSON::Any
   payload = {
     date:      date,
     schedules: [
@@ -229,7 +308,7 @@ private def daily_schedule(*, date : String, start : Time, finish : Time, user_i
         user_id:                user_id,
         start:                  start.to_unix,
         finish:                 finish.to_unix,
-        breaks:                 Array(Hash(String, String)).new,
+        breaks:                 breaks.map { |brk| {start: brk[:start].to_unix, finish: brk[:finish].to_unix} },
         automatic_break_length: automatic_break_length,
         department_id:          1,
         time_zone:              "Europe/London",

@@ -1,9 +1,12 @@
+require "../helpers/regular_hours_editing"
+
 module TandaCLI
   module Commands
     struct RegularHours
       @[Kebab::Command(summary: "Determine the regular hours for the current user based on recent rosters")]
       struct Determine
         include Kebab::Parseable
+        include Helpers::RegularHoursEditing
 
         DEFAULT_WEEKS_TO_CHECK =  8
         MAX_WEEKS_TO_CHECK     = 52
@@ -30,15 +33,12 @@ module TandaCLI
           pattern.representer.display(display)
           display.puts
 
-          context.input.request_and(message: "Apply these regular hours? (y/n)") do |answer|
-            return display.warning("Regular hours not updated") if answer != "y"
-          end
+          suggested = pattern.to_regular_hours_week
+          prompt = "Apply these regular hours? (Y/n, type an edit, or ? for help)"
+          week = edit_loop(context, suggested, against: suggested, prompt: prompt)
+          return display.warning("Regular hours not updated") if week.nil?
 
-          organisation = context.config.current_organisation!
-          organisation.replace_regular_hours_schedules!(pattern.to_regular_hours_schedules)
-          context.config.save!
-
-          display.success("Regular hours set for #{organisation.name}")
+          save_week(context, week)
         end
 
         private def announce_search(display : TandaCLI::Display, dates : Array(Time)) : Nil

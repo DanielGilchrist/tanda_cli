@@ -54,14 +54,22 @@ module TandaCLI
 
       def to_regular_hours_schedules : Array(RegularHoursSchedule)
         @entries.map do |entry|
+          breaks = entry.breaks.map do |brk|
+            RegularHoursSchedule::Break.new(brk.start_time, brk.finish_time)
+          end
+
           RegularHoursSchedule.new(
             day_of_week: entry.day_of_week,
             start_time: entry.start_time,
             finish_time: entry.finish_time,
-            breaks: entry.breaks.map { |brk| RegularHoursSchedule::Break.new(brk.start_time, brk.finish_time) },
-            automatic_break_length: entry.automatic_break_length,
+            breaks: breaks,
+            automatic_break_length: breaks.empty? ? entry.automatic_break_length : 0.minutes,
           )
         end
+      end
+
+      def to_regular_hours_week : RegularHoursWeek
+        RegularHoursWeek.from(to_regular_hours_schedules)
       end
 
       def representer : Representers::RegularHoursPattern

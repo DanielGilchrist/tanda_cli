@@ -10,9 +10,12 @@ require "./support/context"
 require "./support/travel_to_hack"
 require "./support/configuration/fixture_file"
 require "./support/shift_builder"
+require "./support/editor"
 
 Spec.before_each do
   WebMock.reset
+  ENV.delete("EDITOR")
+  ENV.delete("VISUAL")
 end
 
 DEFAULT_BASE_URI = "https://eu.tanda.co/api/v2"

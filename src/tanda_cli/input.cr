@@ -23,6 +23,11 @@ module TandaCLI
       end
     end
 
+    def read_line(message : String) : String?
+      @display.puts(message)
+      @stdin.gets(chomp: true)
+    end
+
     def request_or(message : String, display_type : Display::Type? = nil, sensitive : Bool = false, & : -> U) : String | U forall U
       request(message, display_type, sensitive) || yield
     end

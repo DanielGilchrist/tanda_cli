@@ -3,6 +3,11 @@ require "../error/unparseable_time_of_day"
 module TandaCLI
   module Models
     struct TimeOfDay
+      include Comparable(TimeOfDay)
+
+      MINUTES_PER_DAY = 24 * 60
+      STORAGE_FORMAT  = "%H:%M"
+
       PATTERN = /\A(?<hour>\d{1,2}):?(?<minute>[0-5]\d)?\s*(?<meridiem>[ap](?:\.?m)?\.?)?\z/i
 
       enum Meridiem
@@ -39,6 +44,10 @@ module TandaCLI
         new(hour, minute)
       end
 
+      def self.from(time : ::Time) : TimeOfDay
+        new(time.hour, time.minute)
+      end
+
       private def self.unparseable(input : String) : Error::UnparseableTimeOfDay
         Error::UnparseableTimeOfDay.new(input)
       end
@@ -50,6 +59,26 @@ module TandaCLI
 
       def on(day : ::Time) : ::Time
         ::Time.local(day.year, day.month, day.day, hour, minute, location: Utils::Time.location)
+      end
+
+      def to_storage_time : ::Time
+        ::Time.parse(to_s, STORAGE_FORMAT, Utils::Time.location)
+      end
+
+      def minutes_of_day : Int32
+        hour * 60 + minute
+      end
+
+      def <=>(other : TimeOfDay) : Int32
+        minutes_of_day <=> other.minutes_of_day
+      end
+
+      def pretty : String
+        Utils::Time.pretty_time(to_storage_time)
+      end
+
+      def to_s(io : IO) : Nil
+        io << hour << ':' << minute.to_s.rjust(2, '0')
       end
     end
   end

@@ -16,6 +16,10 @@ module TandaCLI
         def length : Time::Span
           Utils::Time.span_between(start_time, finish_time)
         end
+
+        def time_range : TimeRange
+          TimeRange.new(TimeOfDay.from(start_time), TimeOfDay.from(finish_time))
+        end
       end
     end
   end
