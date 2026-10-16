@@ -15,6 +15,10 @@ module TandaCLI
 
       INTERNAL_SERVER_ERROR_STRING = "Internal Server Error"
 
+      CONNECT_TIMEOUT = 10.seconds
+      READ_TIMEOUT    = 30.seconds
+      WRITE_TIMEOUT   = 10.seconds
+
       alias Query = Hash(String, String)
       alias Body = Hash(String, String)
 
@@ -33,13 +37,13 @@ module TandaCLI
       end
 
       private def exec(method : String, endpoint : String, query : Query? = nil, body : String? = nil) : HTTP::Client::Response
-        with_no_internet_handler! do
+        with_network_error_handler! do
           encoded_params = URI::Params.encode(query) if query
           uri = build_uri(endpoint, encoded_params)
           request_body = body
           headers = build_headers
 
-          HTTP::Client.exec(method, url: uri, headers: headers, body: request_body).tap do |response|
+          execute(method, uri, headers, request_body).tap do |response|
             Log.debug(&.emit(
               "#{method} response for #{endpoint}",
               headers: headers.pretty_inspect,
@@ -50,6 +54,16 @@ module TandaCLI
 
             handle_fatal_error!(response)
           end
+        end
+      end
+
+      private def execute(method : String, uri : URI, headers : HTTP::Headers, body : String?) : HTTP::Client::Response
+        HTTP::Client.new(uri) do |client|
+          client.connect_timeout = CONNECT_TIMEOUT
+          client.read_timeout = READ_TIMEOUT
+          client.write_timeout = WRITE_TIMEOUT
+
+          client.exec(method, uri.request_target, headers: headers, body: body)
         end
       end
 
@@ -79,10 +93,12 @@ module TandaCLI
         end
       end
 
-      private def with_no_internet_handler!(& : -> HTTP::Client::Response) : HTTP::Client::Response
+      private def with_network_error_handler!(& : -> HTTP::Client::Response) : HTTP::Client::Response
         yield
       rescue Socket::Addrinfo::Error
         raise NetworkError.new("There appears to be a problem with your internet connection")
+      rescue IO::TimeoutError
+        raise NetworkError.new("The request timed out, please try again")
       end
 
       private def handle_fatal_error!(response : HTTP::Client::Response) : Nil
