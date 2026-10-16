@@ -4,6 +4,8 @@ require "./tanda_cli"
   TandaCLI::Debug.setup
 {% end %}
 
+TandaCLI::Spinner.enabled = STDERR.tty?
+
 context = TandaCLI.main(
   args: ARGV,
   stdout: STDOUT,

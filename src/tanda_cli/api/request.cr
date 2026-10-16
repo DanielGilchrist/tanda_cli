@@ -5,6 +5,7 @@ require "log"
 require "./fatal_error"
 require "./network_error"
 require "./result"
+require "../spinner"
 
 module TandaCLI
   module API
@@ -14,6 +15,9 @@ module TandaCLI
       PUT  = "PUT"
 
       INTERNAL_SERVER_ERROR_STRING = "Internal Server Error"
+
+      FETCHING_MESSAGE = "Fetching…"
+      SENDING_MESSAGE  = "Sending…"
 
       CONNECT_TIMEOUT = 10.seconds
       READ_TIMEOUT    = 30.seconds
@@ -43,7 +47,7 @@ module TandaCLI
           request_body = body
           headers = build_headers
 
-          execute(method, uri, headers, request_body).tap do |response|
+          Spinner.while_working(working_message(method)) { execute(method, uri, headers, request_body) }.tap do |response|
             Log.debug(&.emit(
               "#{method} response for #{endpoint}",
               headers: headers.pretty_inspect,
@@ -55,6 +59,10 @@ module TandaCLI
             handle_fatal_error!(response)
           end
         end
+      end
+
+      private def working_message(method : String) : String
+        method == GET ? FETCHING_MESSAGE : SENDING_MESSAGE
       end
 
       private def execute(method : String, uri : URI, headers : HTTP::Headers, body : String?) : HTTP::Client::Response

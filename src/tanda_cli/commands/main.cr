@@ -33,7 +33,10 @@ module TandaCLI
       def self.execute(args : Array(String), context : Context) : Nil
         case result = parse(args)
         in Main
-          Colorize.enabled = false if result.no_colour?
+          if result.no_colour?
+            Colorize.enabled = false
+            Spinner.enabled = false
+          end
           maybe_display_staging_warning(context) unless result.command.is_a?(Mode) || result.command.is_a?(Completions)
           result.run(context)
         in Kebab::Help
