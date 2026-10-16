@@ -40,7 +40,7 @@ module TandaCLI
           context.display.puts(result)
         in Kebab::Errors
           context.display.puts_error(result)
-          TandaCLI.exit!
+          TandaCLI.fail!
         end
       end
 

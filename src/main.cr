@@ -4,10 +4,12 @@ require "./tanda_cli"
   TandaCLI::Debug.setup
 {% end %}
 
-TandaCLI.main(
+context = TandaCLI.main(
   args: ARGV,
   stdout: STDOUT,
   stdin: STDIN,
   stderr: STDERR,
   config_file: TandaCLI::Configuration::File.new
 )
+
+exit(context.exit_status)

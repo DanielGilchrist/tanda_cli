@@ -4,6 +4,7 @@ module TandaCLI
 
     getter display : Display
     getter input : Input
+    property exit_status : Int32 = ExitProgram::SUCCESS
 
     getter config : Configuration { Configuration.init(@config_file, @display) }
 

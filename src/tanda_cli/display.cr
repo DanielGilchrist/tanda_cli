@@ -31,7 +31,7 @@ module TandaCLI
         raise message
       {% else %}
         display_message(:fatal, message)
-        TandaCLI.exit!
+        TandaCLI.fail!
       {% end %}
     end
 
@@ -59,7 +59,7 @@ module TandaCLI
 
     def error!(message : String, value : String? = nil) : NoReturn
       error(message, value)
-      TandaCLI.exit!
+      TandaCLI.fail!
     end
 
     def error!(error_object : Error::Base) : NoReturn
@@ -67,13 +67,13 @@ module TandaCLI
         raise error_object
       {% else %}
         error(error_object)
-        TandaCLI.exit!
+        TandaCLI.fail!
       {% end %}
     end
 
     def error!(error_object : Error::Interface) : NoReturn
       error(error_object)
-      TandaCLI.exit!
+      TandaCLI.fail!
     end
 
     def puts(message : Object? = nil) : Nil
