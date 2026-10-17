@@ -33,7 +33,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
 
       context.stderr.to_s.should be_empty
 
-      organisation = context.config.current_organisation!
+      organisation = context.current_organisation!
       organisation.regular_hours_schedules.size.should eq(2)
 
       monday_schedule = organisation.regular_hours_schedules.find(&.day_of_week.monday?)
@@ -72,7 +72,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
       stdout.should contain("9:00 am - 5:30 pm")
       stdout.should contain("2 of 8")
 
-      organisation = context.config.current_organisation!
+      organisation = context.current_organisation!
       organisation.regular_hours_schedules.size.should eq(1)
 
       monday_schedule = organisation.regular_hours_schedules.find(&.day_of_week.monday?)
@@ -106,7 +106,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
 
       context.stderr.to_s.should be_empty
 
-      organisation = context.config.current_organisation!
+      organisation = context.current_organisation!
       organisation.regular_hours_schedules.size.should eq(2)
 
       monday = organisation.regular_hours_schedules.find(&.day_of_week.monday?)
@@ -139,7 +139,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
       context = run(["regular_hours", "determine"], stdin: stdin, config_fixture: :no_regular_hours)
 
       context.stdout.to_s.should contain("Warning: Regular hours not updated")
-      context.config.current_organisation!.regular_hours_schedules.should be_empty
+      context.current_organisation!.regular_hours_schedules.should be_empty
     end
   end
 
@@ -177,7 +177,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
       stdout.should contain("Regular hours set for Test Organisation")
       context.stderr.to_s.should be_empty
 
-      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules = context.current_organisation!.regular_hours_schedules
       schedules.size.should eq(2)
       schedules.each do |schedule|
         schedule.automatic_break_length.should eq(30.minutes)
@@ -209,7 +209,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
         editor_received.should contain("monday     8:30-17:00  break 30m")
         editor_received.should contain("tuesday    off")
         context.stdout.to_s.should contain("Regular hours set for Test Organisation")
-        context.config.current_organisation!.regular_hours_schedules.size.should eq(5)
+        context.current_organisation!.regular_hours_schedules.size.should eq(5)
       end
     end
   end
@@ -255,7 +255,7 @@ describe TandaCLI::Commands::RegularHours::Determine do
     stdout.should contain("Checking 3 weeks of rosters (2025-05-18 → 2025-06-01)...")
     stdout.should contain("1 of 3")
 
-    monday = context.config.current_organisation!.regular_hours_schedules.find(&.day_of_week.monday?)
+    monday = context.current_organisation!.regular_hours_schedules.find(&.day_of_week.monday?)
     monday.try(&.pretty_start_time).should eq("10:00 am")
   end
 

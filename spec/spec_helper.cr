@@ -7,8 +7,9 @@ Colorize.enabled = false
 
 require "../src/tanda_cli"
 require "./support/context"
+require "./support/environment"
 require "./support/travel_to_hack"
-require "./support/configuration/fixture_file"
+require "./support/storage/fixture_files"
 require "./support/shift_builder"
 require "./support/editor"
 
@@ -23,14 +24,14 @@ DEFAULT_BASE_URI = "https://eu.tanda.co/api/v2"
 def run(
   args : Array(String),
   stdin : IO = IO::Memory.new,
-  config_fixture : Configuration::FixtureFile::Fixture = :default,
+  config_fixture : Storage::FixtureFiles::Fixture = :default,
 ) : TandaCLI::Context
   context = TandaCLI.main(
     args,
     stdout: IO::Memory.new,
     stderr: IO::Memory.new,
     stdin: stdin,
-    config_file: Configuration::FixtureFile.load(config_fixture)
+    files: Storage::FixtureFiles.load(config_fixture)
   )
 
   {% if flag?(:print_output) %}

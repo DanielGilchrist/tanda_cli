@@ -5,11 +5,11 @@ module TandaCLI
       struct Status
         include Kebab::Parseable
 
-        private alias Environment = Configuration::Serialisable::Environment
+        private alias Environment = State::Serialisable::Environment
 
         def run(context : Context) : Nil
           display = context.display
-          env = context.config.current
+          env = context.state.current
 
           unless context.authenticated?
             display.puts "🔒 #{"Not authenticated (#{env.display_label})".colorize.yellow}"
@@ -17,8 +17,8 @@ module TandaCLI
             return
           end
 
-          access_token = env.access_token
-          organisation = env.current_organisation?
+          access_token = context.state.access_token
+          organisation = context.state.current_organisation?
 
           display.puts "🔓 #{"Authenticated (#{env.display_label})".colorize.green}"
           display.puts "📧 #{access_token.email}" if access_token

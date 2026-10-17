@@ -90,7 +90,7 @@ describe TandaCLI::Commands::Auth::Login do
     output.should contain("Test Organisation 1")
     output.should contain("Test Organisation 2")
     output.should contain("Selected organisation \"Test Organisation 2\"")
-    output.should contain("Organisations saved to config")
+    output.should contain("Organisations saved")
   end
 
   it "auto-selects organisation when only one is available" do
@@ -129,7 +129,7 @@ describe TandaCLI::Commands::Auth::Login do
     output = context.stdout.to_s
     output.should contain("Authenticated!")
     output.should contain("Selected organisation \"Test Organisation\"")
-    output.should contain("Organisations saved to config")
+    output.should contain("Organisations saved")
   end
 
   it "errors when all regions fail authentication" do
@@ -221,7 +221,7 @@ describe TandaCLI::Commands::Auth::Login do
 
     output = context.stdout.to_s
     output.should contain("Authenticated!")
-    env = context.config.current.as(TandaCLI::Configuration::Serialisable::Environment::Production)
+    env = context.state.current.as(TandaCLI::State::Serialisable::Environment::Production)
     env.region.should eq(TandaCLI::Region::InternalAPAC)
   end
 

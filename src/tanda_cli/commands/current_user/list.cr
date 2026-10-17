@@ -8,7 +8,7 @@ module TandaCLI
         def run(context : Context) : Nil
           display = context.display
 
-          context.config.organisations.each do |organisation|
+          context.state.organisations.each do |organisation|
             current = organisation.current? ? " #{"(current)".colorize.green}" : ""
             display.puts "#{organisation.name.colorize.white.bold}#{current}"
             display.puts "User ID: #{organisation.user_id}\n\n"

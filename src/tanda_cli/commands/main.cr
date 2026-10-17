@@ -18,7 +18,7 @@ module TandaCLI
     struct Main
       include Kebab::Parseable
 
-      private alias Environment = Configuration::Serialisable::Environment
+      private alias Environment = State::Serialisable::Environment
       private alias Subcommand = Auth |
                                  Me |
                                  PersonalDetails |
@@ -54,7 +54,7 @@ module TandaCLI
       end
 
       private def self.maybe_display_staging_warning(context : Context) : Nil
-        case env = context.config.current
+        case env = context.state.current
         in Environment::Production
         in Environment::Staging
           context.display.warning("Command running in staging mode")

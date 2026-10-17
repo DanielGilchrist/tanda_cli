@@ -1,22 +1,23 @@
 module TandaCLI
   class Context
-    def initialize(@config_file : Configuration::AbstractFile, @display : Display, @input : Input) : Nil; end
+    def initialize(@files : Storage::Files, @display : Display, @input : Input) : Nil; end
 
-    getter config_file : Configuration::AbstractFile
+    getter files : Storage::Files
     getter display : Display
     getter input : Input
     property exit_status : Int32 = ExitProgram::SUCCESS
 
-    getter config : Configuration { Configuration.init(@config_file, @display) }
+    getter state : State { State.init(@files.state, @display) }
+    getter config : Configuration { Configuration.init(@files.configuration(state.current_environment), @display) }
 
     private getter _nilable_current : Current? do
-      organisation = config.current_organisation?
+      organisation = state.current_organisation?
       Current.new(Current::User.new(organisation.user_id, organisation.name)) if organisation
     end
 
     private getter _nilable_client : API::Client? do
-      access_token = config.access_token
-      API::Client.new(config.api_url, access_token.token, _nilable_current.try(&.user)) if access_token
+      access_token = state.access_token
+      API::Client.new(state.api_url, access_token.token, _nilable_current.try(&.user)) if access_token
     end
 
     def client : API::Client
@@ -25,6 +26,15 @@ module TandaCLI
 
     def current : Current
       _nilable_current || not_authenticated!
+    end
+
+    def current_organisation? : Current::Organisation?
+      organisation = state.current_organisation?
+      Current::Organisation.new(organisation, config) if organisation
+    end
+
+    def current_organisation! : Current::Organisation
+      current_organisation? || raise("No current organisation set!")
     end
 
     def authenticated? : Bool

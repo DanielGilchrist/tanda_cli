@@ -11,12 +11,9 @@ module TandaCLI
 
       def initialize(
         @clockin_photo_path : String? = nil,
-        @production : Environment::Production = Environment::Production.new,
-        @staging : Environment::Staging = Environment::Staging.new,
-        @custom : Environment::Custom? = nil,
-        @current_environment : Environment::Name = Environment::Name::Production,
         @start_of_week : Time::DayOfWeek = Time::DayOfWeek::Monday,
         @treat_paid_breaks_as_unpaid : Bool = false,
+        @regular_hours : Models::RegularHoursByOrganisation = Models::RegularHoursByOrganisation.new,
       ) : Nil; end
 
       property clockin_photo_path : String?
@@ -25,64 +22,22 @@ module TandaCLI
       @[JSON::Field(emit_null: true)]
       property? treat_paid_breaks_as_unpaid : Bool = false
 
-      @production : Environment::Production = Environment::Production.new
-      @staging : Environment::Staging = Environment::Staging.new
-      @custom : Environment::Custom? = nil
-      @current_environment : Environment::Name = Environment::Name::Production
-
-      def redacted : Serialisable
-        Serialisable.new(
-          clockin_photo_path: @clockin_photo_path,
-          production: @production.redacted,
-          staging: @staging.redacted,
-          custom: @custom.try(&.redacted),
-          current_environment: @current_environment,
-          start_of_week: @start_of_week,
-          treat_paid_breaks_as_unpaid: treat_paid_breaks_as_unpaid?,
-        )
-      end
+      property regular_hours : Models::RegularHoursByOrganisation = Models::RegularHoursByOrganisation.new
 
       def pretty_start_of_week : String
         @start_of_week.to_s
       end
 
-      def current : Environment::Any
-        case @current_environment
-        in .production?
-          @production
-        in .staging?
-          @staging
-        in .custom?
-          @custom || raise("Custom environment selected but not configured")
-        end
+      def regular_hours_schedules(organisation_id : Int32) : Array(Models::RegularHoursSchedule)
+        regular_hours[organisation_id]? || Array(Models::RegularHoursSchedule).new
       end
 
-      def use_production! : Nil
-        @current_environment = Environment::Name::Production
+      def replace_regular_hours_schedules!(organisation_id : Int32, schedules : Array(Models::RegularHoursSchedule)) : Nil
+        regular_hours[organisation_id] = schedules
       end
 
-      def use_staging! : Nil
-        @current_environment = Environment::Name::Staging
-      end
-
-      def use_custom!(url : URI) : Nil
-        existing = @custom
-        if existing.nil? || existing.url != url
-          @custom = Environment::Custom.new(url: url)
-        end
-        @current_environment = Environment::Name::Custom
-      end
-
-      def reset_current_environment! : Nil
-        case @current_environment
-        in .production?
-          @production = Environment::Production.new
-        in .staging?
-          @staging = Environment::Staging.new
-        in .custom?
-          existing = @custom
-          @custom = existing && Environment::Custom.new(existing.url)
-        end
+      def clear_regular_hours_schedules!(organisation_id : Int32) : Nil
+        regular_hours.delete(organisation_id)
       end
     end
   end

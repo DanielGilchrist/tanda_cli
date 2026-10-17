@@ -8,7 +8,7 @@ describe TandaCLI::Commands::RegularHours::Clear do
     context.stdout.to_s.should contain("Warning: Are you sure you want to clear regular hours for Test Organisation?")
     context.stdout.to_s.should contain("Success: Regular hours cleared for Test Organisation.")
 
-    context.config.current_organisation!.regular_hours_schedules.should be_empty
+    context.current_organisation!.regular_hours_schedules.should be_empty
   end
 
   it "Doesn't clear regular hours if not confirmed" do
@@ -16,6 +16,6 @@ describe TandaCLI::Commands::RegularHours::Clear do
     context = run(["regular_hours", "clear"], stdin: stdin)
 
     context.stdout.to_s.should contain("Warning: Are you sure you want to clear regular hours for Test Organisation?")
-    context.config.current_organisation!.regular_hours_schedules.should_not be_empty
+    context.current_organisation!.regular_hours_schedules.should_not be_empty
   end
 end

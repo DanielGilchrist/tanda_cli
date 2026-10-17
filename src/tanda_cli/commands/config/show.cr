@@ -1,21 +1,30 @@
+require "./target"
+
 module TandaCLI
   module Commands
     struct Config
-      @[Kebab::Command(summary: "Print the configuration with secrets redacted")]
+      @[Kebab::Command(summary: "Print the config in effect for the current mode")]
       struct Show
         include Kebab::Parseable
+        include Target
 
         def run(context : Context) : Nil
           display = context.display
-          path = context.config_file.path
+          file = file(context)
 
-          contents = context.config_file.read.presence
-          return display.info("No configuration yet", path) if contents.nil?
+          contents = file.read.presence
+          return display.info("Nothing stored yet", file.path) if contents.nil?
 
-          serialisable = Configuration::Serialisable.parse?(contents)
-          display.error!("Invalid config!", path) if serialisable.nil?
+          document = parse(contents)
+          display.error!("Invalid JSON!", file.path) if document.nil?
 
-          display.puts(serialisable.redacted.to_pretty_json)
+          display.puts(document.to_pretty_json)
+        end
+
+        private def parse(contents : String) : JSON::Serializable?
+          return TandaCLI::State::Serialisable.parse?(contents).try(&.redacted) if state?
+
+          Configuration::Serialisable.parse?(contents)
         end
       end
     end

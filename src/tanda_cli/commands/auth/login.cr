@@ -5,16 +5,16 @@ module TandaCLI
       struct Login
         include Kebab::Parseable
 
-        private alias Environment = ::TandaCLI::Configuration::Serialisable::Environment
+        private alias Environment = ::TandaCLI::State::Serialisable::Environment
 
         SCOPES = "device leave personal roster timesheet me"
 
         def run(context : Context) : Nil
           display = context.display
           input = context.input
-          config = context.config
+          state = context.state
 
-          config.reset_current_environment!
+          state.clear!
 
           display.puts "🔐 #{"Tanda CLI Login".colorize.white.bold}"
           display.puts
@@ -23,11 +23,12 @@ module TandaCLI
 
           display.puts "🔍 #{"Authenticating...".colorize.cyan}"
 
-          access_token = authenticate(display, config.current, email, password)
+          access_token = authenticate(display, state.current, email, password)
 
-          config.overwrite_access_token!(email, access_token)
+          state.overwrite_access_token!(email, access_token)
+          state.save!
 
-          client = API::Client.new(config.api_url, access_token.token)
+          client = API::Client.new(state.api_url, access_token.token)
           select_and_save_organisation(context, client)
         end
 
@@ -93,10 +94,10 @@ module TandaCLI
         private def select_and_save_organisation(context : Context, client : API::Client) : Nil
           display = context.display
           input = context.input
-          config = context.config
+          state = context.state
 
           me = client.users.me.unwrap!
-          organisations = Configuration::Serialisable::Organisation.from(me)
+          organisations = State::Serialisable::Organisation.from(me)
 
           display.error!("You don't have access to any organisations") if organisations.empty?
 
@@ -110,19 +111,19 @@ module TandaCLI
           end
 
           organisation.current = true
-          config.organisations = organisations
-          config.save!
+          state.organisations = organisations
+          state.save!
 
           display.puts
           display.success("Selected organisation \"#{organisation.name}\"")
-          display.success("Organisations saved to config")
+          display.success("Organisations saved")
         end
 
         private def prompt_for_organisation(
           display : TandaCLI::Display,
           input : TandaCLI::Input,
-          organisations : Array(Configuration::Serialisable::Organisation),
-        ) : Configuration::Serialisable::Organisation?
+          organisations : Array(State::Serialisable::Organisation),
+        ) : State::Serialisable::Organisation?
           organisations.each_with_index(1) do |org, index|
             display.puts "  #{index.to_s.colorize.cyan}: #{org.name}"
           end

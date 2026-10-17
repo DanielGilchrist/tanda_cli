@@ -6,8 +6,8 @@ module TandaCLI
         include Kebab::Parseable
 
         def run(context : Context) : Nil
-          context.config.use_production!
-          context.config.save!
+          context.state.use_production!
+          context.state.save!
 
           context.display.success("Successfully set mode to production!")
         end

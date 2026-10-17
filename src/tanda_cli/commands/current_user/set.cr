@@ -10,26 +10,26 @@ module TandaCLI
 
         def run(context : Context) : Nil
           display = context.display
-          config = context.config
+          state = context.state
 
           organisation =
             if user_id = id_or_name.to_i?
-              config.organisations.find(&.user_id.==(user_id))
+              state.organisations.find(&.user_id.==(user_id))
             else
               input_name = id_or_name.downcase
-              config.organisations.find(&.name.downcase.includes?(input_name))
+              state.organisations.find(&.name.downcase.includes?(input_name))
             end
 
           display.error!("Invalid argument", id_or_name) if organisation.nil?
 
-          config.organisations.each(&.current = false)
+          state.organisations.each(&.current = false)
           organisation.current = true
-          config.save!
+          state.save!
 
           display.success("The current user has been set to", format_organisation(organisation))
         end
 
-        private def format_organisation(organisation : Configuration::Serialisable::Organisation) : String
+        private def format_organisation(organisation : State::Serialisable::Organisation) : String
           "#{organisation.user_id} in #{organisation.name}"
         end
       end

@@ -20,7 +20,7 @@ module TandaCLI
 
         def run(context : Context) : Nil
           display = context.display
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
           saved = Models::RegularHoursWeek.from(organisation.regular_hours_schedules)
 
           week = words.empty? ? run_loop(context, saved) : run_edit(context, saved)
@@ -34,7 +34,7 @@ module TandaCLI
           saved : Models::RegularHoursWeek,
         ) : Models::RegularHoursWeek?
           display = context.display
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
           prompt = "Save? (Y/n, type an edit, or ? for help)"
 
           if Editor.from_environment

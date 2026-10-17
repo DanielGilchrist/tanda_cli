@@ -12,9 +12,9 @@ describe TandaCLI::Commands::Auth::Logout do
     context.stdout.to_s.should contain("Revoking access token...")
     context.stdout.to_s.should contain("Revoked access token")
     context.stdout.to_s.should contain("Logged out of Production environment")
-    context.config.access_token.should be_nil
+    context.state.access_token.should be_nil
 
-    context.config.organisations.should be_empty
+    context.state.organisations.should be_empty
   end
 
   it "revokes token and clears authentication for staging environment" do
@@ -28,9 +28,9 @@ describe TandaCLI::Commands::Auth::Logout do
     context.stdout.to_s.should contain("Revoking access token...")
     context.stdout.to_s.should contain("Revoked access token")
     context.stdout.to_s.should contain("Logged out of Staging environment")
-    context.config.access_token.should be_nil
+    context.state.access_token.should be_nil
 
-    context.config.organisations.should be_empty
+    context.state.organisations.should be_empty
   end
 
   it "warns but still clears authentication when revocation fails" do
@@ -44,6 +44,6 @@ describe TandaCLI::Commands::Auth::Logout do
     context.stdout.to_s.should_not contain("Revoked access token")
     context.stdout.to_s.should contain("Failed to revoke token (status: 503)")
     context.stdout.to_s.should contain("Logged out of Production environment")
-    context.config.access_token.should be_nil
+    context.state.access_token.should be_nil
   end
 end

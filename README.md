@@ -23,7 +23,7 @@ alias tanda_cli="/link/to/tanda_cli/bin/tanda_cli"
 
 ## Usage
 Upon running any command for the first time, you will be taken through an authentication flow where you will need to enter your username and password.
-The retrieved token is stored in `~/.tanda_cli/config.json` (format / structure is subject to change at the moment)
+Your preferences are stored under `~/.config/tanda_cli/` and the retrieved token in `~/.local/share/tanda_cli/state.json` (format / structure is subject to change at the moment)
 
 See `--help` for a list of commands (each subcommand also accepts a `--help` flag)
 ```fish

@@ -2,26 +2,17 @@ require "json"
 require "file_utils"
 
 require "./configuration/**"
+require "./storage/abstract_file"
 require "./error/invalid_start_of_week"
-require "./api/types/access_token"
 
 module TandaCLI
   class Configuration
-    enum OAuthEndpoint
-      Token
-      Revoke
-
-      def url(base_url : String) : String
-        "#{base_url}/api/oauth/#{to_s.downcase}"
-      end
-    end
-
-    def self.init(file : Configuration::AbstractFile, display : Display) : Configuration
-      config_contents = file.read.presence
-      return new(file) unless config_contents
+    def self.init(file : Storage::AbstractFile, display : Display) : Configuration
+      contents = file.read.presence
+      return new(file) if contents.nil?
 
       begin
-        new(file, Serialisable.from_json(config_contents))
+        new(file, Serialisable.from_json(contents))
       rescue ex
         {% if flag?(:raise_errors) %}
           raise(ex)
@@ -38,7 +29,7 @@ module TandaCLI
       end || new(file)
     end
 
-    def initialize(@file : Configuration::AbstractFile, @serialisable : Serialisable = Serialisable.new) : Nil; end
+    def initialize(@file : Storage::AbstractFile, @serialisable : Serialisable = Serialisable.new) : Nil; end
 
     delegate :start_of_week,
       :start_of_week=,
@@ -46,26 +37,13 @@ module TandaCLI
       :clockin_photo_path,
       :clockin_photo_path=,
       :treat_paid_breaks_as_unpaid?,
-      :current,
-      :use_production!,
-      :use_staging!,
-      :use_custom!,
-      :reset_current_environment!,
+      :regular_hours_schedules,
+      :replace_regular_hours_schedules!,
+      :clear_regular_hours_schedules!,
       to: @serialisable
 
-    delegate :access_token, :organisations, :organisations=, :current_organisation?, :current_organisation!, to: current
-
-    def overwrite_access_token!(email : String, access_token : API::Types::AccessToken) : Nil
-      current.access_token = Serialisable::AccessToken.from(email, access_token)
-      save!
-    end
-
     def save! : Nil
-      @file.write(@serialisable.to_json)
-    end
-
-    def api_url : String
-      "#{current.base_url}/api/v2"
+      @file.write(@serialisable)
     end
   end
 end

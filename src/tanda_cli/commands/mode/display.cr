@@ -5,12 +5,12 @@ module TandaCLI
       struct Display
         include Kebab::Parseable
 
-        private alias Environment = Configuration::Serialisable::Environment
+        private alias Environment = State::Serialisable::Environment
 
         def run(context : Context) : Nil
           display = context.display
 
-          case env = context.config.current
+          case env = context.state.current
           in Environment::Production
             display.puts env.display_label.colorize.green
           in Environment::Staging

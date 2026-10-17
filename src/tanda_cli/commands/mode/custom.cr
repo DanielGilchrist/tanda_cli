@@ -15,8 +15,8 @@ module TandaCLI
 
           case validated = Utils::URL.validate(url)
           in URI
-            context.config.use_custom!(validated)
-            context.config.save!
+            context.state.use_custom!(validated)
+            context.state.save!
             display.success("Successfully set custom url", validated.to_s)
           in Error::InvalidURL
             display.error!(validated)

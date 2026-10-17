@@ -186,7 +186,7 @@ module TandaCLI
           editor = Editor.from_environment
           return display.error(Error::NoEditor.new) if editor.nil?
 
-          title = "Regular hours for #{context.config.current_organisation!.name}"
+          title = "Regular hours for #{context.current_organisation!.name}"
           text = Models::RegularHoursDocument.render(week, context.config.start_of_week, title)
 
           loop do
@@ -234,7 +234,7 @@ module TandaCLI
           display = context.display
           display.error!(Error::EmptyRegularHours.new) if week.empty?
 
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
           organisation.replace_regular_hours_schedules!(week.to_schedules)
           context.config.save!
 

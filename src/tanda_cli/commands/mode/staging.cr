@@ -6,8 +6,8 @@ module TandaCLI
         include Kebab::Parseable
 
         def run(context : Context) : Nil
-          context.config.use_staging!
-          context.config.save!
+          context.state.use_staging!
+          context.state.save!
 
           context.display.success("Successfully set mode to staging!")
         end

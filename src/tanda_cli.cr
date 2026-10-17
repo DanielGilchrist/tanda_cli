@@ -4,11 +4,11 @@ require "./tanda_cli/**"
 module TandaCLI
   extend self
 
-  def main(args : Array(String), stdin : IO, stdout : IO, stderr : IO, config_file : Configuration::AbstractFile) : Context
+  def main(args : Array(String), stdin : IO, stdout : IO, stderr : IO, files : Storage::Files) : Context
     display = Display.new(stdout, stderr)
     input = Input.new(stdin, display)
 
-    Context.new(config_file, display, input).tap do |context|
+    Context.new(files, display, input).tap do |context|
       Commands::Main.execute(args, context)
     rescue ex : ExitProgram
       context.exit_status = ex.status

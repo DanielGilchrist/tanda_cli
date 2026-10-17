@@ -34,7 +34,7 @@ module TandaCLI
 
           leave_requests = leave_requests_for(context, api_shifts)
 
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
           treat_paid_breaks_as_unpaid = context.config.treat_paid_breaks_as_unpaid?
 

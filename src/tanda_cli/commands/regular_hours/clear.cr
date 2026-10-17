@@ -8,7 +8,7 @@ module TandaCLI
         def run(context : Context) : Nil
           display = context.display
           input = context.input
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
 
           input.request_and("Are you sure you want to clear regular hours for #{organisation.name}? (y/n)", :warning) do |user_input|
             return if user_input != "y"

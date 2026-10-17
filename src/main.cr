@@ -11,7 +11,7 @@ context = TandaCLI.main(
   stdout: STDOUT,
   stdin: STDIN,
   stderr: STDERR,
-  config_file: TandaCLI::Configuration::File.new
+  files: TandaCLI::Storage::Files.default
 )
 
 exit(context.exit_status)

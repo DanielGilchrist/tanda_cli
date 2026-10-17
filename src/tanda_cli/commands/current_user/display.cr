@@ -8,7 +8,7 @@ module TandaCLI
         def run(context : Context) : Nil
           display = context.display
 
-          if organisation = context.config.current_organisation?
+          if organisation = context.current_organisation?
             display.puts "#{organisation.name.colorize.white.bold} (User #{organisation.user_id})"
           else
             display.puts "A current user hasn't been set!"

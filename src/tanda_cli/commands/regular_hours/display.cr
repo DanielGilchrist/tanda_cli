@@ -7,7 +7,7 @@ module TandaCLI
 
         def run(context : Context) : Nil
           display = context.display
-          organisation = context.config.current_organisation!
+          organisation = context.current_organisation!
           regular_hours_schedules = organisation.regular_hours_schedules
 
           if regular_hours_schedules.empty?

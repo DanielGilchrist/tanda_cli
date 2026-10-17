@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-private alias Environment = TandaCLI::Configuration::Serialisable::Environment
+private alias Environment = TandaCLI::State::Serialisable::Environment
 
 describe TandaCLI::Commands::Mode do
   describe TandaCLI::Commands::Mode::Display do
@@ -15,7 +15,7 @@ describe TandaCLI::Commands::Mode do
       url = "https://test.environment.tanda.co"
       context = run(["mode", "custom", url])
 
-      env = context.config.current
+      env = context.state.current
       env.should be_a(Environment::Custom)
       env.as(Environment::Custom).url.to_s.should eq(url)
       context.stdout.to_s.should eq("Success: Successfully set custom url \"#{url}\"\n")
@@ -25,7 +25,7 @@ describe TandaCLI::Commands::Mode do
       url = "https://dangilchrist.dev.us.adnat.co"
       context = run(["mode", "custom", url])
 
-      env = context.config.current
+      env = context.state.current
       env.should be_a(Environment::Custom)
       env.as(Environment::Custom).url.to_s.should eq(url)
     end
@@ -34,7 +34,7 @@ describe TandaCLI::Commands::Mode do
       url = "https://invalid_url.com"
       context = run(["mode", "custom", url])
 
-      context.config.current.should be_a(Environment::Production)
+      context.state.current.should be_a(Environment::Production)
       context.stderr.to_s.should contain("Error: Host must end with")
     end
 
@@ -42,7 +42,7 @@ describe TandaCLI::Commands::Mode do
       url = "https://my.tanda.co.attacker.com"
       context = run(["mode", "custom", url])
 
-      context.config.current.should be_a(Environment::Production)
+      context.state.current.should be_a(Environment::Production)
       context.stderr.to_s.should contain("Error: Host must end with")
     end
   end
@@ -50,7 +50,7 @@ describe TandaCLI::Commands::Mode do
   describe TandaCLI::Commands::Mode::Production do
     it "Sets mode to production" do
       context = run(["mode", "production"], config_fixture: :default_staging)
-      context.config.current.should be_a(Environment::Production)
+      context.state.current.should be_a(Environment::Production)
       context.stdout.to_s.should eq("Success: Successfully set mode to production!\n")
     end
   end
@@ -59,7 +59,7 @@ describe TandaCLI::Commands::Mode do
     it "Sets mode to staging" do
       context = run(["mode", "staging"])
 
-      context.config.current.should be_a(Environment::Staging)
+      context.state.current.should be_a(Environment::Staging)
       context.stdout.to_s.should eq("Success: Successfully set mode to staging!\n")
     end
   end

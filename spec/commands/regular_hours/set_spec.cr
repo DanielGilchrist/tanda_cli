@@ -12,7 +12,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       stdout.should contain("Success: Regular hours set for Test Organisation")
       context.stderr.to_s.should be_empty
 
-      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules = context.current_organisation!.regular_hours_schedules
       schedules.size.should eq(5)
       schedules.each do |schedule|
         schedule.pretty_start_time.should eq("9:00 am")
@@ -29,7 +29,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       stdout.should contain("39h 00m")
       stdout.should_not contain("Monday")
 
-      friday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
+      friday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
       friday.pretty_finish_time.should eq("4:00 pm")
       friday.automatic_break_length.should eq(30.minutes)
     end
@@ -38,7 +38,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set", "fri", "8:30", "am", "-", "4:00", "pm", "break", "30min"])
 
       context.stderr.to_s.should be_empty
-      friday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
+      friday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
       friday.pretty_finish_time.should eq("4:00 pm")
     end
 
@@ -47,7 +47,7 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stdout.to_s.should contain("* Monday     8:30 am - 5:00 pm  12:00 pm - 12:30 pm  8h 00m")
 
-      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules = context.current_organisation!.regular_hours_schedules
       schedules.each do |schedule|
         schedule.automatic_break_length.should eq(0.minutes)
         schedule.breaks.size.should eq(1)
@@ -59,7 +59,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set", "wed", "break", "10-10:15", "12:30-13:00"])
 
       context.stdout.to_s.should contain("* Wednesday  8:30 am - 5:00 pm  10:00 am - 10:15 am, 12:30 pm - 1:00 pm  7h 45m")
-      wednesday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.wednesday?)
+      wednesday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.wednesday?)
       wednesday.breaks.size.should eq(2)
     end
 
@@ -68,7 +68,7 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stdout.to_s.should contain("* Friday     —                  —      —")
       context.stdout.to_s.should contain("32h 00m")
-      context.config.current_organisation!.regular_hours_schedules.map(&.day_of_week).should_not contain(Time::DayOfWeek::Friday)
+      context.current_organisation!.regular_hours_schedules.map(&.day_of_week).should_not contain(Time::DayOfWeek::Friday)
     end
 
     it "Copies a day" do
@@ -76,14 +76,14 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stdout.to_s.should contain("* Saturday   8:30 am - 5:00 pm  30min  8h 00m")
       context.stdout.to_s.should contain("* Sunday     8:30 am - 5:00 pm  30min  8h 00m")
-      context.config.current_organisation!.regular_hours_schedules.size.should eq(7)
+      context.current_organisation!.regular_hours_schedules.size.should eq(7)
     end
 
     it "Clears a break" do
       context = run(["regular_hours", "set", "fri", "break", "none"])
 
       context.stdout.to_s.should contain("* Friday     8:30 am - 5:00 pm  —      8h 30m")
-      friday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
+      friday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
       friday.automatic_break_length.should eq(0.minutes)
       friday.breaks.should be_empty
     end
@@ -92,7 +92,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set", "mon", "22:00-6:00", "break", "2-2:30"], config_fixture: :overnight_regular_hours)
 
       context.stderr.to_s.should be_empty
-      monday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?)
+      monday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?)
       monday.length.should eq(8.hours)
       monday.breaks.first.pretty_start_time.should eq("2:00 am")
     end
@@ -113,7 +113,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       stdout.should contain("☕ Friday break [30m]:")
       stdout.should contain("* Friday     8:30 am - 4:00 pm  30min  7h 00m")
 
-      friday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
+      friday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
       friday.pretty_finish_time.should eq("4:00 pm")
       friday.automatic_break_length.should eq(30.minutes)
     end
@@ -124,7 +124,7 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stderr.to_s.should contain("Unable to parse hours!")
       context.stdout.to_s.scan("🕐 Friday hours").size.should eq(2)
-      friday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
+      friday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?)
       friday.automatic_break_length.should eq(0.minutes)
     end
 
@@ -133,14 +133,14 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stderr.to_s.should contain("Error: Saturday has no regular hours yet")
       context.stderr.to_s.should contain(%(Give it hours too, e.g. "sat 9-17 break 30m"))
-      context.config.current_organisation!.regular_hours_schedules.size.should eq(5)
+      context.current_organisation!.regular_hours_schedules.size.should eq(5)
     end
 
     it "Errors on a break without a unit" do
       context = run(["regular_hours", "set", "mon", "9-17", "break", "12"])
 
       context.stderr.to_s.should contain(%("12" isn't a break))
-      context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?).pretty_start_time.should eq("8:30 am")
+      context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?).pretty_start_time.should eq("8:30 am")
     end
 
     it "Errors on a break outside the hours" do
@@ -160,7 +160,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set"], stdin: stdin)
 
       context.stderr.to_s.should contain("Error: Break 12:30 pm - 1:00 pm is outside Wednesday's hours (9:00 am - 12:00 pm)")
-      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules = context.current_organisation!.regular_hours_schedules
       schedules.each(&.pretty_finish_time.should(eq("5:00 pm")))
       schedules.find!(&.day_of_week.wednesday?).breaks.size.should eq(1)
     end
@@ -175,7 +175,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set", "all", "off"])
 
       context.stderr.to_s.should contain("Nothing to save!")
-      context.config.current_organisation!.regular_hours_schedules.size.should eq(5)
+      context.current_organisation!.regular_hours_schedules.size.should eq(5)
     end
   end
 
@@ -193,7 +193,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       stdout.should contain("43h 30m")
       stdout.should contain("Success: Regular hours set for Test Organisation")
 
-      schedules = context.config.current_organisation!.regular_hours_schedules
+      schedules = context.current_organisation!.regular_hours_schedules
       schedules.size.should eq(6)
       schedules.find!(&.day_of_week.saturday?).pretty_finish_time.should eq("1:00 pm")
     end
@@ -203,7 +203,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set"], stdin: stdin)
 
       context.stdout.to_s.should contain("Warning: Regular hours not updated")
-      context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("5:00 pm")
+      context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("5:00 pm")
     end
 
     it "Discards on end of input" do
@@ -211,7 +211,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       context = run(["regular_hours", "set"], stdin: stdin)
 
       context.stdout.to_s.should contain("Warning: Regular hours not updated")
-      context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("5:00 pm")
+      context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("5:00 pm")
     end
 
     it "Prints help, reports bad lines and carries on" do
@@ -222,7 +222,7 @@ describe TandaCLI::Commands::RegularHours::Set do
       stdout.should contain("Edits are one line, days first:")
       context.stderr.to_s.should contain("Unable to parse hours!")
       stdout.scan("   Day        Hours              Break  Worked").size.should eq(2)
-      context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("4:00 pm")
+      context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("4:00 pm")
     end
 
     it "Prompts for a bare day inside the loop" do
@@ -231,7 +231,7 @@ describe TandaCLI::Commands::RegularHours::Set do
 
       context.stdout.to_s.should contain("🕐 Saturday hours [off]:")
       context.stdout.to_s.should contain("☕ Saturday break [none]:")
-      saturday = context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.saturday?)
+      saturday = context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.saturday?)
       saturday.automatic_break_length.should eq(15.minutes)
     end
   end
@@ -252,7 +252,7 @@ describe TandaCLI::Commands::RegularHours::Set do
         stdout.should contain("Success: Regular hours set for Test Organisation")
         context.stderr.to_s.should be_empty
 
-        schedules = context.config.current_organisation!.regular_hours_schedules
+        schedules = context.current_organisation!.regular_hours_schedules
         schedules.size.should eq(5)
         schedules.find!(&.day_of_week.friday?).pretty_finish_time.should eq("3:00 pm")
       end
@@ -263,7 +263,7 @@ describe TandaCLI::Commands::RegularHours::Set do
         context = run(["regular_hours", "set"], stdin: build_stdin(""))
 
         context.stdout.to_s.should contain("* Thursday   —")
-        context.config.current_organisation!.regular_hours_schedules.size.should eq(3)
+        context.current_organisation!.regular_hours_schedules.size.should eq(3)
       end
     end
 
@@ -273,7 +273,7 @@ describe TandaCLI::Commands::RegularHours::Set do
 
         context.stdout.to_s.should contain("Warning: No changes made")
         context.stdout.to_s.should contain("Warning: Regular hours not updated")
-        context.config.current_organisation!.regular_hours_schedules.size.should eq(5)
+        context.current_organisation!.regular_hours_schedules.size.should eq(5)
       end
     end
 
@@ -291,7 +291,7 @@ describe TandaCLI::Commands::RegularHours::Set do
         received = editor_received
         received.should contain(%(# error: line 1: "12" isn't a break))
         received.should contain("monday 9-17 break 12")
-        context.config.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?).pretty_start_time.should eq("8:30 am")
+        context.current_organisation!.regular_hours_schedules.find!(&.day_of_week.monday?).pretty_start_time.should eq("8:30 am")
       end
     end
 
@@ -310,7 +310,7 @@ describe TandaCLI::Commands::RegularHours::Set do
         context = run(["regular_hours", "set"], stdin: stdin)
 
         context.stdout.to_s.should contain("* Saturday   9:00 am - 1:00 pm  —      4h 00m")
-        context.config.current_organisation!.regular_hours_schedules.size.should eq(1)
+        context.current_organisation!.regular_hours_schedules.size.should eq(1)
       end
     end
 
