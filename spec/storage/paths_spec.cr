@@ -9,7 +9,7 @@ describe TandaCLI::Storage::Paths do
       "TANDA_CLI_CONFIG_DIR" => nil,
       "TANDA_CLI_DATA_DIR"   => nil,
     }) do
-      TandaCLI::Storage::Paths.environment_file(:production).to_s.should eq("/home/tester/.config/tanda_cli/production.json")
+      TandaCLI::Storage::Paths.config_file(:production).to_s.should eq("/home/tester/.config/tanda_cli/production.json")
       TandaCLI::Storage::Paths.state_file.to_s.should eq("/home/tester/.local/share/tanda_cli/state.json")
     end
   end
@@ -22,7 +22,7 @@ describe TandaCLI::Storage::Paths do
       "TANDA_CLI_CONFIG_DIR" => nil,
       "TANDA_CLI_DATA_DIR"   => nil,
     }) do
-      TandaCLI::Storage::Paths.environment_file(:staging).to_s.should eq("/elsewhere/config/tanda_cli/staging.json")
+      TandaCLI::Storage::Paths.config_file(:staging).to_s.should eq("/elsewhere/config/tanda_cli/staging.json")
       TandaCLI::Storage::Paths.state_file.to_s.should eq("/elsewhere/data/tanda_cli/state.json")
     end
   end
@@ -35,7 +35,7 @@ describe TandaCLI::Storage::Paths do
       "TANDA_CLI_CONFIG_DIR" => "~/tanda/config",
       "TANDA_CLI_DATA_DIR"   => "/var/tanda",
     }) do
-      TandaCLI::Storage::Paths.environment_file(:custom).to_s.should eq("/home/tester/tanda/config/custom.json")
+      TandaCLI::Storage::Paths.config_file(:custom).to_s.should eq("/home/tester/tanda/config/custom.json")
       TandaCLI::Storage::Paths.state_file.to_s.should eq("/var/tanda/state.json")
     end
   end

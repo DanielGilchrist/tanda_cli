@@ -14,19 +14,19 @@ module TandaCLI
       end
 
       def initialize(
-        @production : Environment::Production = Environment::Production.new,
-        @staging : Environment::Staging = Environment::Staging.new,
-        @custom : Environment::Custom? = nil,
-        @current_environment : Environment::Name = Environment::Name::Production,
+        @production : Environments::Production = Environments::Production.new,
+        @staging : Environments::Staging = Environments::Staging.new,
+        @custom : Environments::Custom? = nil,
+        @current_environment : Environment = Environment::Production,
       ) : Nil; end
 
-      @production : Environment::Production = Environment::Production.new
-      @staging : Environment::Staging = Environment::Staging.new
-      @custom : Environment::Custom? = nil
+      @production : Environments::Production = Environments::Production.new
+      @staging : Environments::Staging = Environments::Staging.new
+      @custom : Environments::Custom? = nil
 
-      getter current_environment : Environment::Name = Environment::Name::Production
+      getter current_environment : Environment = Environment::Production
 
-      def current : Environment::Any
+      def current : Environments::Any
         case @current_environment
         in .production?
           @production
@@ -38,30 +38,30 @@ module TandaCLI
       end
 
       def use_production! : Nil
-        @current_environment = Environment::Name::Production
+        @current_environment = Environment::Production
       end
 
       def use_staging! : Nil
-        @current_environment = Environment::Name::Staging
+        @current_environment = Environment::Staging
       end
 
       def use_custom!(url : URI) : Nil
         existing = @custom
         if existing.nil? || existing.url != url
-          @custom = Environment::Custom.new(url: url)
+          @custom = Environments::Custom.new(url: url)
         end
-        @current_environment = Environment::Name::Custom
+        @current_environment = Environment::Custom
       end
 
       def clear_current! : Nil
         case @current_environment
         in .production?
-          @production = Environment::Production.new
+          @production = Environments::Production.new
         in .staging?
-          @staging = Environment::Staging.new
+          @staging = Environments::Staging.new
         in .custom?
           existing = @custom
-          @custom = existing && Environment::Custom.new(existing.url)
+          @custom = existing && Environments::Custom.new(existing.url)
         end
       end
 

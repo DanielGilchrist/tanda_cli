@@ -8,7 +8,7 @@ module TandaCLI
 
         getter region : Region?
 
-        @[JSON::Field(converter: TandaCLI::State::Serialisable::Environment::Custom::URIConverter)]
+        @[JSON::Field(converter: TandaCLI::State::Serialisable::Environments::Custom::URIConverter)]
         getter url : URI?
 
         getter access_token : State::Serialisable::AccessToken?

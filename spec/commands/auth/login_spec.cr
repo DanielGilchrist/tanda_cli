@@ -221,7 +221,7 @@ describe TandaCLI::Commands::Auth::Login do
 
     output = context.stdout.to_s
     output.should contain("Authenticated!")
-    env = context.state.current.as(TandaCLI::State::Serialisable::Environment::Production)
+    env = context.state.current.as(TandaCLI::State::Serialisable::Environments::Production)
     env.region.should eq(TandaCLI::Region::InternalAPAC)
   end
 

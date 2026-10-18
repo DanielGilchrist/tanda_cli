@@ -5,7 +5,7 @@ module TandaCLI
       struct Status
         include Kebab::Parseable
 
-        private alias Environment = State::Serialisable::Environment
+        private alias Environments = State::Serialisable::Environments
 
         def run(context : Context) : Nil
           display = context.display
@@ -25,11 +25,11 @@ module TandaCLI
           display.puts "🏢 #{organisation.name} (user #{organisation.user_id})" if organisation
 
           case env
-          in Environment::Production
+          in Environments::Production
             display.puts "🌐 #{env.region.display_name} (#{env.region.production_host})"
-          in Environment::Staging
+          in Environments::Staging
             display.puts "🌐 #{env.region.display_name} (#{env.region.staging_host})"
-          in Environment::Custom
+          in Environments::Custom
           end
         end
       end

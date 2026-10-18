@@ -1,7 +1,7 @@
 module TandaCLI
   class State
     class Serialisable
-      module Environment
+      module Environments
         alias Any = Production | Staging | Custom
 
         struct AuthCandidate
@@ -22,16 +22,6 @@ module TandaCLI
 
           def selected! : Nil
             @on_selected.call
-          end
-        end
-
-        enum Name
-          Production
-          Staging
-          Custom
-
-          def to_json(builder : JSON::Builder) : Nil
-            builder.string(to_s.downcase)
           end
         end
       end

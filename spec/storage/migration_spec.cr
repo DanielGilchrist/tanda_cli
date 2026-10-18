@@ -37,13 +37,13 @@ describe TandaCLI::Storage::Migration do
       files = TandaCLI::Storage::Files.default
 
       production = TandaCLI::Configuration::Serialisable
-        .parse?(files.environment(:production).read.not_nil!)
+        .parse?(files.own_configuration(:production).read.not_nil!)
         .not_nil!
       production.start_of_week.should eq(Time::DayOfWeek::Saturday)
       production.treat_paid_breaks_as_unpaid?.should be_true
       production.regular_hours_schedules(1).size.should eq(5)
 
-      files.environment(:staging).read.should be_nil
+      files.own_configuration(:staging).read.should be_nil
 
       state = TandaCLI::State::Serialisable.parse?(files.state.read.not_nil!).not_nil!
       state.current_environment.production?.should be_true
@@ -51,7 +51,7 @@ describe TandaCLI::Storage::Migration do
       environment = state.current
       environment.access_token.not_nil!.token.should eq("testtoken")
       environment.current_organisation?.not_nil!.name.should eq("Test Organisation")
-      environment.as(TandaCLI::State::Serialisable::Environment::Production).region.eu?.should be_true
+      environment.as(TandaCLI::State::Serialisable::Environments::Production).region.eu?.should be_true
 
       File.exists?(legacy_path).should be_false
       Dir.exists?(File.dirname(legacy_path)).should be_false
@@ -68,7 +68,7 @@ describe TandaCLI::Storage::Migration do
 
       files = TandaCLI::Storage::Files.default
 
-      files.environment(:production).read.should eq(%({"start_of_week":"monday"}))
+      files.own_configuration(:production).read.should eq(%({"start_of_week":"monday"}))
       files.state.read.should be_nil
       File.exists?(legacy_path).should be_true
     end
@@ -78,7 +78,7 @@ describe TandaCLI::Storage::Migration do
     in_temporary_home do
       files = TandaCLI::Storage::Files.default
 
-      files.environment(:production).read.should be_nil
+      files.own_configuration(:production).read.should be_nil
       files.state.read.should be_nil
     end
   end

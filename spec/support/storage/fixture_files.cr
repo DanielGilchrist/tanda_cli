@@ -3,8 +3,6 @@ require "./fixture_file"
 module Storage::FixtureFiles
   FIXTURE_PATH = "spec/fixtures"
 
-  private alias EnvironmentName = TandaCLI::State::Serialisable::Environment::Name
-
   enum Fixture
     Default
     DefaultStaging
@@ -26,12 +24,12 @@ module Storage::FixtureFiles
   end
 
   def self.load(fixture : Fixture) : TandaCLI::Storage::Files
-    environments = EnvironmentName.values.to_h do |name|
-      file = Storage::FixtureFile.load(fixture.path(name.to_s.downcase))
+    configurations = TandaCLI::Environment.values.to_h do |mode|
+      file = Storage::FixtureFile.load(fixture.path(mode.to_s.downcase))
 
-      {name, file.as(TandaCLI::Storage::AbstractFile)}
+      {mode, file.as(TandaCLI::Storage::AbstractFile)}
     end
 
-    TandaCLI::Storage::Files.new(environments, Storage::FixtureFile.load(fixture.path("state")))
+    TandaCLI::Storage::Files.new(configurations, Storage::FixtureFile.load(fixture.path("state")))
   end
 end

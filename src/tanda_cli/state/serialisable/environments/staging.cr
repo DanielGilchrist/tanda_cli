@@ -1,7 +1,7 @@
 module TandaCLI
   class State
     class Serialisable
-      module Environment
+      module Environments
         class Staging
           include JSON::Serializable
 

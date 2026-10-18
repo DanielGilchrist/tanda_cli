@@ -35,11 +35,11 @@ describe TandaCLI::Commands::Config do
     it "Keeps its own config once the mode has been written to" do
       context = run(["start_of_week", "set", "sunday"], config_fixture: :inherited_staging)
 
-      staging = TandaCLI::Configuration::Serialisable.parse?(context.files.environment(:staging).read.not_nil!).not_nil!
+      staging = TandaCLI::Configuration::Serialisable.parse?(context.files.own_configuration(:staging).read.not_nil!).not_nil!
       staging.start_of_week.should eq(Time::DayOfWeek::Sunday)
       staging.regular_hours_schedules(1).size.should eq(5)
 
-      production = TandaCLI::Configuration::Serialisable.parse?(context.files.environment(:production).read.not_nil!).not_nil!
+      production = TandaCLI::Configuration::Serialisable.parse?(context.files.own_configuration(:production).read.not_nil!).not_nil!
       production.start_of_week.should eq(Time::DayOfWeek::Saturday)
     end
   end

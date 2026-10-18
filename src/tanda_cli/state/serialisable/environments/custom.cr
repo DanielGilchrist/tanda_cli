@@ -1,22 +1,34 @@
 module TandaCLI
   class State
     class Serialisable
-      module Environment
-        class Production
+      module Environments
+        class Custom
           include JSON::Serializable
 
+          module URIConverter
+            def self.from_json(value : JSON::PullParser) : URI
+              URI.parse(value.read_string)
+            end
+
+            def self.to_json(value : URI, json_builder : JSON::Builder) : Nil
+              json_builder.string(value.to_s)
+            end
+          end
+
           def initialize(
-            @region : Region = Region::APAC,
+            @url : URI,
             @access_token : AccessToken? = nil,
             @organisations : Array(Organisation) = Array(Organisation).new,
           ) : Nil; end
 
-          property region : Region
+          @[JSON::Field(converter: TandaCLI::State::Serialisable::Environments::Custom::URIConverter)]
+          property url : URI
+
           property access_token : AccessToken?
           property organisations : Array(Organisation) = Array(Organisation).new
 
           def base_url : String
-            "https://#{region.production_host}"
+            url.to_s
           end
 
           def oauth_url(endpoint : State::OAuthEndpoint) : String
@@ -24,25 +36,23 @@ module TandaCLI
           end
 
           def auth_candidates : Array(AuthCandidate)
-            Region.values.map do |region|
-              AuthCandidate.new("https://#{region.production_host}", region.display_name) { self.region = region }
-            end
+            [AuthCandidate.new(base_url, base_url)]
           end
 
           def current_organisation? : Organisation?
             @organisations.find(&.current?)
           end
 
-          def redacted : Production
-            Production.new(
-              region: @region,
+          def redacted : Custom
+            Custom.new(
+              url: @url,
               access_token: @access_token.try(&.redacted),
               organisations: @organisations,
             )
           end
 
           def display_label : String
-            "Production"
+            "Custom (#{url})"
           end
         end
       end

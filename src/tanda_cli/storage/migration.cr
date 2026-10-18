@@ -5,10 +5,8 @@ require "./paths"
 module TandaCLI
   module Storage
     module Migration
-      private alias EnvironmentName = State::Serialisable::Environment::Name
-
-      def self.run(environments : Hash(EnvironmentName, AbstractFile), state : AbstractFile) : Nil
-        return if state.read.presence || environments.each_value.any?(&.read.presence)
+      def self.run(configurations : Hash(Environment, AbstractFile), state : AbstractFile) : Nil
+        return if state.read.presence || configurations.each_value.any?(&.read.presence)
 
         legacy = File.new(Paths.legacy_config_file)
         contents = legacy.read.presence
@@ -19,9 +17,9 @@ module TandaCLI
 
         state.write(document.state)
 
-        environments.each do |name, file|
-          configuration = document.configuration(name)
-          file.write(configuration) if name.production? || !configuration.regular_hours.empty?
+        configurations.each do |environment, file|
+          configuration = document.configuration(environment)
+          file.write(configuration) if environment.production? || !configuration.regular_hours.empty?
         end
 
         legacy.delete!

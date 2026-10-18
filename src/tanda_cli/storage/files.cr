@@ -7,32 +7,30 @@ require "./paths"
 module TandaCLI
   module Storage
     struct Files
-      private alias EnvironmentName = State::Serialisable::Environment::Name
-
       def self.default : Files
-        environments = EnvironmentName.values.to_h do |name|
-          {name, File.new(Paths.environment_file(name)).as(AbstractFile)}
+        configurations = Environment.values.to_h do |environment|
+          {environment, File.new(Paths.config_file(environment)).as(AbstractFile)}
         end
         state = File.new(Paths.state_file)
 
-        Migration.run(environments, state)
+        Migration.run(configurations, state)
 
-        new(environments, state)
+        new(configurations, state)
       end
 
-      def initialize(@environments : Hash(EnvironmentName, AbstractFile), @state : AbstractFile) : Nil; end
+      def initialize(@configurations : Hash(Environment, AbstractFile), @state : AbstractFile) : Nil; end
 
       getter state : AbstractFile
 
-      def environment(name : EnvironmentName) : AbstractFile
-        @environments[name]
+      def own_configuration(environment : Environment) : AbstractFile
+        @configurations[environment]
       end
 
-      def configuration(name : EnvironmentName) : AbstractFile
-        file = environment(name)
-        return file if name.production?
+      def configuration(environment : Environment) : AbstractFile
+        file = own_configuration(environment)
+        return file if environment.production?
 
-        InheritingFile.new(file, environment(:production))
+        InheritingFile.new(file, own_configuration(:production))
       end
     end
   end

@@ -9,8 +9,8 @@ module TandaCLI
       XDG_CONFIG_HOME_VARIABLE = "XDG_CONFIG_HOME"
       XDG_DATA_HOME_VARIABLE   = "XDG_DATA_HOME"
 
-      def self.environment_file(name : State::Serialisable::Environment::Name) : Path
-        config_dir / "#{name.to_s.downcase}.json"
+      def self.config_file(environment : Environment) : Path
+        config_dir / environment.file_name
       end
 
       def self.state_file : Path

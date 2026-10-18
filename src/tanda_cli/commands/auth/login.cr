@@ -5,7 +5,7 @@ module TandaCLI
       struct Login
         include Kebab::Parseable
 
-        private alias Environment = ::TandaCLI::State::Serialisable::Environment
+        private alias Environments = ::TandaCLI::State::Serialisable::Environments
 
         SCOPES = "device leave personal roster timesheet me"
 
@@ -46,7 +46,7 @@ module TandaCLI
           {email, password}
         end
 
-        private def authenticate(display : TandaCLI::Display, env : Environment::Any, email : String, password : String) : API::Types::AccessToken
+        private def authenticate(display : TandaCLI::Display, env : Environments::Any, email : String, password : String) : API::Types::AccessToken
           env.auth_candidates.each do |candidate|
             url = candidate.oauth_url(:token)
             Log.debug(&.emit("Trying #{candidate.display_name} (#{url})"))
