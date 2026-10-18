@@ -8,7 +8,7 @@ module TandaCLI
     property exit_status : Int32 = ExitProgram::SUCCESS
 
     getter state : State { State.init(@files.state, @display) }
-    getter config : Configuration { Configuration.init(@files.configuration(state.current_environment), @display) }
+    getter config : Configuration { Configuration.init(@files.configuration(state.current_environment), @input, @display) }
 
     private getter _nilable_current : Current? do
       organisation = state.current_organisation?

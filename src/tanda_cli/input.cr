@@ -23,6 +23,12 @@ module TandaCLI
       end
     end
 
+    def confirmed?(message : String) : Bool
+      @display.puts(message)
+
+      !@stdin.gets.nil?
+    end
+
     def read_line(message : String) : String?
       @display.puts(message)
       @stdin.gets(chomp: true)
