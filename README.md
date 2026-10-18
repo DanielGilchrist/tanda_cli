@@ -12,7 +12,7 @@ Or you can checkout [this link](https://crystal-lang.org/install/) for platform 
 Then
 1. Clone the repository
 2. Run `shards install`
-3. Run `./scripts/build_prod.sh`
+3. Run `./scripts/build-prod.sh`
 4. You now have a release build! This can be run with `./bin/tanda_cli` assuming you're in the root directory of this repository
 
 This project doesn't currently distribute to any package managers or release any binaries.
