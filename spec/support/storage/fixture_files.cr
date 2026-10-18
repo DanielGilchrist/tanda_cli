@@ -11,6 +11,7 @@ module Storage::FixtureFiles
     InheritedStaging
     InvalidJson
     MondayStartOfWeek
+    NoCurrentUser
     NoRegularHours
     OvernightRegularHours
     Unauthenticated

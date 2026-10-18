@@ -34,7 +34,7 @@ module TandaCLI
     end
 
     def current_organisation! : Current::Organisation
-      current_organisation? || raise("No current organisation set!")
+      current_organisation? || no_current_user!
     end
 
     def authenticated? : Bool
@@ -42,7 +42,13 @@ module TandaCLI
     end
 
     private def not_authenticated! : NoReturn
-      @display.error!("Not authenticated. Run `tanda_cli auth login` to authenticate.")
+      @display.error!(Error::NotAuthenticated.new)
+    end
+
+    private def no_current_user! : NoReturn
+      not_authenticated! if state.access_token.nil?
+
+      @display.error!(Error::NoCurrentUser.new)
     end
   end
 end
