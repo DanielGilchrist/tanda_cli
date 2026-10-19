@@ -1,7 +1,6 @@
 require "./abstract_file"
 require "./file"
 require "./inheriting_file"
-require "./migration"
 require "./paths"
 
 module TandaCLI
@@ -12,8 +11,6 @@ module TandaCLI
           {environment, File.new(Paths.config_file(environment)).as(AbstractFile)}
         end
         state = File.new(Paths.state_file)
-
-        Migration.run(configurations, state)
 
         new(configurations, state)
       end

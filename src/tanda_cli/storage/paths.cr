@@ -17,10 +17,6 @@ module TandaCLI
         data_dir / "state.json"
       end
 
-      def self.legacy_config_file : Path
-        Path.home / ".#{APPLICATION}" / "config.json"
-      end
-
       def self.config_dir : Path
         from_environment(CONFIG_DIR_VARIABLE) ||
           application_dir(XDG_CONFIG_HOME_VARIABLE, Path.home / ".config")

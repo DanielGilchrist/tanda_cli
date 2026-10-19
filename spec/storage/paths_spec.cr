@@ -39,10 +39,4 @@ describe TandaCLI::Storage::Paths do
       TandaCLI::Storage::Paths.state_file.to_s.should eq("/var/tanda/state.json")
     end
   end
-
-  it "Points at the old location for the legacy config" do
-    with_environment({"HOME" => "/home/tester"}) do
-      TandaCLI::Storage::Paths.legacy_config_file.to_s.should eq("/home/tester/.tanda_cli/config.json")
-    end
-  end
 end

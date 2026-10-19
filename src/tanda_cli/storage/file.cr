@@ -27,15 +27,6 @@ module TandaCLI
 
         ::File.write(@location, content)
       end
-
-      def delete! : Nil
-        ::File.delete?(@location)
-      end
-
-      def delete_directory_if_empty! : Nil
-        directory = @location.dirname
-        ::Dir.delete(directory) if ::Dir.empty?(directory)
-      end
     end
   end
 end
