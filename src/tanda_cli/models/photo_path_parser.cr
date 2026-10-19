@@ -15,16 +15,17 @@ module TandaCLI
       end
 
       def initialize(@path : String) : Nil
-        @path = path
       end
 
       def parse : Photo | PhotoDirectory | Error::InvalidPath
-        if File.directory?(@path)
-          PhotoDirectory.new(@path)
-        elsif File.file?(@path)
-          Photo.new(@path)
+        expanded_path = Path.new(@path).expand(home: true).to_s
+
+        if File.directory?(expanded_path)
+          PhotoDirectory.new(expanded_path)
+        elsif File.file?(expanded_path)
+          Photo.new(expanded_path)
         else
-          Error::InvalidPath.new("Invalid path: #{@path}")
+          Error::InvalidPath.new(@path)
         end
       end
     end
