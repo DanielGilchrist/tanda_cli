@@ -2,6 +2,8 @@ require "colorize"
 
 module TandaCLI
   module Spinner
+    extend self
+
     FRAMES   = %w[⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏]
     INTERVAL = 80.milliseconds
 
@@ -15,7 +17,7 @@ module TandaCLI
     @@stop = Channel(Nil).new
     @@stopped = Channel(Nil).new
 
-    def self.while_working(message : String, io : IO = STDERR, & : -> T) : T forall T
+    def while_working(message : String, io : IO = STDERR, & : -> T) : T forall T
       return yield unless enabled?
 
       start(message, io)
@@ -27,7 +29,7 @@ module TandaCLI
       end
     end
 
-    private def self.start(message : String, io : IO) : Nil
+    private def start(message : String, io : IO) : Nil
       @@depth += 1
       return unless @@depth == 1
 
@@ -38,7 +40,7 @@ module TandaCLI
       end
     end
 
-    private def self.stop : Nil
+    private def stop : Nil
       @@depth -= 1
       return unless @@depth.zero?
 
@@ -46,7 +48,7 @@ module TandaCLI
       @@stopped.receive
     end
 
-    private def self.spin(message : String, io : IO) : Nil
+    private def spin(message : String, io : IO) : Nil
       index = 0
 
       loop do
@@ -61,7 +63,7 @@ module TandaCLI
       io.flush
     end
 
-    private def self.wait(duration : Time::Span) : Bool
+    private def wait(duration : Time::Span) : Bool
       select
       when @@stop.receive
         false

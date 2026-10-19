@@ -13,24 +13,28 @@ module TandaCLI
       OVERNIGHT_WARNING_LENGTH = 16.hours
 
       module TimeOfDayConverter
+        extend self
+
         FORMAT = "%H:%M"
 
-        def self.from_json(value : JSON::PullParser) : Time
+        def from_json(value : JSON::PullParser) : Time
           Time.parse(value.read_string, FORMAT, Utils::Time.location)
         end
 
-        def self.to_json(value : Time, json_builder : JSON::Builder) : Nil
+        def to_json(value : Time, json_builder : JSON::Builder) : Nil
           json_builder.string(value.to_s(FORMAT))
         end
       end
 
       module DayOfWeekConverter
-        def self.from_json(value : JSON::PullParser) : Time::DayOfWeek
+        extend self
+
+        def from_json(value : JSON::PullParser) : Time::DayOfWeek
           day_string = value.read_string
           Time::DayOfWeek.parse?(day_string) || raise("Invalid day of week: #{day_string}")
         end
 
-        def self.to_json(value : Time::DayOfWeek, json_builder : JSON::Builder) : Nil
+        def to_json(value : Time::DayOfWeek, json_builder : JSON::Builder) : Nil
           json_builder.string(value.to_s)
         end
       end

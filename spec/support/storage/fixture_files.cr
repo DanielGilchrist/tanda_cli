@@ -1,6 +1,8 @@
 require "./fixture_file"
 
 module Storage::FixtureFiles
+  extend self
+
   FIXTURE_PATH = "spec/fixtures"
 
   enum Fixture
@@ -24,7 +26,7 @@ module Storage::FixtureFiles
     end
   end
 
-  def self.load(fixture : Fixture) : TandaCLI::Storage::Files
+  def load(fixture : Fixture) : TandaCLI::Storage::Files
     configurations = TandaCLI::Environment.values.to_h do |mode|
       file = Storage::FixtureFile.load(fixture.path(mode.to_s.downcase))
 

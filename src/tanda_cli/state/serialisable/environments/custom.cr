@@ -6,11 +6,13 @@ module TandaCLI
           include JSON::Serializable
 
           module URIConverter
-            def self.from_json(value : JSON::PullParser) : URI
+            extend self
+
+            def from_json(value : JSON::PullParser) : URI
               URI.parse(value.read_string)
             end
 
-            def self.to_json(value : URI, json_builder : JSON::Builder) : Nil
+            def to_json(value : URI, json_builder : JSON::Builder) : Nil
               json_builder.string(value.to_s)
             end
           end

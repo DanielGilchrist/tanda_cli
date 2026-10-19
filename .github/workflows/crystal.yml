@@ -50,10 +50,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: bin/ameba
-          key: ${{ runner.os }}-ameba-${{ matrix.crystal }}-${{ hashFiles('**/shard.lock') }}
+          key: ${{ runner.os }}-ameba-${{ matrix.crystal }}-${{ hashFiles('**/shard.lock', 'tools/ameba/**/*.cr') }}
 
       - name: Install shards
         run: shards install --frozen
+
+      - name: Run custom ameba rule specs
+        run: crystal spec tools/ameba/spec
 
       - name: Build ameba
         run: test -x bin/ameba || shards build ameba

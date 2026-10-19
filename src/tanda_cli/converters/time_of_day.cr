@@ -4,7 +4,9 @@ require "../models/time_of_day"
 module TandaCLI
   module Converters
     module TimeOfDay
-      def self.convert(input : String) : Models::TimeOfDay | Kebab::Convert::Failure
+      extend self
+
+      def convert(input : String) : Models::TimeOfDay | Kebab::Convert::Failure
         case parsed = Models::TimeOfDay.parse(input)
         in Models::TimeOfDay
           parsed

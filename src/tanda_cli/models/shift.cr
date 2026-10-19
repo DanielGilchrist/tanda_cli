@@ -4,9 +4,11 @@ require "./leave_shift"
 module TandaCLI
   module Models
     module Shift
+      extend self
+
       alias Any = WorkedShift | LeaveShift
 
-      def self.parse?(
+      def parse?(
         api_shift : API::Types::Shift,
         leave_requests_by_id : Hash(Int32, API::Types::LeaveRequest),
       ) : Any?

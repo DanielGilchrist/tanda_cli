@@ -13,7 +13,9 @@ module TandaCLI
           include Utils::Mixins::PrettyTimes
 
           module StringIDConverter
-            def self.from_json(value : JSON::PullParser) : Int32
+            extend self
+
+            def from_json(value : JSON::PullParser) : Int32
               value.read_string.to_i32
             end
           end

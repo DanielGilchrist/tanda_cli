@@ -8,13 +8,15 @@ module TandaCLI
   module Models
     struct RegularHoursWeek
       module Edit
+        extend self
+
         alias Any = Hours | Break | Remove | Copy
         alias Parsed = Any | Prompt
 
         MERIDIEM_SPACING = /(\d)\s+([ap]\.?m?\.?)(?=\s|$)/i
         RANGE_SPACING    = /\s*-\s*/
 
-        def self.parse(line : String) : Parsed | Error::Base
+        def parse(line : String) : Parsed | Error::Base
           words = normalise(line).split(' ', remove_empty: true)
           days_word = words.shift?
           return Error::UnparseableRegularHoursEdit.new(line) if days_word.nil?
@@ -29,14 +31,14 @@ module TandaCLI
           parse_hours_or_break(line, days, words)
         end
 
-        private def self.parse_copy(days : DaySet, words : Array(String)) : Copy | Error::Base
+        private def parse_copy(days : DaySet, words : Array(String)) : Copy | Error::Base
           from = ClockInDay.parse_day_of_week(words.last)
           return Error::UnparseableDaySet.new(words.last) if from.nil?
 
           Copy.new(days, from)
         end
 
-        private def self.parse_hours_or_break(
+        private def parse_hours_or_break(
           line : String,
           days : DaySet,
           words : Array(String),
@@ -61,7 +63,7 @@ module TandaCLI
           Hours.new(days, hours, break_plan)
         end
 
-        private def self.normalise(line : String) : String
+        private def normalise(line : String) : String
           line.strip.downcase
             .gsub(MERIDIEM_SPACING, "\\1\\2")
             .gsub(RANGE_SPACING, "-")

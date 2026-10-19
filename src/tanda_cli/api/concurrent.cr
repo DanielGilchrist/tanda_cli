@@ -5,7 +5,9 @@ require "./result"
 module TandaCLI
   module API
     module Concurrent
-      def self.fetch(inputs : Array(T), &block : T -> Result(R)) : Array(Result(R)) forall T, R
+      extend self
+
+      def fetch(inputs : Array(T), &block : T -> Result(R)) : Array(Result(R)) forall T, R
         return Array(Result(R)).new if inputs.empty?
 
         channel = Channel(Tuple(Int32, Result(R) | Exception)).new(inputs.size)

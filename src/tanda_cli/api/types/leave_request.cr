@@ -31,7 +31,9 @@ module TandaCLI
         end
 
         module StatusConverter
-          def self.from_json(value : JSON::PullParser) : Status::Any
+          extend self
+
+          def from_json(value : JSON::PullParser) : Status::Any
             raw = value.read_string
             Status::Known.parse?(raw) || Status::Unknown.new(raw)
           end

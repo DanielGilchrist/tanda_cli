@@ -3,7 +3,9 @@ require "log"
 
 module TandaCLI
   module Debug
-    def self.setup : Nil
+    extend self
+
+    def setup : Nil
       Log.setup(:debug, Backend.new)
     end
 

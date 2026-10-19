@@ -32,7 +32,9 @@ module TandaCLI
         end
 
         module TypeConverter
-          def self.from_json(value : JSON::PullParser) : Type::Any
+          extend self
+
+          def from_json(value : JSON::PullParser) : Type::Any
             raw = value.read_string
             Type::Known.parse?(raw) || Type::Unknown.new(raw)
           end

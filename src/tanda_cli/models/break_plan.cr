@@ -6,11 +6,13 @@ require "./time_range"
 module TandaCLI
   module Models
     module BreakPlan
+      extend self
+
       alias Any = Automatic | Fixed | None
 
       MINUTES = /\A(?<minutes>\d+)\s*(m|min|mins|minutes)\z/i
 
-      def self.parse(specs : Array(String)) : Any | Error::Base
+      def parse(specs : Array(String)) : Any | Error::Base
         joined = specs.join(' ').strip.downcase
         return Error::UnparseableBreak.new(joined) if joined.empty?
         return None.new if joined == "none"
@@ -24,7 +26,7 @@ module TandaCLI
         Automatic.new(minutes.minutes)
       end
 
-      private def self.parse_fixed(specs : Array(String)) : Fixed | Error::Base
+      private def parse_fixed(specs : Array(String)) : Fixed | Error::Base
         ranges = specs.map do |spec|
           return Error::MixedBreaks.new if MINUTES.matches?(spec)
 
