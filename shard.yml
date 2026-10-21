@@ -23,6 +23,6 @@ development_dependencies:
     github: manastech/webmock.cr # https://github.com/manastech/webmock.cr
     branch: master
 
-crystal: 1.21.0
+crystal: 1.22.0
 
 license: MIT
