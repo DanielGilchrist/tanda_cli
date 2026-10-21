@@ -29,6 +29,12 @@ module TandaCLI
       !@stdin.gets.nil?
     end
 
+    def ask(message : String) : String?
+      @display.print(message)
+      @display.flush
+      @stdin.gets(chomp: true).try(&.strip.presence)
+    end
+
     def read_line(message : String) : String?
       @display.puts(message)
       @stdin.gets(chomp: true)

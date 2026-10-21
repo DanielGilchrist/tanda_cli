@@ -84,6 +84,10 @@ module TandaCLI
       @stdout.print message
     end
 
+    def flush : Nil
+      @stdout.flush
+    end
+
     def puts_error(message : Object? = nil) : Nil
       @stderr.puts message
     end

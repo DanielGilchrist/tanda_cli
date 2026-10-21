@@ -32,7 +32,7 @@ module TandaCLI
         Result(T).from(exec(GET, endpoint, query: query))
       end
 
-      def post(type : T.class, endpoint : String, body : Body) : Result(T) forall T
+      def post(type : T.class, endpoint : String, body : Body | JSON::Serializable) : Result(T) forall T
         Result(T).from(exec(POST, endpoint, body: body.to_json))
       end
 

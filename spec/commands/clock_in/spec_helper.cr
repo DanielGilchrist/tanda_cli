@@ -70,4 +70,18 @@ module ClockInSpecHelper
     stub = stub.with(body: body) if body
     stub.to_return(status: 200, body: "{}")
   end
+
+  def stub_break_update(shift_id : Int32, break_id : Int32, body : String) : Nil
+    WebMock
+      .stub(:put, endpoint("/shifts/#{shift_id}/breaks/#{break_id}"))
+      .with(body: body)
+      .to_return(status: 200, body: "{}")
+  end
+
+  def stub_break_create(shift_id : Int32, body : String) : Nil
+    WebMock
+      .stub(:post, endpoint("/shifts/#{shift_id}/breaks"))
+      .with(body: body)
+      .to_return(status: 200, body: "{}")
+  end
 end

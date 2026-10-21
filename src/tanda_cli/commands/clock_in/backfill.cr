@@ -1,5 +1,6 @@
 require "../../models/clock_in_backfill"
-require "../../models/clock_in_day"
+require "../../converters/day"
+require "../helpers/clock_in_day"
 
 module TandaCLI
   module Commands
@@ -7,14 +8,15 @@ module TandaCLI
       @[Kebab::Command(summary: "Backfill missed clock ins for a day")]
       struct Backfill
         include Kebab::Parseable
+        include Helpers::ClockInDay
 
-        @[Kebab::Option(short: 'd', description: "Day to backfill, defaults to today (\"wednesday\", \"wed\", \"yesterday\" or YYYY-MM-DD)")]
-        getter date : String?
+        @[Kebab::Option(short: 'd', converter: ::TandaCLI::Converters::Day, description: "Day to backfill, defaults to today (\"wed\", \"yesterday\" or YYYY-MM-DD)")]
+        getter date : Models::ClockInDay?
 
         def run(context : Context) : Nil
           display = context.display
 
-          day = parse_day(context)
+          day = resolve_day(context)
           api_shifts = context.client.shifts.list(context.current.user.id, day).or { |error| display.error!(error) }
           shifts = api_shifts.compact_map { |api_shift| Models::WorkedShift.from?(api_shift) }
           backfill = Models::ClockInBackfill.new(day, shifts)
@@ -37,23 +39,6 @@ module TandaCLI
 
           clock_in_word = entries.one? ? "clock in" : "clock ins"
           display.success("Backfilled #{entries.size} #{clock_in_word} for #{Utils::Time.pretty_date(day)}")
-        end
-
-        private def parse_day(context : Context) : ::Time
-          date_string = date
-          return Utils::Time.now if date_string.nil?
-
-          day =
-            case parsed = Models::ClockInDay.parse(date_string)
-            in Models::ClockInDay
-              parsed.on(context.config.start_of_week)
-            in Error::Base
-              context.display.error!(parsed)
-            end
-
-          context.display.error!("You can't backfill a future date") if day.date > Utils::Time.now.date
-
-          day
         end
 
         private def announce_existing_state(context : Context, backfill : Models::ClockInBackfill) : Nil
@@ -120,11 +105,6 @@ module TandaCLI
           end
         end
 
-        private def confirm?(context : Context) : Bool
-          answer = context.input.request("Submit? (Y/n)")
-          answer.nil? || answer.downcase.in?("y", "yes")
-        end
-
         private def submit(context : Context, backfill : Models::ClockInBackfill) : Nil
           shift = backfill.ongoing_shift
 
@@ -143,17 +123,25 @@ module TandaCLI
         end
 
         private def update_shift(context : Context, shift : Models::WorkedShift, backfill : Models::ClockInBackfill) : Nil
-          context.client.shifts.update(shift.id) do |update|
-            if finish = backfill.finish_time
-              update.finish(finish)
-            end
+          display = context.display
+          client = context.client
 
-            if breaks = backfill.breaks
-              breaks.each do |shift_break|
-                update.add_break(start: shift_break.start, finish: shift_break.finish, paid: shift_break.paid)
-              end
-            end
-          end.or { |error| context.display.error!(error) }
+          if finish = backfill.finish_time
+            client.shifts.update(shift.id, &.finish(finish)).or { |error| display.error!(error) }
+          end
+
+          if finished_break = backfill.finished_break
+            client.shift_breaks
+              .update(shift.id, finished_break.id, &.finish(finished_break.finish))
+              .or { |error| display.error!(error) }
+          end
+
+          backfill.new_breaks.each do |shift_break|
+            client.shift_breaks.create(shift.id) do |update|
+              update.start(shift_break.start)
+              update.finish(shift_break.finish)
+            end.or { |error| display.error!(error) }
+          end
         end
       end
     end

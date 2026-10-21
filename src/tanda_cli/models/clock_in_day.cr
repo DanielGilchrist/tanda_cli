@@ -1,3 +1,4 @@
+require "../error/future_date"
 require "../error/unparseable_date"
 
 module TandaCLI
@@ -40,6 +41,13 @@ module TandaCLI
         return day if day.is_a?(::Time)
 
         Utils::Time.now.at_beginning_of_week(start_of_week) + days_into_week(day, start_of_week)
+      end
+
+      def on_or_before_today(start_of_week : ::Time::DayOfWeek) : ::Time | Error::FutureDate
+        day = on(start_of_week)
+        return Error::FutureDate.new(day) if day.date > Utils::Time.now.date
+
+        day
       end
 
       private def days_into_week(day : ::Time::DayOfWeek, start_of_week : ::Time::DayOfWeek) : ::Time::Span

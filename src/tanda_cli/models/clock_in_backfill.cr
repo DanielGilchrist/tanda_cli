@@ -32,28 +32,23 @@ module TandaCLI
         @entries.find(&.clock_type.finish?).try(&.time)
       end
 
-      def breaks : Array(Break)?
-        shift = @ongoing_shift
-        return if shift.nil?
+      def finished_break : FinishedBreak?
+        ongoing_break = @ongoing_shift.try(&.valid_breaks.find(&.ongoing?))
+        return if ongoing_break.nil?
 
-        break_entries = @entries.select do |entry|
-          entry.clock_type.break_start? || entry.clock_type.break_finish?
-        end
-        return if break_entries.empty?
+        entry = break_entries.first?
+        return unless entry && entry.clock_type.break_finish?
 
-        breaks = shift.valid_breaks.compact_map do |shift_break|
-          start = shift_break.start_time
-          next if start.nil?
+        FinishedBreak.new(ongoing_break.id, entry.time)
+      end
 
-          finish = shift_break.ongoing? ? break_entries.shift?.try(&.time) : shift_break.finish_time
-          Break.new(start, finish, shift_break.paid?)
-        end
+      def new_breaks : Array(Break)
+        entries = break_entries
+        entries = entries.skip(1) if finished_break
 
-        break_entries.each_slice(2) do |(start_entry, finish_entry)|
-          breaks << Break.new(start_entry.time, finish_entry.time, false)
-        end
-
-        breaks
+        entries.each_slice(2).map do |(start_entry, finish_entry)|
+          Break.new(start_entry.time, finish_entry.try(&.time))
+        end.to_a
       end
 
       def needs_start? : Bool
@@ -79,6 +74,10 @@ module TandaCLI
 
         apply(clock_type)
         Entry.new(clock_type, moment.time).tap { |entry| @entries << entry }
+      end
+
+      private def break_entries : Array(Entry)
+        @entries.select { |entry| entry.clock_type.break_start? || entry.clock_type.break_finish? }
       end
 
       private def working? : Bool

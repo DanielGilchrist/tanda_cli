@@ -76,15 +76,8 @@ describe TandaCLI::Commands::ClockIn::Backfill do
   it "updates the existing shift when backfilling an open break on a previous day" do
     travel_to(Time.local(2026, 2, 18, 10, 0)) do
       ClockInSpecHelper.stub_shifts(ClockInSpecHelper.on_break_shift)
-      ClockInSpecHelper.stub_shift_update(1, {
-        finish: Time.local(2026, 2, 17, 2, 30).to_unix,
-        breaks: [{
-          start:  Time.local(2026, 2, 17, 0, 55).to_unix,
-          finish: Time.local(2026, 2, 17, 1, 25).to_unix,
-          paid:   false,
-          length: 30,
-        }],
-      }.to_json)
+      ClockInSpecHelper.stub_shift_update(1, {finish: Time.local(2026, 2, 17, 2, 30).to_unix}.to_json)
+      ClockInSpecHelper.stub_break_update(1, 1, {finish: Time.local(2026, 2, 17, 1, 25).to_unix}.to_json)
 
       stdin = build_stdin("1:25am", "", "2:30am", "")
       context = run(["clockin", "backfill", "--date", "yesterday"], stdin: stdin)
@@ -95,6 +88,26 @@ describe TandaCLI::Commands::ClockIn::Backfill do
       output.should contain("Break finish: 1:25 am")
       output.should contain("Clock out: 2:30 am")
       output.should contain("Success: Backfilled 2 clock ins for Tuesday, 17 Feb 2026")
+      context.stderr.to_s.should be_empty
+    end
+  end
+
+  it "creates a new break when backfilling a previous day" do
+    travel_to(Time.local(2026, 2, 18, 10, 0)) do
+      ClockInSpecHelper.stub_shifts(ClockInSpecHelper.clocked_in_shift)
+      ClockInSpecHelper.stub_shift_update(1, {finish: Time.local(2026, 2, 17, 2, 30).to_unix}.to_json)
+      ClockInSpecHelper.stub_break_create(1, {
+        start:  Time.local(2026, 2, 17, 1, 0).to_unix,
+        finish: Time.local(2026, 2, 17, 1, 30).to_unix,
+      }.to_json)
+
+      stdin = build_stdin("1:00am", "1:30am", "", "2:30am", "")
+      context = run(["clockin", "backfill", "--date", "yesterday"], stdin: stdin)
+
+      output = context.stdout.to_s
+      output.should contain("Break start: 1:00 am")
+      output.should contain("Break finish: 1:30 am")
+      output.should contain("Success: Backfilled 3 clock ins for Tuesday, 17 Feb 2026")
       context.stderr.to_s.should be_empty
     end
   end
@@ -155,7 +168,7 @@ describe TandaCLI::Commands::ClockIn::Backfill do
     travel_to(Time.local(2026, 2, 17, 18, 0)) do
       context = run(["clockin", "backfill", "--date", "2026-02-20"])
 
-      context.stderr.to_s.should eq("Error: You can't backfill a future date\n")
+      context.stderr.to_s.should eq("Error: Date is in the future!\n       Friday, 20 Feb 2026 hasn't happened yet.\n")
     end
   end
 end

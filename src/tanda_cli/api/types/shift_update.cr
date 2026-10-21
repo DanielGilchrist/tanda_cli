@@ -1,23 +1,18 @@
 require "json"
 
+require "./updatable"
+
 module TandaCLI
   module API
     module Types
       class ShiftUpdate
         include JSON::Serializable
+        include Updatable
 
-        @finish : Int64?
-        @breaks : Array(Break)?
+        update_field start : Time, converter: Time::EpochConverter
+        update_field finish : Time, converter: Time::EpochConverter
 
         def initialize : Nil; end
-
-        def finish(time : Time) : Nil
-          @finish = time.to_unix
-        end
-
-        def add_break(start : Time, finish : Time?, paid : Bool) : Nil
-          (@breaks ||= [] of Break) << Break.new(start, finish, paid)
-        end
       end
     end
   end

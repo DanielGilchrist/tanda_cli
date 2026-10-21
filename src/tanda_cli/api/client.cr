@@ -12,6 +12,10 @@ module TandaCLI
         Resources::Shifts.new(@request)
       end
 
+      def shift_breaks : Resources::ShiftBreaks
+        Resources::ShiftBreaks.new(@request)
+      end
+
       def clock_ins : Resources::ClockIns
         Resources::ClockIns.new(@request)
       end

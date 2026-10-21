@@ -8,7 +8,7 @@ module TandaCLI
       include Kebab::Parseable
 
       @[Kebab::Subcommand]
-      getter command : Start | Finish | Break | Backfill | Photo | Status | Display
+      getter command : Start | Finish | Break | Backfill | Edit | Photo | Status | Display
     end
   end
 end
