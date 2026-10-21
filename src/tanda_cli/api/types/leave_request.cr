@@ -44,12 +44,38 @@ module TandaCLI
         getter leave_type : String
         getter reason : String?
         getter daily_breakdown : Array(DailyBreakdown)
+        getter? all_day : Bool = false
+
+        @[JSON::Field(key: "start", converter: TandaCLI::API::Types::Converters::Time::FromISODate)]
+        getter start : Time
+
+        @[JSON::Field(key: "finish", converter: TandaCLI::API::Types::Converters::Time::FromISODate)]
+        getter finish : Time
+
+        @[JSON::Field(key: "hours", converter: TandaCLI::API::Types::Converters::Span::FromHoursFloat)]
+        getter hours : Time::Span
 
         @[JSON::Field(key: "status", converter: TandaCLI::API::Types::LeaveRequest::StatusConverter)]
         getter status : Status::Any
 
         def each(& : DailyBreakdown ->) : Nil
           daily_breakdown.each { |breakdown| yield breakdown }
+        end
+
+        def single_day? : Bool
+          start == finish
+        end
+
+        def public_holidays : Array(DailyBreakdown)
+          daily_breakdown.select(&.holiday?)
+        end
+
+        def public_holiday? : Bool
+          !daily_breakdown.empty? && daily_breakdown.all?(&.holiday?)
+        end
+
+        def days : Int32
+          (finish - start).total_days.to_i + 1
         end
       end
     end

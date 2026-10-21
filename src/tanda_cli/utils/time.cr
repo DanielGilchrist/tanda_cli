@@ -4,6 +4,7 @@ module TandaCLI
       extend self
 
       DEFAULT_DATE_FORMAT      = "%A, %d %b %Y"
+      SHORT_DATE_FORMAT        = "%a %d %b"
       DEFAULT_TIME_FORMAT      = "%l:%M %p"
       DEFAULT_DATE_TIME_FORMAT = "#{DEFAULT_DATE_FORMAT} | #{DEFAULT_TIME_FORMAT}"
       ISO_DATE                 = "%Y-%m-%d"
@@ -31,6 +32,26 @@ module TandaCLI
 
       def pretty_date(date : ::Time) : String
         ::Time::Format.new(DEFAULT_DATE_FORMAT).format(date)
+      end
+
+      def short_date(date : ::Time) : String
+        ::Time::Format.new(SHORT_DATE_FORMAT).format(date)
+      end
+
+      def date_range(start : ::Time, finish : ::Time) : String
+        return format(start, "%a %d %b %Y") if start == finish
+
+        if start.year != finish.year
+          "#{format(start, "%a %d %b %Y")}\u{2013}#{format(finish, "%d %b %Y")}"
+        elsif start.month != finish.month
+          "#{format(start, "%a %d %b")}\u{2013}#{format(finish, "%d %b %Y")}"
+        else
+          "#{format(start, "%a %d")}\u{2013}#{format(finish, "%d %b %Y")}"
+        end
+      end
+
+      private def format(date : ::Time, pattern : String) : String
+        ::Time::Format.new(pattern).format(date)
       end
 
       def pretty_time(time : ::Time) : String

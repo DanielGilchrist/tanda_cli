@@ -34,6 +34,9 @@ module TandaCLI
 
           @[JSON::Field(key: "hours", converter: TandaCLI::API::Types::Converters::Span::FromHoursFloat)]
           getter hours : Time::Span
+
+          @[JSON::Field(key: "is_holiday")]
+          getter? holiday : Bool = false
         end
       end
     end

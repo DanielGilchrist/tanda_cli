@@ -68,7 +68,7 @@ module ShiftBuilder
     }
   end
 
-  record DailyBreakdown, shift_id : Int32, date : String, hours : Float64
+  record DailyBreakdown, shift_id : Int32, date : String, hours : Float64, is_holiday : Bool = false
 
   def build_leave_request(
     id : Int32,
@@ -78,13 +78,16 @@ module ShiftBuilder
     leave_type : String = "Annual Leave",
     status : String = "approved",
     reason : String? = nil,
+    is_holiday : Bool = false,
+    all_day : Bool = true,
   ) : NamedTuple
     build_leave_request(
       id: id,
-      daily_breakdowns: [DailyBreakdown.new(shift_id: shift_id, date: date, hours: hours)],
+      daily_breakdowns: [DailyBreakdown.new(shift_id: shift_id, date: date, hours: hours, is_holiday: is_holiday)],
       leave_type: leave_type,
       status: status,
       reason: reason,
+      all_day: all_day,
     )
   end
 
@@ -94,6 +97,7 @@ module ShiftBuilder
     leave_type : String = "Annual Leave",
     status : String = "approved",
     reason : String? = nil,
+    all_day : Bool = true,
   ) : NamedTuple
     shifts = daily_breakdowns.map do |breakdown|
       build_shift(
@@ -103,12 +107,18 @@ module ShiftBuilder
       )
     end
 
+    dates = daily_breakdowns.map(&.date).sort!
+
     leave_request = {
       id:              id,
       user_id:         1,
       leave_type:      leave_type,
       status:          status,
       reason:          reason,
+      all_day:         all_day,
+      start:           dates.first,
+      finish:          dates.last,
+      hours:           daily_breakdowns.sum(&.hours),
       daily_breakdown: daily_breakdowns.map do |breakdown|
         {
           id:          breakdown.shift_id.to_s,
@@ -116,6 +126,7 @@ module ShiftBuilder
           start_time:  nil,
           finish_time: nil,
           hours:       breakdown.hours,
+          is_holiday:  breakdown.is_holiday,
         }
       end,
     }

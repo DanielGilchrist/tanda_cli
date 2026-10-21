@@ -39,6 +39,7 @@ Commands:
   completions       Print a shell completion script
   config            Show where the configuration lives or what it contains
   current_user      View the current user, list available users or set the current user
+  leave             View your leave
   me                Get your own information
   mode              Set the mode to run commands in (production/staging/custom <url>)
   personal_details  Get your personal details
@@ -64,6 +65,12 @@ tanda_cli clockin photo set /users/me/Pictures/clockin_photos # as a directory
 # See time worked today or for the week
 tanda_cli time_worked today
 tanda_cli time_worked week --display # both options accept a flag to display the shifts
+
+# See your leave
+tanda_cli leave upcoming # leave booked between today and a year from now
+tanda_cli leave taken    # leave taken over the past year
+tanda_cli leave list --from 2026-01-01 --to 2026-06-30 --status pending
+tanda_cli leave show 2026-12-25 # by date, or by leave request id
 
 # Goes through each week of your roster to find your working hours (makes `time_worked` much more accurate)
 tanda_cli regular_hours determine

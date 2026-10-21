@@ -6,6 +6,7 @@ require "./clock_in"
 require "./config"
 require "./time_worked"
 require "./balance"
+require "./leave"
 require "./regular_hours"
 require "./current_user"
 require "./mode"
@@ -25,6 +26,7 @@ module TandaCLI
                                  ClockIn |
                                  TimeWorked |
                                  Balance |
+                                 Leave |
                                  RegularHours |
                                  CurrentUser |
                                  Mode |
