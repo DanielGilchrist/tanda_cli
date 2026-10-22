@@ -39,7 +39,15 @@ module TandaCLI
           build_mismatch(builder, breakdown)
         in Nil
           build_holidays(builder)
+          build_no_schedule(builder)
         end
+      end
+
+      private def build_no_schedule(builder : Builder) : Nil
+        return if @object.single_day?
+
+        builder.puts
+        builder.puts("No day by day breakdown until your regular hours are set (tanda_cli regular_hours determine)")
       end
 
       private def build_mismatch(builder : Builder, mismatch : Models::LeaveBreakdown::Mismatch) : Nil

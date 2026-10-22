@@ -183,23 +183,36 @@ module TandaCLI
 
         private def choose_type(context : Context, prompter : Prompter, types : Array(Models::LeaveType)) : Models::LeaveType
           display = context.display
-          default = types.find(&.name.==(DEFAULT_TYPE)) || types.first
+          default = types.find(&.name.==(DEFAULT_TYPE))
 
           prompter.lines do
+            width = types.size.to_s.size
+
             types.each_with_index(1) do |leave_type, number|
-              display.puts "  #{number.colorize.cyan}  #{leave_type.name}"
+              display.puts "  #{number.to_s.rjust(width).colorize.cyan}  #{leave_type.name}"
             end
           end
 
           loop do
-            answer = prompter.ask("Which leave type? 1-#{types.size}, Enter for #{default.name}")
-            return default if answer.nil? || answer.blank?
+            answer = prompter.ask(type_question(types, default))
+
+            if answer.nil? || answer.blank?
+              next display.error("Pick a number between 1 and #{types.size}") if default.nil?
+
+              return default
+            end
 
             chosen = answer.to_i?.try { |number| types[number - 1]? if number.positive? }
             return chosen if chosen
 
             display.error("Pick a number between 1 and #{types.size}")
           end
+        end
+
+        private def type_question(types : Array(Models::LeaveType), default : Models::LeaveType?) : String
+          return "Which leave type? 1-#{types.size}" if default.nil?
+
+          "Which leave type? 1-#{types.size}, Enter for #{default.name}"
         end
 
         private def resolve_reason(context : Context, prompter : Prompter) : String?
