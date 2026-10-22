@@ -12,6 +12,7 @@ require "./support/travel_to_hack"
 require "./support/storage/fixture_files"
 require "./support/shift_builder"
 require "./support/editor"
+require "./support/interactive"
 
 Spec.before_each do
   WebMock.reset

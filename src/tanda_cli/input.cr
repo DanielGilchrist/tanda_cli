@@ -29,10 +29,21 @@ module TandaCLI
       !@stdin.gets.nil?
     end
 
+    def interactive? : Bool
+      stdin = @stdin
+      stdin.is_a?(IO::FileDescriptor) && stdin.tty?
+    end
+
     def ask(message : String) : String?
       @display.print(message)
       @display.flush
       @stdin.gets(chomp: true).try(&.strip.presence)
+    end
+
+    def ask_line(message : String) : String?
+      @display.print(message)
+      @display.flush
+      @stdin.gets(chomp: true)
     end
 
     def read_line(message : String) : String?
