@@ -5,8 +5,8 @@ module TandaCLI
     class LeaveWindowTooLong < Error::Base
       def initialize(days : Int32, maximum : Int32) : Nil
         super(
-          "That's too long a period to look up leave for!",
-          "#{days} days were asked for and the API only allows #{maximum} at a time"
+          "That's too long a period to look up leave for",
+          "You asked for #{days} days and the API allows #{maximum} at a time"
         )
       end
     end

@@ -33,7 +33,7 @@ describe TandaCLI::Commands::Balance do
 
     expected = <<-OUTPUT
       Leave Balance
-          ⏳ 128.0 hours
+          ⏳ 128h
           🌴 Holiday Leave
 
       OUTPUT

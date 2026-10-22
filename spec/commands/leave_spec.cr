@@ -66,11 +66,11 @@ describe TandaCLI::Commands::Leave do
         context = run(["leave", "list"])
 
         context.stdout.to_s.should eq(<<-OUTPUT)
-            DATE                  HOURS  TYPE     STATUS    REASON
-            Mon 02 Dec 2024      7h 30m  Sick     Pending
-            Wed 25–26 Dec 2024       8h  Holiday  Approved  Christmas
+            DATE             UNTIL         HOURS  TYPE     STATUS    REASON
+            Mon 02 Dec 2024               7h 30m  Sick     Pending
+            Wed 25 Dec 2024  Thu 26 Dec       8h  Holiday  Approved  Christmas
 
-                                15h 30m  2 requests
+                                         15h 30m  2 requests
 
           OUTPUT
       end
@@ -170,7 +170,7 @@ describe TandaCLI::Commands::Leave do
         output = context.stdout.to_s
 
         output.should_not contain("Boxing Day")
-        output.should contain("1 auto-applied public holiday hidden")
+        output.should contain("1 auto-applied public holiday not shown")
       end
     end
 
@@ -192,7 +192,7 @@ describe TandaCLI::Commands::Leave do
       travel_to(NOW) do
         context = run(["leave", "list"])
 
-        context.stdout.to_s.should eq("Info: No leave between Monday, 01 Jan 2024 to Tuesday, 31 Dec 2024\n")
+        context.stdout.to_s.should eq("Info: No leave from Monday, 01 Jan 2024 to Tuesday, 31 Dec 2024\n")
       end
     end
 
@@ -256,14 +256,14 @@ describe TandaCLI::Commands::Leave do
         context.stdout.to_s.should eq(<<-OUTPUT)
           Holiday Leave  #1  Approved
 
-            Dates   Wed 25–26 Dec 2024  (2 days, 2 working)
-            Hours   8h
-            Reason  Christmas
+            Dates    Wed 25 Dec – Thu 26 Dec 2024  (2 days, 1 deducted)
+            Hours    8h
+            Reason   Christmas
 
-          · Wed 25 Dec     0h  public holiday
+          · Wed 25 Dec     –   public holiday
             Thu 26 Dec     8h
 
-                           8h
+                           8h  1 of 2 days deducted
 
           OUTPUT
       end

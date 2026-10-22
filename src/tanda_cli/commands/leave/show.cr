@@ -9,7 +9,7 @@ module TandaCLI
         include Kebab::Parseable
         include Helpers::Leave
 
-        @[Kebab::Argument(description: "A leave request id, or a day (\"wednesday\", \"today\" or YYYY-MM-DD)")]
+        @[Kebab::Argument(description: "A leave request id, or a day (\"wednesday\", \"tomorrow\" or YYYY-MM-DD)")]
         getter id_or_date : String
 
         def run(context : Context) : Nil
