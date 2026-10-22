@@ -282,6 +282,49 @@ describe TandaCLI::Commands::Leave::Request do
     end
   end
 
+  it "Says why there's no breakdown when regular hours aren't set" do
+    stub_all(hours: 56.0)
+
+    travel_to(NOW) do
+      context = run(
+        ["leave", "request", "-f", "2026-10-22", "-t", "2026-11-01", "--type", "holiday", "--yes"],
+        config_fixture: :no_regular_hours
+      )
+
+      context.stdout.to_s.should contain("No day by day breakdown until your regular hours are set")
+    end
+  end
+
+  it "Needs an explicit choice when none of your leave types is the default" do
+    stub_all(types: [{name: "Unpaid Leave"}, {name: "Annual Leave"}].to_json)
+
+    travel_to(NOW) do
+      context = interactively do
+        run(["leave", "request", "-f", "2026-12-21"], stdin: build_stdin("", "2", "", "y"))
+      end
+
+      output = context.stdout.to_s
+      output.should contain("Which leave type? 1-2 ")
+      output.should_not contain("Enter for")
+      output.should contain("Annual Leave  Draft")
+      context.stderr.to_s.should contain("Pick a number between 1 and 2")
+    end
+  end
+
+  it "Right-aligns the leave type numbers" do
+    stub_all(types: (1..10).map { |number| {name: "Type #{number}"} }.to_json)
+
+    travel_to(NOW) do
+      context = interactively do
+        run(["leave", "request", "-f", "2026-12-21"], stdin: build_stdin("1", "", "y"))
+      end
+
+      output = context.stdout.to_s
+      output.should contain("   1  Type 1")
+      output.should contain("  10  Type 10")
+    end
+  end
+
   it "Honours an --hours override" do
     stub_all
 
