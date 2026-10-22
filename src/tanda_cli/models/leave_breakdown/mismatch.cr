@@ -7,10 +7,6 @@ module TandaCLI
 
         getter charged : Time::Span
         getter scheduled : Time::Span
-
-        def difference : Time::Span
-          (@charged - @scheduled).abs
-        end
       end
     end
   end

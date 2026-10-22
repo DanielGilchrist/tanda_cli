@@ -63,10 +63,6 @@ module TandaCLI
 
         first.date.year != last.date.year
       end
-
-      def total : Time::Span
-        @days.sum(Time::Span.zero, &.hours)
-      end
     end
   end
 end

@@ -1,4 +1,5 @@
 require "./base"
+require "./leave/shared"
 require "./table"
 require "../api/types/leave_request"
 require "../utils/duration"
@@ -6,8 +7,8 @@ require "../utils/duration"
 module TandaCLI
   module Representers
     struct LeaveList < Base(Array(API::Types::LeaveRequest))
-      HOLIDAY_GUTTER = '·'
-      AUTO_APPLIED   = " (auto applied)"
+      include Leave::Shared
+
       TYPE_SUFFIX    = " Leave"
       TYPE_MAX_WIDTH = 12
 

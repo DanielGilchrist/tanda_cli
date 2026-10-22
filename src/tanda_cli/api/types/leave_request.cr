@@ -71,7 +71,7 @@ module TandaCLI
         end
 
         def days : Int32
-          (finish - start).total_days.to_i + 1
+          (finish - start).total_days.round.to_i + 1
         end
       end
     end

@@ -15,10 +15,6 @@ module TandaCLI
       yield
     end
 
-    def printed? : Bool
-      @printed
-    end
-
     private def space : Nil
       @display.puts if @printed
       @printed = true

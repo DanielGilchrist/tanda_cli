@@ -5,7 +5,6 @@ module TandaCLI
 
       DEFAULT_DATE_FORMAT      = "%A, %d %b %Y"
       SHORT_DATE_FORMAT        = "%a %d %b"
-      SHORT_DAY                = "%a %d %b"
       LONG_DAY                 = "%a %d %b %Y"
       RANGE                    = "–"
       DEFAULT_TIME_FORMAT      = "%l:%M %p"
@@ -46,12 +45,12 @@ module TandaCLI
       end
 
       def date_range(start : ::Time, finish : ::Time) : String
-        return format(start, LONG_DAY) if start == finish
+        return pretty_short_date(start) if start == finish
 
         if start.year == finish.year
-          "#{format(start, SHORT_DAY)} #{RANGE} #{format(finish, LONG_DAY)}"
+          "#{short_date(start)} #{RANGE} #{pretty_short_date(finish)}"
         else
-          "#{format(start, LONG_DAY)} #{RANGE} #{format(finish, LONG_DAY)}"
+          "#{pretty_short_date(start)} #{RANGE} #{pretty_short_date(finish)}"
         end
       end
 

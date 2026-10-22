@@ -1,4 +1,5 @@
 require "./base"
+require "./leave/shared"
 require "./table"
 require "../models/leave_draft"
 require "../utils/duration"
@@ -6,11 +7,7 @@ require "../utils/duration"
 module TandaCLI
   module Representers
     struct LeaveDraft < Base(Models::LeaveDraft)
-      HOLIDAY_GUTTER = '·'
-      NOTHING        = "– "
-      HOLIDAY_NOTE   = "public holiday"
-      HOURS_COLUMN   = 1
-      LABEL_WIDTH    = 9
+      include Leave::Shared
 
       def initialize(
         object : T,
@@ -51,17 +48,13 @@ module TandaCLI
           "#{"Warning:".colorize.yellow} Tanda is charging #{Utils::Duration.compact(mismatch.charged)}, " \
           "but your regular hours over these dates come to #{Utils::Duration.compact(mismatch.scheduled)}"
         )
-        builder.puts("         No day by day breakdown while those disagree (#{Utils::Duration.compact(mismatch.difference)} apart)")
+        builder.puts("         No day by day breakdown while those disagree (#{Utils::Duration.compact((mismatch.charged - mismatch.scheduled).abs)} apart)")
       end
 
       private def build_breakdown(builder : Builder, breakdown : Models::LeaveBreakdown) : Nil
         builder.puts
 
-        table = Table.new([
-          Table::Column.new("DATE"),
-          Table::Column.new("HOURS", align: :right),
-          Table::Column.new("NOTE"),
-        ])
+        table = breakdown_table
 
         breakdown.days.each do |day|
           table << Table::Row.new(
@@ -74,7 +67,7 @@ module TandaCLI
           )
         end
 
-        table.summarise(HOURS_COLUMN, Utils::Duration.compact(breakdown.total), pretty_deducted(breakdown))
+        table.summarise(HOURS_COLUMN, Utils::Duration.compact(@object.hours), pretty_deducted(breakdown.deducted_days, breakdown.days.size))
         table.build(builder, header: false)
       end
 
@@ -84,23 +77,13 @@ module TandaCLI
         Utils::Time.short_date(day.date)
       end
 
-      private def pretty_deducted(breakdown : Models::LeaveBreakdown) : String
-        total = breakdown.days.size
-
-        "#{breakdown.deducted_days} of #{total} day#{"s" if total != 1} deducted"
-      end
-
-      private def labelled(builder : Builder, label : String, value : String) : Nil
-        builder.puts("  #{label.ljust(LABEL_WIDTH)}#{value}")
-      end
-
       private def build_holidays(builder : Builder) : Nil
         return if @holidays.empty?
 
         builder.puts
 
         @holidays.each do |holiday|
-          builder.puts("#{HOLIDAY_GUTTER} #{Utils::Time.short_date(holiday.start)}  #{holiday_name(holiday)}")
+          builder.puts("#{HOLIDAY_GUTTER} #{Utils::Time.short_date(holiday.start)}  #{Leave::Shared.holiday_name(holiday)}")
         end
       end
 
@@ -136,13 +119,6 @@ module TandaCLI
         return unless (span.total_minutes % length.total_minutes).zero?
 
         (span.total_minutes / length.total_minutes).to_i
-      end
-
-      private def holiday_name(holiday : API::Types::LeaveRequest) : String
-        reason = holiday.reason
-        return HOLIDAY_NOTE if reason.nil? || reason.blank?
-
-        reason.rchop(LeaveList::AUTO_APPLIED)
       end
 
       private def dates : String

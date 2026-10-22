@@ -64,7 +64,10 @@ module TandaCLI
               .display(display)
           end
 
-          return declined(display) unless confirmed?(context, prompter)
+          unless confirmed?(context, prompter)
+            display.puts
+            return display.puts CANCELLED
+          end
 
           created = context.client.leave_requests.create(user_id, draft).or do |error|
             display.error(error)
@@ -83,7 +86,7 @@ module TandaCLI
           hours : Time::Span,
         ) : Models::LeaveBreakdown::Any?
           named = holidays.to_h do |holiday|
-            {holiday.start.at_beginning_of_day, holiday_name(holiday)}
+            {holiday.start.at_beginning_of_day, Representers::Leave::Shared.holiday_name(holiday)}
           end
 
           Models::LeaveBreakdown.for(
@@ -92,13 +95,6 @@ module TandaCLI
             named,
             hours
           )
-        end
-
-        private def holiday_name(holiday : API::Types::LeaveRequest) : String
-          reason = holiday.reason
-          return Representers::LeaveDraft::HOLIDAY_NOTE if reason.nil? || reason.blank?
-
-          reason.rchop(Representers::LeaveList::AUTO_APPLIED)
         end
 
         private def resolve_request_window(context : Context, prompter : Prompter) : Models::LeaveWindow
@@ -231,11 +227,6 @@ module TandaCLI
           return false if answer.nil?
 
           answer.strip.downcase.in?("y", "yes")
-        end
-
-        private def declined(display : TandaCLI::Display) : Nil
-          display.puts
-          display.puts CANCELLED
         end
 
         private def rejected(display : TandaCLI::Display, draft : Models::LeaveDraft) : Nil
