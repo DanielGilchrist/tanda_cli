@@ -9,12 +9,12 @@ module TandaCLI
 
       def self.upcoming : LeaveWindow
         today = Utils::Time.now.at_beginning_of_day
-        new(today, today + 1.year - 1.day)
+        new(today, today.shift(years: 1, days: -1))
       end
 
       def self.taken : LeaveWindow
         today = Utils::Time.now.at_beginning_of_day
-        new(today - 1.year + 1.day, today)
+        new(today.shift(years: -1, days: 1), today)
       end
 
       def self.this_year : LeaveWindow
@@ -31,10 +31,10 @@ module TandaCLI
         if from.nil?
           return this_year if to.nil?
 
-          return bounded(to - 1.year + 1.day, to)
+          return bounded(to.shift(years: -1, days: 1), to)
         end
 
-        return bounded(from, from + 1.year - 1.day) if to.nil?
+        return bounded(from, from.shift(years: 1, days: -1)) if to.nil?
 
         bounded(from, to)
       end
@@ -44,10 +44,10 @@ module TandaCLI
         finish = to.at_beginning_of_day
 
         if finish < start
-          return Error::BackwardsLeaveWindow.new(Utils::Time.iso_date(start), Utils::Time.iso_date(finish))
+          return Error::BackwardsLeaveWindow.new(start, finish)
         end
 
-        days = (finish - start).total_days.to_i + 1
+        days = (finish - start).total_days.round.to_i + 1
         return Error::LeaveWindowTooLong.new(days, MAX_DAYS) if days > MAX_DAYS
 
         new(start, finish)
