@@ -60,7 +60,7 @@ module TandaCLI
 
           prompter.lines do
             Representers::LeaveDraft
-              .new(draft, holidays: holidays, balance: balance, breakdown: breakdown, day_length: day_length(context))
+              .new(draft, holidays: holidays, balance: balance, breakdown: breakdown, day_length: leave_type.day_length)
               .display(display)
           end
 
@@ -74,12 +74,6 @@ module TandaCLI
           display.puts
           display.success("Submitted ##{created.id}")
           display.puts "  tanda_cli leave show #{created.id}"
-        end
-
-        private def day_length(context : Context) : Time::Span?
-          lengths = context.current_organisation!.regular_hours_schedules.map(&.worked_length).uniq!
-
-          lengths.first if lengths.one?
         end
 
         private def breakdown_for(
@@ -169,11 +163,11 @@ module TandaCLI
           available = context.client.leave_requests.types_for(user_id).or do |error|
             display.warning("Couldn't fetch your leave types, using \"#{DEFAULT_TYPE}\"")
             display.puts "  #{error.error}"
-            return Models::LeaveType.new(DEFAULT_TYPE)
+            return Models::LeaveType.named(DEFAULT_TYPE)
           end
 
-          types = Models::LeaveType.available(available.select(&.named?).map(&.name))
-          return Models::LeaveType.new(DEFAULT_TYPE) if types.empty?
+          types = Models::LeaveType.available(available)
+          return Models::LeaveType.named(DEFAULT_TYPE) if types.empty?
 
           wanted = type
           if wanted

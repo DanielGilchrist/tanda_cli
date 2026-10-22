@@ -6,43 +6,18 @@ module TandaCLI
       struct LeaveType
         include JSON::Serializable
 
-        NAME_KEYS = {"name", "leave_type", "title", "type"}
-
-        def self.new(pull : JSON::PullParser) : LeaveType
-          case pull.kind
-          in .string?
-            new(pull.read_string)
-          in .begin_object?
-            from_object(pull)
-          in .null?
-            pull.read_null
-            new("")
-          in .begin_array?, .int?, .float?, .bool?, .end_array?, .end_object?, .eof?
-            pull.skip
-            new("")
-          end
-        end
-
-        private def self.from_object(pull : JSON::PullParser) : LeaveType
-          name = ""
-
-          pull.read_object do |key|
-            if NAME_KEYS.includes?(key) && name.empty?
-              name = pull.read_string
-            else
-              pull.skip
-            end
-          end
-
-          new(name)
-        end
-
-        def initialize(@name : String) : Nil; end
-
         getter name : String
+        getter default_leave_length : Float64?
 
-        def named? : Bool
-          !@name.blank?
+        @[JSON::Field(key: "view_in_days")]
+        getter? in_days : Bool = false
+
+        @[JSON::Field(key: "prevent_negative")]
+        getter? prevents_negative : Bool = false
+
+        def day_length : ::Time::Span?
+          length = default_leave_length
+          length.hours if length && length.positive?
         end
       end
     end

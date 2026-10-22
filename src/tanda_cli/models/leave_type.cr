@@ -1,3 +1,4 @@
+require "../api/types/leave_type"
 require "../error/ambiguous_leave_type"
 require "../error/unknown_leave_type"
 
@@ -7,11 +8,15 @@ module TandaCLI
     struct LeaveType
       SUFFIX = " Leave"
 
-      def self.available(names : Array(String)) : Array(LeaveType)
-        names
-          .compact_map(&.strip.presence)
-          .uniq!(&.downcase)
-          .map { |name| new(name) }
+      def self.available(types : Array(API::Types::LeaveType)) : Array(LeaveType)
+        types
+          .reject(&.name.blank?)
+          .uniq!(&.name.downcase)
+          .map { |type| new(type.name, type.day_length) }
+      end
+
+      def self.named(name : String) : LeaveType
+        new(name, nil)
       end
 
       def self.parse(input : String, available : Array(LeaveType)) : LeaveType | Error::Base
@@ -30,9 +35,10 @@ module TandaCLI
         end
       end
 
-      def initialize(@name : String) : Nil; end
+      private def initialize(@name : String, @day_length : Time::Span?) : Nil; end
 
       getter name : String
+      getter day_length : Time::Span?
 
       def pretty : String
         @name.rchop(SUFFIX)
