@@ -14,7 +14,9 @@ module TandaCLI
         when "today"
           new(Utils::Time.now)
         when "yesterday"
-          new(Utils::Time.now - 1.day)
+          new(Utils::Time.now.shift(days: -1))
+        when "tomorrow"
+          new(Utils::Time.now.shift(days: 1))
         else
           day_of_week = parse_day_of_week(normalised)
           return new(day_of_week) if day_of_week
@@ -40,7 +42,7 @@ module TandaCLI
         day = @day
         return day if day.is_a?(::Time)
 
-        Utils::Time.now.at_beginning_of_week(start_of_week) + days_into_week(day, start_of_week)
+        Utils::Time.now.at_beginning_of_week(start_of_week).shift(days: days_into_week(day, start_of_week))
       end
 
       def on_or_before_today(start_of_week : ::Time::DayOfWeek) : ::Time | Error::FutureDate
@@ -50,8 +52,15 @@ module TandaCLI
         day
       end
 
-      private def days_into_week(day : ::Time::DayOfWeek, start_of_week : ::Time::DayOfWeek) : ::Time::Span
-        ((day.value - start_of_week.value) % 7).days
+      def on_or_after_today(start_of_week : ::Time::DayOfWeek) : ::Time
+        day = on(start_of_week)
+        return day unless @day.is_a?(::Time::DayOfWeek)
+
+        day.date < Utils::Time.now.date ? day.shift(weeks: 1) : day
+      end
+
+      private def days_into_week(day : ::Time::DayOfWeek, start_of_week : ::Time::DayOfWeek) : Int32
+        (day.value - start_of_week.value) % 7
       end
     end
   end

@@ -1,4 +1,5 @@
 require "./base"
+require "./leave/shared"
 require "./table"
 require "../api/types/leave_request"
 require "../utils/duration"
@@ -6,11 +7,10 @@ require "../utils/duration"
 module TandaCLI
   module Representers
     struct LeaveList < Base(Array(API::Types::LeaveRequest))
-      HOLIDAY_GUTTER = '·'
-      AUTO_APPLIED   = " (auto applied)"
+      include Leave::Shared
+
       TYPE_SUFFIX    = " Leave"
       TYPE_MAX_WIDTH = 12
-      HOURS_COLUMN   =  1
 
       def initialize(object : T, @show_ids : Bool = false, @hidden_holidays : Array(API::Types::LeaveRequest) = T.new) : Nil
         super(object)
@@ -25,17 +25,24 @@ module TandaCLI
       end
 
       private def columns : Array(Table::Column)
-        columns = [
-          Table::Column.new("DATE"),
-          Table::Column.new("HOURS", align: :right),
-          Table::Column.new("TYPE", max_width: TYPE_MAX_WIDTH),
-        ]
+        columns = [Table::Column.new("DATE")]
 
+        columns << Table::Column.new("UNTIL") if spans_days?
+        columns << Table::Column.new("HOURS", align: :right)
+        columns << Table::Column.new("TYPE", max_width: TYPE_MAX_WIDTH)
         columns << Table::Column.new("STATUS") unless shared_status
         columns << Table::Column.new("ID") if @show_ids
         columns << Table::Column.new("REASON")
 
         columns
+      end
+
+      private getter? spans_days : Bool do
+        @object.any? { |request| !request.single_day? }
+      end
+
+      private def hours_column : Int32
+        spans_days? ? 2 : 1
       end
 
       private getter shared_status : String? do
@@ -48,11 +55,11 @@ module TandaCLI
       private def row_for(request : API::Types::LeaveRequest) : Table::Row
         holiday = request.public_holiday?
 
-        cells = [
-          Utils::Time.date_range(request.start, request.finish),
-          Utils::Duration.compact(request.hours),
-          pretty_type(request.leave_type),
-        ]
+        cells = [Utils::Time.pretty_short_date(request.start)]
+
+        cells << until_for(request) if spans_days?
+        cells << Utils::Duration.compact(request.hours)
+        cells << pretty_type(request.leave_type)
 
         cells << request.status.to_s unless shared_status
         cells << "##{request.id}" if @show_ids
@@ -61,18 +68,28 @@ module TandaCLI
         Table::Row.new(cells, gutter: holiday ? HOLIDAY_GUTTER : ' ')
       end
 
+      private def until_for(request : API::Types::LeaveRequest) : String
+        return "" if request.single_day?
+
+        if request.start.year == request.finish.year
+          Utils::Time.short_date(request.finish)
+        else
+          Utils::Time.pretty_short_date(request.finish)
+        end
+      end
+
       private def build_summary(table : Table) : Nil
         holidays = @object.select(&.public_holiday?)
         total = total_hours(@object)
 
-        table.summarise(HOURS_COLUMN, Utils::Duration.compact(total), pretty_total(@object.size))
+        table.summarise(hours_column, Utils::Duration.compact(total), pretty_total(@object.size))
 
         yours = @object.reject(&.public_holiday?)
 
         unless holidays.empty? || yours.empty?
-          table.summarise(HOURS_COLUMN, Utils::Duration.compact(total_hours(yours)), "#{yours.size} yours")
+          table.summarise(hours_column, Utils::Duration.compact(total_hours(yours)), "#{yours.size} yours")
           table.summarise(
-            HOURS_COLUMN,
+            hours_column,
             Utils::Duration.compact(total_hours(holidays)),
             "#{pretty_holidays(holidays.size)} (#{HOLIDAY_GUTTER})"
           )
@@ -85,9 +102,9 @@ module TandaCLI
         return if @hidden_holidays.empty?
 
         table.summarise(
-          HOURS_COLUMN,
+          hours_column,
           Utils::Duration.compact(total_hours(@hidden_holidays)),
-          "#{pretty_holidays(@hidden_holidays.size)} hidden"
+          "#{pretty_holidays(@hidden_holidays.size)} not shown"
         )
       end
 

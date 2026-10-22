@@ -172,7 +172,7 @@ describe TandaCLI::Commands::ClockIn::Start do
     context = run(["clockin", "start", "--at", "8:45am", "--date", "tu"])
 
     context.stderr.to_s.should contain(%("tu" isn't a valid day for "--date"))
-    context.stderr.to_s.should contain(%(Try a day name like "wednesday" or "wed", "today", "yesterday" or YYYY-MM-DD))
+    context.stderr.to_s.should contain(%(Try a day name like "wednesday" or "wed", "today", "tomorrow", "yesterday" or YYYY-MM-DD))
     context.stdout.to_s.should be_empty
   end
 
