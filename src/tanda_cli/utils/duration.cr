@@ -3,14 +3,22 @@ module TandaCLI
     module Duration
       extend self
 
+      ZERO         = "0h"
+      UNDER_MINUTE = "<1m"
+
       def compact(span : ::Time::Span) : String
-        hours = span.total_hours.to_i
-        minutes = span.minutes.abs
+        return ZERO if span.zero?
 
-        return "#{hours}h" if minutes.zero?
-        return "#{minutes}m" if hours.zero?
+        magnitude = span.abs
+        sign = span.negative? ? "-" : ""
+        hours = magnitude.total_hours.to_i
+        minutes = magnitude.minutes
 
-        "#{hours}h #{minutes}m"
+        return "#{sign}#{UNDER_MINUTE}" if hours.zero? && minutes.zero?
+        return "#{sign}#{minutes}m" if hours.zero?
+        return "#{sign}#{hours}h" if minutes.zero?
+
+        "#{sign}#{hours}h #{minutes}m"
       end
     end
   end
