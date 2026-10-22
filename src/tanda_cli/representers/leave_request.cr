@@ -7,8 +7,10 @@ module TandaCLI
   module Representers
     struct LeaveRequest < Base(API::Types::LeaveRequest)
       HOLIDAY_GUTTER = '·'
+      HOLIDAY_NOTE   = "public holiday"
+      NOTHING        = "– "
       HOURS_COLUMN   = 1
-      LABEL_WIDTH    = 8
+      LABEL_WIDTH    = 9
 
       private def build_display(builder : Builder) : Nil
         builder.puts(heading)
@@ -47,14 +49,14 @@ module TandaCLI
           table << Table::Row.new(
             [
               Utils::Time.short_date(breakdown.date),
-              Utils::Duration.compact(breakdown.hours),
-              breakdown.holiday? ? "public holiday" : "",
+              breakdown.hours.zero? ? NOTHING : Utils::Duration.compact(breakdown.hours),
+              breakdown.holiday? ? HOLIDAY_NOTE : "",
             ],
             gutter: breakdown.holiday? ? HOLIDAY_GUTTER : ' '
           )
         end
 
-        table.summarise(HOURS_COLUMN, Utils::Duration.compact(@object.hours), "") if @object.daily_breakdown.size > 1
+        table.summarise(HOURS_COLUMN, Utils::Duration.compact(@object.hours), pretty_deducted) if @object.daily_breakdown.size > 1
         table.build(builder, header: false)
       end
 
@@ -62,7 +64,17 @@ module TandaCLI
         range = Utils::Time.date_range(@object.start, @object.finish)
         return range if @object.single_day?
 
-        "#{range}  (#{@object.days} days, #{@object.daily_breakdown.size} working)"
+        "#{range}  (#{@object.days} days, #{deducted_days} deducted)"
+      end
+
+      private def deducted_days : Int32
+        @object.daily_breakdown.count { |breakdown| !breakdown.hours.zero? }
+      end
+
+      private def pretty_deducted : String
+        total = @object.daily_breakdown.size
+
+        "#{deducted_days} of #{total} day#{"s" if total != 1} deducted"
       end
 
       private def times : String

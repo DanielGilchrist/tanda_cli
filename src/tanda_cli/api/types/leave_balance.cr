@@ -10,8 +10,8 @@ module TandaCLI
         getter hours : Float32
         getter leave_type : String
 
-        def pretty_hours : String
-          "#{hours} hours"
+        def span : ::Time::Span
+          hours.to_f64.hours
         end
       end
     end
