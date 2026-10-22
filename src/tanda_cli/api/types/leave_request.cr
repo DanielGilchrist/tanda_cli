@@ -66,16 +66,12 @@ module TandaCLI
           start == finish
         end
 
-        def public_holidays : Array(DailyBreakdown)
-          daily_breakdown.select(&.holiday?)
-        end
-
         def public_holiday? : Bool
           !daily_breakdown.empty? && daily_breakdown.all?(&.holiday?)
         end
 
         def days : Int32
-          (finish - start).total_days.to_i + 1
+          (finish - start).total_days.round.to_i + 1
         end
       end
     end

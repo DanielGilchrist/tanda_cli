@@ -16,9 +16,6 @@ module TandaCLI
         @summaries = Array(Summary).new
       end
 
-      getter rows : Array(Row)
-      getter summaries : Array(Summary)
-
       def <<(row : Row) : Nil
         @rows << row
       end

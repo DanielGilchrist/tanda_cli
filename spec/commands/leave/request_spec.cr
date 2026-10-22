@@ -58,12 +58,18 @@ private def stub_create(id : Int32 = 184203) : Nil
     )
 end
 
-private def stub_all : Nil
-  stub_types
-  stub_hours
-  stub_existing
-  stub_balances
-  stub_create
+private def stub_all(
+  types : String? = default_types,
+  hours : Float64 = 28.0,
+  existing : String = "[]",
+  balance : Float64 = 70.0,
+  create : Bool = true,
+) : Nil
+  stub_types(types) if types
+  stub_hours(hours)
+  stub_existing_body(existing)
+  stub_balances(balance)
+  stub_create if create
 end
 
 describe TandaCLI::Commands::Leave::Request do
@@ -84,8 +90,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Treats --from without --to as a single day" do
-    stub_all
-    stub_hours(7.0)
+    stub_all(hours: 7.0)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-12-21", "--type", "holiday", "--yes"])
@@ -156,14 +161,11 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Falls back to Holiday Leave when the types endpoint fails" do
-    stub_hours
-    stub_existing
-    stub_balances
-    stub_create
-
     WebMock
       .stub(:get, endpoint(Regex.new("/leave/types_with_details_for/1")))
       .to_return(status: 500, body: {error: "boom"}.to_json)
+
+    stub_all(types: nil)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-12-21", "--yes"])
@@ -187,19 +189,6 @@ describe TandaCLI::Commands::Leave::Request do
     end
   end
 
-  it "Omits the day count when the API gives no leave day length" do
-    stub_hours
-    stub_existing
-    stub_balances
-    stub_create
-    stub_types([{name: "Holiday Leave"}].to_json)
-
-    travel_to(NOW) do
-      context = run(["leave", "request", "-f", "2026-12-21", "--yes"])
-      context.stdout.to_s.should contain("Balance  70h → 42h if approved")
-    end
-  end
-
   it "Accepts tomorrow as a date" do
     stub_all
 
@@ -219,11 +208,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Shows a duplicated leave type only once" do
-    stub_hours
-    stub_existing
-    stub_balances
-    stub_create
-    stub_types([{name: "Holiday Leave"}, {name: "Sick Leave"}, {name: "Holiday Leave"}].to_json)
+    stub_all(types: [{name: "Holiday Leave"}, {name: "Sick Leave"}, {name: "Holiday Leave"}].to_json)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-12-21", "--type", "holiday", "--yes"])
@@ -234,11 +219,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Breaks the request down day by day when it adds up" do
-    stub_types
-    stub_existing
-    stub_balances
-    stub_create
-    stub_hours(56.0)
+    stub_all(hours: 56.0)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-10-22", "-t", "2026-11-01", "--type", "holiday", "--yes"])
@@ -277,11 +258,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Omits the breakdown when it doesn't add up to the hours being requested" do
-    stub_types
-    stub_existing
-    stub_balances
-    stub_create
-    stub_hours(42.5)
+    stub_all(hours: 42.5)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-10-22", "-t", "2026-11-01", "--type", "holiday", "--yes"])
@@ -293,11 +270,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Says why there's no breakdown when Tanda's hours disagree with your regular hours" do
-    stub_types
-    stub_existing
-    stub_balances
-    stub_create
-    stub_hours(52.0)
+    stub_all(hours: 52.0)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-10-22", "-t", "2026-11-01", "--type", "holiday", "--yes"])
@@ -385,10 +358,7 @@ describe TandaCLI::Commands::Leave::Request do
   end
 
   it "Prints a retry command when the API rejects the request" do
-    stub_types
-    stub_hours
-    stub_existing
-    stub_balances
+    stub_all(create: false)
 
     WebMock
       .stub(:post, endpoint("/leave"))

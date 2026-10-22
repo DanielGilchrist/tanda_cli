@@ -6,8 +6,6 @@ module TandaCLI
   module Models
     # A leave type the API has told us this user may take
     struct LeaveType
-      SUFFIX = " Leave"
-
       def self.available(types : Array(API::Types::LeaveType)) : Array(LeaveType)
         types
           .reject(&.name.blank?)
@@ -39,10 +37,6 @@ module TandaCLI
 
       getter name : String
       getter day_length : Time::Span?
-
-      def pretty : String
-        @name.rchop(SUFFIX)
-      end
 
       def to_s(io : IO) : Nil
         io << @name

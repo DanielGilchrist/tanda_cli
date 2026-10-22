@@ -47,8 +47,8 @@ module TandaCLI
           return Error::BackwardsLeaveWindow.new(start, finish)
         end
 
-        days = (finish - start).total_days.round.to_i + 1
-        return Error::LeaveWindowTooLong.new(days, MAX_DAYS) if days > MAX_DAYS
+        span = days_between(start, finish)
+        return Error::LeaveWindowTooLong.new(span, MAX_DAYS) if span > MAX_DAYS
 
         new(start, finish)
       end
@@ -57,6 +57,14 @@ module TandaCLI
 
       getter from : Time
       getter to : Time
+
+      def days : Int32
+        LeaveWindow.days_between(from, to)
+      end
+
+      protected def self.days_between(start : Time, finish : Time) : Int32
+        (finish - start).total_days.round.to_i + 1
+      end
 
       def covers?(date : Time) : Bool
         day = date.at_beginning_of_day
