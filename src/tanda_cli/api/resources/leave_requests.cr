@@ -32,7 +32,7 @@ module TandaCLI
         end
 
         def types_for(user_id : Int32) : Result(Array(Types::LeaveType))
-          @request.get(Array(Types::LeaveType), "/leave/types_for/#{user_id}")
+          @request.get(Array(Types::LeaveType), "/leave/types_with_details_for/#{user_id}")
         end
 
         def hours_between(user_id : Int32, from : Time, to : Time, leave_type : String) : Result(Types::LeaveHours)

@@ -2,10 +2,17 @@ require "../../spec_helper"
 
 private NOW = Time.local(2026, 10, 21)
 
-private def stub_types(body : String = %(["Holiday Leave", "Sick Leave"])) : Nil
+private def stub_types(body : String = default_types) : Nil
   WebMock
-    .stub(:get, endpoint(Regex.new("/leave/types_for/1")))
+    .stub(:get, endpoint(Regex.new("/leave/types_with_details_for/1")))
     .to_return(status: 200, body: body)
+end
+
+private def default_types : String
+  [
+    {name: "Holiday Leave", default_leave_length: 8.0},
+    {name: "Sick Leave", default_leave_length: 8.0},
+  ].to_json
 end
 
 private def stub_hours(hours : Float64 = 28.0) : Nil
@@ -155,7 +162,7 @@ describe TandaCLI::Commands::Leave::Request do
     stub_create
 
     WebMock
-      .stub(:get, endpoint(Regex.new("/leave/types_for/1")))
+      .stub(:get, endpoint(Regex.new("/leave/types_with_details_for/1")))
       .to_return(status: 500, body: {error: "boom"}.to_json)
 
     travel_to(NOW) do
@@ -167,16 +174,29 @@ describe TandaCLI::Commands::Leave::Request do
     end
   end
 
-  it "Parses a types response of objects as well as strings" do
+  it "Takes the length of a leave day from the API" do
+    stub_hours(8.0)
+    stub_existing
+    stub_balances(70.0)
+    stub_create
+    stub_types([{name: "Holiday Leave", default_leave_length: 7.0}].to_json)
+
+    travel_to(NOW) do
+      context = run(["leave", "request", "-f", "2026-12-21", "--yes"])
+      context.stdout.to_s.should contain("Balance  70h (10 days)")
+    end
+  end
+
+  it "Omits the day count when the API gives no leave day length" do
     stub_hours
     stub_existing
     stub_balances
     stub_create
-    stub_types([{name: "Holiday Leave"}, {name: "Sick Leave"}].to_json)
+    stub_types([{name: "Holiday Leave"}].to_json)
 
     travel_to(NOW) do
-      context = run(["leave", "request", "-f", "2026-12-21", "--type", "sick", "--yes"])
-      context.stdout.to_s.should contain("Sick Leave  Draft")
+      context = run(["leave", "request", "-f", "2026-12-21", "--yes"])
+      context.stdout.to_s.should contain("Balance  70h → 42h if approved")
     end
   end
 
@@ -203,7 +223,7 @@ describe TandaCLI::Commands::Leave::Request do
     stub_existing
     stub_balances
     stub_create
-    stub_types(%(["Holiday Leave", "Sick Leave", "Holiday Leave"]))
+    stub_types([{name: "Holiday Leave"}, {name: "Sick Leave"}, {name: "Holiday Leave"}].to_json)
 
     travel_to(NOW) do
       context = run(["leave", "request", "-f", "2026-12-21", "--type", "holiday", "--yes"])
