@@ -1,4 +1,5 @@
 require "./base"
+require "./leave/shared"
 require "./table"
 require "../api/types/leave_request"
 require "../utils/duration"
@@ -6,9 +7,7 @@ require "../utils/duration"
 module TandaCLI
   module Representers
     struct LeaveRequest < Base(API::Types::LeaveRequest)
-      HOLIDAY_GUTTER = '·'
-      HOURS_COLUMN   = 1
-      LABEL_WIDTH    = 8
+      include Leave::Shared
 
       private def build_display(builder : Builder) : Nil
         builder.puts(heading)
@@ -28,33 +27,25 @@ module TandaCLI
         "#{@object.leave_type.colorize.white.bold}  ##{@object.id}  #{@object.status}"
       end
 
-      private def labelled(builder : Builder, label : String, value : String) : Nil
-        builder.puts("  #{label.ljust(LABEL_WIDTH)}#{value}")
-      end
-
       private def build_breakdown(builder : Builder) : Nil
         return if @object.daily_breakdown.empty?
 
         builder.puts
 
-        table = Table.new([
-          Table::Column.new("DATE"),
-          Table::Column.new("HOURS", align: :right),
-          Table::Column.new("NOTE"),
-        ])
+        table = breakdown_table
 
         @object.each do |breakdown|
           table << Table::Row.new(
             [
               Utils::Time.short_date(breakdown.date),
-              Utils::Duration.compact(breakdown.hours),
-              breakdown.holiday? ? "public holiday" : "",
+              breakdown.hours.zero? ? NOTHING : Utils::Duration.compact(breakdown.hours),
+              breakdown.holiday? ? HOLIDAY_NOTE : "",
             ],
             gutter: breakdown.holiday? ? HOLIDAY_GUTTER : ' '
           )
         end
 
-        table.summarise(HOURS_COLUMN, Utils::Duration.compact(@object.hours), "") if @object.daily_breakdown.size > 1
+        table.summarise(HOURS_COLUMN, Utils::Duration.compact(@object.hours), pretty_deducted(deducted_days, @object.daily_breakdown.size)) if @object.daily_breakdown.size > 1
         table.build(builder, header: false)
       end
 
@@ -62,7 +53,11 @@ module TandaCLI
         range = Utils::Time.date_range(@object.start, @object.finish)
         return range if @object.single_day?
 
-        "#{range}  (#{@object.days} days, #{@object.daily_breakdown.size} working)"
+        "#{range}  (#{@object.days} days, #{deducted_days} deducted)"
+      end
+
+      private def deducted_days : Int32
+        @object.daily_breakdown.count { |breakdown| !breakdown.hours.zero? }
       end
 
       private def times : String

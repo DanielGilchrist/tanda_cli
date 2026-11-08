@@ -10,10 +10,10 @@ module TandaCLI
         include Helpers::Leave
         include Options
 
-        @[Kebab::Option(short: 'f', converter: ::TandaCLI::Converters::Day, description: "Date to list leave from (\"wednesday\", \"today\" or YYYY-MM-DD)")]
+        @[Kebab::Option(short: 'f', converter: ::TandaCLI::Converters::Day, description: "Date to list leave from (\"wednesday\", \"tomorrow\" or YYYY-MM-DD)")]
         getter from : Models::ClockInDay?
 
-        @[Kebab::Option(short: 't', converter: ::TandaCLI::Converters::Day, description: "Date to list leave to (\"wednesday\", \"today\" or YYYY-MM-DD)")]
+        @[Kebab::Option(short: 't', converter: ::TandaCLI::Converters::Day, description: "Date to list leave to (\"wednesday\", \"tomorrow\" or YYYY-MM-DD)")]
         getter to : Models::ClockInDay?
 
         def run(context : Context) : Nil
@@ -23,7 +23,7 @@ module TandaCLI
           display_list(
             context,
             requests,
-            "No leave between #{window}",
+            "No leave from #{window}",
             show_ids: ids?,
             public_holidays: !no_public_holidays?
           )

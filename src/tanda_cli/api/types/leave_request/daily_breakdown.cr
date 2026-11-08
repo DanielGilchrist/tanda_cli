@@ -12,16 +12,7 @@ module TandaCLI
           include JSON::Serializable
           include Utils::Mixins::PrettyTimes
 
-          module StringIDConverter
-            extend self
-
-            def from_json(value : JSON::PullParser) : Int32
-              value.read_string.to_i32
-            end
-          end
-
-          @[JSON::Field(key: "id", converter: TandaCLI::API::Types::LeaveRequest::DailyBreakdown::StringIDConverter)]
-          getter shift_id : Int32
+          getter id : String
 
           @[JSON::Field(key: "date", converter: TandaCLI::API::Types::Converters::Time::FromISODate)]
           getter date : Time
@@ -37,6 +28,10 @@ module TandaCLI
 
           @[JSON::Field(key: "is_holiday")]
           getter? holiday : Bool = false
+
+          def shift_id : Int32?
+            @id.to_i32?
+          end
         end
       end
     end
