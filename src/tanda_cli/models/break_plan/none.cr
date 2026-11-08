@@ -2,10 +2,6 @@ module TandaCLI
   module Models
     module BreakPlan
       struct None
-        def length : Time::Span
-          Time::Span.zero
-        end
-
         def pretty : String
           "—"
         end

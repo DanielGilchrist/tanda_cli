@@ -124,10 +124,6 @@ module TandaCLI
         end
       end
 
-      def with_hours(hours : TimeRange) : self | Error::Base
-        self.class.build(day_of_week, hours, break_plan)
-      end
-
       def with_break_plan(break_plan : BreakPlan::Any) : self | Error::Base
         self.class.build(day_of_week, hours, break_plan)
       end

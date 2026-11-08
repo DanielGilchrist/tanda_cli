@@ -66,10 +66,6 @@ module TandaCLI
 
       getter days : Array(Time::DayOfWeek)
 
-      def one? : Bool
-        @days.one?
-      end
-
       def to_s(io : IO) : Nil
         io << @days.join(", ")
       end

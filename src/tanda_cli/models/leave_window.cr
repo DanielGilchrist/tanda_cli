@@ -58,12 +58,6 @@ module TandaCLI
       getter from : Time
       getter to : Time
 
-      def covers?(date : Time) : Bool
-        day = date.at_beginning_of_day
-
-        day >= from && day <= to
-      end
-
       def to_s(io : IO) : Nil
         io << Utils::Time.pretty_date(from) << " to " << Utils::Time.pretty_date(to)
       end

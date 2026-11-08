@@ -6,10 +6,6 @@ module TandaCLI
 
         getter ranges : Array(TimeRange)
 
-        def length : Time::Span
-          ranges.sum(&.length)
-        end
-
         def pretty : String
           ranges.map(&.pretty).join(", ")
         end

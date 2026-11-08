@@ -30,10 +30,6 @@ module TandaCLI
         offset_of(finish)
       end
 
-      def overnight? : Bool
-        finish < start
-      end
-
       def offset_of(time : TimeOfDay) : Time::Span
         ((time.minutes_of_day - start.minutes_of_day) % TimeOfDay::MINUTES_PER_DAY).minutes
       end

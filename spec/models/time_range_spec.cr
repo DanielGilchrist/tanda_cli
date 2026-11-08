@@ -11,7 +11,6 @@ describe TandaCLI::Models::TimeRange do
 
   it "Wraps past midnight" do
     range = TandaCLI::Models::TimeRange.parse("22:00-6:00").as(TandaCLI::Models::TimeRange)
-    range.overnight?.should be_true
     range.length.should eq(8.hours)
     range.covers?(TandaCLI::Models::TimeRange.parse("2-2:30").as(TandaCLI::Models::TimeRange)).should be_true
     range.covers?(TandaCLI::Models::TimeRange.parse("20-20:30").as(TandaCLI::Models::TimeRange)).should be_false

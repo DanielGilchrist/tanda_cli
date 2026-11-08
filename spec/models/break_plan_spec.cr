@@ -12,7 +12,6 @@ describe TandaCLI::Models::BreakPlan do
   it "Parses fixed ranges" do
     plan = TandaCLI::Models::BreakPlan.parse(["12-12:30", "15-15:15"]).as(TandaCLI::Models::BreakPlan::Fixed)
     plan.ranges.size.should eq(2)
-    plan.length.should eq(45.minutes)
     plan.to_s.should eq("12:00-12:30 15:00-15:15")
   end
 
