@@ -37,10 +37,6 @@ module TandaCLI
 
       getter name : String
       getter day_length : Time::Span?
-
-      def to_s(io : IO) : Nil
-        io << @name
-      end
     end
   end
 end
